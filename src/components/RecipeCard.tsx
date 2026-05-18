@@ -1,52 +1,48 @@
 "use client";
-
 import { type Recipe } from "@/data/recipes";
-
 interface RecipeCardProps {
   recipe: Recipe;
   inCart: boolean;
   onAdd: () => void;
   onReject: () => void;
 }
-
 export const RecipeCard = ({ recipe, inCart, onAdd, onReject }: RecipeCardProps) => {
   return (
     <div className="card-float p-4 fade-in relative">
-      {inCart && (
-        <div className="absolute top-3 right-3 bg-[#7BC843] text-white text-xs font-bold px-3 py-1 rounded-full">
-          ✓ No carrinho
-        </div>
-      )}
-      <div className="relative rounded-xl overflow-hidden mb-3" style={{ height: "200px" }}>
+      {/* Image with rounded top only and fixed height */}
+      <div className="relative rounded-t-[16px] rounded-b-0 h-180 w-full overflow-hidden">
         <img
           src={`https://picsum.photos/seed/${recipe.id}/300/300`}
           alt={recipe.nome}
           className="w-full h-full object-cover"
         />
-        <div className="absolute top-2 left-2 bg-[#FF6B35] text-white text-xs font-bold px-3 py-1 rounded-full">
-          {recipe.id}
-        </div>
+        <div className="absolute top-2 left-2 bg-[#FF6B35] text-white text-xs font-bold px-3 py-1 rounded-full">Código: {recipe.id}</div>
       </div>
-      <h3 className="text-lg font-bold mb-1" style={{ fontFamily: "'Fredoka One', cursive" }}>
+      {/* Recipe Name */}
+      <h3 className="text-lg font-bold mb-1" style={{ fontFamily: "'Fredoka One', cursive", color: "#2d2d2d" }}>
         {recipe.nome}
       </h3>
+      {/* Description */}
       <p className="text-gray-500 text-sm mb-1">{recipe.descricao}</p>
+      {/* Category */}
       <p className="text-xs text-gray-400 mb-2">{recipe.categoria}</p>
-      <p className="text-2xl font-bold mb-3" style={{ color: "#7BC843", fontFamily: "'Fredoka One', cursive" }}>
+      {/* Price */}
+      <p className="text-2xl font-bold mb-3" style={{ color: "#7BC843", fontFamily: "'Fredoka One', cursive", textShadow: "1px 1px 0 rgba(123,200,67,0.2)" }}>
         R$ {recipe.preco.toFixed(2)}
       </p>
+      {/* Add to Cart Button */}
       <button
         onClick={onAdd}
         disabled={inCart}
-        className="w-full py-2.5 rounded-xl font-bold text-white text-base disabled:opacity-50 transition-transform active:scale-[0.98]"
-        style={{ backgroundColor: inCart ? "#ccc" : "#7BC843", fontFamily: "'Fredoka One', cursive" }}
+        className="w-full py-2.5 rounded-12 bg-gradient-to-r from-[#7BC843] to-[#5fa832] shadow-0-4-15 rgba(123,200,67,0.35) text-white font-bold"
       >
         {inCart ? "✓ Adicionado" : "+ Adicionar ao Carrinho"}
       </button>
+      {/* Reject Button */}
       {!inCart && (
         <button
           onClick={onReject}
-          className="w-full mt-2 py-2 rounded-xl font-semibold text-red-500 text-sm border border-red-200 hover:bg-red-50 transition-colors"
+          className="w-full mt-2 py-2 rounded-12 bg-gradient-to-r from-[#ff5252] to-[#d32f2f] text-red-600 font-semibold text-sm border border-red-200 hover:bg-red-50 transition-colors"
         >
           ✕ Rejeitar
         </button>
