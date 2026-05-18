@@ -15,16 +15,12 @@ export const CategoryCard = ({ nome }: CategoryCardProps) => {
           .toLowerCase()
           .replace(/ /g, "-")}/400/300`}
         alt={nome}
-        className={`w-full h-full object-cover transition-transform duration-300 ${
-          hover ? "scale-108" : ""
-        }`}
+        className={`w-full h-full object-cover transition-transform duration-300 ${hover ? "scale-108" : ""}`}
         onMouseEnter={() => setHover(true)}
         onMouseLeave={() => setHover(false)}
       />
       <div
-        className={`absolute inset-0 bg-gradient-to-b from-transparent via-black/85 to-transparent transition-opacity duration-300 ${
-          hover ? "opacity-70" : "opacity-0"
-        }`}
+        className={`absolute inset-0 bg-gradient-to-b from-transparent via-black/85 to-transparent transition-opacity duration-300 ${hover ? "opacity-70" : "opacity-0"}`}
       />
       <div className="absolute bottom-0 left-0 right-0 p-4">
         <h3

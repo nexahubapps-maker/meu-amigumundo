@@ -12,13 +12,13 @@ interface PackCardProps {
 export const PackCard = ({ pack, inCart, onAdd, onRemove }: PackCardProps) => {
   return (
     <div className="card-float overflow-hidden">
-      <div className="relative h-48 rounded-t-[12px] overflow-hidden">
+      <div className="relative h-48 rounded-t-[12px] rounded-b-0">
         <img
           src={`https://picsum.photos/seed/${pack.nome
             .toLowerCase()
             .replace(/ /g, "-")}/400/300`}
           alt={pack.nome}
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/85 to-transparent" />
         <div className="absolute top-2 left-2 bg-black/60 backdrop-blur-4 px-2 py-1 rounded-full flex items-center gap-1 text-white text-xs">
@@ -49,14 +49,14 @@ export const PackCard = ({ pack, inCart, onAdd, onRemove }: PackCardProps) => {
         <button
           onClick={onAdd}
           disabled={inCart}
-          className="w-full py-2.5 rounded-12 bg-gradient-to-r from-[#7BC843] to-[#5fa832] text-white font-bold transition-all duration-200 hover:scale-105"
+          className="w-full py-2.5 rounded-12 bg-gradient-to-r from-[#7BC843] to-[#5fa832] text-white font-bold transition-all duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {inCart ? "✓ No carrinho" : "+ Adicionar ao Carrinho"}
         </button>
         {inCart && (
           <button
             onClick={onRemove}
-            className="w-full py-2 rounded-10 bg-red-500 text-red-600 text-sm border border-red-200 hover:bg-red-50 transition-colors"
+            className="w-full mt-2 py-2 rounded-10 bg-red-500 text-red-600 text-sm border border-red-200 hover:bg-red-50 transition-colors"
           >
             ✕ Remover do Carrinho
           </button>

@@ -1,6 +1,4 @@
-export interface Category {
-  nome: string;
-}
+export type Category = string;
 
 export const categories: Category[] = [
   "Princesas", "Personagens TV", "Super-Herois", "Animais da Fazenda",
