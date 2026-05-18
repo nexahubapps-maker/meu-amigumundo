@@ -1,1 +1,5 @@
-// File contents excluded from context
+import { Label } from "@/components/ui/label";
+
+export default function LabelDemo() {
+  return <Label>Label</Label>;
+}

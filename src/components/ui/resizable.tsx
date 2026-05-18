@@ -1,1 +1,5 @@
-// File contents excluded from context
+import { Resizable } from "@/components/ui/resizable";
+
+export default function ResizableDemo() {
+  return <Resizable />;
+}

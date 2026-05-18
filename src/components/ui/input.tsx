@@ -1,1 +1,5 @@
-// File contents excluded from context
+import { Input } from "@/components/ui/input";
+
+export default function InputDemo() {
+  return <Input placeholder="Enter text" />;
+}

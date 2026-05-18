@@ -76,7 +76,7 @@ export default function Index() {
   };
 
   return (
-    <div className="min-h-screen pb-20 px-4 sm:px-6 md:px-8 lg:px-12">
+    <div className="min-h-sm px-4 sm:px-6 md:px-8 lg:px-12">
       <Header />
       <section className="max-w-6xl mx-auto">
         <div className="banner flex flex-col items-center justify-center text-center">

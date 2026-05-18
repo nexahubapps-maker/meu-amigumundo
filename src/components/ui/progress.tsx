@@ -1,1 +1,5 @@
-// File contents excluded from context
+import { Progress } from "@/components/ui/progress";
+
+export default function ProgressDemo() {
+  return <Progress value={50} />;
+}

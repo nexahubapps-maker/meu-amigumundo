@@ -1,1 +1,5 @@
-// File contents excluded from context
+import { Toggle } from "@/components/ui/toggle";
+
+export default function ToggleDemo() {
+  return <Toggle />;
+}

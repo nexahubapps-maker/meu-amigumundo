@@ -1,1 +1,5 @@
-// File contents excluded from context
+import { Separator } from "@/components/ui/separator";
+
+export default function SeparatorDemo() {
+  return <Separator />;
+}

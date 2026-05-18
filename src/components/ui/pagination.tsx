@@ -1,1 +1,5 @@
-// File contents excluded from context
+import { Pagination } from "@/components/ui/pagination";
+
+export default function PaginationDemo() {
+  return <Pagination />;
+}
