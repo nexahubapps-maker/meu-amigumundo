@@ -117,7 +117,11 @@ export default function Index() {
           <div className="modal-overlay" onClick={() => setShowRecipe(null)}>
             <div className="modal-content p-0 overflow-hidden" onClick={(e) => e.stopPropagation()}>
               <RecipeCard
-                recipe={showRecipe}
+                id={showRecipe.id}
+                nome={showRecipe.nome}
+                descricao={showRecipe.descricao}
+                preco={showRecipe.preco}
+                categoria={showRecipe.categoria}
                 inCart={isInCart(showRecipe.id)}
                 onAdd={() => handleRecipeAdd(showRecipe)}
                 onReject={handleRecipeReject}
@@ -134,10 +138,14 @@ export default function Index() {
               {foundRecipes.map((recipe) => (
                 <RecipeCard
                   key={recipe.id}
-                  recipe={recipe}
+                  id={recipe.id}
+                  nome={recipe.nome}
+                  descricao={recipe.descricao}
+                  preco={recipe.preco}
+                  categoria={recipe.categoria}
                   inCart={isInCart(recipe.id)}
                   onAdd={() => handleRecipeAdd(recipe)}
-                  onReject={() => handleRecipeReject()}
+                  onReject={handleRecipeReject}
                 />
               ))}
             </div>
