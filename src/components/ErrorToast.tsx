@@ -12,8 +12,7 @@ export const ErrorToast = ({ message, onClose }: ErrorToastProps) => {
         <span className="text-2xl">❌</span>
         <p className="text-red-600 font-semibold text-sm">{message}</p>
         <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
-          ✕
-        </button>
+          ✕        </button>
       </div>
     </div>
   );

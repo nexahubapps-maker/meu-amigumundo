@@ -60,7 +60,12 @@ export const UpsellModal = ({ upsell, onClose, onBuy }: UpsellModalProps) => {
               R${upsell.precoOriginal.toFixed(2)}
             </span>
             <div className="inline-block bg-gradient-to-r from-[#ff5252] to-[#d32f2f] rounded-full font-bold px-6 py-2 text-xs shadow-0-4-15 rgba(255,82,82,0.4) mt-2">
-              🔥 {Math.round(((upsell.precoOriginal - upsell.precoAtual) / upsell.precoOriginal) * 100)}% DE DESCONTO
+              🔥{" "}
+              {Math.round(
+                ((upsell.precoOriginal - upsell.precoAtual) / upsell.precoOriginal) *
+                  100,
+              )}
+              % DE DESCONTO
             </div>
             <p
               className="text-3xl font-bold mt-2"
@@ -74,19 +79,9 @@ export const UpsellModal = ({ upsell, onClose, onBuy }: UpsellModalProps) => {
             </p>
           </div>
 
-          <p className="text-center text-xs text-gray-400 mb-3">
-            Pagamento unico • Sem mensalidade • Acesso imediato
-          </p>
-
-          <div className="bg-[#FFF0E0] rounded-xl p-2 text-center mb-4">
-            <p className="text-sm font-bold" style={{ color: "#FF6B35" }}>
-              ⚠️ Oferta por tempo limitado
-            </p>
-          </div>
-
           <button
             onClick={onBuy}
-            className="w-full py-3 rounded-xl font-bold text-white text-lg transition-transform active:scale-[0.98] mb-3"
+            className="w-full py-3 rounded-16 font-bold text-white text-lg transition-transform active:scale-[0.98] mb-3"
             style={{ backgroundColor: "#7BC843", fontFamily: "'Fredoka One', cursive" }}
           >
             💳 QUERO AGORA — R${upsell.precoAtual.toFixed(2)}
@@ -94,13 +89,13 @@ export const UpsellModal = ({ upsell, onClose, onBuy }: UpsellModalProps) => {
 
           <button
             onClick={onClose}
-            className="w-full py-2.5 rounded-xl font-semibold text-white text-sm transition-transform active:scale-[0.98]"
+            className="w-full py-2.5 rounded-12 font-semibold text-white text-sm transition-transform active:scale-[0.98]"
             style={{ backgroundColor: "#FF6B35", fontFamily: "'Fredoka One', cursive" }}
           >
             JA COMPREI — INSERIR CÓDIGO DE ACESSO
           </button>
 
-          <div className="text-center text-xs text-gray-400 mt-4 pb-2">
+          <div className="bg-[#f8f9fa] rounded-12 p-4 mt-4 text-center text-green-600 text-sm">
             ✅ Garantia de 7 dias — Não gostou? Devolvemos 100%. Sem perguntas.
           </div>
         </div>

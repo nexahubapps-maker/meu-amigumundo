@@ -1,5 +1,15 @@
-import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
 
-export default function SkeletonDemo() {
-  return <Skeleton />;
+function Skeleton({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cn("animate-pulse rounded-md bg-muted", className)}
+      {...props}
+    />
+  );
 }
+
+export { Skeleton };

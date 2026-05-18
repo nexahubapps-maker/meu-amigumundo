@@ -76,9 +76,10 @@ export default function Index() {
   };
 
   return (
-    <div className="min-h-sm px-4 sm:px-6 md:px-8 lg:px-12">
+    <div className="min-h-screen pb-20 px-4 sm:px-6 md:px-8 lg:px-12">
       <Header />
       <section className="max-w-6xl mx-auto">
+        {/* Banner */}
         <div className="banner flex flex-col items-center justify-center text-center">
           <span className="absolute left-4 top-4 text-5xl opacity-60">🧶</span>
           <span className="absolute right-4 bottom-4 text-5xl opacity-60">✂️</span>
@@ -90,12 +91,16 @@ export default function Index() {
           </p>
         </div>
 
+        {/* Gamification */}
         <GamificationBar cartCount={cart.length} />
 
+        {/* Code Input */}
         <CodeInput onRecipeFound={handleRecipeFound} onRecipeNotFound={handleRecipeNotFound} />
 
+        {/* Error Toast */}
         {error && <ErrorToast message={error} onClose={() => setError(null)} />}
 
+        {/* Recipe Modal */}
         {showRecipe && (
           <div className="modal-overlay" onClick={() => setShowRecipe(null)}>
             <div className="modal-content p-0 overflow-hidden" onClick={(e) => e.stopPropagation()}>
@@ -109,6 +114,7 @@ export default function Index() {
           </div>
         )}
 
+        {/* Added Recipes */}
         {foundRecipes.length > 0 && (
           <div className="mt-8">
             <SectionTitle color="#FF6B35">Receitas Adicionadas</SectionTitle>
@@ -127,6 +133,7 @@ export default function Index() {
         )}
       </section>
 
+      {/* Store Header */}
       <section className="max-w-6xl mx-auto mt-12">
         <SectionTitle color="#FF3D9A">🏪 Loja AmiguMundo</SectionTitle>
         <div className="gradient-store rounded-3xl p-10 text-center text-white mb-6">
@@ -134,7 +141,9 @@ export default function Index() {
         </div>
       </section>
 
+      {/* Store Sections */}
       <section className="max-w-6xl mx-auto">
+        {/* Upsells */}
         <SectionTitle color="#9B59B6">⭐ Produtos que Vão Transformar sua Arte</SectionTitle>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {upsells.map((u) => (
@@ -150,6 +159,7 @@ export default function Index() {
         )}
         <SectionDivider />
 
+        {/* Categories */}
         <SectionTitle color="#7BC843">🧶 Categorias de Receitas</SectionTitle>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
           {categories.map((c) => (
@@ -158,6 +168,7 @@ export default function Index() {
         </div>
         <SectionDivider />
 
+        {/* Packs */}
         <SectionTitle color="#FF6B35">📦 Packs Temáticos</SectionTitle>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {packs.map((p) => (
@@ -172,6 +183,7 @@ export default function Index() {
         </div>
         <SectionDivider />
 
+        {/* Combos */}
         <SectionTitle color="#F5A623">👑 Combos Elite — Volume com Desconto</SectionTitle>
         <div className="space-y-4">
           {combos.map((c) => (
@@ -186,13 +198,16 @@ export default function Index() {
         </div>
       </section>
 
+      {/* Footer */}
       <footer className="text-center py-8">
         <p className="text-sm text-gray-400">© 2024 AmiguMundo Artes — Todos os direitos reservados</p>
         <p className="text-xs text-gray-300 mt-1">Feito com ❤️ para artesãs brasileiras</p>
       </footer>
 
+      {/* Floating Cart */}
       <Cart count={cart.length} total={total} onCheckout={() => setShowCheckout(true)} />
 
+      {/* Checkout Modal */}
       {showCheckout && (
         <CheckoutModal total={total} onClose={() => setShowCheckout(false)} onConfirm={() => { setShowCheckout(false); setCart([]); }} />
       )}
