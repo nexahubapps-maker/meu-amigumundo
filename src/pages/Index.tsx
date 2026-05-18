@@ -12,20 +12,16 @@ import { CategoryCard } from "@/components/CategoryCard";
 import { PackCard } from "@/components/PackCard";
 import { ComboCard } from "@/components/ComboCard";
 import { ErrorToast } from "@/components/ErrorToast";
-import { SectionTitle } from "@/components/SectionTitle";
-import { SectionDivider } from "@/components/SectionDivider";
 import { recipes, type Recipe } from "@/data/recipes";
 import { upsells } from "@/data/upsells";
 import { categories } from "@/data/categories";
 import { packs, combos } from "@/data/packs";
-
 interface CartItem {
   id: string;
   nome: string;
   preco: number;
   tipo: "recipe" | "pack" | "combo" | "upsell";
 }
-
 export default function Index() {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [showRecipe, setShowRecipe] = useState<Recipe | null>(null);
@@ -33,7 +29,6 @@ export default function Index() {
   const [activeUpsell, setActiveUpsell] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [foundRecipes, setFoundRecipes] = useState<Recipe[]>([]);
-
   const addToCart = (item: CartItem) => {
     setCart((prev) => {
       if (prev.find((i) => i.id === item.id)) return prev;
@@ -41,66 +36,72 @@ export default function Index() {
     });
     if (showRecipe) setShowRecipe(null);
   };
-  const removeFromCart = (id: string) => setCart((prev) => prev.filter((i) => i.id !== id));
-  const total = cart.reduce((sum, i) => sum + i.preco, 0);
-  const isInCart = (id: string) => cart.some((i) => i.id === id);
-
-  const handleRecipeFound = (r: Recipe) => {
+  const removeFromCart = (id: string) => {
+    setCart((prev) => prev.filter((i) => i.id !== id));
+  };
+  const total = cart.reduce((sum, item) => sum + item.preco, 0);
+  const handleRecipeFound = (recipe: Recipe) => {
     setError(null);
-    setShowRecipe(r);
+    setShowRecipe(recipe);
   };
   const handleRecipeNotFound = () => {
-    setError("Código não encontrado. Verifique o número e tente novamente.");
+    setError("Codigo nao encontrado. Verifique o numero e tente novamente.");
     setTimeout(() => setError(null), 3000);
   };
-  const handleRecipeAdd = (r: Recipe) => {
-    addToCart({ id: r.id, nome: r.nome, preco: r.preco, tipo: "recipe" });
-    setFoundRecipes((prev) => (prev.find((x) => x.id === r.id) ? prev : [...prev, r]));
+  const handleRecipeAdd = (recipe: Recipe) => {
+    addToCart({ id: recipe.id, nome: recipe.nome, preco: recipe.preco, tipo: "recipe" });
+    setFoundRecipes((prev) => {
+      if (prev.find((r) => r.id === recipe.id)) return prev;
+      return [...prev, recipe];
+    });
   };
-  const handlePackAdd = (id: string) => {
-    const p = packs.find((p) => p.id === id);
-    if (p) addToCart({ id: p.id, nome: p.nome, preco: p.precoAtual, tipo: "pack" });
+  const handleRecipeReject = () => {
+    setShowRecipe(null);
   };
-  const handlePackRemove = (id: string) => removeFromCart(id);
-  const handleComboAdd = (id: string) => {
-    const c = combos.find((c) => c.id === id);
-    if (c) addToCart({ id: c.id, nome: c.nome, preco: c.preco, tipo: "combo" });
+  const handlePackAdd = (packId: string) => {
+    const pack = packs.find((p) => p.id === packId);
+    if (pack) addToCart({ id: pack.id, nome: pack.nome, preco: pack.precoAtual, tipo: "pack" });
   };
-  const handleComboRemove = (id: string) => removeFromCart(id);
+  const handlePackRemove = (packId: string) => {
+    removeFromCart(packId);
+  };
+  const handleComboAdd = (comboId: string) => {
+    const combo = combos.find((c) => c.id === comboId);
+    if (combo) addToCart({ id: combo.id, nome: combo.nome, preco: combo.preco, tipo: "combo" });
+  };
+  const handleComboRemove = (comboId: string) => {
+    removeFromCart(comboId);
+  };
   const handleUpsellBuy = () => {
     if (activeUpsell) {
-      const u = upsells.find((u) => u.id === activeUpsell);
-      if (u) addToCart({ id: u.id, nome: u.nome, preco: u.precoAtual, tipo: "upsell" });
+      const upsell = upsells.find((u) => u.id === activeUpsell);
+      if (upsell) addToCart({ id: upsell.id, nome: upsell.nome, preco: upsell.precoAtual, tipo: "upsell" });
       setActiveUpsell(null);
     }
   };
-
+  const isInCart = (id: string) => cart.some((item) => item.id === id);
   return (
-    <div className="min-h-screen pb-20 px-4 sm:px-6 md:px-8 lg:px-12">
+    <div className="min-h-screen pb-20" style={{ backgroundColor: "#FFF8F2" }}>
       <Header />
-      <section className="max-w-6xl mx-auto">
-        {/* Banner */}
-        <div className="banner flex flex-col items-center justify-center text-center">
-          <span className="absolute left-4 top-4 text-5xl opacity-60">🧶</span>
-          <span className="absolute right-4 bottom-4 text-5xl opacity-60">✂️</span>
-          <h1 className="text-4xl sm:text-5xl font-bold text-white mb-3" style={{ fontFamily: "'Fredoka One', cursive", textShadow: "0 2px 20px rgba(0,0,0,0.3)" }}>
+      <section className="max-w-6xl mx-auto px-4">
+        {/* Banner Checkout */}
+        <div className="banner">
+          <span className="absolute left-4 top-4 text-5xl font-bold text-gray-600 opacity-60">🧶</span>
+          <span className="absolute right-4 bottom-4 text-5xl font-bold text-gray-600 opacity-60">✂️</span>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white text-center mb-3" style={{ fontFamily: "'Fredoka One', cursive", textShadow: "0 2px 20px rgba(0,0,0,0.3)" }}>
             🧶 Suas receitas de amigurumi, na hora, no seu WhatsApp!
           </h1>
-          <p className="text-white/80 max-w-lg">
-            Digite o código da receita que você viu no grupo e adicione ao carrinho
+          <p className="text-white/80 text-sm sm:text-base max-w-lg mx-auto">
+            Digite o codigo da receita que voce viu no grupo e adicione ao carrinho
           </p>
         </div>
-
         {/* Gamification */}
         <GamificationBar cartCount={cart.length} />
-
         {/* Code Input */}
         <CodeInput onRecipeFound={handleRecipeFound} onRecipeNotFound={handleRecipeNotFound} />
-
         {/* Error Toast */}
         {error && <ErrorToast message={error} onClose={() => setError(null)} />}
-
-        {/* Recipe Modal */}
+        {/* Found Recipe Modal */}
         {showRecipe && (
           <div className="modal-overlay" onClick={() => setShowRecipe(null)}>
             <div className="modal-content p-0 overflow-hidden" onClick={(e) => e.stopPropagation()}>
@@ -108,48 +109,55 @@ export default function Index() {
                 recipe={showRecipe}
                 inCart={isInCart(showRecipe.id)}
                 onAdd={() => handleRecipeAdd(showRecipe)}
-                onReject={() => setShowRecipe(null)}
+                onReject={handleRecipeReject}
               />
             </div>
           </div>
         )}
-
-        {/* Added Recipes */}
+        {/* Found Recipes Grid */}
         {foundRecipes.length > 0 && (
-          <div className="mt-8">
-            <SectionTitle color="#FF6B35">Receitas Adicionadas</SectionTitle>
+          <div className="mb-8">
+            <h2 className="text-xl font-bold mb-4" style={{ fontFamily: "'Fredoka One', cursive", color: "#FF6B35" }}>
+              Receitas Adicionadas
+            </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {foundRecipes.map((r) => (
+              {foundRecipes.map((recipe) => (
                 <RecipeCard
-                  key={r.id}
-                  recipe={r}
-                  inCart={isInCart(r.id)}
-                  onAdd={() => handleRecipeAdd(r)}
-                  onReject={() => setShowRecipe(null)}
+                  key={recipe.id}
+                  recipe={recipe}
+                  inCart={isInCart(recipe.id)}
+                  onAdd={() => handleRecipeAdd(recipe)}
+                  onReject={() => handleRecipeReject()}
                 />
               ))}
             </div>
           </div>
         )}
       </section>
-
-      {/* Store Header */}
-      <section className="max-w-6xl mx-auto mt-12">
-        <SectionTitle color="#FF3D9A">🏪 Loja AmiguMundo</SectionTitle>
-        <div className="gradient-store rounded-3xl p-10 text-center text-white mb-6">
-          <p className="text-white/80">Explore nossa coleção completa de receitas e produtos</p>
+      {/* Divider */}
+      <div className="max-w-6xl mx-auto px-4 my-8">
+        <div className="gradient-store rounded-3xl px-6 py-10 sm:py-14 text-center text-white mb-6" style={{ minHeight: "160px" }}>
+          <h1 className="text-3xl sm:text-4xl font-bold mb-2" style={{ fontFamily: "'Fredoka One', cursive" }}>
+            🏪 Loja AmiguMundo
+          </h1>
+          <p className="text-white/80 text-sm sm:text-base">Explore nossa colecao completa de receitas e produtos</p>
         </div>
-      </section>
-
-      {/* Store Sections */}
-      <section className="max-w-6xl mx-auto">
+        <div className="h-6 gradient-redline mb-8" />
+      </div>
+      {/* Store Section */}
+      <section className="max-w-6xl mx-auto px-4">
         {/* Upsells */}
-        <SectionTitle color="#9B59B6">⭐ Produtos que Vão Transformar sua Arte</SectionTitle>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {upsells.map((u) => (
-            <UpsellCard key={u.id} upsell={u} onOpen={() => setActiveUpsell(u.id)} />
-          ))}
+        <div className="mb-10">
+          <h2 className="text-2xl font-bold mb-6" style={{ fontFamily: "'Fredoka One', cursive", color: "#9B59B6" }}>
+            ⭐ Produtos que Vao Transformar sua Arte
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {upsells.map((upsell) => (
+              <UpsellCard key={upsell.id} upsell={upsell} onOpen={() => setActiveUpsell(upsell.id)} />
+            ))}
+          </div>
         </div>
+        {/* Upsell Modal */}
         {activeUpsell && (
           <UpsellModal
             upsell={upsells.find((u) => u.id === activeUpsell)!}
@@ -157,56 +165,59 @@ export default function Index() {
             onBuy={handleUpsellBuy}
           />
         )}
-        <SectionDivider />
-
         {/* Categories */}
-        <SectionTitle color="#7BC843">🧶 Categorias de Receitas</SectionTitle>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-          {categories.map((c) => (
-            <CategoryCard key={c} nome={c} />
-          ))}
+        <div className="mb-10">
+          <h2 className="text-2xl font-bold mb-6" style={{ fontFamily: "'Fredoka One', cursive", color: "#7BC843" }}>
+            🧶 Categorias de Receitas
+          </h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+            {categories.map((cat) => (
+              <CategoryCard key={cat} nome={cat} />
+            ))}
+          </div>
         </div>
-        <SectionDivider />
-
         {/* Packs */}
-        <SectionTitle color="#FF6B35">📦 Packs Temáticos</SectionTitle>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {packs.map((p) => (
-            <PackCard
-              key={p.id}
-              pack={p}
-              inCart={isInCart(p.id)}
-              onAdd={() => handlePackAdd(p.id)}
-              onRemove={() => handlePackRemove(p.id)}
-            />
-          ))}
+        <div className="mb-10">
+          <h2 className="text-2xl font-bold mb-6" style={{ fontFamily: "'Fredoka One', cursive", color: "#FF6B35" }}>
+            📦 Packs Tematicos
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {packs.map((pack) => (
+              <PackCard
+                key={pack.id}
+                pack={pack}
+                inCart={isInCart(pack.id)}
+                onAdd={() => handlePackAdd(pack.id)}
+                onRemove={() => handlePackRemove(pack.id)}
+              />
+            ))}
+          </div>
         </div>
-        <SectionDivider />
-
         {/* Combos */}
-        <SectionTitle color="#F5A623">👑 Combos Elite — Volume com Desconto</SectionTitle>
-        <div className="space-y-4">
-          {combos.map((c) => (
-            <ComboCard
-              key={c.id}
-              combo={c}
-              inCart={isInCart(c.id)}
-              onAdd={() => handleComboAdd(c.id)}
-              onRemove={() => handleComboRemove(c.id)}
-            />
-          ))}
+        <div className="mb-10">
+          <h2 className="text-2xl font-bold mb-6" style={{ fontFamily: "'Fredoka One', cursive", color: "#F5A623" }}>
+            👑 Combos Elite — Volume com Desconto
+          </h2>
+          <div className="max-w-2xl mx-auto space-y-4">
+            {combos.map((combo) => (
+              <ComboCard
+                key={combo.id}
+                combo={combo}
+                inCart={isInCart(combo.id)}
+                onAdd={() => handleComboAdd(combo.id)}
+                onRemove={() => handleComboRemove(combo.id)}
+              />
+            ))}
+          </div>
         </div>
       </section>
-
       {/* Footer */}
-      <footer className="text-center py-8">
+      <footer className="text-center py-8 px-4">
         <p className="text-sm text-gray-400">© 2024 AmiguMundo Artes — Todos os direitos reservados</p>
         <p className="text-xs text-gray-300 mt-1">Feito com ❤️ para artesãs brasileiras</p>
       </footer>
-
       {/* Floating Cart */}
       <Cart count={cart.length} total={total} onCheckout={() => setShowCheckout(true)} />
-
       {/* Checkout Modal */}
       {showCheckout && (
         <CheckoutModal total={total} onClose={() => setShowCheckout(false)} onConfirm={() => { setShowCheckout(false); setCart([]); }} />
