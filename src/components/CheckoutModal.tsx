@@ -12,8 +12,8 @@ export const CheckoutModal = ({ total, onClose, onConfirm }: CheckoutModalProps)
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="p-6">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl" style={{ fontFamily: "'Fredoka One', cursive", color: "#FF6B35" }}>
-              Quase la! 🎉
+            <h2 className="text-2xl font-bold text-white text-center" style={{ fontFamily: "'Fredoka One', cursive" }}>
+              Quase lá! 🎉
             </h2>
             <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-2xl">
               ✕
@@ -59,11 +59,10 @@ export const CheckoutModal = ({ total, onClose, onConfirm }: CheckoutModalProps)
             >
               💳 Pagar via Pix
             </button>
-            <button
-              className="w-full py-3 rounded-xl font-bold text-white text-base transition-transform active:scale-[0.98]"
+            <button              className="w-full py-3 rounded-xl font-bold text-white text-base transition-transform active:scale-[0.98]"
               style={{ backgroundColor: "#4A90D9", fontFamily: "'Fredoka One', cursive" }}
             >
-              💳 Pagar com Cartao
+              💳 Pagar com Cartão
             </button>
           </div>
 

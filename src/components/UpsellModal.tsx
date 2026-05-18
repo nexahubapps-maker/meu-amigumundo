@@ -15,14 +15,14 @@ export const UpsellModal = ({ upsell, onClose, onBuy }: UpsellModalProps) => {
         <div className="p-6">
           <div className="flex justify-between items-center mb-4">
             <div className="text-5xl">{upsell.emoji}</div>
-            <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-2xl">
+            <button onClick={onClose} className="absolute top-2 right-2 bg-white/20 rounded-full w-36 h-36 flex items-center justify-center">
               ✕
             </button>
           </div>
 
           <h2
             className="text-2xl text-center mb-1"
-            style={{ fontFamily: "'Fredoka One', cursive", color: "#9B59B6" }}
+            style={{ fontFamily: "'Fredoka One', cursive", color: `${upsell.cor}` }}
           >
             {upsell.nome}
           </h2>
@@ -49,13 +49,13 @@ export const UpsellModal = ({ upsell, onClose, onBuy }: UpsellModalProps) => {
           <div className="text-center mb-4">
             <span className="text-gray-400 line-through text-lg">R${upsell.precoOriginal.toFixed(2)}</span>
             <div
-              className="inline-block bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full mt-1"
+              className="inline-block bg-gradient-to-r from-[#ff5252] to-[#d32f2f] rounded-full font-weight-800 px-6 py-2 text-xs shadow-0-4-15 rgba(255,82,82,0.4)"
             >
               🔥 {Math.round(((upsell.precoOriginal - upsell.precoAtual) / upsell.precoOriginal) * 100)}% DE DESCONTO
             </div>
             <p
               className="text-3xl font-bold mt-2"
-              style={{ color: "#7BC843", fontFamily: "'Fredoka One', cursive" }}
+              style={{ color: "#7BC843", fontFamily: "'Fredoka One', cursive", textShadow: "2px 2px 0 rgba(123,200,67,0.2)" }}
             >
               R${upsell.precoAtual.toFixed(2)}
             </p>

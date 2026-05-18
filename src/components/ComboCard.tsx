@@ -11,28 +11,24 @@ interface ComboCardProps {
 
 export const ComboCard = ({ combo, inCart, onAdd, onRemove }: ComboCardProps) => {
   return (
-    <div className="card-float p-5 flex flex-col sm:flex-row items-center gap-4 relative">
+    <div className="card-float p-5 flex flex-col sm:flex-row gap-4 relative">
       <div className="absolute top-2 right-3 bg-white/90 text-xs font-bold px-3 py-1 rounded-full" style={{ color: combo.cor }}>
         {combo.badge}
       </div>
       <div className="flex-shrink-0">
-        <span
-          className="text-5xl sm:text-6xl font-bold"
-          style={{ color: combo.cor, fontFamily: "'Fredoka One', cursive" }}
-        >
-          {combo.receitas}
-        </span>
-        <p className="text-sm text-gray-500 -mt-1">receitas</p>
+        <div className="h-36 w-36 rounded-full bg-gradient-to-r from-[#FF6B35] to-[#FF3D9A] flex items-center justify-center">
+          <span className="text-3xl font-bold text-white" style={{ fontFamily: "'Fredoka One', cursive" }}>
+            {combo.receitas}
+          </span>
+        </div>
+        <div className="text-sm text-gray-500 -mt-1">receitas</div>
       </div>
       <div className="flex-1 text-center sm:text-left">
         <h3 className="text-xl font-bold" style={{ fontFamily: "'Fredoka One', cursive" }}>
           {combo.nome}
         </h3>
         <p className="text-gray-500 text-sm mt-1">{combo.descricao}</p>
-        <p
-          className="text-2xl font-bold mt-2"
-          style={{ color: "#7BC843", fontFamily: "'Fredoka One', cursive" }}
-        >
+        <p className="text-2xl font-bold mt-2" style={{ color: "#7BC843", fontFamily: "'Fredoka One', cursive" }}>
           R${combo.preco.toFixed(2)}
         </p>
       </div>
