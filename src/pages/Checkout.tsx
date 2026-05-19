@@ -2,12 +2,17 @@
 
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ChevronLeft, ChevronDown, ChevronUp, ShieldCheck, Zap, CreditCard, Smartphone } from "lucide-react";
+import { ChevronLeft, ShieldCheck, Zap, CreditCard, Smartphone, Mail, Phone } from "lucide-react";
+import { SupportButton } from "@/components/SupportButton";
 
 export default function Checkout() {
   const navigate = useNavigate();
   const [cart, setCart] = useState<any[]>([]);
-  const [showSummary, setShowSummary] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<"pix" | "card">("pix");
+  
+  // Estados para os campos com persistência
+  const [email, setEmail] = useState(() => localStorage.getItem("amigumundo-email") || "");
+  const [whatsapp, setWhatsapp] = useState(() => localStorage.getItem("amigumundo-whatsapp") || "");
 
   useEffect(() => {
     const savedCart = localStorage.getItem("amigumundo-cart");
@@ -16,103 +21,160 @@ export default function Checkout() {
     }
   }, []);
 
+  // Salva os dados sempre que mudarem
+  useEffect(() => {
+    localStorage.setItem("amigumundo-email", email);
+  }, [email]);
+
+  useEffect(() => {
+    localStorage.setItem("amigumundo-whatsapp", whatsapp);
+  }, [whatsapp]);
+
   const total = cart.reduce((sum, item) => sum + item.preco, 0);
 
   return (
-    <div className="min-h-screen bg-white pb-12">
-      <div className="max-w-2xl mx-auto px-4 pt-8">
+    <div className="min-h-screen bg-[#F4F7F9] pb-20 font-sans">
+      <div className="max-w-2xl mx-auto px-4 pt-6">
+        
+        {/* Botão Voltar */}
         <button 
           onClick={() => navigate("/")}
-          className="flex items-center gap-2 bg-white border-2 border-[#171717] px-4 py-2 rounded-[8px] font-black text-[#171717] mb-8 uppercase text-sm"
-          style={{ boxShadow: '4px 4px 0px 0px #171717' }}
+          className="flex items-center gap-2 text-gray-500 hover:text-gray-800 font-bold mb-6 transition-colors"
         >
-          <ChevronLeft size={20} strokeWidth={3} /> Voltar
+          <ChevronLeft size={20} /> Voltar para a loja
         </button>
 
-        <h1 className="text-[2.5rem] font-black leading-none mb-2 uppercase italic tracking-tighter">QUASE LÁ! 🎉</h1>
-        <p className="text-[#171717] font-black mb-8 uppercase text-sm">Para enviarmos suas receitas, precisamos de:</p>
-
-        <div className="space-y-6 mb-10">
-          <div>
-            <label className="block text-xs font-black mb-2 text-[#171717] uppercase tracking-widest">WhatsApp</label>
-            <input
-              type="text"
-              placeholder="(44) 99999-8888"
-              className="w-full px-5 py-4 rounded-[12px] border-4 border-[#171717] focus:bg-[#F8DD12] focus:outline-none transition-colors font-black placeholder:text-[#171717]/30"
-              style={{ boxShadow: '4px 4px 0px 0px #171717' }}
-            />
+        {/* Resumo do Pedido no Topo */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-6">
+          <div className="flex items-center gap-2 mb-4 text-gray-800">
+            <Smartphone size={20} className="text-blue-500" />
+            <h2 className="font-bold uppercase tracking-tight text-sm">Resumo do Pedido</h2>
           </div>
-          <div>
-            <label className="block text-xs font-black mb-2 text-[#171717] uppercase tracking-widest">E-mail</label>
-            <input
-              type="email"
-              placeholder="seu@email.com"
-              className="w-full px-5 py-4 rounded-[12px] border-4 border-[#171717] focus:bg-[#F8DD12] focus:outline-none transition-colors font-black placeholder:text-[#171717]/30"
-              style={{ boxShadow: '4px 4px 0px 0px #171717' }}
-            />
+          <div className="space-y-3">
+            {cart.map((item, i) => (
+              <div key={i} className="flex justify-between items-center text-sm">
+                <span className="text-gray-600">{item.nome}</span>
+                <span className="font-bold text-gray-800">R$ {item.preco.toFixed(2)}</span>
+              </div>
+            ))}
+            <div className="pt-4 border-t border-dashed border-gray-200 flex justify-between items-center">
+              <span className="font-bold text-gray-800">Total</span>
+              <span className="text-xl font-black text-blue-600">R$ {total.toFixed(2)}</span>
+            </div>
           </div>
         </div>
 
-        <div className="neo-card overflow-hidden mb-10">
-          <button 
-            onClick={() => setShowSummary(!showSummary)}
-            className="w-full px-5 py-5 flex items-center justify-between font-black text-[#171717] uppercase italic"
-          >
-            <span className="flex items-center gap-3">
-              {showSummary ? <ChevronUp size={24} strokeWidth={3} /> : <ChevronDown size={24} strokeWidth={3} />}
-              Resumo do pedido
-            </span>
-            <span className="text-[1.2rem]">R$ {total.toFixed(2)}</span>
-          </button>
+        {/* Mensagem de Boas-vindas */}
+        <div className="text-center mb-8">
+          <h1 className="text-2xl font-black text-gray-900 mb-2">QUASE LÁ! 🎉</h1>
+          <p className="text-gray-600 font-medium">
+            Para enviarmos suas receitas, <span className="text-blue-600 font-bold">PREENCHA EMAIL E WHATSAPP:</span>
+          </p>
+          <p className="text-sm text-green-600 font-bold mt-1">Você recebe as receitas em segundos!</p>
+        </div>
+
+        {/* Dados Pessoais */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-6">
+          <div className="flex items-center gap-2 mb-6 text-gray-800">
+            <ShieldCheck size={20} className="text-blue-500" />
+            <h2 className="font-bold uppercase tracking-tight text-sm">Dados para Entrega</h2>
+          </div>
           
-          {showSummary && (
-            <div className="px-5 pb-5 space-y-3 border-t-4 border-[#171717] pt-5 bg-[#F8DD12]/10">
-              {cart.map((item, i) => (
-                <div key={i} className="flex justify-between items-center text-sm font-black uppercase">
-                  <span className="text-[#171717]/60">{item.nome}</span>
-                  <span>R$ {item.preco.toFixed(2)}</span>
-                </div>
-              ))}
-              <div className="pt-4 border-t-2 border-[#171717] flex justify-between items-center font-black">
-                <span className="text-lg">TOTAL</span>
-                <span className="text-2xl">R$ {total.toFixed(2)}</span>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="relative">
+              <label className="block text-[10px] font-bold text-gray-400 uppercase mb-1 ml-1">E-mail</label>
+              <div className="relative">
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" size={18} />
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="seu@email.com"
+                  className="w-full pl-12 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-gray-700 font-medium"
+                />
               </div>
             </div>
+            <div className="relative">
+              <label className="block text-[10px] font-bold text-gray-400 uppercase mb-1 ml-1">WhatsApp</label>
+              <div className="relative">
+                <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" size={18} />
+                <input
+                  type="text"
+                  value={whatsapp}
+                  onChange={(e) => setWhatsapp(e.target.value)}
+                  placeholder="(00) 00000-0000"
+                  className="w-full pl-12 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-gray-700 font-medium"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Pagamento */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-8">
+          <div className="flex items-center gap-2 mb-6 text-gray-800">
+            <CreditCard size={20} className="text-blue-500" />
+            <h2 className="font-bold uppercase tracking-tight text-sm">Forma de Pagamento</h2>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4 mb-6">
+            <button 
+              onClick={() => setPaymentMethod("pix")}
+              className={`flex flex-col items-center justify-center gap-2 p-4 rounded-2xl border-2 transition-all ${paymentMethod === "pix" ? "border-blue-500 bg-blue-50" : "border-gray-100 bg-gray-50 hover:bg-gray-100"}`}
+            >
+              <Zap size={24} className={paymentMethod === "pix" ? "text-blue-600" : "text-gray-400"} fill={paymentMethod === "pix" ? "currentColor" : "none"} />
+              <span className={`text-xs font-bold uppercase ${paymentMethod === "pix" ? "text-blue-700" : "text-gray-500"}`}>Pix</span>
+            </button>
+            <button 
+              onClick={() => setPaymentMethod("card")}
+              className={`flex flex-col items-center justify-center gap-2 p-4 rounded-2xl border-2 transition-all ${paymentMethod === "card" ? "border-blue-500 bg-blue-50" : "border-gray-100 bg-gray-50 hover:bg-gray-100"}`}
+            >
+              <CreditCard size={24} className={paymentMethod === "card" ? "text-blue-600" : "text-gray-400"} />
+              <span className={`text-xs font-bold uppercase ${paymentMethod === "card" ? "text-blue-700" : "text-gray-500"}`}>Cartão</span>
+            </button>
+          </div>
+
+          {paymentMethod === "pix" && (
+            <div className="bg-green-50 border border-green-100 rounded-xl p-4 mb-6">
+              <p className="text-green-700 text-xs font-bold text-center uppercase tracking-wider">
+                ⚡ LIBERAÇÃO IMEDIATA AO PAGAR NO PIX!
+              </p>
+            </div>
           )}
-        </div>
 
-        <div className="flex gap-4 mb-8">
-          <button className="flex-[3] neo-btn-buy py-5 text-lg uppercase tracking-widest flex items-center justify-center gap-3">
-            <Zap size={24} fill="#171717" strokeWidth={0} /> Pix ⚡
-          </button>
-          <button className="flex-[2] bg-white border-4 border-[#171717] text-[#171717] py-5 rounded-[12px] font-black flex items-center justify-center gap-3 uppercase text-sm" style={{ boxShadow: '4px 4px 0px 0px #171717' }}>
-            <CreditCard size={24} strokeWidth={3} /> Cartão
+          <button className="w-full bg-[#00D177] hover:bg-[#00B868] text-white py-5 rounded-2xl font-black text-lg shadow-lg shadow-green-200 transition-all active:scale-[0.98] uppercase tracking-widest">
+            Finalizar Pagamento
           </button>
         </div>
 
-        <div className="bg-[#F8DD12] border-4 border-[#171717] text-[#171717] py-3 px-6 rounded-[12px] text-center font-black text-sm mb-10 uppercase italic" style={{ boxShadow: '4px 4px 0px 0px #171717' }}>
-          ⚡ Entrega em 5 segundos após pagamento
-        </div>
-
-        <button className="w-full neo-btn-buy py-6 rounded-full text-xl uppercase tracking-[0.2em] mb-12">
-          PAGAR AGORA • R$ {total.toFixed(2)}
-        </button>
-
-        <div className="grid grid-cols-2 gap-6 pb-12">
-          <div className="flex items-center gap-3 text-[11px] font-black text-[#171717] uppercase tracking-tighter">
-            <ShieldCheck size={18} strokeWidth={3} /> SSL SEGURO
+        {/* Selos de Segurança */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-12">
+          <div className="flex flex-col items-center gap-1 text-center">
+            <ShieldCheck size={20} className="text-gray-400" />
+            <span className="text-[9px] font-bold text-gray-400 uppercase">SSL Seguro</span>
           </div>
-          <div className="flex items-center gap-3 text-[11px] font-black text-[#171717] uppercase tracking-tighter">
-            <Smartphone size={18} strokeWidth={3} /> MERCADO PAGO
+          <div className="flex flex-col items-center gap-1 text-center">
+            <Smartphone size={20} className="text-gray-400" />
+            <span className="text-[9px] font-bold text-gray-400 uppercase">Mercado Pago</span>
           </div>
-          <div className="flex items-center gap-3 text-[11px] font-black text-[#171717] uppercase tracking-tighter">
-            <Zap size={18} strokeWidth={3} /> ENTREGA INSTANTÂNEA
+          <div className="flex flex-col items-center gap-1 text-center">
+            <Zap size={20} className="text-gray-400" />
+            <span className="text-[9px] font-bold text-gray-400 uppercase">Entrega Instantânea</span>
           </div>
-          <div className="flex items-center gap-3 text-[11px] font-black text-[#171717] uppercase tracking-tighter">
-            <ShieldCheck size={18} strokeWidth={3} /> COMPRA PROTEGIDA
+          <div className="flex flex-col items-center gap-1 text-center">
+            <ShieldCheck size={20} className="text-gray-400" />
+            <span className="text-[9px] font-bold text-gray-400 uppercase">Compra Protegida</span>
           </div>
         </div>
+
+        {/* Footer */}
+        <footer className="text-center pb-10">
+          <p className="text-[10px] text-gray-300 font-bold uppercase tracking-[0.2em]">AmiguMundo Artes 2016</p>
+        </footer>
       </div>
+
+      {/* Botão de Suporte */}
+      <SupportButton />
     </div>
   );
 }
