@@ -1,22 +1,48 @@
 "use client";
 
-export const Header = () => {
+import { ShoppingCart } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+
+interface HeaderProps {
+  cartCount?: number;
+}
+
+export const Header = ({ cartCount = 0 }: HeaderProps) => {
+  const navigate = useNavigate();
   const logoLetters = "AmiguMundo".split("");
   const logoColors: Record<string, string> = {
-    A: "#FF3D9A", m: "#9B59B6", i: "#7BC843", g: "#FF6B35", u: "#F5A623",
-    M: "#4A90D9", n: "#2EC4B6", d: "#FF3D9A", o: "#FF6B35",
+    A: "#E8472A", m: "#F5C842", i: "#E8689A", g: "#4CAF50", u: "#5B9BD5",
+    M: "#F0A0C0", n: "#E8472A", d: "#F5C842", o: "#E8689A",
   };
 
   return (
     <header className="sticky top-0 z-50 bg-white h-[56px] flex items-center px-4 shadow-[0_2px_8px_rgba(0,0,0,0.08)]">
       <div className="max-w-6xl mx-auto w-full flex items-center justify-between">
-        <h1 className="text-[1.4rem] font-extrabold leading-none flex gap-[1px]">
+        <h1 
+          className="text-[1.4rem] font-extrabold leading-none flex gap-[1px] cursor-pointer"
+          onClick={() => navigate("/")}
+        >
           {logoLetters.map((letter, i) => (
-            <span key={i} style={{ color: logoColors[letter] || "#FF3D9A" }}>{letter}</span>
+            <span key={i} style={{ color: logoColors[letter] || "#E8472A" }}>{letter}</span>
           ))}
         </h1>
-        <div className="bg-[#FFF0E0] border border-[#FF6B35] px-3 py-1 rounded-full text-[10px] font-bold text-[#FF6B35]">
-          ✨ AmiguMundo Artes
+        
+        <div className="flex items-center gap-4">
+          <div className="hidden sm:block bg-[#FFF0E0] border border-[#E8472A] px-3 py-1 rounded-full text-[10px] font-bold text-[#E8472A]">
+            ✨ AmiguMundo Artes
+          </div>
+          
+          <button 
+            onClick={() => navigate("/checkout")}
+            className="relative p-2 text-gray-700 hover:text-[#E8472A] transition-colors"
+          >
+            <ShoppingCart size={24} />
+            {cartCount > 0 && (
+              <span className="absolute top-0 right-0 bg-[#E8472A] text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-white">
+                {cartCount}
+              </span>
+            )}
+          </button>
         </div>
       </div>
     </header>

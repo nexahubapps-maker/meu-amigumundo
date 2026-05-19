@@ -10,45 +10,40 @@ interface CodeInputProps {
 
 export const CodeInput = ({ onRecipeFound, onRecipeNotFound }: CodeInputProps) => {
   const [code, setCode] = useState("");
-  const [loading, setLoading] = useState(false);
 
-  const handleSearch = () => {
-    if (!code.trim()) return;
-    setLoading(true);
-    setTimeout(() => {
-      const recipe = recipes.find((r) => r.id === code.trim());
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.trim();
+    setCode(value);
+
+    if (value.length === 4) {
+      const recipe = recipes.find((r) => r.id === value);
       if (recipe) {
         onRecipeFound(recipe);
+        setCode(""); // Limpa após encontrar
       } else {
         onRecipeNotFound();
       }
-      setLoading(false);
-    }, 300);
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") handleSearch();
+    }
   };
 
   return (
-    <div className="max-w-[480px] mx-auto my-4 sm:my-6">
-      <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+    <div className="max-w-[480px] mx-auto my-6">
+      <div className="relative">
         <input
           type="text"
           value={code}
-          onChange={(e) => setCode(e.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder="Código da receita (ex: 3872)"
-          className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl sm:rounded-2xl text-base sm:text-lg focus:outline-none focus:border-[#FF6B35] transition-colors"
+          onChange={handleChange}
+          maxLength={4}
+          placeholder="Digite o código de 4 dígitos (ex: 3872)"
+          className="w-full px-6 py-4 border-2 border-gray-200 rounded-2xl text-lg font-bold text-center focus:outline-none focus:border-[#E8472A] transition-colors placeholder:font-medium placeholder:text-gray-300"
         />
-        <button
-          onClick={handleSearch}
-          disabled={loading || !code.trim()}
-          className="w-full sm:w-auto px-6 py-3 rounded-xl sm:rounded-2xl font-bold text-white text-sm sm:text-lg disabled:opacity-50 transition-transform active:scale-95 bg-[#7BC843]"
-        >
-          {loading ? "Buscando..." : "Buscar Receita →"}
-        </button>
+        <div className="absolute right-4 top-1/2 -translate-y-1/2 text-[#E8472A] font-bold text-sm">
+          {code.length}/4
+        </div>
       </div>
+      <p className="text-center text-xs text-gray-400 mt-2 font-medium">
+        A busca é automática ao digitar os 4 números
+      </p>
     </div>
   );
 };
