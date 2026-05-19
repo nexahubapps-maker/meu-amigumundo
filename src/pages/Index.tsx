@@ -5,7 +5,6 @@ import { Header } from "@/components/Header";
 import { GamificationBar } from "@/components/GamificationBar";
 import { CodeInput } from "@/components/CodeInput";
 import RecipeCard from "@/components/RecipeCard";
-import { CheckoutModal } from "@/components/CheckoutModal";
 import { UpsellCard } from "@/components/UpsellCard";
 import { UpsellModal } from "@/components/UpsellModal";
 import { CategoryCard } from "@/components/CategoryCard";
@@ -124,11 +123,11 @@ export default function Index() {
       <Header cartCount={cart.length} />
 
       <section className="max-w-6xl mx-auto px-4">
-        <div className="mb-6">
+        <div className="mb-4">
           <img 
             src="https://ik.imagekit.io/51b3srlsg/banner-checkout.jpg.jpeg" 
             alt="AmiguMundo" 
-            className="w-full h-[160px] sm:h-[220px] object-cover rounded-b-[24px] block shadow-sm"
+            className="w-full h-[150px] sm:h-[200px] object-cover rounded-b-[24px] block shadow-sm"
           />
         </div>
 
@@ -136,43 +135,43 @@ export default function Index() {
 
         <CodeInput onRecipeFound={handleRecipeFound} onRecipeNotFound={handleRecipeNotFound} />
 
-        {/* Carrinho Inline */}
-        <div className="max-w-2xl mx-auto my-8 bg-white rounded-[24px] p-6 shadow-sm border-2 border-gray-50">
-          <h2 className="text-xl font-extrabold mb-6 flex items-center gap-2">
+        {/* Carrinho Inline Compacto */}
+        <div className="max-w-2xl mx-auto my-4 bg-white rounded-[24px] p-3 shadow-sm border-2 border-gray-50">
+          <h2 className="text-[1rem] font-extrabold mb-3 flex items-center gap-2">
             🛒 Meu Carrinho ({cart.length})
           </h2>
           
           {cart.length === 0 ? (
-            <div className="py-12 text-center">
-              <ShoppingBag size={48} className="mx-auto text-gray-200 mb-4" />
-              <p className="text-gray-400 font-bold text-sm leading-relaxed">
+            <div className="py-6 text-center">
+              <ShoppingBag size={32} className="mx-auto text-gray-200 mb-2" />
+              <p className="text-gray-400 font-bold text-[0.75rem] leading-relaxed">
                 Seu carrinho está vazio — <br />
                 Digite um código acima ou escolha na loja abaixo
               </p>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-2">
               {cart.map((item) => (
-                <div key={item.id} className="flex items-center gap-3 py-3 border-b border-gray-50 last:border-0">
-                  <img src={item.imagem} className="w-10 h-10 rounded-lg object-cover" alt="" />
+                <div key={item.id} className="flex items-center gap-2 py-2 border-b border-gray-50 last:border-0">
+                  <img src={item.imagem} className="w-8 h-8 rounded-lg object-cover" alt="" />
                   <div className="flex-1">
-                    <h4 className="text-sm font-bold text-gray-800 leading-tight">{item.nome}</h4>
-                    <span className="text-[10px] font-bold text-gray-400 uppercase">Cód: {item.id}</span>
+                    <h4 className="text-[0.8rem] font-bold text-gray-800 leading-tight truncate">{item.nome}</h4>
+                    <span className="text-[9px] font-bold text-gray-400 uppercase">Cód: {item.id}</span>
                   </div>
-                  <span className="font-bold text-[#4CAF50] text-sm">R$ {item.preco.toFixed(2)}</span>
+                  <span className="font-bold text-[#4CAF50] text-[0.85rem]">R$ {item.preco.toFixed(2)}</span>
                   <button onClick={() => removeFromCart(item.id)} className="p-1 text-gray-300 hover:text-red-500">
-                    <X size={18} />
+                    <X size={16} />
                   </button>
                 </div>
               ))}
-              <div className="pt-4 mt-4 border-t-2 border-gray-50">
-                <div className="flex justify-between items-center mb-4">
-                  <span className="font-bold text-gray-500">Total</span>
-                  <span className="text-2xl font-extrabold text-[#4CAF50]">R$ {total.toFixed(2)}</span>
+              <div className="pt-2 mt-2 border-t-2 border-gray-50">
+                <div className="flex justify-between items-center mb-3">
+                  <span className="font-bold text-gray-500 text-[0.85rem]">Total</span>
+                  <span className="text-[1.1rem] font-extrabold text-[#4CAF50]">R$ {total.toFixed(2)}</span>
                 </div>
                 <button 
                   onClick={() => navigate("/checkout")}
-                  className="w-full bg-[#E8472A] text-white py-4 rounded-full font-extrabold text-lg shadow-lg shadow-[#E8472A]/20 transition-transform active:scale-95"
+                  className="w-full bg-[#E8472A] text-white py-3 rounded-full font-extrabold text-[0.9rem] shadow-lg shadow-[#E8472A]/20 transition-transform active:scale-95"
                 >
                   Finalizar Pedido →
                 </button>
@@ -197,9 +196,9 @@ export default function Index() {
         )}
 
         {foundRecipes.length > 0 && (
-          <div className="mb-12">
+          <div className="mb-8">
             <h2 className="section-title text-[#E8472A]">✨ Receitas Adicionadas</h2>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
               {foundRecipes.map((recipe) => (
                 <RecipeCard
                   key={recipe.id}
@@ -214,21 +213,21 @@ export default function Index() {
         )}
       </section>
 
-      <div className="max-w-6xl mx-auto px-4 my-12">
-        <div className="redline mb-12" />
-        <div className="mb-12">
+      <div className="max-w-6xl mx-auto px-4 my-6">
+        <div className="redline mb-6" />
+        <div className="mb-6">
           <img 
             src="https://ik.imagekit.io/51b3srlsg/banner-loja.jpg.jpeg" 
             alt="Loja AmiguMundo" 
-            className="w-full h-[160px] sm:h-[220px] object-cover block rounded-2xl shadow-sm"
+            className="w-full h-[150px] sm:h-[200px] object-cover block rounded-2xl shadow-sm"
           />
         </div>
       </div>
 
       <section className="max-w-6xl mx-auto px-4">
-        <div className="mb-16">
+        <div className="mb-8">
           <h2 className="section-title text-[#E8689A]">⭐ Produtos Premium</h2>
-          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-2">
             {upsells.map((upsell) => (
               <UpsellCard key={upsell.id} upsell={upsell} onOpen={() => setActiveUpsell(upsell.id)} />
             ))}
@@ -243,18 +242,18 @@ export default function Index() {
           />
         )}
 
-        <div className="mb-16">
+        <div className="mb-8">
           <h2 className="section-title text-[#4CAF50]">🧶 Categorias</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4">
+          <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-x-2 gap-y-4">
             {categories.map((cat) => (
               <CategoryCard key={cat} nome={cat} />
             ))}
           </div>
         </div>
 
-        <div className="mb-16">
+        <div className="mb-8">
           <h2 className="section-title text-[#E8472A]">📦 Packs Temáticos</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {packs.map((pack) => (
               <PackCard
                 key={pack.id}
@@ -267,9 +266,9 @@ export default function Index() {
           </div>
         </div>
 
-        <div className="mb-16">
+        <div className="mb-8">
           <h2 className="section-title text-[#F5C842]">👑 Combos Elite</h2>
-          <div className="max-w-3xl mx-auto space-y-6">
+          <div className="max-w-3xl mx-auto space-y-3">
             {combos.map((combo) => (
               <ComboCard
                 key={combo.id}
@@ -283,8 +282,8 @@ export default function Index() {
         </div>
       </section>
 
-      <footer className="text-center py-12 px-4 border-t border-gray-100 mt-12">
-        <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">© 2024 AmiguMundo Artes</p>
+      <footer className="text-center py-6 px-4 border-t border-gray-100 mt-6">
+        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">© 2024 AmiguMundo Artes</p>
       </footer>
     </div>
   );

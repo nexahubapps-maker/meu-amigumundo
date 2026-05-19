@@ -14,20 +14,20 @@ export const UpsellCard = ({ upsell, onOpen }: UpsellCardProps) => {
   };
 
   return (
-    <div className="card-float overflow-hidden flex flex-col h-full">
+    <div className="card-float overflow-hidden flex flex-col h-[200px]">
       <div
-        className="h-[80px] flex items-center justify-center text-4xl"
+        className="h-[140px] flex items-center justify-center text-[2.5rem]"
         style={{ backgroundColor: headerColors[upsell.id] || "#FF6B35" }}
       >
         {upsell.emoji}
       </div>
-      <div className="p-3 flex flex-col flex-1">
-        <h3 className="text-[0.85rem] font-bold leading-tight mb-1 line-clamp-2">{upsell.nome}</h3>
-        <div className="mt-auto">
-          <span className="text-[#7BC843] font-bold text-[1rem]">R${upsell.precoAtual.toFixed(2)}</span>
+      <div className="h-[60px] p-2 flex flex-col justify-between bg-white">
+        <h3 className="text-[0.8rem] font-bold leading-tight truncate">{upsell.nome}</h3>
+        <div className="flex items-center justify-between gap-1">
+          <span className="text-[#7BC843] font-bold text-[0.85rem]">R${upsell.precoAtual.toFixed(2)}</span>
           <button
             onClick={onOpen}
-            className="w-full mt-2 btn-premium bg-[#7BC843] text-white py-2 text-[0.75rem]"
+            className="btn-premium bg-[#7BC843] text-white px-3 py-1.5 text-[0.75rem]"
           >
             Quero →
           </button>

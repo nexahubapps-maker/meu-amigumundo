@@ -15,34 +15,34 @@ interface RecipeCardProps {
 
 const RecipeCard = ({ recipe, onAdd, onReject, isInCart }: RecipeCardProps) => {
   return (
-    <div className="card-float overflow-hidden relative flex flex-col">
-      <div className="relative h-[140px] w-full">
+    <div className="card-float overflow-hidden relative flex flex-col bg-white">
+      <div className="relative h-[120px] w-full">
         <img
           src={`https://picsum.photos/seed/${recipe.id}/400/300`}
           alt={recipe.nome}
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover rounded-t-[12px]"
         />
-        <div className="absolute top-2 left-2 bg-[#FF6B35] text-white text-[10px] font-bold px-3 py-1 rounded-full shadow-md">
-          R$ {recipe.preco.toFixed(2)}
-        </div>
-        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-3">
-          <h3 className="text-white text-sm font-bold leading-tight truncate">{recipe.nome}</h3>
+        <div className="absolute top-1.5 left-1.5 bg-[#FF6B35] text-white text-[8px] font-bold px-2 py-0.5 rounded-full shadow-md">
+          CÓD: {recipe.id}
         </div>
       </div>
-      <div className="p-3 flex flex-col gap-2">
-        <p className="text-gray-500 text-[10px] line-clamp-2 leading-tight">{recipe.descricao}</p>
-        <div className="flex gap-2">
+      <div className="p-2 flex flex-col gap-1.5">
+        <h3 className="text-gray-800 text-[0.9rem] font-bold leading-tight truncate">{recipe.nome}</h3>
+        <div className="flex items-center justify-between">
+          <span className="text-[#4CAF50] font-bold text-[1rem]">R$ {recipe.preco.toFixed(2)}</span>
+        </div>
+        <div className="flex gap-1">
           <button
             onClick={onAdd}
             disabled={isInCart}
-            className="flex-1 btn-premium bg-[#7BC843] text-white disabled:opacity-50"
+            className="flex-1 btn-premium bg-[#7BC843] text-white py-1.5 text-[0.75rem]"
           >
             {isInCart ? "✓ No Carrinho" : "+ Adicionar"}
           </button>
           {!isInCart && (
             <button
               onClick={onReject}
-              className="px-3 py-2 rounded-full bg-red-50 text-red-500 text-xs font-bold"
+              className="px-2 py-1.5 rounded-full bg-red-50 text-red-500 text-[0.7rem] font-bold"
             >
               ✕
             </button>

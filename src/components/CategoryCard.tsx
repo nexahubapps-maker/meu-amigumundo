@@ -27,12 +27,14 @@ export const CategoryCard = ({ nome }: CategoryCardProps) => {
   const style = categoryStyles[nome] || { color: "#FF6B35", emoji: "🧶" };
 
   return (
-    <div 
-      className="rounded-2xl flex flex-col items-center justify-center p-2 h-[100px] sm:h-[120px] transition-transform active:scale-95 cursor-pointer shadow-sm"
-      style={{ backgroundColor: style.color }}
-    >
-      <span className="text-3xl sm:text-4xl mb-1">{style.emoji}</span>
-      <span className="text-white text-[0.75rem] sm:text-[0.85rem] font-bold text-center leading-tight">
+    <div className="flex flex-col items-center">
+      <div 
+        className="w-full h-[80px] rounded-[16px] flex items-center justify-center transition-transform active:scale-95 cursor-pointer shadow-sm"
+        style={{ backgroundColor: style.color }}
+      >
+        <span className="text-[2rem]">{style.emoji}</span>
+      </div>
+      <span className="text-[#333] text-[0.7rem] font-semibold text-center mt-1 leading-tight">
         {nome}
       </span>
     </div>

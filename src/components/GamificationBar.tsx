@@ -17,27 +17,27 @@ export const GamificationBar = ({ cartCount }: GamificationBarProps) => {
   const recipesLeft = nextLevel ? nextLevel.recipes - cartCount : 0;
 
   return (
-    <div className="bg-white rounded-[20px] border-[3px] border-[#F5C842] p-4 sm:p-6 my-6 shadow-sm">
-      <h2 className="text-[#E8472A] font-extrabold text-[1.1rem] mb-4 flex items-center gap-2">
+    <div className="bg-white rounded-[20px] border-[2px] border-[#F5C842] p-3 sm:p-4 my-4 shadow-sm">
+      <h2 className="text-[#E8472A] font-extrabold text-[0.95rem] mb-2 flex items-center gap-2">
         🎁 Super Mimo AmiguMundo
       </h2>
       
-      <div className="space-y-3 mb-6">
+      <div className="space-y-1 mb-3">
         {levels.map((level, i) => (
-          <div key={i} className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <span className="text-xl">🏅</span>
-              <span className="text-sm font-bold text-gray-700">Bônus {level.name} ({level.recipes} un)</span>
+          <div key={i} className="flex items-center justify-between py-0.5">
+            <div className="flex items-center gap-2">
+              <span className="text-base">🏅</span>
+              <span className="text-[0.85rem] font-bold text-gray-700">Bônus {level.name} ({level.recipes} un)</span>
             </div>
-            <span className="text-sm font-extrabold text-[#4CAF50]">
+            <span className="text-[0.85rem] font-extrabold text-[#4CAF50]">
               {level.price > 0 ? `R$ ${level.price.toFixed(2)} cada` : `GRÁTIS!`}
             </span>
           </div>
         ))}
       </div>
 
-      <div className="space-y-3">
-        <div className="h-3 bg-gray-100 rounded-full overflow-hidden">
+      <div className="space-y-2">
+        <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
           <div 
             className="h-full bg-[#4CAF50] transition-all duration-500"
             style={{ width: `${Math.min((cartCount / 10) * 100, 100)}%` }}
@@ -45,8 +45,8 @@ export const GamificationBar = ({ cartCount }: GamificationBarProps) => {
         </div>
         
         {nextLevel && (
-          <div className="inline-block bg-[#F5C842] px-4 py-1.5 rounded-full">
-            <p className="text-[11px] sm:text-xs font-bold text-gray-900">
+          <div className="inline-block bg-[#F5C842] px-3 py-1 rounded-full">
+            <p className="text-[0.8rem] font-bold text-gray-900">
               Faltam {recipesLeft} receitas para o BÔNUS {nextLevel.name.toUpperCase()} {nextLevel.emoji}
             </p>
           </div>
