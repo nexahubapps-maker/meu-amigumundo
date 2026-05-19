@@ -45,13 +45,12 @@ export const BannerCarousel = () => {
     <div className="relative overflow-hidden rounded-2xl shadow-md my-4 mx-4 sm:mx-0" ref={emblaRef}>
       <div className="flex">
         {banners.map((banner) => (
-          <div key={banner.id} className="relative flex-[0_0_100%] min-w-0 h-[120px] sm:h-[220px]">
+          <div key={banner.id} className="relative flex-[0_0_100%] min-w-0 h-[180px] sm:h-[340px]">
             <img 
               src={banner.url} 
               alt={banner.title} 
               className="w-full h-full object-cover"
             />
-            {/* Removido o gradiente e texto para destacar a arte original */}
           </div>
         ))}
       </div>
