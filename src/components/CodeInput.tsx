@@ -19,7 +19,7 @@ export const CodeInput = ({ onRecipeFound, onRecipeNotFound }: CodeInputProps) =
       const recipe = recipes.find((r) => r.id === value);
       if (recipe) {
         onRecipeFound(recipe);
-        setCode(""); // Limpa após encontrar
+        setCode(""); 
       } else {
         onRecipeNotFound();
       }
@@ -27,23 +27,19 @@ export const CodeInput = ({ onRecipeFound, onRecipeNotFound }: CodeInputProps) =
   };
 
   return (
-    <div className="max-w-[480px] mx-auto my-8">
-      <div className="relative">
+    <div className="max-w-[480px] mx-auto my-8 px-4">
+      <div className="relative group">
         <input
           type="text"
           value={code}
           onChange={handleChange}
           maxLength={4}
-          placeholder="DIGITE O CÓDIGO DE 4 DÍGITOS"
-          className="w-full px-6 py-5 border-4 border-[#171717] rounded-[16px] text-2xl font-black text-center focus:outline-none focus:bg-[#F8DD12] transition-colors placeholder:font-black placeholder:text-[#171717]/20 uppercase"
-          style={{ boxShadow: '6px 6px 0px 0px #171717' }}
+          placeholder="DIGITE O CÓDIGO"
+          className="w-full px-6 py-6 border-2 border-gray-100 rounded-[20px] text-3xl font-black text-center focus:outline-none focus:border-[#F8DD12] transition-all placeholder:font-black placeholder:text-gray-200 uppercase shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] group-hover:shadow-[0_25px_50px_-12px_rgba(0,0,0,0.15)]"
         />
-        <div className="absolute right-6 top-1/2 -translate-y-1/2 text-[#171717] font-black text-lg italic">
-          {code.length}/4
-        </div>
       </div>
-      <p className="text-center text-[10px] text-[#171717] mt-4 font-black uppercase tracking-widest">
-        A busca é automática ao digitar os 4 números
+      <p className="text-center text-[10px] text-gray-400 mt-4 font-black uppercase tracking-[0.2em]">
+        Busca automática ao digitar 4 números
       </p>
     </div>
   );

@@ -11,6 +11,8 @@ import { CategoryCard } from "@/components/CategoryCard";
 import { PackCard } from "@/components/PackCard";
 import { ComboCard } from "@/components/ComboCard";
 import { ErrorToast } from "@/components/ErrorToast";
+import { BannerCarousel } from "@/components/BannerCarousel";
+import { CartFooter } from "@/components/CartFooter";
 import { recipes, type Recipe } from "@/data/recipes";
 import { upsells } from "@/data/upsells";
 import { categories } from "@/data/categories";
@@ -119,52 +121,55 @@ export default function Index() {
   const isInCart = (id: string) => cart.some((item) => item.id === id);
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white pb-24">
       <Header cartCount={cart.length} />
 
-      {/* SEÇÃO 1: CHECKOUT (Topo) - Fundo Cinza Neutro */}
+      {/* SEÇÃO 1: CHECKOUT (Topo) */}
       <section className="bg-[#F5F5F5] border-b border-gray-200 shadow-sm pb-8">
-        <div className="max-w-6xl mx-auto px-4 pt-6">
+        <div className="max-w-6xl mx-auto px-4">
+          
+          <BannerCarousel />
+
           <GamificationBar cartCount={cart.length} />
 
           <CodeInput onRecipeFound={handleRecipeFound} onRecipeNotFound={handleRecipeNotFound} />
 
           {/* Carrinho Inline Compacto */}
-          <div className="max-w-2xl mx-auto my-4 bg-white rounded-[24px] p-3 shadow-lg border border-gray-100">
-            <h2 className="text-[1rem] font-extrabold mb-3 flex items-center gap-2 uppercase italic">
+          <div id="cart-section" className="max-w-2xl mx-auto my-4 bg-white rounded-[24px] p-4 shadow-lg border border-gray-100">
+            <h2 className="text-[1rem] font-extrabold mb-4 flex items-center gap-2 uppercase italic">
               🛒 Meu Carrinho ({cart.length})
             </h2>
             
             {cart.length === 0 ? (
-              <div className="py-6 text-center">
-                <ShoppingBag size={32} className="mx-auto text-gray-200 mb-2" />
-                <p className="text-gray-400 font-bold text-[0.75rem] leading-relaxed uppercase">
+              <div className="py-8 text-center">
+                <ShoppingBag size={40} className="mx-auto text-gray-100 mb-3" />
+                <p className="text-gray-400 font-black text-[0.75rem] leading-relaxed uppercase tracking-widest">
                   Seu carrinho está vazio
                 </p>
               </div>
             ) : (
-              <div className="space-y-2">
+              <div className="space-y-3">
                 {cart.map((item) => (
-                  <div key={item.id} className="flex items-center gap-2 py-2 border-b border-gray-50 last:border-0">
-                    <img src={item.imagem} className="w-8 h-8 rounded-lg object-cover border border-gray-100" alt="" />
+                  <div key={item.id} className="flex items-center gap-3 py-3 border-b border-gray-50 last:border-0">
+                    <img src={item.imagem} className="w-10 h-10 rounded-xl object-cover border border-gray-100" alt="" />
                     <div className="flex-1">
-                      <h4 className="text-[0.8rem] font-bold text-gray-800 leading-tight truncate uppercase">{item.nome}</h4>
-                      <span className="text-[9px] font-bold text-gray-400 uppercase">Cód: {item.id}</span>
+                      <h4 className="text-[0.85rem] font-black text-gray-800 leading-tight truncate uppercase">{item.nome}</h4>
+                      <span className="text-[9px] font-black text-gray-300 uppercase">Cód: {item.id}</span>
                     </div>
-                    <span className="font-bold text-[#171717] text-[0.85rem]">R$ {item.preco.toFixed(2)}</span>
-                    <button onClick={() => removeFromCart(item.id)} className="p-1 text-gray-300 hover:text-red-500">
-                      <X size={16} />
+                    <span className="font-black text-[#171717] text-[0.9rem]">R$ {item.preco.toFixed(2)}</span>
+                    <button onClick={() => removeFromCart(item.id)} className="p-1.5 text-gray-200 hover:text-red-500 transition-colors">
+                      <X size={18} />
                     </button>
                   </div>
                 ))}
-                <div className="pt-2 mt-2 border-t-2 border-gray-50">
-                  <div className="flex justify-between items-center mb-3">
-                    <span className="font-bold text-gray-500 text-[0.85rem] uppercase">Total</span>
-                    <span className="text-[1.1rem] font-extrabold text-[#171717]">R$ {total.toFixed(2)}</span>
+                <div className="pt-4 mt-2 border-t-2 border-gray-50">
+                  <div className="flex justify-between items-center mb-4">
+                    <span className="font-black text-gray-400 text-[0.85rem] uppercase tracking-widest">Total</span>
+                    <span className="text-[1.3rem] font-black text-[#171717]">R$ {total.toFixed(2)}</span>
                   </div>
                   <button 
                     onClick={() => navigate("/checkout")}
-                    className="w-full bg-[#44FF00] text-[#171717] py-3 rounded-full font-extrabold text-[0.9rem] shadow-md transition-transform active:scale-95 uppercase"
+                    className="w-full bg-[#44FF00] text-[#171717] py-4 rounded-full font-black text-[1rem] shadow-md transition-transform active:scale-95 uppercase tracking-widest"
                   >
                     Finalizar Pedido →
                   </button>
@@ -190,13 +195,13 @@ export default function Index() {
         </div>
       )}
 
-      {/* SEÇÃO 2: UPSELLS - Fundo Branco */}
-      <section className="bg-white py-8">
+      {/* SEÇÃO 2: UPSELLS */}
+      <section className="bg-white py-12">
         <div className="max-w-6xl mx-auto px-4">
           {foundRecipes.length > 0 && (
-            <div className="mb-8">
-              <h2 className="section-title text-[#171717]">✨ Receitas Adicionadas</h2>
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+            <div className="mb-12">
+              <h2 className="section-title text-[#171717] italic">✨ Receitas Adicionadas</h2>
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                 {foundRecipes.map((recipe) => (
                   <RecipeCard
                     key={recipe.id}
@@ -210,9 +215,9 @@ export default function Index() {
             </div>
           )}
 
-          <div className="mb-8">
-            <h2 className="section-title text-[#171717]">⭐ Produtos Premium</h2>
-            <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="mb-12">
+            <h2 className="section-title text-[#171717] italic">⭐ Produtos Premium</h2>
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               {upsells.map((upsell) => (
                 <UpsellCard key={upsell.id} upsell={upsell} onOpen={() => setActiveUpsell(upsell.id)} />
               ))}
@@ -229,11 +234,11 @@ export default function Index() {
         />
       )}
 
-      {/* SEÇÃO 3: CATEGORIAS - Fundo Amarelo */}
-      <section className="bg-[#F8DD12] py-8">
+      {/* SEÇÃO 3: CATEGORIAS */}
+      <section className="bg-[#F8DD12] py-12">
         <div className="max-w-6xl mx-auto px-4">
-          <h2 className="section-title text-[#171717]">🧶 Categorias</h2>
-          <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-x-3 gap-y-6">
+          <h2 className="section-title text-[#171717] italic">🧶 Categorias</h2>
+          <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-2 sm:gap-4">
             {categories.map((cat) => (
               <CategoryCard key={cat} nome={cat} />
             ))}
@@ -241,11 +246,11 @@ export default function Index() {
         </div>
       </section>
 
-      {/* SEÇÃO 4: PACKS - Fundo Branco */}
-      <section className="bg-white py-8">
+      {/* SEÇÃO 4: PACKS */}
+      <section className="bg-white py-12">
         <div className="max-w-6xl mx-auto px-4">
-          <h2 className="section-title text-[#171717]">📦 Packs Temáticos</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <h2 className="section-title text-[#171717] italic">📦 Packs Temáticos</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
             {packs.map((pack) => (
               <PackCard
                 key={pack.id}
@@ -259,11 +264,11 @@ export default function Index() {
         </div>
       </section>
 
-      {/* SEÇÃO 5: COMBOS - Fundo Preto */}
-      <section className="bg-[#171717] py-12">
+      {/* SEÇÃO 5: COMBOS */}
+      <section className="bg-[#171717] py-16">
         <div className="max-w-6xl mx-auto px-4">
-          <h2 className="section-title text-white">👑 Combos Elite</h2>
-          <div className="max-w-3xl mx-auto space-y-4">
+          <h2 className="section-title text-white italic">👑 Combos Elite</h2>
+          <div className="max-w-3xl mx-auto space-y-6">
             {combos.map((combo) => (
               <ComboCard
                 key={combo.id}
@@ -277,9 +282,15 @@ export default function Index() {
         </div>
       </section>
 
-      <footer className="text-center py-8 px-4 border-t border-gray-100 bg-white">
-        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">© 2024 AmiguMundo Artes</p>
+      <footer className="text-center py-12 px-4 border-t border-gray-100 bg-white">
+        <p className="text-[10px] text-gray-300 font-black uppercase tracking-[0.3em]">© 2024 AmiguMundo Artes</p>
       </footer>
+
+      <CartFooter 
+        count={cart.length} 
+        total={total} 
+        onCheckout={() => navigate("/checkout")} 
+      />
     </div>
   );
 }
