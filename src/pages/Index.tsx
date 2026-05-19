@@ -210,7 +210,7 @@ export default function Index() {
         <div className="mb-10">
           <h2
             className="text-2xl font-bold mb-6"
-            style={{ fontFamily: "'Fredoka One', cursive", color: "#FF6B35" }}
+            style={{ fontFamily: "Fredoka One, cursive", color: "#FF6B35" }}
           >
             📦 Packs Tematicos
           </h2>
