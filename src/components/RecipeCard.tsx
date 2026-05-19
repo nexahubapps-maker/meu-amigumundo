@@ -1,4 +1,4 @@
-import React from "react";
+"use client";
 
 interface RecipeCardProps {
   recipe: {
@@ -13,92 +13,41 @@ interface RecipeCardProps {
   isInCart: boolean;
 }
 
-const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, onAdd, onReject, isInCart }) => {
-  const { id, nome, descricao, preco, categoria } = recipe;
-
+const RecipeCard = ({ recipe, onAdd, onReject, isInCart }: RecipeCardProps) => {
   return (
-    <div
-      style={{
-        background: "white",
-        borderRadius: 20,
-        boxShadow: "0 8px 32px rgba(0,0,0,0.13)",
-        padding: 0,
-        overflow: "hidden",
-        maxWidth: 320,
-      }}
-    >
-      <img
-        src={`https://picsum.photos/seed/${id}/300/200`}
-        alt={nome}
-        style={{ width: "100%", height: 180, objectFit: "cover" }}
-      />
-      <div style={{ padding: 16 }}>
-        <span
-          style={{
-            background: "#FF6B35",
-            color: "white",
-            borderRadius: 50,
-            padding: "4px 12px",
-            fontSize: 12,
-            fontWeight: 700,
-          }}
-        >
-          #{id}
-        </span>
-        <span
-          style={{
-            background: "#9B59B6",
-            color: "white",
-            borderRadius: 50,
-            padding: "4px 12px",
-            fontSize: 11,
-            fontWeight: 600,
-            marginLeft: 8,
-          }}
-        >
-          {categoria}
-        </span>
-        <h3 style={{ margin: "12px 0 4px", fontSize: 18 }}>{nome}</h3>
-        <p style={{ color: "#666", fontSize: 14, margin: "0 0 12px" }}>{descricao}</p>
-        <p style={{ color: "#7BC843", fontSize: 22, fontWeight: 700, margin: "0 0 12px" }}>
-          R$ {preco.toFixed(2)}
-        </p>
-        {isInCart ? (
-          <span style={{ color: "green", fontWeight: 700 }}>✓ No carrinho</span>
-        ) : (
-          <>
-            <button
-              onClick={onAdd}
-              style={{
-                width: "100%",
-                background: "#7BC843",
-                color: "white",
-                border: "none",
-                borderRadius: 12,
-                padding: "12px",
-                fontWeight: 700,
-                cursor: "pointer",
-                marginBottom: 8,
-              }}
-            >
-              + Adicionar ao Carrinho
-            </button>
+    <div className="card-float overflow-hidden relative flex flex-col">
+      <div className="relative h-[140px] w-full">
+        <img
+          src={`https://picsum.photos/seed/${recipe.id}/400/300`}
+          alt={recipe.nome}
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute top-2 left-2 bg-[#FF6B35] text-white text-[10px] font-bold px-3 py-1 rounded-full shadow-md">
+          R$ {recipe.preco.toFixed(2)}
+        </div>
+        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-3">
+          <h3 className="text-white text-sm font-bold leading-tight truncate">{recipe.nome}</h3>
+        </div>
+      </div>
+      <div className="p-3 flex flex-col gap-2">
+        <p className="text-gray-500 text-[10px] line-clamp-2 leading-tight">{recipe.descricao}</p>
+        <div className="flex gap-2">
+          <button
+            onClick={onAdd}
+            disabled={isInCart}
+            className="flex-1 btn-premium bg-[#7BC843] text-white disabled:opacity-50"
+          >
+            {isInCart ? "✓ No Carrinho" : "+ Adicionar"}
+          </button>
+          {!isInCart && (
             <button
               onClick={onReject}
-              style={{
-                width: "100%",
-                background: "#ff5252",
-                color: "white",
-                border: "none",
-                borderRadius: 10,
-                padding: "8px",
-                cursor: "pointer",
-              }}
+              className="px-3 py-2 rounded-full bg-red-50 text-red-500 text-xs font-bold"
             >
-              ✕ Rejeitar
+              ✕
             </button>
-          </>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );

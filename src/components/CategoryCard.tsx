@@ -1,29 +1,40 @@
 "use client";
 
-import { useState } from "react";
-
 interface CategoryCardProps {
   nome: string;
 }
 
 export const CategoryCard = ({ nome }: CategoryCardProps) => {
-  const [hover, setHover] = useState(false);
+  const categoryStyles: Record<string, { color: string; emoji: string }> = {
+    "Princesas": { color: "#FF3D9A", emoji: "👸" },
+    "Personagens TV": { color: "#4A90D9", emoji: "📺" },
+    "Super-Herois": { color: "#9B59B6", emoji: "🦸" },
+    "Animais da Fazenda": { color: "#F5A623", emoji: "🐄" },
+    "Animais Selvagens": { color: "#7BC843", emoji: "🦁" },
+    "Fundo do Mar": { color: "#2EC4B6", emoji: "🌊" },
+    "Frutas e Verduras": { color: "#FF6B35", emoji: "🍓" },
+    "Bebes e Fofuras": { color: "#FFB3C6", emoji: "👶" },
+    "Natal e Festas": { color: "#e74c3c", emoji: "🎄" },
+    "Religiosos": { color: "#8e44ad", emoji: "✝️" },
+    "Bonecas": { color: "#FF3D9A", emoji: "🪆" },
+    "Unicornios e Fantasia": { color: "#9B59B6", emoji: "🦄" },
+    "Dinossauros": { color: "#27ae60", emoji: "🦕" },
+    "Esportes": { color: "#2980b9", emoji: "⚽" },
+    "Profissoes": { color: "#F5A623", emoji: "👷" },
+    "Flores e Natureza": { color: "#7BC843", emoji: "🌸" },
+  };
+
+  const style = categoryStyles[nome] || { color: "#FF6B35", emoji: "🧶" };
+
   return (
-    <div className="card-float overflow-hidden relative h-[110px] sm:h-[180px] rounded-xl shadow-lg bg-white cursor-pointer">
-      <div className="relative h-full w-full">
-        <img
-          src={`https://picsum.photos/seed/${nome.toLowerCase().replace(/ /g, "-")}/400/300`}
-          alt={nome}
-          className={`w-full h-full object-cover transition-transform duration-300 ${hover ? "scale-110" : ""}`}
-          onMouseEnter={() => setHover(true)}
-          onMouseLeave={() => setHover(false)}
-        />
-        <div className="absolute inset-0 bg-black/40 flex items-end p-2 sm:p-4">
-          <h3 className="text-white text-[0.85rem] sm:text-base font-bold leading-tight">
-            {nome}
-          </h3>
-        </div>
-      </div>
+    <div 
+      className="rounded-2xl flex flex-col items-center justify-center p-2 h-[100px] sm:h-[120px] transition-transform active:scale-95 cursor-pointer shadow-sm"
+      style={{ backgroundColor: style.color }}
+    >
+      <span className="text-3xl sm:text-4xl mb-1">{style.emoji}</span>
+      <span className="text-white text-[0.75rem] sm:text-[0.85rem] font-bold text-center leading-tight">
+        {nome}
+      </span>
     </div>
   );
 };

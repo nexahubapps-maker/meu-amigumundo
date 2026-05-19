@@ -10,44 +10,36 @@ interface ComboCardProps {
 }
 
 export const ComboCard = ({ combo, inCart, onAdd, onRemove }: ComboCardProps) => {
+  const comboColors: Record<number, string> = {
+    20: "#FF6B35",
+    50: "#4A90D9",
+    100: "#7BC843",
+  };
+
+  const bgColor = comboColors[combo.receitas] || "#FF6B35";
+
   return (
-    <div className="card-float p-4 sm:p-5 flex flex-col sm:flex-row items-center sm:items-start gap-4 relative">
-      <div className="absolute top-2 right-3 bg-white/90 text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm" style={{ color: combo.cor }}>
-        {combo.badge}
+    <div className="card-float overflow-hidden flex h-[100px] items-center">
+      <div 
+        className="w-[80px] sm:w-[100px] h-full flex flex-col items-center justify-center text-white"
+        style={{ backgroundColor: bgColor }}
+      >
+        <span className="text-[2.2rem] sm:text-[2.5rem] font-extrabold leading-none">{combo.receitas}</span>
+        <span className="text-[10px] font-bold uppercase tracking-tighter">Receitas</span>
       </div>
-      <div className="flex-shrink-0 flex flex-col items-center">
-        <div className="h-20 w-20 sm:h-36 sm:w-36 rounded-full bg-gradient-to-r from-[#FF6B35] to-[#FF3D9A] flex items-center justify-center shadow-lg">
-          <span className="text-2xl sm:text-4xl font-extrabold text-white">
-            {combo.receitas}
-          </span>
-        </div>
-        <div className="text-[10px] sm:text-sm text-gray-500 mt-1 font-bold uppercase tracking-wider">receitas</div>
+      <div className="flex-1 px-3 sm:px-4 flex flex-col justify-center">
+        <h3 className="text-[0.9rem] sm:text-[1rem] font-bold leading-tight truncate">{combo.nome}</h3>
+        <p className="text-gray-500 text-[0.75rem] sm:text-[0.8rem] line-clamp-1">{combo.descricao}</p>
+        <span className="text-[#7BC843] font-bold text-[1rem] sm:text-[1.1rem]">R$ {combo.preco.toFixed(2)}</span>
       </div>
-      <div className="flex-1 text-center sm:text-left">
-        <h3 className="text-lg sm:text-xl font-extrabold leading-tight">
-          {combo.nome}
-        </h3>
-        <p className="text-gray-500 text-[0.85rem] sm:text-sm mt-1 leading-snug">{combo.descricao}</p>
-        <p className="text-xl sm:text-2xl font-extrabold mt-2 text-[#7BC843]">
-          R${combo.preco.toFixed(2)}
-        </p>
-      </div>
-      <div className="flex gap-2 w-full sm:w-auto mt-2 sm:mt-0">
+      <div className="pr-3">
         <button
           onClick={onAdd}
           disabled={inCart}
-          className="flex-1 sm:flex-none px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg sm:rounded-xl font-bold text-white text-xs sm:text-sm disabled:opacity-50 transition-transform active:scale-95 bg-[#7BC843]"
+          className="btn-premium bg-[#7BC843] text-white px-4 py-2 text-[0.75rem]"
         >
-          {inCart ? "✓ Adicionado" : "+ Adicionar"}
+          {inCart ? "✓" : "+ Add"}
         </button>
-        {inCart && (
-          <button
-            onClick={onRemove}
-            className="px-3 py-2.5 sm:py-3 rounded-lg sm:rounded-xl font-semibold text-red-500 text-xs sm:text-sm border border-red-200 hover:bg-red-50"
-          >
-            ✕
-          </button>
-        )}
       </div>
     </div>
   );

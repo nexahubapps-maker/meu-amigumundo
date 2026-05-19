@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { Header } from "@/components/Header";
 import { GamificationBar } from "@/components/GamificationBar";
 import { CodeInput } from "@/components/CodeInput";
 import RecipeCard from "@/components/RecipeCard";
@@ -51,7 +52,7 @@ export default function Index() {
   };
 
   const handleRecipeNotFound = () => {
-    setError("Código não encontrado. Verifique o número e tente novamente.");
+    setError("Código não encontrado.");
     setTimeout(() => setError(null), 3000);
   };
 
@@ -96,13 +97,15 @@ export default function Index() {
   const isInCart = (id: string) => cart.some((item) => item.id === id);
 
   return (
-    <div className="min-h-screen pb-24 sm:pb-32" style={{ backgroundColor: "#FFF8F2" }}>
+    <div className="min-h-screen pb-20" style={{ backgroundColor: "#FFF8F2" }}>
+      <Header />
+
       <section className="max-w-6xl mx-auto px-4">
-        <div className="mb-6 sm:mb-8">
+        <div className="mb-4 sm:mb-8">
           <img 
             src="https://ik.imagekit.io/51b3srlsg/banner-checkout.jpg.jpeg" 
             alt="AmiguMundo" 
-            className="w-full h-[160px] sm:h-[220px] object-cover rounded-b-[24px] block"
+            className="w-full h-[160px] sm:h-[220px] object-cover rounded-b-[24px] block shadow-sm"
           />
         </div>
 
@@ -126,11 +129,9 @@ export default function Index() {
         )}
 
         {foundRecipes.length > 0 && (
-          <div className="mb-10 sm:mb-12">
-            <h2 className="section-title text-[#FF6B35]">
-              ✨ Receitas Adicionadas
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          <div className="mb-8 sm:mb-12">
+            <h2 className="section-title text-[#FF6B35]">✨ Receitas Adicionadas</h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6">
               {foundRecipes.map((recipe) => (
                 <RecipeCard
                   key={recipe.id}
@@ -145,22 +146,20 @@ export default function Index() {
         )}
       </section>
 
-      <div className="max-w-6xl mx-auto px-4 my-8 sm:my-12">
-        <div className="redline mb-8 sm:mb-12" />
-        <div className="mb-8 sm:mb-12">
+      <div className="max-w-6xl mx-auto px-4 my-6 sm:my-12">
+        <div className="redline mb-6 sm:mb-12" />
+        <div className="mb-6 sm:mb-12">
           <img 
             src="https://ik.imagekit.io/51b3srlsg/banner-loja.jpg.jpeg" 
             alt="Loja AmiguMundo" 
-            className="w-full h-[160px] sm:h-[220px] object-cover block rounded-2xl"
+            className="w-full h-[160px] sm:h-[220px] object-cover block rounded-2xl shadow-sm"
           />
         </div>
       </div>
 
       <section className="max-w-6xl mx-auto px-4">
-        <div className="mb-12 sm:mb-16">
-          <h2 className="section-title text-[#9B59B6]">
-            ⭐ Produtos que Vão Transformar sua Arte
-          </h2>
+        <div className="mb-10 sm:mb-16">
+          <h2 className="section-title text-[#9B59B6]">⭐ Produtos Premium</h2>
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
             {upsells.map((upsell) => (
               <UpsellCard key={upsell.id} upsell={upsell} onOpen={() => setActiveUpsell(upsell.id)} />
@@ -176,22 +175,18 @@ export default function Index() {
           />
         )}
 
-        <div className="mb-12 sm:mb-16">
-          <h2 className="section-title text-[#7BC843]">
-            🧶 Categorias de Receitas
-          </h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6">
+        <div className="mb-10 sm:mb-16">
+          <h2 className="section-title text-[#7BC843]">🧶 Categorias</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4">
             {categories.map((cat) => (
               <CategoryCard key={cat} nome={cat} />
             ))}
           </div>
         </div>
 
-        <div className="mb-12 sm:mb-16">
-          <h2 className="section-title text-[#FF6B35]">
-            📦 Packs Temáticos
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+        <div className="mb-10 sm:mb-16">
+          <h2 className="section-title text-[#FF6B35]">📦 Packs Temáticos</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8">
             {packs.map((pack) => (
               <PackCard
                 key={pack.id}
@@ -204,11 +199,9 @@ export default function Index() {
           </div>
         </div>
 
-        <div className="mb-12 sm:mb-16">
-          <h2 className="section-title text-[#F5A623]">
-            👑 Combos Elite — Volume com Desconto
-          </h2>
-          <div className="max-w-3xl mx-auto space-y-4 sm:space-y-6">
+        <div className="mb-10 sm:mb-16">
+          <h2 className="section-title text-[#F5A623]">👑 Combos Elite</h2>
+          <div className="max-w-3xl mx-auto space-y-3 sm:space-y-6">
             {combos.map((combo) => (
               <ComboCard
                 key={combo.id}
@@ -222,9 +215,8 @@ export default function Index() {
         </div>
       </section>
 
-      <footer className="text-center py-8 sm:py-12 px-4 border-t border-gray-100 mt-8 sm:mt-12">
-        <p className="text-sm sm:text-base text-gray-500 font-bold">© 2024 AmiguMundo Artes — Todos os direitos reservados</p>
-        <p className="text-xs sm:text-sm text-gray-400 mt-2 font-medium">Feito com ❤️ para artesãs brasileiras</p>
+      <footer className="text-center py-8 px-4 border-t border-gray-100 mt-8">
+        <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">© 2024 AmiguMundo Artes</p>
       </footer>
 
       <Cart count={cart.length} total={total} onCheckout={() => setShowCheckout(true)} />
