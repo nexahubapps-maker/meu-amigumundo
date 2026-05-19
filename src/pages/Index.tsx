@@ -155,7 +155,7 @@ export default function Index() {
             </div>
           </div>
         )}
-      </div>
+      </section>
 
       <div className="max-w-6xl mx-auto px-4 my-8">
         <div
@@ -168,7 +168,7 @@ export default function Index() {
           <p className="text-white/80 text-sm sm:text-base">Explore nossa colecao completa de receitas e produtos</p>
         </div>
         <div className="h-6 gradient-redline mb-8" />
-      </section>
+      </div>
 
       <section className="max-w-6xl mx-auto px-4">
         <div className="mb-10">
@@ -176,9 +176,9 @@ export default function Index() {
             className="text-2xl font-bold mb-6"
             style={{ fontFamily: "'Fredoka One', cursive", color: "#9B59B6" }}
           >
-            ⭐ Produtos que Vao Transformar sua Arte
+            ⭐ Produtos que Vão Transformar sua Arte
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
             {upsells.map((upsell) => (
               <UpsellCard key={upsell.id} upsell={upsell} onOpen={() => setActiveUpsell(upsell.id)} />
             ))}
