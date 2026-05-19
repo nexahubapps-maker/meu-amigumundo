@@ -5,36 +5,15 @@ interface CategoryCardProps {
 }
 
 export const CategoryCard = ({ nome }: CategoryCardProps) => {
-  const categoryStyles: Record<string, { color: string; emoji: string }> = {
-    "Princesas": { color: "#FF3D9A", emoji: "👸" },
-    "Personagens TV": { color: "#4A90D9", emoji: "📺" },
-    "Super-Herois": { color: "#9B59B6", emoji: "🦸" },
-    "Animais da Fazenda": { color: "#F5A623", emoji: "🐄" },
-    "Animais Selvagens": { color: "#7BC843", emoji: "🦁" },
-    "Fundo do Mar": { color: "#2EC4B6", emoji: "🌊" },
-    "Frutas e Verduras": { color: "#FF6B35", emoji: "🍓" },
-    "Bebes e Fofuras": { color: "#FFB3C6", emoji: "👶" },
-    "Natal e Festas": { color: "#e74c3c", emoji: "🎄" },
-    "Religiosos": { color: "#8e44ad", emoji: "✝️" },
-    "Bonecas": { color: "#FF3D9A", emoji: "🪆" },
-    "Unicornios e Fantasia": { color: "#9B59B6", emoji: "🦄" },
-    "Dinossauros": { color: "#27ae60", emoji: "🦕" },
-    "Esportes": { color: "#2980b9", emoji: "⚽" },
-    "Profissoes": { color: "#F5A623", emoji: "👷" },
-    "Flores e Natureza": { color: "#7BC843", emoji: "🌸" },
-  };
-
-  const style = categoryStyles[nome] || { color: "#FF6B35", emoji: "🧶" };
-
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center group cursor-pointer">
       <div 
-        className="w-full h-[80px] rounded-[16px] flex items-center justify-center transition-transform active:scale-95 cursor-pointer shadow-sm"
-        style={{ backgroundColor: style.color }}
+        className="w-full h-[80px] bg-[#F8DD12] border-2 border-[#171717] rounded-[12px] flex items-center justify-center transition-all group-active:translate-x-[2px] group-active:translate-y-[2px] group-active:shadow-none"
+        style={{ boxShadow: '4px 4px 0px 0px #171717' }}
       >
-        <span className="text-[2rem]">{style.emoji}</span>
+        <span className="text-[2.2rem] drop-shadow-[2px_2px_0px_#171717]">🧶</span>
       </div>
-      <span className="text-[#333] text-[0.7rem] font-semibold text-center mt-1 leading-tight">
+      <span className="text-[#171717] text-[0.7rem] font-black text-center mt-2 leading-tight uppercase tracking-tighter">
         {nome}
       </span>
     </div>

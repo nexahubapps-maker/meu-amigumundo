@@ -27,21 +27,22 @@ export const CodeInput = ({ onRecipeFound, onRecipeNotFound }: CodeInputProps) =
   };
 
   return (
-    <div className="max-w-[480px] mx-auto my-6">
+    <div className="max-w-[480px] mx-auto my-8">
       <div className="relative">
         <input
           type="text"
           value={code}
           onChange={handleChange}
           maxLength={4}
-          placeholder="Digite o código de 4 dígitos (ex: 3872)"
-          className="w-full px-6 py-4 border-2 border-gray-200 rounded-2xl text-lg font-bold text-center focus:outline-none focus:border-[#E8472A] transition-colors placeholder:font-medium placeholder:text-gray-300"
+          placeholder="DIGITE O CÓDIGO DE 4 DÍGITOS"
+          className="w-full px-6 py-5 border-4 border-[#171717] rounded-[16px] text-2xl font-black text-center focus:outline-none focus:bg-[#F8DD12] transition-colors placeholder:font-black placeholder:text-[#171717]/20 uppercase"
+          style={{ boxShadow: '6px 6px 0px 0px #171717' }}
         />
-        <div className="absolute right-4 top-1/2 -translate-y-1/2 text-[#E8472A] font-bold text-sm">
+        <div className="absolute right-6 top-1/2 -translate-y-1/2 text-[#171717] font-black text-lg italic">
           {code.length}/4
         </div>
       </div>
-      <p className="text-center text-xs text-gray-400 mt-2 font-medium">
+      <p className="text-center text-[10px] text-[#171717] mt-4 font-black uppercase tracking-widest">
         A busca é automática ao digitar os 4 números
       </p>
     </div>

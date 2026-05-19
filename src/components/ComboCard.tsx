@@ -10,35 +10,26 @@ interface ComboCardProps {
 }
 
 export const ComboCard = ({ combo, inCart, onAdd, onRemove }: ComboCardProps) => {
-  const comboColors: Record<number, string> = {
-    20: "#FF6B35",
-    50: "#4A90D9",
-    100: "#7BC843",
-  };
-
-  const bgColor = comboColors[combo.receitas] || "#FF6B35";
-
   return (
-    <div className="card-float overflow-hidden flex h-[100px] items-center">
+    <div className="neo-card overflow-hidden flex h-[110px] items-center bg-white">
       <div 
-        className="w-[80px] sm:w-[100px] h-full flex flex-col items-center justify-center text-white"
-        style={{ backgroundColor: bgColor }}
+        className="w-[100px] h-full flex flex-col items-center justify-center text-[#171717] border-r-2 border-[#171717] bg-[#F8DD12]"
       >
-        <span className="text-[2.2rem] sm:text-[2.5rem] font-extrabold leading-none">{combo.receitas}</span>
-        <span className="text-[10px] font-bold uppercase tracking-tighter">Receitas</span>
+        <span className="text-[2.5rem] font-black leading-none drop-shadow-[2px_2px_0px_#fff]">{combo.receitas}</span>
+        <span className="text-[10px] font-black uppercase tracking-tighter">Receitas</span>
       </div>
-      <div className="flex-1 px-3 sm:px-4 flex flex-col justify-center">
-        <h3 className="text-[0.9rem] sm:text-[1rem] font-bold leading-tight truncate">{combo.nome}</h3>
-        <p className="text-gray-500 text-[0.75rem] sm:text-[0.8rem] line-clamp-1">{combo.descricao}</p>
-        <span className="text-[#7BC843] font-bold text-[1rem] sm:text-[1.1rem]">R$ {combo.preco.toFixed(2)}</span>
+      <div className="flex-1 px-4 flex flex-col justify-center">
+        <h3 className="text-[1rem] font-black leading-tight truncate text-[#171717] uppercase">{combo.nome}</h3>
+        <p className="text-[#171717]/60 text-[0.75rem] font-bold line-clamp-1 uppercase">{combo.descricao}</p>
+        <span className="text-[#171717] font-black text-[1.2rem]">R$ {combo.preco.toFixed(2)}</span>
       </div>
-      <div className="pr-3">
+      <div className="pr-4">
         <button
           onClick={onAdd}
           disabled={inCart}
-          className="btn-premium bg-[#7BC843] text-white px-4 py-2 text-[0.75rem]"
+          className={`px-5 py-2.5 text-[0.8rem] uppercase ${inCart ? 'bg-gray-100 text-gray-400 border-gray-300' : 'neo-btn-buy'}`}
         >
-          {inCart ? "✓" : "+ Add"}
+          {inCart ? "✓" : "+ ADD"}
         </button>
       </div>
     </div>
