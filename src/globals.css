@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -30,7 +32,12 @@
     @apply bg-background text-foreground;
     background-color: #FFF8F2;
     background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23d4a574' fill-opacity='0.08'%3E%3Cpath d='M0 0h40v1H0zM0 0v40h1V0z'/%3E%3C/g%3E%3C/svg%3E");
-    font-family: 'Inter', sans-serif;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 800;
   }
 }
 
@@ -47,28 +54,16 @@
     box-shadow: 0 20px 60px rgba(0,0,0,0.18);
   }
 
-  .banner {
-    @apply relative overflow-hidden rounded-3xl px-6 py-12 sm:py-16 text-center mb-8;
-    background: linear-gradient(135deg, #FF6B35 0%, #FF3D9A 100%);
-    box-shadow: 0 20px 40px rgba(255, 107, 53, 0.25);
+  .section-title {
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin-bottom: 2rem;
   }
 
-  .gradient-store {
-    background: linear-gradient(135deg, #4A90D9 0%, #9B59B6 100%);
-    box-shadow: 0 20px 40px rgba(74, 144, 217, 0.2);
-  }
-
-  .gradient-redline {
+  .redline {
+    height: 6px;
     background: linear-gradient(90deg, #FF3D9A, #FF6B35, #F5A623, #7BC843, #2EC4B6, #4A90D9, #9B59B6);
-    border-radius: 100px;
-  }
-
-  .gradient-progress {
-    background: linear-gradient(90deg, #7BC843, #2EC4B6, #4A90D9);
-  }
-
-  .level-pill {
-    @apply px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider;
+    width: 100%;
   }
 
   .modal-overlay {
