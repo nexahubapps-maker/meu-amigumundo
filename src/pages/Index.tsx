@@ -100,19 +100,29 @@ export default function Index() {
     <div className="min-h-screen pb-20" style={{ backgroundColor: "#FFF8F2" }}>
       <Header />
 
-      <section className="max-w-6xl mx-auto px-4">
-        <div className="banner">
-          <span className="absolute left-4 top-4 text-5xl font-bold text-gray-600 opacity-60">🧶</span>
-          <span className="absolute right-4 bottom-4 text-5xl font-bold text-gray-600 opacity-60">✂️</span>
-          <h1
-            className="text-2xl sm:text-3xl md:text-4xl font-bold text-white text-center mb-3"
-            style={{ fontFamily: "'Fredoka One', cursive", textShadow: "0 2px 20px rgba(0,0,0,0.3)" }}
-          >
-            🧶 Suas receitas de amigurumi, na hora, no seu WhatsApp!
-          </h1>
-          <p className="text-white/80 text-sm sm:text-base max-w-lg mx-auto">
-            Digite o codigo da receita que voce viu no grupo e adicione ao carrinho
-          </p>
+      <section className="max-w-6xl mx-auto px-4 pt-8">
+        <div 
+          className="relative overflow-hidden rounded-[32px] px-6 flex flex-col items-center justify-center text-center mb-8 shadow-[0_20px_40px_rgba(255,107,53,0.25)]"
+          style={{ 
+            background: "linear-gradient(135deg, #FF6B35 0%, #FF3D9A 50%, #9B59B6 100%)",
+            minHeight: "170px",
+          }}
+        >
+          {/* Emojis decorativos */}
+          <span className="absolute left-6 top-1/2 -translate-y-1/2 text-6xl sm:text-7xl opacity-60 select-none pointer-events-none">🧶</span>
+          <span className="absolute right-6 top-1/2 -translate-y-1/2 text-6xl sm:text-7xl opacity-60 select-none pointer-events-none">✂️</span>
+          
+          <div className="relative z-10 max-w-2xl">
+            <h1
+              className="text-2xl sm:text-3xl md:text-[2.5rem] font-bold text-white mb-3 leading-tight"
+              style={{ fontFamily: "'Fredoka One', cursive", textShadow: "0 2px_20px_rgba(0,0,0,0.3)" }}
+            >
+              Suas receitas de amigurumi, na hora, no seu WhatsApp!
+            </h1>
+            <p className="text-white/90 text-sm sm:text-lg font-medium">
+              Digite o código da receita que você viu no grupo e adicione ao carrinho
+            </p>
+          </div>
         </div>
 
         <GamificationBar cartCount={cart.length} />
@@ -135,14 +145,14 @@ export default function Index() {
         )}
 
         {foundRecipes.length > 0 && (
-          <div className="mb-8">
+          <div className="mb-12">
             <h2
-              className="text-xl font-bold mb-4"
+              className="text-2xl font-bold mb-6"
               style={{ fontFamily: "'Fredoka One', cursive", color: "#FF6B35" }}
             >
-              Receitas Adicionadas
+              ✨ Receitas Adicionadas
             </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {foundRecipes.map((recipe) => (
                 <RecipeCard
                   key={recipe.id}
@@ -157,28 +167,28 @@ export default function Index() {
         )}
       </section>
 
-      <div className="max-w-6xl mx-auto px-4 my-8">
+      <div className="max-w-6xl mx-auto px-4 my-12">
         <div
-          className="gradient-store rounded-3xl px-6 py-10 sm:py-14 text-center text-white mb-6"
+          className="gradient-store rounded-[32px] px-6 py-12 sm:py-16 text-center text-white mb-6"
           style={{ minHeight: "160px" }}
         >
-          <h1 className="text-3xl sm:text-4xl font-bold mb-2" style={{ fontFamily: "'Fredoka One', cursive" }}>
+          <h1 className="text-3xl sm:text-5xl font-bold mb-3" style={{ fontFamily: "'Fredoka One', cursive" }}>
             🏪 Loja AmiguMundo
           </h1>
-          <p className="text-white/80 text-sm sm:text-base">Explore nossa colecao completa de receitas e produtos</p>
+          <p className="text-white/90 text-base sm:text-xl">Explore nossa coleção completa de receitas e produtos</p>
         </div>
-        <div className="h-6 gradient-redline mb-8" />
+        <div className="h-6 gradient-redline mb-12" />
       </div>
 
       <section className="max-w-6xl mx-auto px-4">
-        <div className="mb-10">
+        <div className="mb-16">
           <h2
-            className="text-2xl font-bold mb-6"
+            className="text-2xl sm:text-3xl font-bold mb-8"
             style={{ fontFamily: "'Fredoka One', cursive", color: "#9B59B6" }}
           >
             ⭐ Produtos que Vão Transformar sua Arte
           </h2>
-          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-6">
             {upsells.map((upsell) => (
               <UpsellCard key={upsell.id} upsell={upsell} onOpen={() => setActiveUpsell(upsell.id)} />
             ))}
@@ -193,28 +203,28 @@ export default function Index() {
           />
         )}
 
-        <div className="mb-10">
+        <div className="mb-16">
           <h2
-            className="text-2xl font-bold mb-6"
+            className="text-2xl sm:text-3xl font-bold mb-8"
             style={{ fontFamily: "'Fredoka One', cursive", color: "#7BC843" }}
           >
             🧶 Categorias de Receitas
           </h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
             {categories.map((cat) => (
               <CategoryCard key={cat} nome={cat} />
             ))}
           </div>
         </div>
 
-        <div className="mb-10">
+        <div className="mb-16">
           <h2
-            className="text-2xl font-bold mb-6"
+            className="text-2xl sm:text-3xl font-bold mb-8"
             style={{ fontFamily: "Fredoka One, cursive", color: "#FF6B35" }}
           >
-            📦 Packs Tematicos
+            📦 Packs Temáticos
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {packs.map((pack) => (
               <PackCard
                 key={pack.id}
@@ -227,14 +237,14 @@ export default function Index() {
           </div>
         </div>
 
-        <div className="mb-10">
+        <div className="mb-16">
           <h2
-            className="text-2xl font-bold mb-6"
+            className="text-2xl sm:text-3xl font-bold mb-8"
             style={{ fontFamily: "'Fredoka One', cursive", color: "#F5A623" }}
           >
             👑 Combos Elite — Volume com Desconto
           </h2>
-          <div className="max-w-2xl mx-auto space-y-4">
+          <div className="max-w-3xl mx-auto space-y-6">
             {combos.map((combo) => (
               <ComboCard
                 key={combo.id}
@@ -248,9 +258,9 @@ export default function Index() {
         </div>
       </section>
 
-      <footer className="text-center py-8 px-4">
-        <p className="text-sm text-gray-400">© 2024 AmiguMundo Artes — Todos os direitos reservados</p>
-        <p className="text-xs text-gray-300 mt-1">Feito com ❤️ para artesãs brasileiras</p>
+      <footer className="text-center py-12 px-4 border-t border-gray-100 mt-12">
+        <p className="text-base text-gray-500 font-medium">© 2024 AmiguMundo Artes — Todos os direitos reservados</p>
+        <p className="text-sm text-gray-400 mt-2">Feito com ❤️ para artesãs brasileiras</p>
       </footer>
 
       <Cart count={cart.length} total={total} onCheckout={() => setShowCheckout(true)} />
