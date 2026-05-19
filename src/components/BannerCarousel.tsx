@@ -4,9 +4,21 @@ import React, { useEffect, useState, useCallback } from 'react';
 import useEmblaCarousel from 'embla-carousel-react';
 
 const banners = [
-  { id: 1, url: "https://images.unsplash.com/photo-1603356033288-acfcb570bbce?q=80&w=1200&auto=format&fit=crop", title: "Novas Receitas" },
-  { id: 2, url: "https://images.unsplash.com/photo-1584992236310-6edddc08acff?q=80&w=1200&auto=format&fit=crop", title: "Packs Exclusivos" },
-  { id: 3, url: "https://images.unsplash.com/photo-1615486511484-92e172cc4ee0?q=80&w=1200&auto=format&fit=crop", title: "Mundo Amigurumi" },
+  { 
+    id: 1, 
+    url: "https://ik.imagekit.io/51b3srlsg/banner_whatsapp_amigumundo.jpeg", 
+    title: "WhatsApp AmiguMundo" 
+  },
+  { 
+    id: 2, 
+    url: "https://ik.imagekit.io/51b3srlsg/Combo_Colecionadora_Segunda_amigumundo.jpeg", 
+    title: "Combo Colecionadora" 
+  },
+  { 
+    id: 3, 
+    url: "https://ik.imagekit.io/51b3srlsg/Lan%C3%A7amento_AmiguMundo_50_Receitas_amigumundo.jpeg", 
+    title: "Lançamento 50 Receitas" 
+  },
 ];
 
 export const BannerCarousel = () => {
@@ -39,11 +51,7 @@ export const BannerCarousel = () => {
               alt={banner.title} 
               className="w-full h-full object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent flex items-end p-4">
-              <h3 className="text-white font-black text-lg sm:text-2xl uppercase italic tracking-tighter">
-                {banner.title}
-              </h3>
-            </div>
+            {/* Removido o gradiente e texto para destacar a arte original */}
           </div>
         ))}
       </div>
