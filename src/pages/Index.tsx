@@ -13,6 +13,7 @@ import { ComboCard } from "@/components/ComboCard";
 import { ErrorToast } from "@/components/ErrorToast";
 import { BannerCarousel } from "@/components/BannerCarousel";
 import { CartFooter } from "@/components/CartFooter";
+import { DailyGiftSection } from "@/components/DailyGiftSection";
 import { recipes, type Recipe } from "@/data/recipes";
 import { upsells } from "@/data/upsells";
 import { categories } from "@/data/categories";
@@ -281,6 +282,9 @@ export default function Index() {
           </div>
         </div>
       </section>
+
+      {/* SEÇÃO 6: MIMO GRATUITO DIÁRIO */}
+      <DailyGiftSection />
 
       <footer className="text-center py-8 px-4 border-t border-gray-100 bg-white">
         <p className="text-[10px] text-gray-300 font-black uppercase tracking-[0.3em]">© 2024 AmiguMundo Artes</p>
