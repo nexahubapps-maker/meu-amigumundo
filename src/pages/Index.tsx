@@ -14,11 +14,13 @@ import { ErrorToast } from "@/components/ErrorToast";
 import { BannerCarousel } from "@/components/BannerCarousel";
 import { CartFooter } from "@/components/CartFooter";
 import { DailyGiftSection } from "@/components/DailyGiftSection";
+import { LaunchBanner } from "@/components/LaunchBanner";
+import { PwaPrompt } from "@/components/PwaPrompt";
 import { recipes, type Recipe } from "@/data/recipes";
 import { upsells } from "@/data/upsells";
 import { categories } from "@/data/categories";
 import { packs, combos } from "@/data/packs";
-import { X, ShoppingBag } from "lucide-react";
+import { X, ShoppingBag, Heart } from "lucide-react";
 
 interface CartItem {
   id: string;
@@ -35,6 +37,13 @@ export default function Index() {
   const [activeUpsell, setActiveUpsell] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [foundRecipes, setFoundRecipes] = useState<Recipe[]>([]);
+  
+  // Favorites State
+  const [favorites, setFavorites] = useState<string[]>(() => {
+    const saved = localStorage.getItem("amigumundo-favorites");
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [showOnlyFavorites, setShowOnlyFavorites] = useState(false);
 
   useEffect(() => {
     const savedCart = localStorage.getItem("amigumundo-cart");
@@ -44,6 +53,16 @@ export default function Index() {
   useEffect(() => {
     localStorage.setItem("amigumundo-cart", JSON.stringify(cart));
   }, [cart]);
+
+  useEffect(() => {
+    localStorage.setItem("amigumundo-favorites", JSON.stringify(favorites));
+  }, [favorites]);
+
+  const toggleFavorite = (id: string) => {
+    setFavorites((prev) => 
+      prev.includes(id) ? prev.filter((favId) => favId !== id) : [...prev, id]
+    );
+  };
 
   const addToCart = (item: CartItem) => {
     setCart((prev) => {
@@ -121,6 +140,11 @@ export default function Index() {
 
   const isInCart = (id: string) => cart.some((item) => item.id === id);
 
+  // Filter packs based on favorites toggle
+  const displayedPacks = showOnlyFavorites 
+    ? packs.filter(p => favorites.includes(p.id)) 
+    : packs;
+
   return (
     <div className="min-h-screen bg-white pb-24">
       <Header cartCount={cart.length} />
@@ -129,11 +153,21 @@ export default function Index() {
       <section className="bg-[#F5F5F5] border-b border-gray-200 shadow-sm pb-6">
         <div className="max-w-6xl mx-auto px-4">
           
+          {/* PWA Install Prompt */}
+          <PwaPrompt />
+
+          {/* Thursday Launch Banner */}
+          <LaunchBanner />
+
           <BannerCarousel />
 
-          <GamificationBar cartCount={cart.length} />
-
-          <CodeInput onRecipeFound={handleRecipeFound} onRecipeNotFound={handleRecipeNotFound} />
+          {/* ENVELOPAMENTO DA SEÇÃO "SUPER MIMO" E "DIGITE O CÓDIGO" */}
+          <div className="bg-white rounded-2xl p-5 sm:p-6 my-6 shadow-md border border-gray-100">
+            <GamificationBar cartCount={cart.length} />
+            <div className="border-t border-gray-100 my-4 pt-4">
+              <CodeInput onRecipeFound={handleRecipeFound} onRecipeNotFound={handleRecipeNotFound} />
+            </div>
+          </div>
 
           {/* Carrinho Inline Compacto */}
           <div id="cart-section" className="max-w-2xl mx-auto my-2 bg-white rounded-[20px] p-3 shadow-md border border-gray-100">
@@ -188,6 +222,8 @@ export default function Index() {
           <div className="modal-content p-0 overflow-hidden" onClick={(e) => e.stopPropagation()}>
             <RecipeCard
               recipe={showRecipe}
+              isFavorite={favorites.includes(showRecipe.id)}
+              onToggleFavorite={() => toggleFavorite(showRecipe.id)}
               onAdd={() => handleRecipeAdd(showRecipe)}
               onReject={() => setShowRecipe(null)}
               isInCart={isInCart(showRecipe.id)}
@@ -199,6 +235,22 @@ export default function Index() {
       {/* SEÇÃO 2: UPSELLS */}
       <section className="bg-white py-8">
         <div className="max-w-6xl mx-auto px-4">
+          {/* Favorites Filter Toggle */}
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="section-title text-[#171717] italic mb-0">⭐ Produtos Premium</h2>
+            <button 
+              onClick={() => setShowOnlyFavorites(!showOnlyFavorites)}
+              className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-black uppercase tracking-wider transition-all ${
+                showOnlyFavorites 
+                  ? 'bg-red-500 text-white shadow-md' 
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              <Heart size={14} fill={showOnlyFavorites ? "currentColor" : "none"} />
+              {showOnlyFavorites ? "Ver Todos" : "Favoritos"}
+            </button>
+          </div>
+
           {foundRecipes.length > 0 && (
             <div className="mb-8">
               <h2 className="section-title text-[#171717] italic">✨ Receitas Adicionadas</h2>
@@ -207,6 +259,8 @@ export default function Index() {
                   <RecipeCard
                     key={recipe.id}
                     recipe={recipe}
+                    isFavorite={favorites.includes(recipe.id)}
+                    onToggleFavorite={() => toggleFavorite(recipe.id)}
                     onAdd={() => handleRecipeAdd(recipe)}
                     onReject={() => {}}
                     isInCart={isInCart(recipe.id)}
@@ -217,7 +271,6 @@ export default function Index() {
           )}
 
           <div className="mb-8">
-            <h2 className="section-title text-[#171717] italic">⭐ Produtos Premium</h2>
             <div className="grid grid-cols-2 gap-3 sm:gap-4">
               {upsells.map((upsell) => (
                 <UpsellCard key={upsell.id} upsell={upsell} onOpen={() => setActiveUpsell(upsell.id)} />
@@ -235,11 +288,13 @@ export default function Index() {
         />
       )}
 
-      {/* SEÇÃO 3: CATEGORIAS */}
-      <section className="bg-[#F8DD12] py-8">
+      {/* SEÇÃO 3: CATEGORIAS (Redesigned with soft gray background and white cards) */}
+      <section className="bg-[#F5F5F7] py-10">
         <div className="max-w-6xl mx-auto px-4">
-          <h2 className="section-title text-[#171717] italic">🧶 Categorias</h2>
-          <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-2 sm:gap-3">
+          <h2 className="text-[1.1rem] font-extrabold mb-6 uppercase tracking-tight text-[#171717]">
+            🧶 Categorias
+          </h2>
+          <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4">
             {categories.map((cat) => (
               <CategoryCard key={cat} nome={cat} />
             ))}
@@ -251,24 +306,34 @@ export default function Index() {
       <section className="bg-white py-8">
         <div className="max-w-6xl mx-auto px-4">
           <h2 className="section-title text-[#171717] italic">📦 Packs Temáticos</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-            {packs.map((pack) => (
-              <PackCard
-                key={pack.id}
-                pack={pack}
-                inCart={isInCart(pack.id)}
-                onAdd={() => handlePackAdd(pack.id)}
-                onRemove={() => removeFromCart(pack.id)}
-              />
-            ))}
-          </div>
+          {displayedPacks.length === 0 ? (
+            <div className="text-center py-8 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
+              <p className="text-gray-400 text-sm font-medium">Nenhum pack favoritado ainda.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+              {displayedPacks.map((pack) => (
+                <PackCard
+                  key={pack.id}
+                  pack={pack}
+                  inCart={isInCart(pack.id)}
+                  isFavorite={favorites.includes(pack.id)}
+                  onToggleFavorite={() => toggleFavorite(pack.id)}
+                  onAdd={() => handlePackAdd(pack.id)}
+                  onRemove={() => removeFromCart(pack.id)}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
-      {/* SEÇÃO 5: COMBOS */}
+      {/* SEÇÃO 5: COMBOS (Refined typography and straight title) */}
       <section className="bg-[#171717] py-12">
         <div className="max-w-6xl mx-auto px-4">
-          <h2 className="section-title text-white italic">👑 Combos Elite</h2>
+          <h2 className="text-[1.2rem] font-black mb-6 uppercase tracking-wider text-white flex items-center gap-2">
+            👑 COMBOS ELITE
+          </h2>
           <div className="max-w-3xl mx-auto space-y-4">
             {combos.map((combo) => (
               <ComboCard

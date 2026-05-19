@@ -1,5 +1,7 @@
 "use client";
 
+import { Heart } from "lucide-react";
+
 interface RecipeCardProps {
   recipe: {
     id: string;
@@ -8,41 +10,72 @@ interface RecipeCardProps {
     preco: number;
     categoria: string;
   };
+  isFavorite: boolean;
+  onToggleFavorite: () => void;
   onAdd: () => void;
   onReject: () => void;
   isInCart: boolean;
 }
 
-const RecipeCard = ({ recipe, onAdd, onReject, isInCart }: RecipeCardProps) => {
+const RecipeCard = ({ recipe, isFavorite, onToggleFavorite, onAdd, onReject, isInCart }: RecipeCardProps) => {
+  // Determine a badge based on recipe ID
+  const badge = recipe.id === "3872" ? { text: "MAIS VENDIDO", bg: "bg-[#44FF00] text-[#171717]" } : 
+                recipe.id === "1204" ? { text: "NOVO", bg: "bg-blue-500 text-white" } : null;
+
   return (
-    <div className="card-float overflow-hidden relative flex flex-col bg-white">
-      <div className="relative h-[120px] w-full">
+    <div className="card-float overflow-hidden relative flex flex-col bg-white rounded-2xl border border-gray-100 shadow-sm">
+      <div className="relative h-[120px] w-full bg-gray-50">
         <img
           src={`https://picsum.photos/seed/${recipe.id}/400/300`}
           alt={recipe.nome}
-          className="w-full h-full object-cover rounded-t-[12px]"
+          className="w-full h-full object-cover"
         />
-        <div className="absolute top-1.5 left-1.5 bg-[#FF6B35] text-white text-[8px] font-bold px-2 py-0.5 rounded-full shadow-md">
+        
+        {/* Micro-badges */}
+        {badge && (
+          <div className={`absolute top-2 left-2 ${badge.bg} text-[7px] font-black px-2 py-0.5 rounded-full shadow-sm uppercase tracking-wider`}>
+            {badge.text}
+          </div>
+        )}
+
+        {/* Favorite Heart Icon */}
+        <button 
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggleFavorite();
+          }}
+          className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm p-1 rounded-full shadow-md hover:scale-110 active:scale-90 transition-transform text-red-500"
+        >
+          <Heart size={14} fill={isFavorite ? "currentColor" : "none"} />
+        </button>
+
+        <div className="absolute bottom-2 left-2 bg-black/70 backdrop-blur-sm text-white text-[8px] font-bold px-2 py-0.5 rounded-md shadow-md">
           CÓD: {recipe.id}
         </div>
       </div>
-      <div className="p-2 flex flex-col gap-1.5">
-        <h3 className="text-gray-800 text-[0.9rem] font-bold leading-tight truncate">{recipe.nome}</h3>
-        <div className="flex items-center justify-between">
-          <span className="text-[#4CAF50] font-bold text-[1rem]">R$ {recipe.preco.toFixed(2)}</span>
+      
+      <div className="p-3 flex flex-col gap-2 flex-1 justify-between">
+        <div>
+          <h3 className="text-gray-800 text-[0.85rem] font-bold leading-tight truncate uppercase tracking-tight">
+            {recipe.nome}
+          </h3>
+          <div className="flex items-center justify-between mt-1">
+            <span className="text-[#171717] font-black text-[0.95rem]">R$ {recipe.preco.toFixed(2)}</span>
+          </div>
         </div>
+        
         <div className="flex gap-1">
           <button
             onClick={onAdd}
             disabled={isInCart}
-            className="flex-1 btn-premium bg-[#7BC843] text-white py-1.5 text-[0.75rem]"
+            className="flex-1 btn-premium bg-[#7BC843] text-white py-2 text-[0.75rem] font-black uppercase tracking-wider"
           >
             {isInCart ? "✓ No Carrinho" : "+ Adicionar"}
           </button>
           {!isInCart && (
             <button
               onClick={onReject}
-              className="px-2 py-1.5 rounded-full bg-red-50 text-red-500 text-[0.7rem] font-bold"
+              className="px-2.5 py-2 rounded-full bg-red-50 text-red-500 text-[0.7rem] font-bold hover:bg-red-100 transition-colors"
             >
               ✕
             </button>
