@@ -124,15 +124,7 @@ export default function Index() {
 
       {/* SEÇÃO 1: CHECKOUT (Topo) - Fundo Cinza Neutro */}
       <section className="bg-[#F5F5F5] border-b border-gray-200 shadow-sm pb-8">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="pt-4 mb-6">
-            <img 
-              src="https://ik.imagekit.io/51b3srlsg/banner-checkout.jpg.jpeg" 
-              alt="AmiguMundo" 
-              className="w-full h-[150px] sm:h-[200px] object-cover rounded-b-[24px] block shadow-sm"
-            />
-          </div>
-
+        <div className="max-w-6xl mx-auto px-4 pt-6">
           <GamificationBar cartCount={cart.length} />
 
           <CodeInput onRecipeFound={handleRecipeFound} onRecipeNotFound={handleRecipeNotFound} />
@@ -248,16 +240,6 @@ export default function Index() {
           </div>
         </div>
       </section>
-
-      <div className="max-w-6xl mx-auto px-4 my-6">
-        <div className="mb-6">
-          <img 
-            src="https://ik.imagekit.io/51b3srlsg/banner-loja.jpg.jpeg" 
-            alt="Loja AmiguMundo" 
-            className="w-full h-[150px] sm:h-[200px] object-cover block rounded-2xl shadow-sm"
-          />
-        </div>
-      </div>
 
       {/* SEÇÃO 4: PACKS - Fundo Branco */}
       <section className="bg-white py-8">
