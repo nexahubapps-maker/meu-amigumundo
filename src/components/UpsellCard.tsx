@@ -9,23 +9,31 @@ interface UpsellCardProps {
 
 export const UpsellCard = ({ upsell, onOpen }: UpsellCardProps) => {
   return (
-    <div className="bg-white rounded-[16px] overflow-hidden flex flex-col h-[200px] shadow-[0_10px_15px_-3px_rgba(0,0,0,0.05),0_4px_6px_-2px_rgba(0,0,0,0.02)] card-hover hover:shadow-xl">
-      <div
-        className="h-[140px] flex items-center justify-center text-[2.5rem] bg-white"
+    <div className="card-hover flex flex-col">
+      <div 
+        className="relative aspect-[2/1] rounded-xl overflow-hidden shadow-sm cursor-pointer"
+        onClick={onOpen}
       >
-        {upsell.emoji}
-      </div>
-      <div className="h-[60px] p-2 flex flex-col justify-between bg-white">
-        <h3 className="text-[0.8rem] font-bold leading-tight truncate text-[#171717] uppercase">{upsell.nome}</h3>
-        <div className="flex items-center justify-between gap-1">
-          <span className="text-[#171717] font-bold text-[0.85rem]">R${upsell.precoAtual.toFixed(2)}</span>
-          <button
-            onClick={onOpen}
-            className="bg-[#44FF00] text-[#171717] px-3 py-1.5 rounded-full font-bold text-[0.75rem] transition-all active:scale-95"
-          >
-            Quero →
-          </button>
+        <img 
+          src={`https://picsum.photos/seed/${upsell.id}/600/300`} 
+          alt={upsell.nome} 
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex items-end p-2">
+          <span className="text-white text-[0.7rem] font-black leading-tight uppercase tracking-tighter line-clamp-1">
+            {upsell.nome}
+          </span>
         </div>
+      </div>
+      
+      <div className="flex items-center justify-between mt-1.5 px-1">
+        <span className="text-[#171717] font-black text-[0.85rem]">R$ {upsell.precoAtual.toFixed(2)}</span>
+        <button
+          onClick={onOpen}
+          className="bg-[#44FF00] text-[#171717] px-3 py-1 rounded-full font-black text-[0.65rem] uppercase transition-all active:scale-95"
+        >
+          Quero →
+        </button>
       </div>
     </div>
   );

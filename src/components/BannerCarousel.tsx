@@ -30,28 +30,28 @@ export const BannerCarousel = () => {
   }, [emblaApi, onSelect]);
 
   return (
-    <div className="relative overflow-hidden rounded-2xl shadow-lg my-4 mx-4 sm:mx-0" ref={emblaRef}>
+    <div className="relative overflow-hidden rounded-2xl shadow-md my-4 mx-4 sm:mx-0" ref={emblaRef}>
       <div className="flex">
         {banners.map((banner) => (
-          <div key={banner.id} className="relative flex-[0_0_100%] min-w-0 h-[180px] sm:h-[300px]">
+          <div key={banner.id} className="relative flex-[0_0_100%] min-w-0 h-[120px] sm:h-[220px]">
             <img 
               src={banner.url} 
               alt={banner.title} 
               className="w-full h-full object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-6">
-              <h3 className="text-white font-black text-xl sm:text-3xl uppercase italic tracking-tighter">
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent flex items-end p-4">
+              <h3 className="text-white font-black text-lg sm:text-2xl uppercase italic tracking-tighter">
                 {banner.title}
               </h3>
             </div>
           </div>
         ))}
       </div>
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
         {banners.map((_, i) => (
           <div 
             key={i} 
-            className={`h-1.5 rounded-full transition-all ${i === selectedIndex ? 'w-6 bg-[#F8DD12]' : 'w-2 bg-white/50'}`}
+            className={`h-1 rounded-full transition-all ${i === selectedIndex ? 'w-5 bg-[#F8DD12]' : 'w-1.5 bg-white/50'}`}
           />
         ))}
       </div>

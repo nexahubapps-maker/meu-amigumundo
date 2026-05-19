@@ -125,7 +125,7 @@ export default function Index() {
       <Header cartCount={cart.length} />
 
       {/* SEÇÃO 1: CHECKOUT (Topo) */}
-      <section className="bg-[#F5F5F5] border-b border-gray-200 shadow-sm pb-8">
+      <section className="bg-[#F5F5F5] border-b border-gray-200 shadow-sm pb-6">
         <div className="max-w-6xl mx-auto px-4">
           
           <BannerCarousel />
@@ -135,41 +135,41 @@ export default function Index() {
           <CodeInput onRecipeFound={handleRecipeFound} onRecipeNotFound={handleRecipeNotFound} />
 
           {/* Carrinho Inline Compacto */}
-          <div id="cart-section" className="max-w-2xl mx-auto my-4 bg-white rounded-[24px] p-4 shadow-lg border border-gray-100">
-            <h2 className="text-[1rem] font-extrabold mb-4 flex items-center gap-2 uppercase italic">
+          <div id="cart-section" className="max-w-2xl mx-auto my-2 bg-white rounded-[20px] p-3 shadow-md border border-gray-100">
+            <h2 className="text-[0.85rem] font-extrabold mb-2 flex items-center gap-2 uppercase italic">
               🛒 Meu Carrinho ({cart.length})
             </h2>
             
             {cart.length === 0 ? (
-              <div className="py-8 text-center">
-                <ShoppingBag size={40} className="mx-auto text-gray-100 mb-3" />
-                <p className="text-gray-400 font-black text-[0.75rem] leading-relaxed uppercase tracking-widest">
-                  Seu carrinho está vazio
+              <div className="py-4 text-center">
+                <ShoppingBag size={32} className="mx-auto text-gray-100 mb-2" />
+                <p className="text-gray-400 font-black text-[0.65rem] uppercase tracking-widest">
+                  Vazio
                 </p>
               </div>
             ) : (
-              <div className="space-y-3">
+              <div className="space-y-1.5">
                 {cart.map((item) => (
-                  <div key={item.id} className="flex items-center gap-3 py-3 border-b border-gray-50 last:border-0">
-                    <img src={item.imagem} className="w-10 h-10 rounded-xl object-cover border border-gray-100" alt="" />
+                  <div key={item.id} className="flex items-center gap-2 py-1.5 border-b border-gray-50 last:border-0">
+                    <img src={item.imagem} className="w-8 h-8 rounded-lg object-cover border border-gray-100" alt="" />
                     <div className="flex-1">
-                      <h4 className="text-[0.85rem] font-black text-gray-800 leading-tight truncate uppercase">{item.nome}</h4>
-                      <span className="text-[9px] font-black text-gray-300 uppercase">Cód: {item.id}</span>
+                      <h4 className="text-[0.75rem] font-black text-gray-800 leading-tight truncate uppercase">{item.nome}</h4>
+                      <span className="text-[8px] font-black text-gray-300 uppercase">Cód: {item.id}</span>
                     </div>
-                    <span className="font-black text-[#171717] text-[0.9rem]">R$ {item.preco.toFixed(2)}</span>
-                    <button onClick={() => removeFromCart(item.id)} className="p-1.5 text-gray-200 hover:text-red-500 transition-colors">
-                      <X size={18} />
+                    <span className="font-black text-[#171717] text-[0.8rem]">R$ {item.preco.toFixed(2)}</span>
+                    <button onClick={() => removeFromCart(item.id)} className="p-1 text-gray-200 hover:text-red-500">
+                      <X size={14} />
                     </button>
                   </div>
                 ))}
-                <div className="pt-4 mt-2 border-t-2 border-gray-50">
-                  <div className="flex justify-between items-center mb-4">
-                    <span className="font-black text-gray-400 text-[0.85rem] uppercase tracking-widest">Total</span>
-                    <span className="text-[1.3rem] font-black text-[#171717]">R$ {total.toFixed(2)}</span>
+                <div className="pt-2 mt-1 border-t border-gray-50">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="font-black text-gray-400 text-[0.7rem] uppercase tracking-widest">Total</span>
+                    <span className="text-[1rem] font-black text-[#171717]">R$ {total.toFixed(2)}</span>
                   </div>
                   <button 
                     onClick={() => navigate("/checkout")}
-                    className="w-full bg-[#44FF00] text-[#171717] py-4 rounded-full font-black text-[1rem] shadow-md transition-transform active:scale-95 uppercase tracking-widest"
+                    className="w-full bg-[#44FF00] text-[#171717] py-2.5 rounded-full font-black text-[0.8rem] shadow-sm transition-transform active:scale-95 uppercase tracking-widest"
                   >
                     Finalizar Pedido →
                   </button>
@@ -196,12 +196,12 @@ export default function Index() {
       )}
 
       {/* SEÇÃO 2: UPSELLS */}
-      <section className="bg-white py-12">
+      <section className="bg-white py-8">
         <div className="max-w-6xl mx-auto px-4">
           {foundRecipes.length > 0 && (
-            <div className="mb-12">
+            <div className="mb-8">
               <h2 className="section-title text-[#171717] italic">✨ Receitas Adicionadas</h2>
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                 {foundRecipes.map((recipe) => (
                   <RecipeCard
                     key={recipe.id}
@@ -215,9 +215,9 @@ export default function Index() {
             </div>
           )}
 
-          <div className="mb-12">
+          <div className="mb-8">
             <h2 className="section-title text-[#171717] italic">⭐ Produtos Premium</h2>
-            <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            <div className="grid grid-cols-2 gap-3 sm:gap-4">
               {upsells.map((upsell) => (
                 <UpsellCard key={upsell.id} upsell={upsell} onOpen={() => setActiveUpsell(upsell.id)} />
               ))}
@@ -235,10 +235,10 @@ export default function Index() {
       )}
 
       {/* SEÇÃO 3: CATEGORIAS */}
-      <section className="bg-[#F8DD12] py-12">
+      <section className="bg-[#F8DD12] py-8">
         <div className="max-w-6xl mx-auto px-4">
           <h2 className="section-title text-[#171717] italic">🧶 Categorias</h2>
-          <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-2 sm:gap-4">
+          <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-2 sm:gap-3">
             {categories.map((cat) => (
               <CategoryCard key={cat} nome={cat} />
             ))}
@@ -247,10 +247,10 @@ export default function Index() {
       </section>
 
       {/* SEÇÃO 4: PACKS */}
-      <section className="bg-white py-12">
+      <section className="bg-white py-8">
         <div className="max-w-6xl mx-auto px-4">
           <h2 className="section-title text-[#171717] italic">📦 Packs Temáticos</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
             {packs.map((pack) => (
               <PackCard
                 key={pack.id}
@@ -265,10 +265,10 @@ export default function Index() {
       </section>
 
       {/* SEÇÃO 5: COMBOS */}
-      <section className="bg-[#171717] py-16">
+      <section className="bg-[#171717] py-12">
         <div className="max-w-6xl mx-auto px-4">
           <h2 className="section-title text-white italic">👑 Combos Elite</h2>
-          <div className="max-w-3xl mx-auto space-y-6">
+          <div className="max-w-3xl mx-auto space-y-4">
             {combos.map((combo) => (
               <ComboCard
                 key={combo.id}
@@ -282,7 +282,7 @@ export default function Index() {
         </div>
       </section>
 
-      <footer className="text-center py-12 px-4 border-t border-gray-100 bg-white">
+      <footer className="text-center py-8 px-4 border-t border-gray-100 bg-white">
         <p className="text-[10px] text-gray-300 font-black uppercase tracking-[0.3em]">© 2024 AmiguMundo Artes</p>
       </footer>
 
