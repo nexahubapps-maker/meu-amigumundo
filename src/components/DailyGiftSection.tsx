@@ -15,10 +15,10 @@ export const DailyGiftSection = () => {
   };
 
   const handleDownload = () => {
-    // Efeito de Confete
+    // Efeito de Confete - zIndex ajustado para 999 para ficar acima do modal (z-100)
     const duration = 3 * 1000;
     const animationEnd = Date.now() + duration;
-    const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+    const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 999 };
 
     const randomInRange = (min: number, max: number) => Math.random() * (max - min) + min;
 
