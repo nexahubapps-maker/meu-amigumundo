@@ -55,9 +55,17 @@
   }
 
   .section-title {
-    font-size: 1.8rem;
-    font-weight: 800;
-    margin-bottom: 2rem;
+    @apply text-[1.8rem] font-extrabold mb-8;
+  }
+
+  @media (max-width: 768px) {
+    .section-title {
+      @apply text-[1.2rem] mb-6;
+    }
+    
+    .card-float {
+      border-radius: 16px;
+    }
   }
 
   .redline {
@@ -72,5 +80,13 @@
 
   .modal-content {
     @apply bg-white rounded-[32px] w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl animate-in zoom-in-95 duration-200;
+  }
+
+  .gradient-progress {
+    background: linear-gradient(90deg, #7BC843, #2EC4B6, #4A90D9);
+  }
+
+  .level-pill {
+    @apply px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider;
   }
 }
