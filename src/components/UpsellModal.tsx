@@ -11,11 +11,14 @@ interface UpsellModalProps {
 export const UpsellModal = ({ upsell, onClose, onBuy }: UpsellModalProps) => {
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+      <div className="modal-content relative" onClick={(e) => e.stopPropagation()}>
         <div className="p-6">
           <div className="flex justify-between items-center mb-4">
             <div className="text-5xl">{upsell.emoji}</div>
-            <button onClick={onClose} className="absolute top-2 right-2 bg-white/20 rounded-full w-36 h-36 flex items-center justify-center">
+            <button 
+              onClick={onClose} 
+              className="absolute top-4 right-4 bg-gray-100 hover:bg-gray-200 rounded-full w-8 h-8 flex items-center justify-center text-gray-500 transition-colors"
+            >
               ✕
             </button>
           </div>
@@ -35,7 +38,7 @@ export const UpsellModal = ({ upsell, onClose, onBuy }: UpsellModalProps) => {
           </div>
 
           <div className="bg-gray-50 rounded-xl p-4 mb-4">
-            <h4 className="font-bold mb-2">Beneficios:</h4>
+            <h4 className="font-bold mb-2">Benefícios:</h4>
             <ul className="space-y-1">
               {upsell.beneficios.map((b, i) => (
                 <li key={i} className="text-sm text-gray-600 flex items-start gap-2">
@@ -49,20 +52,20 @@ export const UpsellModal = ({ upsell, onClose, onBuy }: UpsellModalProps) => {
           <div className="text-center mb-4">
             <span className="text-gray-400 line-through text-lg">R${upsell.precoOriginal.toFixed(2)}</span>
             <div
-              className="inline-block bg-gradient-to-r from-[#ff5252] to-[#d32f2f] rounded-full font-weight-800 px-6 py-2 text-xs shadow-0-4-15 rgba(255,82,82,0.4)"
+              className="inline-block bg-gradient-to-r from-[#ff5252] to-[#d32f2f] rounded-full font-bold px-6 py-2 text-xs text-white ml-2"
             >
               🔥 {Math.round(((upsell.precoOriginal - upsell.precoAtual) / upsell.precoOriginal) * 100)}% DE DESCONTO
             </div>
             <p
               className="text-3xl font-bold mt-2"
-              style={{ color: "#7BC843", fontFamily: "'Fredoka One', cursive", textShadow: "2px 2px 0 rgba(123,200,67,0.2)" }}
+              style={{ color: "#7BC843", fontFamily: "'Fredoka One', cursive" }}
             >
               R${upsell.precoAtual.toFixed(2)}
             </p>
           </div>
 
           <p className="text-center text-xs text-gray-400 mb-3">
-            Pagamento unico • Sem mensalidade • Acesso imediato
+            Pagamento único • Sem mensalidade • Acesso imediato
           </p>
 
           <div className="bg-[#FFF0E0] rounded-xl p-2 text-center mb-4">
@@ -84,11 +87,11 @@ export const UpsellModal = ({ upsell, onClose, onBuy }: UpsellModalProps) => {
             className="w-full py-2.5 rounded-xl font-semibold text-white text-sm transition-transform active:scale-[0.98]"
             style={{ backgroundColor: "#FF6B35", fontFamily: "'Fredoka One', cursive" }}
           >
-            JA COMPREI — INSERIR CODIGO DE ACESSO
+            JÁ COMPREI — INSERIR CÓDIGO
           </button>
 
           <div className="text-center text-xs text-gray-400 mt-4 pb-2">
-            ✅ Garantia de 7 dias — Nao gostou? Devolvemos 100%. Sem perguntas.
+            ✅ Garantia de 7 dias — Não gostou? Devolvemos 100%.
           </div>
         </div>
       </div>

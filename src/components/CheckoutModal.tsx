@@ -12,10 +12,10 @@ export const CheckoutModal = ({ total, onClose, onConfirm }: CheckoutModalProps)
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="p-6">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-white text-center" style={{ fontFamily: "'Fredoka One', cursive" }}>
+            <h2 className="text-2xl font-bold text-gray-800 text-center w-full" style={{ fontFamily: "'Fredoka One', cursive" }}>
               Quase lá! 🎉
             </h2>
-            <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-2xl">
+            <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-2xl absolute top-4 right-4">
               ✕
             </button>
           </div>
@@ -67,7 +67,7 @@ export const CheckoutModal = ({ total, onClose, onConfirm }: CheckoutModalProps)
           </div>
 
           <div className="bg-[#FFF8F2] rounded-xl p-3 mb-4 text-center">
-            <p className="text-sm font-semibold" style={{ color: "#FF6B35" }}>
+            <p className="text-sm font-bold" style={{ color: "#FF6B35" }}>
               ⚡ Entrega em 5 segundos após pagamento
             </p>
           </div>
