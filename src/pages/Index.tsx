@@ -155,7 +155,7 @@ export default function Index() {
             </div>
           </div>
         )}
-      </section>
+      </div>
 
       <div className="max-w-6xl mx-auto px-4 my-8">
         <div
@@ -168,7 +168,7 @@ export default function Index() {
           <p className="text-white/80 text-sm sm:text-base">Explore nossa colecao completa de receitas e produtos</p>
         </div>
         <div className="h-6 gradient-redline mb-8" />
-      </div>
+      </section>
 
       <section className="max-w-6xl mx-auto px-4">
         <div className="mb-10">
