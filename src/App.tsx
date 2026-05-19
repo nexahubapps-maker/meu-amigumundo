@@ -17,6 +17,10 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/recipe/:id" element={<Index />} />
+          <Route path="/pack/:id" element={<Index />} />
+          <Route path="/combo/:id" element={<Index />} />
+          <Route path="/upsell/:id" element={<Index />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

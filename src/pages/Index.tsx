@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { GamificationBar } from "@/components/GamificationBar";
 import { CodeInput } from "@/components/CodeInput";
@@ -32,6 +32,7 @@ interface CartItem {
 
 export default function Index() {
   const navigate = useNavigate();
+  const { id: routeId } = useParams();
   const [cart, setCart] = useState<CartItem[]>([]);
   const [showRecipe, setShowRecipe] = useState<Recipe | null>(null);
   const [activeUpsell, setActiveUpsell] = useState<string | null>(null);
@@ -58,6 +59,33 @@ export default function Index() {
     localStorage.setItem("amigumundo-favorites", JSON.stringify(favorites));
   }, [favorites]);
 
+  // Deep Linking Handler
+  useEffect(() => {
+    if (routeId) {
+      // Check if it's a recipe
+      const recipe = recipes.find(r => r.id === routeId);
+      if (recipe) {
+        setShowRecipe(recipe);
+        return;
+      }
+
+      // Check if it's an upsell
+      const upsell = upsells.find(u => u.id === routeId);
+      if (upsell) {
+        setActiveUpsell(upsell.id);
+        return;
+      }
+
+      // Check if it's a pack or combo (scroll to section)
+      const pack = packs.find(p => p.id === routeId);
+      const combo = combos.find(c => c.id === routeId);
+      if (pack || combo) {
+        const el = document.getElementById('cart-section');
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  }, [routeId]);
+
   const toggleFavorite = (id: string) => {
     setFavorites((prev) => 
       prev.includes(id) ? prev.filter((favId) => favId !== id) : [...prev, id]
@@ -76,7 +104,77 @@ export default function Index() {
     setCart((prev) => prev.filter((i) => i.id !== id));
   };
 
-  const total = cart.reduce((sum, item) => sum + item.preco, 0);
+  // --- GAMIFIED PRICING LOGIC ---
+  // Partition recipes into: Receitas (full price), Mimos (discounted), Presentes (free)
+  const getCartPartition = () => {
+    const selectedRecipes = cart.filter(item => item.tipo === "recipe");
+    const otherItems = cart.filter(item => item.tipo !== "recipe");
+
+    // Sort recipes by price descending to give the best discounts
+    const sorted = [...selectedRecipes].sort((a, b) => b.preco - a.preco);
+    let bestPartition = { receitas: sorted, mimos: [] as any[], presentes: [] as any[] };
+
+    // Search for the partition that maximizes discounts (minimizes full-price count R)
+    for (let R = 0; R <= sorted.length; R++) {
+      let allowedFree = 0;
+      if (R >= 20) allowedFree = 2;
+      else if (R >= 10) allowedFree = 1;
+
+      let allowedMimos = 0;
+      if (R >= 9) allowedMimos = 9;
+      else if (R >= 6) allowedMimos = 6;
+      else if (R >= 3) allowedMimos = 3;
+
+      if (R + allowedFree + allowedMimos >= sorted.length) {
+        const receitas = sorted.slice(0, R);
+        const remaining = sorted.slice(R);
+
+        const presentes = remaining.slice(0, allowedFree).map(r => ({ ...r, precoFinal: 0, originalPreco: r.preco, tipo: 'presente' }));
+        const mimosRemaining = remaining.slice(allowedFree);
+
+        const mimos = mimosRemaining.map((r, idx) => {
+          let precoFinal = r.preco;
+          if (idx < 3) precoFinal = 3.00;
+          else if (idx < 6) precoFinal = 2.00;
+          else if (idx < 9) precoFinal = 1.00;
+          return { ...r, precoFinal, originalPreco: r.preco, tipo: 'mimo' };
+        });
+
+        bestPartition = {
+          receitas: receitas.map(r => ({ ...r, precoFinal: r.preco, originalPreco: r.preco, tipo: 'receita' })),
+          mimos,
+          presentes
+        };
+        break;
+      }
+    }
+
+    return { ...bestPartition, otherItems };
+  };
+
+  const partition = getCartPartition();
+  const fullPriceRecipeCount = partition.receitas.length;
+
+  // Calculate total price
+  const total = [
+    ...partition.receitas,
+    ...partition.mimos,
+    ...partition.presentes,
+    ...partition.otherItems
+  ].reduce((sum, item) => sum + (item.precoFinal !== undefined ? item.precoFinal : item.preco), 0);
+
+  // Dynamic UX Nudges
+  const getNudgeMessage = () => {
+    if (fullPriceRecipeCount < 3) {
+      return `Adicione mais ${3 - fullPriceRecipeCount} receitas para liberar mimos por R$ 3!`;
+    } else if (fullPriceRecipeCount < 6) {
+      return "Você liberou mimos! Escolha suas receitas na loja.";
+    } else if (fullPriceRecipeCount < 10) {
+      return `Adicione mais ${10 - fullPriceRecipeCount} receitas para ganhar uma receita GRÁTIS!`;
+    } else {
+      return "🎉 VOCÊ GANHOU UMA RECEITA GRÁTIS! Escolha qualquer uma na loja.";
+    }
+  };
 
   const handleRecipeFound = (recipe: Recipe) => {
     setError(null);
@@ -163,7 +261,7 @@ export default function Index() {
 
           {/* ENVELOPAMENTO DA SEÇÃO "SUPER MIMO" E "DIGITE O CÓDIGO" */}
           <div className="bg-white rounded-2xl p-5 sm:p-6 my-6 shadow-md border border-gray-100">
-            <GamificationBar cartCount={cart.length} />
+            <GamificationBar cartCount={fullPriceRecipeCount} />
             <div className="border-t border-gray-100 my-4 pt-4">
               <CodeInput onRecipeFound={handleRecipeFound} onRecipeNotFound={handleRecipeNotFound} />
             </div>
@@ -174,6 +272,11 @@ export default function Index() {
             <h2 className="text-[0.85rem] font-extrabold mb-2 flex items-center gap-2 uppercase italic">
               🛒 Meu Carrinho ({cart.length})
             </h2>
+
+            {/* Dynamic UX Nudge */}
+            <div className="bg-blue-50 text-blue-700 text-xs font-bold p-2.5 rounded-xl mb-3 text-center">
+              {getNudgeMessage()}
+            </div>
             
             {cart.length === 0 ? (
               <div className="py-4 text-center">
@@ -183,20 +286,109 @@ export default function Index() {
                 </p>
               </div>
             ) : (
-              <div className="space-y-1.5">
-                {cart.map((item) => (
-                  <div key={item.id} className="flex items-center gap-2 py-1.5 border-b border-gray-50 last:border-0">
-                    <img src={item.imagem} className="w-8 h-8 rounded-lg object-cover border border-gray-100" alt="" />
-                    <div className="flex-1">
-                      <h4 className="text-[0.75rem] font-black text-gray-800 leading-tight truncate uppercase">{item.nome}</h4>
-                      <span className="text-[8px] font-black text-gray-300 uppercase">Cód: {item.id}</span>
+              <div className="space-y-4">
+                {/* [Seção 1: Receitas] */}
+                {partition.receitas.length > 0 && (
+                  <div>
+                    <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-wider mb-1.5">
+                      [Seção 1: Receitas]
+                    </h3>
+                    <div className="space-y-1.5">
+                      {partition.receitas.map((item) => (
+                        <div key={item.id} className="flex items-center gap-2 py-1.5 border-b border-gray-50 last:border-0">
+                          <img src={item.imagem} className="w-8 h-8 rounded-lg object-cover border border-gray-100" alt="" />
+                          <div className="flex-1">
+                            <h4 className="text-[0.75rem] font-black text-gray-800 leading-tight truncate uppercase">{item.nome}</h4>
+                            <span className="text-[8px] font-black text-gray-300 uppercase">Cód: {item.id}</span>
+                          </div>
+                          <span className="font-black text-[#171717] text-[0.8rem]">R$ {item.precoFinal.toFixed(2)}</span>
+                          <button onClick={() => removeFromCart(item.id)} className="p-1 text-gray-200 hover:text-red-500">
+                            <X size={14} />
+                          </button>
+                        </div>
+                      ))}
                     </div>
-                    <span className="font-black text-[#171717] text-[0.8rem]">R$ {item.preco.toFixed(2)}</span>
-                    <button onClick={() => removeFromCart(item.id)} className="p-1 text-gray-200 hover:text-red-500">
-                      <X size={14} />
-                    </button>
                   </div>
-                ))}
+                )}
+
+                {/* [Seção 2: Mimos] */}
+                {partition.mimos.length > 0 && (
+                  <div>
+                    <h3 className="text-[10px] font-black text-orange-500 uppercase tracking-wider mb-1.5">
+                      [Seção 2: Mimos]
+                    </h3>
+                    <div className="space-y-1.5">
+                      {partition.mimos.map((item) => (
+                        <div key={item.id} className="flex items-center gap-2 py-1.5 border-b border-gray-50 last:border-0">
+                          <img src={item.imagem} className="w-8 h-8 rounded-lg object-cover border border-gray-100" alt="" />
+                          <div className="flex-1">
+                            <h4 className="text-[0.75rem] font-black text-gray-800 leading-tight truncate uppercase">{item.nome}</h4>
+                            <span className="text-[8px] font-black text-gray-300 uppercase">Cód: {item.id}</span>
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-red-500 line-through text-[10px]">R$ {item.originalPreco.toFixed(2)}</span>
+                            <span className="font-black text-green-600 text-[0.8rem]">R$ {item.precoFinal.toFixed(2)}</span>
+                          </div>
+                          <button onClick={() => removeFromCart(item.id)} className="p-1 text-gray-200 hover:text-red-500">
+                            <X size={14} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* [Seção 3: Presentes] */}
+                {partition.presentes.length > 0 && (
+                  <div>
+                    <h3 className="text-[10px] font-black text-green-600 uppercase tracking-wider mb-1.5">
+                      [Seção 3: Presentes]
+                    </h3>
+                    <div className="space-y-1.5">
+                      {partition.presentes.map((item) => (
+                        <div key={item.id} className="flex items-center gap-2 py-1.5 border-b border-gray-50 last:border-0">
+                          <img src={item.imagem} className="w-8 h-8 rounded-lg object-cover border border-gray-100" alt="" />
+                          <div className="flex-1">
+                            <h4 className="text-[0.75rem] font-black text-gray-800 leading-tight truncate uppercase">{item.nome}</h4>
+                            <span className="text-[8px] font-black text-gray-300 uppercase">Cód: {item.id}</span>
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-red-500 line-through text-[10px]">R$ {item.originalPreco.toFixed(2)}</span>
+                            <span className="font-black text-green-600 text-[0.8rem]">GRÁTIS</span>
+                          </div>
+                          <button onClick={() => removeFromCart(item.id)} className="p-1 text-gray-200 hover:text-red-500">
+                            <X size={14} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Other Items (Packs, Combos, Upsells) */}
+                {partition.otherItems.length > 0 && (
+                  <div>
+                    <h3 className="text-[10px] font-black text-purple-600 uppercase tracking-wider mb-1.5">
+                      Outros Itens
+                    </h3>
+                    <div className="space-y-1.5">
+                      {partition.otherItems.map((item) => (
+                        <div key={item.id} className="flex items-center gap-2 py-1.5 border-b border-gray-50 last:border-0">
+                          <img src={item.imagem} className="w-8 h-8 rounded-lg object-cover border border-gray-100" alt="" />
+                          <div className="flex-1">
+                            <h4 className="text-[0.75rem] font-black text-gray-800 leading-tight truncate uppercase">{item.nome}</h4>
+                            <span className="text-[8px] font-black text-gray-300 uppercase">Cód: {item.id}</span>
+                          </div>
+                          <span className="font-black text-[#171717] text-[0.8rem]">R$ {item.preco.toFixed(2)}</span>
+                          <button onClick={() => removeFromCart(item.id)} className="p-1 text-gray-200 hover:text-red-500">
+                            <X size={14} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 <div className="pt-2 mt-1 border-t border-gray-50">
                   <div className="flex justify-between items-center mb-2">
                     <span className="font-black text-gray-400 text-[0.7rem] uppercase tracking-widest">Total</span>

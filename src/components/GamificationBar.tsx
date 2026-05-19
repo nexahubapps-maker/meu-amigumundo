@@ -1,7 +1,7 @@
 "use client";
 
 interface GamificationBarProps {
-  cartCount: number;
+  cartCount: number; // This will represent the number of full-price recipes
 }
 
 export const GamificationBar = ({ cartCount }: GamificationBarProps) => {
