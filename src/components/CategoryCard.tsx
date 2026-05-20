@@ -17,8 +17,8 @@ export const CategoryCard = ({ nome }: CategoryCardProps) => {
   const imageUrl = categoryImages[nome] || `https://picsum.photos/seed/${nome}/400/400`;
 
   return (
-    <div className="flex flex-col items-center cursor-pointer group w-full px-0.5">
-      <div className="w-full aspect-square rounded-full overflow-hidden bg-gray-50 shadow-sm border border-gray-100">
+    <div className="flex flex-col items-center cursor-pointer group w-full">
+      <div className="w-full aspect-square rounded-2xl overflow-hidden bg-gray-50 shadow-sm border border-gray-100">
         <img 
           src={imageUrl} 
           alt={nome} 

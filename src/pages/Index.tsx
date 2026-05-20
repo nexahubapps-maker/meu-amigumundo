@@ -411,16 +411,13 @@ export default function Index() {
         {/* CARD FLUTUANTE COM O BANNER E A DESCRIÇÃO DA LOJA */}
         <div className="max-w-6xl mx-auto px-4 mb-1">
           <div className="bg-white rounded-2xl p-3 shadow-lg border border-gray-100/50">
-            <div className="rounded-xl overflow-hidden mb-2.5">
+            <div className="rounded-xl overflow-hidden">
               <img 
                 src="https://ik.imagekit.io/51b3srlsg/Loja_AmiguMundo_amigurumis.jpeg" 
                 alt="Loja AmiguMundo" 
                 className="w-full h-auto object-cover"
               />
             </div>
-            <p className="text-center text-[10px] sm:text-xs font-black text-black uppercase tracking-wide leading-tight px-2 pb-1">
-              Bem Vindas a Familia AmiguMundo: Adicione 3 receitas ao carrinho para liberar o seu primeiro desconto exclusivo dos 'Mimos AmiguMundo'
-            </p>
           </div>
         </div>
 
@@ -500,7 +497,7 @@ export default function Index() {
             </h2>
           </div>
           
-          <div className="grid grid-cols-3 gap-x-0 gap-y-4">
+          <div className="grid grid-cols-3 gap-3 sm:gap-4">
             {categories.map((cat) => (
               <CategoryCard key={cat} nome={cat} />
             ))}
