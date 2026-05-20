@@ -106,16 +106,13 @@ export default function Index() {
   };
 
   // --- GAMIFIED PRICING LOGIC ---
-  // Partition recipes into: Receitas (full price), Mimos (discounted), Presentes (free)
   const getCartPartition = () => {
     const selectedRecipes = cart.filter(item => item.tipo === "recipe");
     const otherItems = cart.filter(item => item.tipo !== "recipe");
 
-    // Sort recipes by price descending to give the best discounts
     const sorted = [...selectedRecipes].sort((a, b) => b.preco - a.preco);
     let bestPartition = { receitas: sorted, mimos: [] as any[], presentes: [] as any[] };
 
-    // Search for the partition that maximizes discounts (minimizes full-price count R)
     for (let R = 0; R <= sorted.length; R++) {
       let allowedFree = 0;
       if (R >= 20) allowedFree = 2;
@@ -156,7 +153,6 @@ export default function Index() {
   const partition = getCartPartition();
   const fullPriceRecipeCount = partition.receitas.length;
 
-  // Calculate total price
   const total = [
     ...partition.receitas,
     ...partition.mimos,
@@ -164,7 +160,6 @@ export default function Index() {
     ...partition.otherItems
   ].reduce((sum, item) => sum + (item.precoFinal !== undefined ? item.precoFinal : item.preco), 0);
 
-  // Dynamic UX Nudges
   const getNudgeMessage = () => {
     if (fullPriceRecipeCount < 3) {
       return `Adicione mais ${3 - fullPriceRecipeCount} receitas para liberar mimos por R$ 3!`;
@@ -250,180 +245,232 @@ export default function Index() {
         </div>
       </div>
 
-      {/* SEÇÃO 1: CHECKOUT (Topo) */}
-      <section className="bg-[#F5F5F5] border-b border-gray-200 shadow-sm pb-6 mt-3">
-        <div className="max-w-6xl mx-auto px-4">
-          
-          {/* PWA Install Prompt */}
-          <PwaPrompt />
+      {/* SESSÃO UNIFICADA COM FUNDO #e6dcd3 */}
+      <div className="bg-[#e6dcd3] mt-3 pt-3 pb-8">
+        
+        {/* SEÇÃO 1: CHECKOUT (Topo) */}
+        <section className="pb-6">
+          <div className="max-w-6xl mx-auto px-4">
+            
+            {/* PWA Install Prompt */}
+            <PwaPrompt />
 
-          {/* Thursday Launch Banner */}
-          <LaunchBanner />
+            {/* Thursday Launch Banner */}
+            <LaunchBanner />
 
-          <BannerCarousel />
+            <BannerCarousel />
 
-          {/* ENVELOPAMENTO DA SEÇÃO "SUPER MIMO" E "DIGITE O CÓDIGO" */}
-          <div className="bg-white rounded-2xl p-4 sm:p-5 my-4 shadow-md border border-gray-100">
-            <GamificationBar cartCount={fullPriceRecipeCount} />
-            <div className="border-t border-gray-100 my-3 pt-3">
-              <CodeInput onRecipeFound={handleRecipeFound} onRecipeNotFound={handleRecipeNotFound} />
+            {/* ENVELOPAMENTO DA SEÇÃO "SUPER MIMO" E "DIGITE O CÓDIGO" */}
+            <div className="bg-white rounded-2xl p-4 sm:p-5 my-4 shadow-md border border-gray-100">
+              <GamificationBar cartCount={fullPriceRecipeCount} />
+              <div className="border-t border-gray-100 my-3 pt-3">
+                <CodeInput onRecipeFound={handleRecipeFound} onRecipeNotFound={handleRecipeNotFound} />
+              </div>
+            </div>
+
+            {/* Carrinho Inline Compacto */}
+            <div id="cart-section" className="max-w-2xl mx-auto my-2 bg-white rounded-[20px] p-3 shadow-md border border-gray-100">
+              <h2 className="text-[0.85rem] font-extrabold mb-2 flex items-center gap-2 uppercase italic">
+                🛒 Meu Carrinho ({cart.length})
+              </h2>
+
+              {/* Dynamic UX Nudge */}
+              <div className="bg-blue-50 text-blue-700 text-xs font-bold p-2.5 rounded-xl mb-3 text-center">
+                {getNudgeMessage()}
+              </div>
+              
+              {cart.length === 0 ? (
+                <div className="py-4 text-center">
+                  <ShoppingBag size={32} className="mx-auto text-gray-100 mb-2" />
+                  <p className="text-gray-400 font-black text-[0.65rem] uppercase tracking-widest">
+                    Vazio
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {/* [Seção 1: Receitas] */}
+                  {partition.receitas.length > 0 && (
+                    <div>
+                      <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-wider mb-1.5">
+                        [Seção 1: Receitas]
+                      </h3>
+                      <div className="space-y-1.5">
+                        {partition.receitas.map((item) => (
+                          <div key={item.id} className="flex items-center gap-2 py-1.5 border-b border-gray-50 last:border-0">
+                            <img src={item.imagem} className="w-8 h-8 rounded-lg object-cover border border-gray-100" alt="" />
+                            <div className="flex-1">
+                              <h4 className="text-[0.75rem] font-black text-gray-800 leading-tight truncate uppercase">{item.nome}</h4>
+                              <span className="text-[8px] font-black text-gray-300 uppercase">Cód: {item.id}</span>
+                            </div>
+                            <span className="font-black text-[#171717] text-[0.8rem]">R$ {item.precoFinal.toFixed(2)}</span>
+                            <button onClick={() => removeFromCart(item.id)} className="p-1 text-gray-200 hover:text-red-500">
+                              <X size={14} />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* [Seção 2: Mimos] */}
+                  {partition.mimos.length > 0 && (
+                    <div>
+                      <h3 className="text-[10px] font-black text-orange-500 uppercase tracking-wider mb-1.5">
+                        [Seção 2: Mimos]
+                      </h3>
+                      <div className="space-y-1.5">
+                        {partition.mimos.map((item) => (
+                          <div key={item.id} className="flex items-center gap-2 py-1.5 border-b border-gray-50 last:border-0">
+                            <img src={item.imagem} className="w-8 h-8 rounded-lg object-cover border border-gray-100" alt="" />
+                            <div className="flex-1">
+                              <h4 className="text-[0.75rem] font-black text-gray-800 leading-tight truncate uppercase">{item.nome}</h4>
+                              <span className="text-[8px] font-black text-gray-300 uppercase">Cód: {item.id}</span>
+                            </div>
+                            <div className="flex items-center gap-1.5">
+                              <span className="text-red-500 line-through text-[10px]">R$ {item.originalPreco.toFixed(2)}</span>
+                              <span className="font-black text-green-600 text-[0.8rem]">R$ {item.precoFinal.toFixed(2)}</span>
+                            </div>
+                            <button onClick={() => removeFromCart(item.id)} className="p-1 text-gray-200 hover:text-red-500">
+                              <X size={14} />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* [Seção 3: Presentes] */}
+                  {partition.presentes.length > 0 && (
+                    <div>
+                      <h3 className="text-[10px] font-black text-green-600 uppercase tracking-wider mb-1.5">
+                        [Seção 3: Presentes]
+                      </h3>
+                      <div className="space-y-1.5">
+                        {partition.presentes.map((item) => (
+                          <div key={item.id} className="flex items-center gap-2 py-1.5 border-b border-gray-50 last:border-0">
+                            <img src={item.imagem} className="w-8 h-8 rounded-lg object-cover border border-gray-100" alt="" />
+                            <div className="flex-1">
+                              <h4 className="text-[0.75rem] font-black text-gray-800 leading-tight truncate uppercase">{item.nome}</h4>
+                              <span className="text-[8px] font-black text-gray-300 uppercase">Cód: {item.id}</span>
+                            </div>
+                            <div className="flex items-center gap-1.5">
+                              <span className="text-red-500 line-through text-[10px]">R$ {item.originalPreco.toFixed(2)}</span>
+                              <span className="font-black text-green-600 text-[0.8rem]">GRÁTIS</span>
+                            </div>
+                            <button onClick={() => removeFromCart(item.id)} className="p-1 text-gray-200 hover:text-red-500">
+                              <X size={14} />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Other Items (Packs, Combos, Upsells) */}
+                  {partition.otherItems.length > 0 && (
+                    <div>
+                      <h3 className="text-[10px] font-black text-purple-600 uppercase tracking-wider mb-1.5">
+                        Outros Itens
+                      </h3>
+                      <div className="space-y-1.5">
+                        {partition.otherItems.map((item) => (
+                          <div key={item.id} className="flex items-center gap-2 py-1.5 border-b border-gray-50 last:border-0">
+                            <img src={item.imagem} className="w-8 h-8 rounded-lg object-cover border border-gray-100" alt="" />
+                            <div className="flex-1">
+                              <h4 className="text-[0.75rem] font-black text-gray-800 leading-tight truncate uppercase">{item.nome}</h4>
+                              <span className="text-[8px] font-black text-gray-300 uppercase">Cód: {item.id}</span>
+                            </div>
+                            <span className="font-black text-[#171717] text-[0.8rem]">R$ {item.preco.toFixed(2)}</span>
+                            <button onClick={() => removeFromCart(item.id)} className="p-1 text-gray-200 hover:text-red-500">
+                              <X size={14} />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="pt-2 mt-1 border-t border-gray-50">
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="font-black text-gray-400 text-[0.7rem] uppercase tracking-widest">Total</span>
+                      <span className="text-[1rem] font-black text-[#171717]">R$ {total.toFixed(2)}</span>
+                    </div>
+                    <button 
+                      onClick={() => navigate("/checkout")}
+                      className="w-full bg-[#44FF00] text-[#171717] py-2.5 rounded-full font-black text-[0.8rem] shadow-sm transition-transform active:scale-95 uppercase tracking-widest"
+                    >
+                      Finalizar Pedido →
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
+        </section>
 
-          {/* Carrinho Inline Compacto */}
-          <div id="cart-section" className="max-w-2xl mx-auto my-2 bg-white rounded-[20px] p-3 shadow-md border border-gray-100">
-            <h2 className="text-[0.85rem] font-extrabold mb-2 flex items-center gap-2 uppercase italic">
-              🛒 Meu Carrinho ({cart.length})
-            </h2>
-
-            {/* Dynamic UX Nudge */}
-            <div className="bg-blue-50 text-blue-700 text-xs font-bold p-2.5 rounded-xl mb-3 text-center">
-              {getNudgeMessage()}
+        {/* CARD FLUTUANTE COM O BANNER E A DESCRIÇÃO DA LOJA */}
+        <div className="max-w-6xl mx-auto px-4 mb-2">
+          <div className="bg-white rounded-2xl p-3.5 shadow-md border border-gray-100/50">
+            <div className="rounded-xl overflow-hidden mb-3">
+              <img 
+                src="https://ik.imagekit.io/51b3srlsg/Loja_AmiguMundo_amigurumis.jpeg" 
+                alt="Loja AmiguMundo" 
+                className="w-full h-auto object-cover"
+              />
             </div>
-            
-            {cart.length === 0 ? (
-              <div className="py-4 text-center">
-                <ShoppingBag size={32} className="mx-auto text-gray-100 mb-2" />
-                <p className="text-gray-400 font-black text-[0.65rem] uppercase tracking-widest">
-                  Vazio
-                </p>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {/* [Seção 1: Receitas] */}
-                {partition.receitas.length > 0 && (
-                  <div>
-                    <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-wider mb-1.5">
-                      [Seção 1: Receitas]
-                    </h3>
-                    <div className="space-y-1.5">
-                      {partition.receitas.map((item) => (
-                        <div key={item.id} className="flex items-center gap-2 py-1.5 border-b border-gray-50 last:border-0">
-                          <img src={item.imagem} className="w-8 h-8 rounded-lg object-cover border border-gray-100" alt="" />
-                          <div className="flex-1">
-                            <h4 className="text-[0.75rem] font-black text-gray-800 leading-tight truncate uppercase">{item.nome}</h4>
-                            <span className="text-[8px] font-black text-gray-300 uppercase">Cód: {item.id}</span>
-                          </div>
-                          <span className="font-black text-[#171717] text-[0.8rem]">R$ {item.precoFinal.toFixed(2)}</span>
-                          <button onClick={() => removeFromCart(item.id)} className="p-1 text-gray-200 hover:text-red-500">
-                            <X size={14} />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
+            <p className="text-center text-[10px] sm:text-xs font-black text-black uppercase tracking-wide leading-tight px-2 pb-1">
+              Bem Vindas a Familia AmiguMundo: Adicione 3 receitas ao carrinho para liberar o seu primeiro desconto exclusivo dos 'Mimos AmiguMundo'
+            </p>
+          </div>
+        </div>
 
-                {/* [Seção 2: Mimos] */}
-                {partition.mimos.length > 0 && (
-                  <div>
-                    <h3 className="text-[10px] font-black text-orange-500 uppercase tracking-wider mb-1.5">
-                      [Seção 2: Mimos]
-                    </h3>
-                    <div className="space-y-1.5">
-                      {partition.mimos.map((item) => (
-                        <div key={item.id} className="flex items-center gap-2 py-1.5 border-b border-gray-50 last:border-0">
-                          <img src={item.imagem} className="w-8 h-8 rounded-lg object-cover border border-gray-100" alt="" />
-                          <div className="flex-1">
-                            <h4 className="text-[0.75rem] font-black text-gray-800 leading-tight truncate uppercase">{item.nome}</h4>
-                            <span className="text-[8px] font-black text-gray-300 uppercase">Cód: {item.id}</span>
-                          </div>
-                          <div className="flex items-center gap-1.5">
-                            <span className="text-red-500 line-through text-[10px]">R$ {item.originalPreco.toFixed(2)}</span>
-                            <span className="font-black text-green-600 text-[0.8rem]">R$ {item.precoFinal.toFixed(2)}</span>
-                          </div>
-                          <button onClick={() => removeFromCart(item.id)} className="p-1 text-gray-200 hover:text-red-500">
-                            <X size={14} />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
+        {/* SEÇÃO 2: UPSELLS (Profissionalize o seu negócio) */}
+        <section className="pt-2 pb-4">
+          <div className="max-w-6xl mx-auto px-4">
+            <div className="mb-6">
+              <h2 className="text-xl sm:text-2xl font-black text-[#171717] uppercase tracking-tight leading-none">
+                Profissionalize o seu negócio
+              </h2>
+              <p className="text-xs sm:text-sm text-gray-800 font-medium mt-1.5 max-w-2xl leading-relaxed">
+                Aqui você vai encontrar soluções para o marketing do seu negócio, como acelerar as vendas e como fazer a sua paixão se tornar o seu conforto financeiro
+              </p>
+            </div>
 
-                {/* [Seção 3: Presentes] */}
-                {partition.presentes.length > 0 && (
-                  <div>
-                    <h3 className="text-[10px] font-black text-green-600 uppercase tracking-wider mb-1.5">
-                      [Seção 3: Presentes]
-                    </h3>
-                    <div className="space-y-1.5">
-                      {partition.presentes.map((item) => (
-                        <div key={item.id} className="flex items-center gap-2 py-1.5 border-b border-gray-50 last:border-0">
-                          <img src={item.imagem} className="w-8 h-8 rounded-lg object-cover border border-gray-100" alt="" />
-                          <div className="flex-1">
-                            <h4 className="text-[0.75rem] font-black text-gray-800 leading-tight truncate uppercase">{item.nome}</h4>
-                            <span className="text-[8px] font-black text-gray-300 uppercase">Cód: {item.id}</span>
-                          </div>
-                          <div className="flex items-center gap-1.5">
-                            <span className="text-red-500 line-through text-[10px]">R$ {item.originalPreco.toFixed(2)}</span>
-                            <span className="font-black text-green-600 text-[0.8rem]">GRÁTIS</span>
-                          </div>
-                          <button onClick={() => removeFromCart(item.id)} className="p-1 text-gray-200 hover:text-red-500">
-                            <X size={14} />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Other Items (Packs, Combos, Upsells) */}
-                {partition.otherItems.length > 0 && (
-                  <div>
-                    <h3 className="text-[10px] font-black text-purple-600 uppercase tracking-wider mb-1.5">
-                      Outros Itens
-                    </h3>
-                    <div className="space-y-1.5">
-                      {partition.otherItems.map((item) => (
-                        <div key={item.id} className="flex items-center gap-2 py-1.5 border-b border-gray-50 last:border-0">
-                          <img src={item.imagem} className="w-8 h-8 rounded-lg object-cover border border-gray-100" alt="" />
-                          <div className="flex-1">
-                            <h4 className="text-[0.75rem] font-black text-gray-800 leading-tight truncate uppercase">{item.nome}</h4>
-                            <span className="text-[8px] font-black text-gray-300 uppercase">Cód: {item.id}</span>
-                          </div>
-                          <span className="font-black text-[#171717] text-[0.8rem]">R$ {item.preco.toFixed(2)}</span>
-                          <button onClick={() => removeFromCart(item.id)} className="p-1 text-gray-200 hover:text-red-500">
-                            <X size={14} />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                <div className="pt-2 mt-1 border-t border-gray-50">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="font-black text-gray-400 text-[0.7rem] uppercase tracking-widest">Total</span>
-                    <span className="text-[1rem] font-black text-[#171717]">R$ {total.toFixed(2)}</span>
-                  </div>
-                  <button 
-                    onClick={() => navigate("/checkout")}
-                    className="w-full bg-[#44FF00] text-[#171717] py-2.5 rounded-full font-black text-[0.8rem] shadow-sm transition-transform active:scale-95 uppercase tracking-widest"
-                  >
-                    Finalizar Pedido →
-                  </button>
+            {foundRecipes.length > 0 && (
+              <div className="mb-8">
+                <h2 className="section-title text-[#171717] italic">✨ Receitas Adicionadas</h2>
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                  {foundRecipes.map((recipe) => (
+                    <RecipeCard
+                      key={recipe.id}
+                      recipe={recipe}
+                      isFavorite={favorites.includes(recipe.id)}
+                      onToggleFavorite={() => toggleFavorite(recipe.id)}
+                      onAdd={() => handleRecipeAdd(recipe)}
+                      onReject={() => {}}
+                      isInCart={isInCart(recipe.id)}
+                    />
+                  ))}
                 </div>
               </div>
             )}
-          </div>
-        </div>
-      </section>
 
-      {/* DIVIDER AND STORE BANNER */}
-      <div className="max-w-6xl mx-auto px-4">
-        <hr className="border-t border-gray-200 my-6" />
-        <div className="rounded-2xl overflow-hidden shadow-md mb-2">
-          <img 
-            src="https://ik.imagekit.io/51b3srlsg/Loja_AmiguMundo_amigurumis.jpeg" 
-            alt="Loja AmiguMundo" 
-            className="w-full h-auto object-cover"
-          />
-        </div>
-        {/* REDLINE TEXT */}
-        <p className="text-center text-[10px] sm:text-xs font-black text-[#E8472A] uppercase tracking-wide mb-8 leading-tight">
-          Bem Vindas a Familia AmiguMundo: Adicione 3 receitas ao carrinho para liberar o seu primeiro desconto exclusivo dos 'Mimos AmiguMundo'
-        </p>
+            <div className="mb-4">
+              <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                {upsells.map((upsell) => (
+                  <UpsellCard 
+                    key={upsell.id} 
+                    upsell={upsell} 
+                    isFavorite={favorites.includes(upsell.id)}
+                    onToggleFavorite={() => toggleFavorite(upsell.id)}
+                    onOpen={() => setActiveUpsell(upsell.id)} 
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
       </div>
 
       {error && <ErrorToast message={error} onClose={() => setError(null)} />}
@@ -441,61 +488,6 @@ export default function Index() {
             />
           </div>
         </div>
-      )}
-
-      {/* SEÇÃO 2: UPSELLS (Redesigned with soft brown background and clean typography) */}
-      <section className="bg-[#98A1AF] py-10">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="mb-6">
-            <h2 className="text-xl sm:text-2xl font-black text-[#171717] uppercase tracking-tight leading-none">
-              Profissionalize o seu negócio
-            </h2>
-            <p className="text-xs sm:text-sm text-gray-800 font-medium mt-1.5 max-w-2xl leading-relaxed">
-              Aqui você vai encontrar soluções para o marketing do seu negócio, como acelerar as vendas e como fazer a sua paixão se tornar o seu conforto financeiro
-            </p>
-          </div>
-
-          {foundRecipes.length > 0 && (
-            <div className="mb-8">
-              <h2 className="section-title text-[#171717] italic">✨ Receitas Adicionadas</h2>
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-                {foundRecipes.map((recipe) => (
-                  <RecipeCard
-                    key={recipe.id}
-                    recipe={recipe}
-                    isFavorite={favorites.includes(recipe.id)}
-                    onToggleFavorite={() => toggleFavorite(recipe.id)}
-                    onAdd={() => handleRecipeAdd(recipe)}
-                    onReject={() => {}}
-                    isInCart={isInCart(recipe.id)}
-                  />
-                ))}
-              </div>
-            </div>
-          )}
-
-          <div className="mb-8">
-            <div className="grid grid-cols-2 gap-3 sm:gap-4">
-              {upsells.map((upsell) => (
-                <UpsellCard 
-                  key={upsell.id} 
-                  upsell={upsell} 
-                  isFavorite={favorites.includes(upsell.id)}
-                  onToggleFavorite={() => toggleFavorite(upsell.id)}
-                  onOpen={() => setActiveUpsell(upsell.id)} 
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {activeUpsell && (
-        <UpsellModal
-          upsell={upsells.find((u) => u.id === activeUpsell)!}
-          onClose={() => setActiveUpsell(null)}
-          onBuy={handleUpsellBuy}
-        />
       )}
 
       {/* SEÇÃO 3: CATEGORIAS */}
@@ -561,7 +553,7 @@ export default function Index() {
         <p className="text-[10px] text-gray-300 font-black uppercase tracking-[0.3em]">© 2024 AmiguMundo Artes</p>
       </footer>
 
-      {/* FLOATING FAVORITES BUTTON (Decreased size by 1x and positioned closer to bottom-right) */}
+      {/* FLOATING FAVORITES BUTTON */}
       <button
         onClick={() => setIsFavoritesOpen(true)}
         className="fixed bottom-16 right-4 z-50 bg-[#44FF00] text-[#171717] p-3 rounded-full shadow-2xl hover:scale-110 transition-transform active:scale-95 flex items-center justify-center border-2 border-white"
