@@ -45,7 +45,7 @@ export const BannerCarousel = () => {
     <div className="relative overflow-hidden rounded-2xl shadow-md my-4 mx-4 sm:mx-0" ref={emblaRef}>
       <div className="flex">
         {banners.map((banner) => (
-          <div key={banner.id} className="relative flex-[0_0_100%] min-w-0 h-[150px] sm:h-[260px]">
+          <div key={banner.id} className="relative flex-[0_0_100%] min-w-0 aspect-[16/9] sm:aspect-[21/9]">
             <img 
               src={banner.url} 
               alt={banner.title} 
