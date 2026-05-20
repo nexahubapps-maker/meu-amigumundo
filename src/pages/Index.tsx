@@ -424,10 +424,14 @@ export default function Index() {
         {/* SEÇÃO 2: UPSELLS (Profissionalize o seu negócio) */}
         <section className="pt-1 pb-2">
           <div className="max-w-6xl mx-auto px-4">
-            <div className="mb-4">
-              <h2 className="text-xl sm:text-2xl font-black text-[#171717] uppercase tracking-tight leading-none">
-                Profissionalize o seu negócio
+            {/* Card de Título de Largura Total e Altura Mínima */}
+            <div className="w-full bg-[#dbdad9] py-3 px-4 mb-4 shadow-sm rounded-xl text-center border border-gray-100">
+              <h2 className="text-sm sm:text-base font-black uppercase tracking-wider text-[#171717] m-0">
+                PROFISSIONALIZE O SEU NEGÓCIO
               </h2>
+            </div>
+            
+            <div className="mb-4">
               <p className="text-xs sm:text-sm text-gray-800 font-medium mt-1 max-w-2xl leading-relaxed">
                 Aqui você vai encontrar soluções para o marketing do seu negócio, como acelerar as vendas e como fazer a sua paixão se tornar o seu conforto financeiro
               </p>
