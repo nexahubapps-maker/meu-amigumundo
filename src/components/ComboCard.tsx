@@ -1,17 +1,20 @@
 "use client";
 
 import { type Combo } from "@/data/packs";
+import { Heart } from "lucide-react";
 
 interface ComboCardProps {
   combo: Combo;
   inCart: boolean;
+  isFavorite: boolean;
+  onToggleFavorite: () => void;
   onAdd: () => void;
   onRemove: () => void;
 }
 
-export const ComboCard = ({ combo, inCart, onAdd, onRemove }: ComboCardProps) => {
+export const ComboCard = ({ combo, inCart, isFavorite, onToggleFavorite, onAdd, onRemove }: ComboCardProps) => {
   return (
-    <div className="bg-white rounded-[16px] overflow-hidden flex h-[110px] items-center shadow-lg card-hover border border-white/10">
+    <div className="bg-white rounded-[16px] overflow-hidden flex h-[110px] items-center shadow-lg card-hover border border-white/10 relative">
       <div 
         className="w-[100px] h-full flex flex-col items-center justify-center text-[#171717] bg-[#F8DD12] shrink-0"
       >
@@ -31,6 +34,17 @@ export const ComboCard = ({ combo, inCart, onAdd, onRemove }: ComboCardProps) =>
           R$ {combo.preco.toFixed(2)}
         </span>
       </div>
+
+      {/* Favorite Heart Icon */}
+      <button 
+        onClick={(e) => {
+          e.stopPropagation();
+          onToggleFavorite();
+        }}
+        className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm p-1 rounded-full shadow-md hover:scale-110 active:scale-90 transition-transform text-red-500 z-10"
+      >
+        <Heart size={12} fill={isFavorite ? "currentColor" : "none"} />
+      </button>
       
       {/* Perfectly centered button container */}
       <div className="pr-5 flex items-center justify-center shrink-0">

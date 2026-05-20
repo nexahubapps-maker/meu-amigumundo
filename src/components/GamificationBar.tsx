@@ -1,56 +1,44 @@
 "use client";
 
 interface GamificationBarProps {
-  cartCount: number; // This will represent the number of full-price recipes
+  cartCount: number;
 }
 
 export const GamificationBar = ({ cartCount }: GamificationBarProps) => {
   const levels = [
-    { name: "Bronze", emoji: "🥉", recipes: 3, price: 3.00, color: "#CD7F32" },
-    { name: "Prata", emoji: "🥈", recipes: 6, price: 2.00, color: "#A8A9AD" },
-    { name: "Ouro", emoji: "🥇", recipes: 9, price: 1.00, color: "#FFD700" },
-    { name: "Mimo", emoji: "🎁", recipes: 10, price: 0, color: "#E8689A" },
+    { name: "Bronze", emoji: "🥉", recipes: 3, price: 3.00, desc: "Você escolhe mais 3 receitas, por 3 reais cada." },
+    { name: "Prata", emoji: "🥈", recipes: 6, price: 2.00, desc: "Você escolhe mais 3 receitas, por 2 reais cada." },
+    { name: "Ouro", emoji: "🥇", recipes: 9, price: 1.00, desc: "Você escolhe mais 3 receitas, por 1 real cada." },
+    { name: "SUPER BONUS", emoji: "🎁", recipes: 10, price: 0, desc: "Você pode escolher mais 3 receitas, GRATUITAS." },
   ];
 
-  const nextLevelIndex = levels.findIndex(l => cartCount < l.recipes);
-  const nextLevel = nextLevelIndex !== -1 ? levels[nextLevelIndex] : null;
-  const recipesLeft = nextLevel ? nextLevel.recipes - cartCount : 0;
-
   return (
-    <div className="bg-white rounded-[20px] border-[2px] border-[#F5C842] p-3 sm:p-4 my-4 shadow-sm">
-      <h2 className="text-[#E8472A] font-extrabold text-[0.95rem] mb-2 flex items-center gap-2">
-        🎁 Super Mimo AmiguMundo
+    <div className="bg-white rounded-[20px] border-[2px] border-[#F5C842] p-4 sm:p-6 my-4 shadow-sm text-left">
+      <h2 className="text-[#E8472A] font-black text-lg sm:text-xl mb-4 flex items-center gap-2 uppercase tracking-tight">
+        🎁 SUPER MIMO AMIGUMUNDO
       </h2>
       
-      <div className="space-y-1 mb-3">
-        {levels.map((level, i) => (
-          <div key={i} className="flex items-center justify-between py-0.5">
-            <div className="flex items-center gap-2">
-              <span className="text-base">🏅</span>
-              <span className="text-[0.85rem] font-bold text-gray-700">Bônus {level.name} ({level.recipes} un)</span>
+      <div className="space-y-4 mb-6">
+        {levels.map((level, i) => {
+          const isActive = cartCount >= level.recipes;
+          return (
+            <div key={i} className={`p-3 rounded-xl border transition-all ${isActive ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-100'}`}>
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-xs sm:text-sm font-black text-gray-800">
+                  {level.recipes} receitas no carrinho - Ativa o Bonus {level.name}:
+                </span>
+                <span className="text-lg">{level.emoji}</span>
+              </div>
+              <p className="text-xs text-gray-600 font-medium">{level.desc}</p>
             </div>
-            <span className="text-[0.85rem] font-extrabold text-[#4CAF50]">
-              {level.price > 0 ? `R$ ${level.price.toFixed(2)} cada` : `GRÁTIS!`}
-            </span>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
-      <div className="space-y-2">
-        <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-          <div 
-            className="h-full bg-[#4CAF50] transition-all duration-500"
-            style={{ width: `${Math.min((cartCount / 10) * 100, 100)}%` }}
-          />
-        </div>
-        
-        {nextLevel && (
-          <div className="inline-block bg-[#F5C842] px-3 py-1 rounded-full">
-            <p className="text-[0.8rem] font-bold text-gray-900">
-              Faltam {recipesLeft} receitas para o BÔNUS {nextLevel.name.toUpperCase()} {nextLevel.emoji}
-            </p>
-          </div>
-        )}
+      <div className="space-y-1.5 border-t border-gray-100 pt-4 text-[10px] sm:text-xs text-gray-400 font-bold uppercase tracking-wide">
+        <p>* Apenas receitas avulsas são contabilizadas no carrinho.</p>
+        <p>* Receitas bônus não são contabilizadas no carrinho.</p>
+        <p>* Packs, Combos e Super Ofertas não são contabilizadas no carrinho.</p>
       </div>
     </div>
   );

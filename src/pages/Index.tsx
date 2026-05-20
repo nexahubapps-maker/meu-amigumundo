@@ -16,6 +16,7 @@ import { CartFooter } from "@/components/CartFooter";
 import { DailyGiftSection } from "@/components/DailyGiftSection";
 import { LaunchBanner } from "@/components/LaunchBanner";
 import { PwaPrompt } from "@/components/PwaPrompt";
+import { FavoritesModal } from "@/components/FavoritesModal";
 import { recipes, type Recipe } from "@/data/recipes";
 import { upsells } from "@/data/upsells";
 import { categories } from "@/data/categories";
@@ -38,13 +39,13 @@ export default function Index() {
   const [activeUpsell, setActiveUpsell] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [foundRecipes, setFoundRecipes] = useState<Recipe[]>([]);
+  const [isFavoritesOpen, setIsFavoritesOpen] = useState(false);
   
   // Favorites State
   const [favorites, setFavorites] = useState<string[]>(() => {
     const saved = localStorage.getItem("amigumundo-favorites");
     return saved ? JSON.parse(saved) : [];
   });
-  const [showOnlyFavorites, setShowOnlyFavorites] = useState(false);
 
   useEffect(() => {
     const savedCart = localStorage.getItem("amigumundo-cart");
@@ -238,13 +239,8 @@ export default function Index() {
 
   const isInCart = (id: string) => cart.some((item) => item.id === id);
 
-  // Filter packs based on favorites toggle
-  const displayedPacks = showOnlyFavorites 
-    ? packs.filter(p => favorites.includes(p.id)) 
-    : packs;
-
   return (
-    <div className="min-h-screen bg-white pb-24">
+    <div className="min-h-screen bg-white pb-24 relative">
       <Header cartCount={cart.length} />
 
       {/* SEÇÃO 1: CHECKOUT (Topo) */}
@@ -407,6 +403,18 @@ export default function Index() {
         </div>
       </section>
 
+      {/* DIVIDER AND STORE BANNER */}
+      <div className="max-w-6xl mx-auto px-4">
+        <hr className="border-t border-gray-200 my-8" />
+        <div className="rounded-2xl overflow-hidden shadow-md mb-8">
+          <img 
+            src="https://ik.imagekit.io/51b3srlsg/Loja_AmiguMundo_amigurumis.jpeg" 
+            alt="Loja AmiguMundo" 
+            className="w-full h-auto object-cover"
+          />
+        </div>
+      </div>
+
       {error && <ErrorToast message={error} onClose={() => setError(null)} />}
 
       {showRecipe && (
@@ -427,20 +435,8 @@ export default function Index() {
       {/* SEÇÃO 2: UPSELLS */}
       <section className="bg-white py-8">
         <div className="max-w-6xl mx-auto px-4">
-          {/* Favorites Filter Toggle */}
           <div className="flex justify-between items-center mb-6">
             <h2 className="section-title text-[#171717] italic mb-0">⭐ Produtos Premium</h2>
-            <button 
-              onClick={() => setShowOnlyFavorites(!showOnlyFavorites)}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-black uppercase tracking-wider transition-all ${
-                showOnlyFavorites 
-                  ? 'bg-red-500 text-white shadow-md' 
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
-            >
-              <Heart size={14} fill={showOnlyFavorites ? "currentColor" : "none"} />
-              {showOnlyFavorites ? "Ver Todos" : "Favoritos"}
-            </button>
           </div>
 
           {foundRecipes.length > 0 && (
@@ -465,7 +461,13 @@ export default function Index() {
           <div className="mb-8">
             <div className="grid grid-cols-2 gap-3 sm:gap-4">
               {upsells.map((upsell) => (
-                <UpsellCard key={upsell.id} upsell={upsell} onOpen={() => setActiveUpsell(upsell.id)} />
+                <UpsellCard 
+                  key={upsell.id} 
+                  upsell={upsell} 
+                  isFavorite={favorites.includes(upsell.id)}
+                  onToggleFavorite={() => toggleFavorite(upsell.id)}
+                  onOpen={() => setActiveUpsell(upsell.id)} 
+                />
               ))}
             </div>
           </div>
@@ -480,7 +482,7 @@ export default function Index() {
         />
       )}
 
-      {/* SEÇÃO 3: CATEGORIAS (Redesigned with soft gray background and white cards) */}
+      {/* SEÇÃO 3: CATEGORIAS */}
       <section className="bg-[#F5F5F7] py-10">
         <div className="max-w-6xl mx-auto px-4">
           <h2 className="text-[1.1rem] font-extrabold mb-6 uppercase tracking-tight text-[#171717]">
@@ -498,29 +500,23 @@ export default function Index() {
       <section className="bg-white py-8">
         <div className="max-w-6xl mx-auto px-4">
           <h2 className="section-title text-[#171717] italic">📦 Packs Temáticos</h2>
-          {displayedPacks.length === 0 ? (
-            <div className="text-center py-8 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
-              <p className="text-gray-400 text-sm font-medium">Nenhum pack favoritado ainda.</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-              {displayedPacks.map((pack) => (
-                <PackCard
-                  key={pack.id}
-                  pack={pack}
-                  inCart={isInCart(pack.id)}
-                  isFavorite={favorites.includes(pack.id)}
-                  onToggleFavorite={() => toggleFavorite(pack.id)}
-                  onAdd={() => handlePackAdd(pack.id)}
-                  onRemove={() => removeFromCart(pack.id)}
-                />
-              ))}
-            </div>
-          )}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+            {packs.map((pack) => (
+              <PackCard
+                key={pack.id}
+                pack={pack}
+                inCart={isInCart(pack.id)}
+                isFavorite={favorites.includes(pack.id)}
+                onToggleFavorite={() => toggleFavorite(pack.id)}
+                onAdd={() => handlePackAdd(pack.id)}
+                onRemove={() => removeFromCart(pack.id)}
+              />
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* SEÇÃO 5: COMBOS (Refined typography and straight title) */}
+      {/* SEÇÃO 5: COMBOS */}
       <section className="bg-[#171717] py-12">
         <div className="max-w-6xl mx-auto px-4">
           <h2 className="text-[1.2rem] font-black mb-6 uppercase tracking-wider text-white flex items-center gap-2">
@@ -532,6 +528,8 @@ export default function Index() {
                 key={combo.id}
                 combo={combo}
                 inCart={isInCart(combo.id)}
+                isFavorite={favorites.includes(combo.id)}
+                onToggleFavorite={() => toggleFavorite(combo.id)}
                 onAdd={() => handleComboAdd(combo.id)}
                 onRemove={() => removeFromCart(combo.id)}
               />
@@ -546,6 +544,25 @@ export default function Index() {
       <footer className="text-center py-8 px-4 border-t border-gray-100 bg-white">
         <p className="text-[10px] text-gray-300 font-black uppercase tracking-[0.3em]">© 2024 AmiguMundo Artes</p>
       </footer>
+
+      {/* FLOATING FAVORITES BUTTON */}
+      <button
+        onClick={() => setIsFavoritesOpen(true)}
+        className="fixed bottom-24 right-6 z-50 bg-[#44FF00] text-[#171717] p-4 rounded-full shadow-2xl hover:scale-110 transition-transform active:scale-95 flex items-center justify-center border-2 border-white"
+        aria-label="Meus Favoritos"
+      >
+        <Heart size={24} fill="currentColor" />
+      </button>
+
+      {/* FAVORITES MODAL */}
+      <FavoritesModal
+        isOpen={isFavoritesOpen}
+        onClose={() => setIsFavoritesOpen(false)}
+        favoriteIds={favorites}
+        onToggleFavorite={toggleFavorite}
+        onAddToCart={addToCart}
+        isInCart={isInCart}
+      />
 
       <CartFooter 
         count={cart.length} 

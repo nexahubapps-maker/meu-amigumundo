@@ -1,15 +1,18 @@
 "use client";
 
 import { type Upsell } from "@/data/upsells";
+import { Heart } from "lucide-react";
 
 interface UpsellCardProps {
   upsell: Upsell;
+  isFavorite: boolean;
+  onToggleFavorite: () => void;
   onOpen: () => void;
 }
 
-export const UpsellCard = ({ upsell, onOpen }: UpsellCardProps) => {
+export const UpsellCard = ({ upsell, isFavorite, onToggleFavorite, onOpen }: UpsellCardProps) => {
   return (
-    <div className="card-hover flex flex-col">
+    <div className="card-hover flex flex-col relative">
       <div 
         className="relative aspect-[2/1] rounded-xl overflow-hidden shadow-sm cursor-pointer"
         onClick={onOpen}
@@ -25,6 +28,17 @@ export const UpsellCard = ({ upsell, onOpen }: UpsellCardProps) => {
           </span>
         </div>
       </div>
+
+      {/* Favorite Heart Icon */}
+      <button 
+        onClick={(e) => {
+          e.stopPropagation();
+          onToggleFavorite();
+        }}
+        className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm p-1 rounded-full shadow-md hover:scale-110 active:scale-90 transition-transform text-red-500 z-10"
+      >
+        <Heart size={12} fill={isFavorite ? "currentColor" : "none"} />
+      </button>
       
       <div className="flex items-center justify-between mt-1.5 px-1">
         <span className="text-[#171717] font-black text-[0.85rem]">R$ {upsell.precoAtual.toFixed(2)}</span>
