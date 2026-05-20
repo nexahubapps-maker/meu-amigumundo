@@ -41,12 +41,12 @@ export const DailyGiftSection = () => {
   };
 
   return (
-    <section className="bg-[#E0F2FE] py-10 px-4">
+    <section className="bg-[#38807B] py-10 px-4">
       <div className="max-w-xl mx-auto text-center">
-        <h2 className="text-[#171717] font-extrabold text-[1.3rem] leading-tight mb-2">
+        <h2 className="text-white font-extrabold text-[1.3rem] leading-tight mb-2">
           🎉 SEU MIMO GRATUITO DO DIA CHEGOU! 🎉
         </h2>
-        <p className="text-[#171717] text-[0.9rem] font-medium mb-8">
+        <p className="text-white/90 text-[0.9rem] font-medium mb-8">
           Nos visite todos os dias para retirar sua receita grátis e garantir seu presente diário!
         </p>
 

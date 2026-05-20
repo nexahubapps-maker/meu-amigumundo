@@ -245,8 +245,8 @@ export default function Index() {
 
       {/* DAILY GIFT ANNOUNCEMENT BOX */}
       <div className="max-w-6xl mx-auto px-4 mt-3">
-        <div className="bg-[#E8F5E9] border border-[#81C784] text-[#2E7D32] p-2.5 rounded-xl text-center text-xs font-black uppercase tracking-wide shadow-sm">
-          🎉 PRESENTE DIÁRIO: Vá até o final da página e baixe a Receita Gratuita de hoje! ↓ 🎉
+        <div className="bg-[#44FF00] text-white p-2.5 rounded-xl text-center text-xs font-black uppercase tracking-wide shadow-sm">
+          PRESENTE DIÁRIO: Vá até o final da página e baixe a Receita Gratuita de hoje! ↓
         </div>
       </div>
 
@@ -444,13 +444,13 @@ export default function Index() {
       )}
 
       {/* SEÇÃO 2: UPSELLS (Redesigned with soft brown background and clean typography) */}
-      <section className="bg-[#F3E0D4] py-10">
+      <section className="bg-[#98A1AF] py-10">
         <div className="max-w-6xl mx-auto px-4">
           <div className="mb-6">
             <h2 className="text-xl sm:text-2xl font-black text-[#171717] uppercase tracking-tight leading-none">
               Profissionalize o seu negócio
             </h2>
-            <p className="text-xs sm:text-sm text-gray-600 font-medium mt-1.5 max-w-2xl leading-relaxed">
+            <p className="text-xs sm:text-sm text-gray-800 font-medium mt-1.5 max-w-2xl leading-relaxed">
               Aqui você vai encontrar soluções para o marketing do seu negócio, como acelerar as vendas e como fazer a sua paixão se tornar o seu conforto financeiro
             </p>
           </div>
@@ -513,9 +513,9 @@ export default function Index() {
       </section>
 
       {/* SEÇÃO 4: PACKS */}
-      <section className="bg-white py-8">
+      <section className="bg-[#6B7586] py-8">
         <div className="max-w-6xl mx-auto px-4">
-          <h2 className="section-title text-[#171717] italic">📦 Packs Temáticos</h2>
+          <h2 className="section-title text-white italic">📦 Packs Temáticos</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
             {packs.map((pack) => (
               <PackCard
@@ -533,9 +533,9 @@ export default function Index() {
       </section>
 
       {/* SEÇÃO 5: COMBOS */}
-      <section className="bg-[#171717] py-12">
+      <section className="bg-[#98A1AF] py-12">
         <div className="max-w-6xl mx-auto px-4">
-          <h2 className="text-[1.2rem] font-black mb-6 uppercase tracking-wider text-white flex items-center gap-2">
+          <h2 className="text-[1.2rem] font-black mb-6 uppercase tracking-wider text-[#171717] flex items-center gap-2">
             👑 COMBOS ELITE
           </h2>
           <div className="max-w-3xl mx-auto space-y-4">
