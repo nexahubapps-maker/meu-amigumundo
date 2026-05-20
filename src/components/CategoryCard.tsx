@@ -17,15 +17,15 @@ export const CategoryCard = ({ nome }: CategoryCardProps) => {
   const imageUrl = categoryImages[nome] || `https://picsum.photos/seed/${nome}/400/400`;
 
   return (
-    <div className="bg-white rounded-2xl p-2.5 shadow-sm border border-gray-100 card-hover group cursor-pointer flex flex-col gap-2">
-      <div className="relative aspect-square rounded-xl overflow-hidden bg-gray-50">
+    <div className="flex flex-col items-center cursor-pointer group w-full">
+      <div className="w-full aspect-square rounded-2xl overflow-hidden bg-gray-50 shadow-sm">
         <img 
           src={imageUrl} 
           alt={nome} 
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
         />
       </div>
-      <span className="text-[#171717] text-[0.75rem] font-black text-center uppercase tracking-tight truncate px-1">
+      <span className="text-[#171717] text-[9px] sm:text-[10px] font-black text-center uppercase tracking-tight truncate w-full mt-1">
         {nome}
       </span>
     </div>

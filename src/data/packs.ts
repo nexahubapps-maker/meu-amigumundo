@@ -15,6 +15,12 @@ export const packs: Pack[] = [
   { id: "pack4", nome: "Pack Bebes e Fofuras", descricao: "20 receitas para presentear bebes", receitas: 20, precoOriginal: 34.90, precoAtual: 17.90, emoji: "👶" },
   { id: "pack5", nome: "Pack Natal Magico", descricao: "20 receitas natalinas", receitas: 20, precoOriginal: 39.90, precoAtual: 19.90, emoji: "🎄" },
   { id: "pack6", nome: "Pack Personagens TV", descricao: "20 receitas de personagens famosos", receitas: 20, precoOriginal: 44.90, precoAtual: 21.90, emoji: "📺" },
+  { id: "pack7", nome: "Pack Fazendinha Feliz", descricao: "20 receitas de animais da fazenda", receitas: 20, precoOriginal: 34.90, precoAtual: 17.90, emoji: "🐷" },
+  { id: "pack8", nome: "Pack Fundo do Mar", descricao: "20 receitas marinhas super fofas", receitas: 20, precoOriginal: 39.90, precoAtual: 19.90, emoji: "🐙" },
+  { id: "pack9", nome: "Pack Bonecas Estilosas", descricao: "20 receitas de bonecas modernas", receitas: 20, precoOriginal: 44.90, precoAtual: 21.90, emoji: "👧" },
+  { id: "pack10", nome: "Pack Dinossauros Baby", descricao: "20 receitas de dinos fofinhos", receitas: 20, precoOriginal: 34.90, precoAtual: 17.90, emoji: "🦖" },
+  { id: "pack11", nome: "Pack Flores e Plantas", descricao: "20 receitas de cactos e flores", receitas: 20, precoOriginal: 29.90, precoAtual: 14.90, emoji: "🌵" },
+  { id: "pack12", nome: "Pack Doces e Frutas", descricao: "20 receitas de comidinhas fofas", receitas: 20, precoOriginal: 29.90, precoAtual: 14.90, emoji: "🍓" },
 ];
 
 export interface Combo {

@@ -34,9 +34,9 @@ export const Header = ({ cartCount = 0 }: HeaderProps) => {
         </div>
         
         <div className="flex items-center gap-3">
-          <div className="hidden sm:flex flex-col items-end leading-none">
-            <span className="text-[7px] font-black text-gray-300 uppercase tracking-widest">um produto</span>
-            <span className="text-[9px] font-black text-[#171717] uppercase">AMIGUMUNDO ARTES</span>
+          <div className="flex flex-col items-end leading-none">
+            <span className="text-[6px] sm:text-[7px] font-black text-gray-300 uppercase tracking-widest">um produto</span>
+            <span className="text-[8px] sm:text-[9px] font-black text-[#171717] uppercase">AMIGUMUNDO ARTES</span>
           </div>
           
           <button 
