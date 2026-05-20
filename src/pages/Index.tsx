@@ -245,7 +245,7 @@ export default function Index() {
 
       {/* DAILY GIFT ANNOUNCEMENT BOX */}
       <div className="max-w-6xl mx-auto px-4 mt-3">
-        <div className="bg-[#44FF00] text-white p-2.5 rounded-xl text-center text-xs font-black uppercase tracking-wide shadow-sm">
+        <div className="bg-[#44FF00] text-[#171717] p-2.5 rounded-xl text-center text-xs font-black uppercase tracking-wide shadow-sm">
           PRESENTE DIÁRIO: Vá até o final da página e baixe a Receita Gratuita de hoje! ↓
         </div>
       </div>
