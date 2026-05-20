@@ -493,10 +493,14 @@ export default function Index() {
       {/* SEÇÃO 3: CATEGORIAS */}
       <section className="bg-[#F5F5F7] py-10">
         <div className="max-w-6xl mx-auto px-4">
-          <h2 className="text-[1.1rem] font-extrabold mb-4 uppercase tracking-tight text-[#171717]">
-            🧶 Categorias
-          </h2>
-          <div className="grid grid-cols-3 gap-2 sm:gap-4">
+          {/* Card de Título de Largura Total e Altura Mínima */}
+          <div className="w-full bg-white py-3 px-4 mb-6 shadow-sm rounded-xl text-center border border-gray-100">
+            <h2 className="text-sm sm:text-base font-black uppercase tracking-wider text-[#171717] m-0">
+              CATEGORIAS DE AMIGURUMIS
+            </h2>
+          </div>
+          
+          <div className="grid grid-cols-3 gap-x-0 gap-y-4">
             {categories.map((cat) => (
               <CategoryCard key={cat} nome={cat} />
             ))}
