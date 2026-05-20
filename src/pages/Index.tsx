@@ -491,13 +491,13 @@ export default function Index() {
       <section className="bg-[#F5F5F7] py-10">
         <div className="max-w-6xl mx-auto px-4">
           {/* Card de Título de Largura Total e Altura Mínima */}
-          <div className="w-full bg-white py-3 px-4 mb-6 shadow-sm rounded-xl text-center border border-gray-100">
+          <div className="w-full bg-[#dbdad9] py-3 px-4 mb-6 shadow-sm rounded-xl text-center border border-gray-100">
             <h2 className="text-sm sm:text-base font-black uppercase tracking-wider text-[#171717] m-0">
               CATEGORIAS DE AMIGURUMIS
             </h2>
           </div>
           
-          <div className="grid grid-cols-3 gap-3 sm:gap-4">
+          <div className="grid grid-cols-3 gap-x-0 gap-y-4">
             {categories.map((cat) => (
               <CategoryCard key={cat} nome={cat} />
             ))}
@@ -508,7 +508,13 @@ export default function Index() {
       {/* SEÇÃO 4: PACKS (Fundo #e6dcd3) */}
       <section className="bg-[#e6dcd3] py-8">
         <div className="max-w-6xl mx-auto px-4">
-          <h2 className="section-title text-[#171717] italic">Pacotes Temáticos</h2>
+          {/* Card de Título de Largura Total e Altura Mínima */}
+          <div className="w-full bg-[#dbdad9] py-3 px-4 mb-6 shadow-sm rounded-xl text-center border border-gray-100">
+            <h2 className="text-sm sm:text-base font-black uppercase tracking-wider text-[#171717] m-0">
+              PACOTES TEMÁTICOS
+            </h2>
+          </div>
+
           <div className="grid grid-cols-2 gap-3 sm:gap-4">
             {packs.map((pack) => (
               <PackCard
@@ -528,10 +534,13 @@ export default function Index() {
       {/* SEÇÃO 5: COMBOS (Fundo #18191a e Título #B78209) */}
       <section className="bg-[#18191a] py-12">
         <div className="max-w-6xl mx-auto px-4">
-          <h2 className="text-[1.2rem] font-black mb-1 uppercase tracking-wider text-[#B78209]">
-            COMBOS ELITE
-          </h2>
-          <p className="text-gray-400 text-xs font-medium mb-6 uppercase tracking-tight">
+          {/* Card de Título de Largura Total e Altura Mínima */}
+          <div className="w-full bg-[#dbdad9] py-3 px-4 mb-2 shadow-sm rounded-xl text-center border border-gray-100">
+            <h2 className="text-sm sm:text-base font-black uppercase tracking-wider text-[#171717] m-0">
+              COMBOS ELITE
+            </h2>
+          </div>
+          <p className="text-gray-400 text-xs font-medium mb-6 uppercase tracking-tight text-center">
             escolha o combo perfeito para crescer o seu negocio ou hobby
           </p>
           <div className="max-w-3xl mx-auto space-y-4">
