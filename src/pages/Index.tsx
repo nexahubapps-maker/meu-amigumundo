@@ -246,10 +246,10 @@ export default function Index() {
       </div>
 
       {/* SESSÃO UNIFICADA COM FUNDO #e6dcd3 */}
-      <div className="bg-[#e6dcd3] mt-3 pt-3 pb-8">
+      <div className="bg-[#e6dcd3] mt-3 pt-3 pb-4">
         
         {/* SEÇÃO 1: CHECKOUT (Topo) */}
-        <section className="pb-6">
+        <section className="pb-4">
           <div className="max-w-6xl mx-auto px-4">
             
             {/* PWA Install Prompt */}
@@ -261,9 +261,9 @@ export default function Index() {
             <BannerCarousel />
 
             {/* ENVELOPAMENTO DA SEÇÃO "SUPER MIMO" E "DIGITE O CÓDIGO" */}
-            <div className="bg-white rounded-2xl p-4 sm:p-5 my-4 shadow-md border border-gray-100">
+            <div className="bg-white rounded-2xl p-3 sm:p-4 my-3 shadow-md border border-gray-100">
               <GamificationBar cartCount={fullPriceRecipeCount} />
-              <div className="border-t border-gray-100 my-3 pt-3">
+              <div className="border-t border-gray-100 my-2 pt-2">
                 <CodeInput onRecipeFound={handleRecipeFound} onRecipeNotFound={handleRecipeNotFound} />
               </div>
             </div>
@@ -409,9 +409,9 @@ export default function Index() {
         </section>
 
         {/* CARD FLUTUANTE COM O BANNER E A DESCRIÇÃO DA LOJA */}
-        <div className="max-w-6xl mx-auto px-4 mb-2">
-          <div className="bg-white rounded-2xl p-3.5 shadow-md border border-gray-100/50">
-            <div className="rounded-xl overflow-hidden mb-3">
+        <div className="max-w-6xl mx-auto px-4 mb-1">
+          <div className="bg-white rounded-2xl p-3 shadow-lg border border-gray-100/50">
+            <div className="rounded-xl overflow-hidden mb-2.5">
               <img 
                 src="https://ik.imagekit.io/51b3srlsg/Loja_AmiguMundo_amigurumis.jpeg" 
                 alt="Loja AmiguMundo" 
@@ -425,19 +425,19 @@ export default function Index() {
         </div>
 
         {/* SEÇÃO 2: UPSELLS (Profissionalize o seu negócio) */}
-        <section className="pt-2 pb-4">
+        <section className="pt-1 pb-2">
           <div className="max-w-6xl mx-auto px-4">
-            <div className="mb-6">
+            <div className="mb-4">
               <h2 className="text-xl sm:text-2xl font-black text-[#171717] uppercase tracking-tight leading-none">
                 Profissionalize o seu negócio
               </h2>
-              <p className="text-xs sm:text-sm text-gray-800 font-medium mt-1.5 max-w-2xl leading-relaxed">
+              <p className="text-xs sm:text-sm text-gray-800 font-medium mt-1 max-w-2xl leading-relaxed">
                 Aqui você vai encontrar soluções para o marketing do seu negócio, como acelerar as vendas e como fazer a sua paixão se tornar o seu conforto financeiro
               </p>
             </div>
 
             {foundRecipes.length > 0 && (
-              <div className="mb-8">
+              <div className="mb-6">
                 <h2 className="section-title text-[#171717] italic">✨ Receitas Adicionadas</h2>
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                   {foundRecipes.map((recipe) => (
@@ -455,7 +455,7 @@ export default function Index() {
               </div>
             )}
 
-            <div className="mb-4">
+            <div className="mb-2">
               <div className="grid grid-cols-2 gap-3 sm:gap-4">
                 {upsells.map((upsell) => (
                   <UpsellCard 
