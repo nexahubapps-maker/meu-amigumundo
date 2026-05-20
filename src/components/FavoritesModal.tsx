@@ -92,7 +92,7 @@ export const FavoritesModal = ({
                       </button>
                       <button 
                         onClick={() => onToggleFavorite(item.id)}
-                        className="p-1.5 text-red-500 hover:bg-red-50 rounded-full transition-colors"
+                        className="p-1.5 text-[#44FF00] hover:bg-green-50 rounded-full transition-colors"
                       >
                         <Heart size={16} fill="currentColor" />
                       </button>

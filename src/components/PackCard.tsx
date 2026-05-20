@@ -39,7 +39,7 @@ export const PackCard = ({ pack, inCart, isFavorite, onToggleFavorite, onAdd, on
             e.stopPropagation();
             onToggleFavorite();
           }}
-          className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm p-1.5 rounded-full shadow-md hover:scale-110 active:scale-90 transition-transform text-red-500"
+          className={`absolute top-3 right-3 bg-white/90 backdrop-blur-sm p-1.5 rounded-full shadow-md hover:scale-110 active:scale-90 transition-transform ${isFavorite ? 'text-[#44FF00]' : 'text-gray-400'}`}
         >
           <Heart size={16} fill={isFavorite ? "currentColor" : "none"} />
         </button>

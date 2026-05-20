@@ -41,7 +41,7 @@ export const ComboCard = ({ combo, inCart, isFavorite, onToggleFavorite, onAdd, 
           e.stopPropagation();
           onToggleFavorite();
         }}
-        className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm p-1 rounded-full shadow-md hover:scale-110 active:scale-90 transition-transform text-red-500 z-10"
+        className={`absolute top-2 right-2 bg-white/90 backdrop-blur-sm p-1 rounded-full shadow-md hover:scale-110 active:scale-90 transition-transform z-10 ${isFavorite ? 'text-[#44FF00]' : 'text-gray-400'}`}
       >
         <Heart size={12} fill={isFavorite ? "currentColor" : "none"} />
       </button>

@@ -44,7 +44,7 @@ const RecipeCard = ({ recipe, isFavorite, onToggleFavorite, onAdd, onReject, isI
             e.stopPropagation();
             onToggleFavorite();
           }}
-          className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm p-1 rounded-full shadow-md hover:scale-110 active:scale-90 transition-transform text-red-500"
+          className={`absolute top-2 right-2 bg-white/90 backdrop-blur-sm p-1 rounded-full shadow-md hover:scale-110 active:scale-90 transition-transform ${isFavorite ? 'text-[#44FF00]' : 'text-gray-400'}`}
         >
           <Heart size={14} fill={isFavorite ? "currentColor" : "none"} />
         </button>

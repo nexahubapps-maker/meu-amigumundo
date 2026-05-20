@@ -243,8 +243,15 @@ export default function Index() {
     <div className="min-h-screen bg-white pb-24 relative">
       <Header cartCount={cart.length} />
 
+      {/* DAILY GIFT ANNOUNCEMENT BOX */}
+      <div className="max-w-6xl mx-auto px-4 mt-3">
+        <div className="bg-[#E8F5E9] border border-[#81C784] text-[#2E7D32] p-2.5 rounded-xl text-center text-xs font-black uppercase tracking-wide shadow-sm">
+          🎉 PRESENTE DIÁRIO: Vá até o final da página e baixe a Receita Gratuita de hoje! ↓ 🎉
+        </div>
+      </div>
+
       {/* SEÇÃO 1: CHECKOUT (Topo) */}
-      <section className="bg-[#F5F5F5] border-b border-gray-200 shadow-sm pb-6">
+      <section className="bg-[#F5F5F5] border-b border-gray-200 shadow-sm pb-6 mt-3">
         <div className="max-w-6xl mx-auto px-4">
           
           {/* PWA Install Prompt */}
@@ -256,9 +263,9 @@ export default function Index() {
           <BannerCarousel />
 
           {/* ENVELOPAMENTO DA SEÇÃO "SUPER MIMO" E "DIGITE O CÓDIGO" */}
-          <div className="bg-white rounded-2xl p-5 sm:p-6 my-6 shadow-md border border-gray-100">
+          <div className="bg-white rounded-2xl p-4 sm:p-5 my-4 shadow-md border border-gray-100">
             <GamificationBar cartCount={fullPriceRecipeCount} />
-            <div className="border-t border-gray-100 my-4 pt-4">
+            <div className="border-t border-gray-100 my-3 pt-3">
               <CodeInput onRecipeFound={handleRecipeFound} onRecipeNotFound={handleRecipeNotFound} />
             </div>
           </div>
@@ -405,14 +412,18 @@ export default function Index() {
 
       {/* DIVIDER AND STORE BANNER */}
       <div className="max-w-6xl mx-auto px-4">
-        <hr className="border-t border-gray-200 my-8" />
-        <div className="rounded-2xl overflow-hidden shadow-md mb-8">
+        <hr className="border-t border-gray-200 my-6" />
+        <div className="rounded-2xl overflow-hidden shadow-md mb-2">
           <img 
             src="https://ik.imagekit.io/51b3srlsg/Loja_AmiguMundo_amigurumis.jpeg" 
             alt="Loja AmiguMundo" 
             className="w-full h-auto object-cover"
           />
         </div>
+        {/* REDLINE TEXT */}
+        <p className="text-center text-[10px] sm:text-xs font-black text-[#E8472A] uppercase tracking-wide mb-8 leading-tight">
+          Bem Vindas a Familia AmiguMundo: Adicione 3 receitas ao carrinho para liberar o seu primeiro desconto exclusivo dos 'Mimos AmiguMundo'
+        </p>
       </div>
 
       {error && <ErrorToast message={error} onClose={() => setError(null)} />}
@@ -432,11 +443,16 @@ export default function Index() {
         </div>
       )}
 
-      {/* SEÇÃO 2: UPSELLS */}
-      <section className="bg-white py-8">
+      {/* SEÇÃO 2: UPSELLS (Redesigned with soft brown background and clean typography) */}
+      <section className="bg-[#F3E0D4] py-10">
         <div className="max-w-6xl mx-auto px-4">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="section-title text-[#171717] italic mb-0">⭐ Produtos Premium</h2>
+          <div className="mb-6">
+            <h2 className="text-xl sm:text-2xl font-black text-[#171717] uppercase tracking-tight leading-none">
+              Profissionalize o seu negócio
+            </h2>
+            <p className="text-xs sm:text-sm text-gray-600 font-medium mt-1.5 max-w-2xl leading-relaxed">
+              Aqui você vai encontrar soluções para o marketing do seu negócio, como acelerar as vendas e como fazer a sua paixão se tornar o seu conforto financeiro
+            </p>
           </div>
 
           {foundRecipes.length > 0 && (
@@ -545,13 +561,13 @@ export default function Index() {
         <p className="text-[10px] text-gray-300 font-black uppercase tracking-[0.3em]">© 2024 AmiguMundo Artes</p>
       </footer>
 
-      {/* FLOATING FAVORITES BUTTON */}
+      {/* FLOATING FAVORITES BUTTON (Decreased size by 1x and positioned closer to bottom-right) */}
       <button
         onClick={() => setIsFavoritesOpen(true)}
-        className="fixed bottom-24 right-6 z-50 bg-[#44FF00] text-[#171717] p-4 rounded-full shadow-2xl hover:scale-110 transition-transform active:scale-95 flex items-center justify-center border-2 border-white"
+        className="fixed bottom-16 right-4 z-50 bg-[#44FF00] text-[#171717] p-3 rounded-full shadow-2xl hover:scale-110 transition-transform active:scale-95 flex items-center justify-center border-2 border-white"
         aria-label="Meus Favoritos"
       >
-        <Heart size={24} fill="currentColor" />
+        <Heart size={20} fill="currentColor" />
       </button>
 
       {/* FAVORITES MODAL */}

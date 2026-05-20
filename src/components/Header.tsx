@@ -20,10 +20,10 @@ export const Header = ({ cartCount = 0 }: HeaderProps) => {
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-white h-[56px] flex items-center px-4 shadow-[0_2px_10px_rgba(0,0,0,0.05)]">
+    <header className="sticky top-0 z-50 bg-white h-[48px] flex items-center px-4 shadow-[0_2px_10px_rgba(0,0,0,0.05)]">
       <div className="max-w-6xl mx-auto w-full flex items-center justify-between">
         <div 
-          className="h-[40px] cursor-pointer flex items-center"
+          className="h-[32px] cursor-pointer flex items-center"
           onClick={() => navigate("/")}
         >
           <img 
@@ -35,17 +35,17 @@ export const Header = ({ cartCount = 0 }: HeaderProps) => {
         
         <div className="flex items-center gap-3">
           <div className="hidden sm:flex flex-col items-end leading-none">
-            <span className="text-[8px] font-black text-gray-300 uppercase tracking-widest">um produto</span>
-            <span className="text-[10px] font-black text-[#171717] uppercase">AMIGUMUNDO ARTES</span>
+            <span className="text-[7px] font-black text-gray-300 uppercase tracking-widest">um produto</span>
+            <span className="text-[9px] font-black text-[#171717] uppercase">AMIGUMUNDO ARTES</span>
           </div>
           
           <button 
             onClick={scrollToCart}
-            className="relative p-2 text-[#171717] hover:text-[#44FF00] transition-colors bg-gray-50 rounded-full"
+            className="relative p-1.5 text-[#171717] hover:text-[#44FF00] transition-colors bg-gray-50 rounded-full"
           >
-            <ShoppingCart size={22} />
+            <ShoppingCart size={18} />
             {cartCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-[#E8472A] text-white text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center border-2 border-white">
+              <span className="absolute -top-1 -right-1 bg-[#44FF00] text-[#171717] text-[8px] font-black w-3.5 h-3.5 rounded-full flex items-center justify-center border border-white">
                 {cartCount}
               </span>
             )}
