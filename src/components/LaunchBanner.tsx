@@ -1,4 +1,3 @@
-17:17 -> 20:17 -> 23:59) with a large, centered timer and custom CTAs.">
 "use client";
 
 import React, { useState, useEffect } from 'react';
