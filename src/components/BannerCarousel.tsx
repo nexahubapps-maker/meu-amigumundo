@@ -14,11 +14,6 @@ const banners = [
     url: "https://ik.imagekit.io/51b3srlsg/banner_segunda_amigumundo.jpeg", 
     title: "Combo Colecionadora Segunda" 
   },
-  { 
-    id: 3, 
-    url: "https://ik.imagekit.io/51b3srlsg/banner_whatsapp_amigumundo.jpeg", 
-    title: "WhatsApp AmiguMundo" 
-  },
 ];
 
 export const BannerCarousel = () => {
@@ -37,7 +32,7 @@ export const BannerCarousel = () => {
     if (intervalRef.current) clearInterval(intervalRef.current);
     intervalRef.current = setInterval(() => {
       if (emblaApi) emblaApi.scrollNext();
-    }, 12000); // 12 segundos
+    }, 27000); // 27 segundos
   }, [emblaApi]);
 
   const stopAutoPlay = useCallback(() => {
@@ -71,7 +66,7 @@ export const BannerCarousel = () => {
   }, [emblaApi, onSelect, startAutoPlay, stopAutoPlay, handleInteraction]);
 
   return (
-    <div className="relative overflow-hidden rounded-2xl shadow-md my-4 mx-4 sm:mx-0" ref={emblaRef}>
+    <div className="relative overflow-hidden rounded-2xl shadow-md mt-1 mb-4 mx-4 sm:mx-0" ref={emblaRef}>
       <div className="flex">
         {banners.map((banner) => (
           <div key={banner.id} className="relative flex-[0_0_100%] min-w-0 aspect-[16/9] sm:aspect-[21/9]">

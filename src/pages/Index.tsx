@@ -239,14 +239,14 @@ export default function Index() {
       <Header cartCount={cart.length} />
 
       {/* DAILY GIFT ANNOUNCEMENT BOX */}
-      <div className="max-w-6xl mx-auto px-4 mt-3">
+      <div className="max-w-6xl mx-auto px-4 mt-2">
         <div className="bg-[#44FF00] text-[#171717] p-2.5 rounded-xl text-center text-xs font-black uppercase tracking-wide shadow-sm">
           PRESENTE DIÁRIO: Vá até o final da página e baixe a Receita Gratuita de hoje! ↓
         </div>
       </div>
 
       {/* SESSÃO UNIFICADA COM FUNDO #e6dcd3 */}
-      <div className="bg-[#e6dcd3] mt-3 pt-3 pb-4">
+      <div className="bg-[#e6dcd3] mt-1 pt-1 pb-4">
         
         {/* SEÇÃO 1: CHECKOUT (Topo) */}
         <section className="pb-4">
@@ -260,16 +260,13 @@ export default function Index() {
 
             <BannerCarousel />
 
-            {/* ENVELOPAMENTO DA SEÇÃO "SUPER MIMO" E "DIGITE O CÓDIGO" */}
-            <div className="bg-white rounded-2xl p-3 sm:p-4 my-3 shadow-md border border-gray-100">
-              <GamificationBar cartCount={fullPriceRecipeCount} />
-              <div className="border-t border-gray-100 my-2 pt-2">
+            {/* Carrinho Inline Compacto com CodeInput anexado no topo */}
+            <div id="cart-section" className="max-w-2xl mx-auto my-3 bg-white rounded-[20px] p-4 shadow-md border border-gray-100">
+              {/* CodeInput anexado no topo com margem divisória suave */}
+              <div className="pb-3 mb-3 border-b border-gray-100">
                 <CodeInput onRecipeFound={handleRecipeFound} onRecipeNotFound={handleRecipeNotFound} />
               </div>
-            </div>
 
-            {/* Carrinho Inline Compacto */}
-            <div id="cart-section" className="max-w-2xl mx-auto my-2 bg-white rounded-[20px] p-3 shadow-md border border-gray-100">
               <h2 className="text-[0.85rem] font-extrabold mb-2 flex items-center gap-2 uppercase italic">
                 🛒 Meu Carrinho ({cart.length})
               </h2>
@@ -404,6 +401,11 @@ export default function Index() {
                   </div>
                 </div>
               )}
+            </div>
+
+            {/* SUPER MIMO AMIGUMUNDO abaixo do carrinho */}
+            <div className="max-w-2xl mx-auto my-3">
+              <GamificationBar cartCount={fullPriceRecipeCount} />
             </div>
           </div>
         </section>
