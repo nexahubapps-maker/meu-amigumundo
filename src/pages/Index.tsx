@@ -9,7 +9,6 @@ import { UpsellCard } from "@/components/UpsellCard";
 import { UpsellModal } from "@/components/UpsellModal";
 import { CategoryCard } from "@/components/CategoryCard";
 import { PackCard } from "@/components/PackCard";
-import { ComboCard } from "@/components/ComboCard";
 import { ErrorToast } from "@/components/ErrorToast";
 import { BannerCarousel } from "@/components/BannerCarousel";
 import { CartFooter } from "@/components/CartFooter";
@@ -20,8 +19,8 @@ import { FavoritesModal } from "@/components/FavoritesModal";
 import { recipes, type Recipe } from "@/data/recipes";
 import { upsells } from "@/data/upsells";
 import { categories } from "@/data/categories";
-import { packs, combos } from "@/data/packs";
-import { X, ShoppingBag, Heart } from "lucide-react";
+import { packs } from "@/data/packs";
+import { X, ShoppingBag, Heart, MessageCircle } from "lucide-react";
 
 interface CartItem {
   id: string;
@@ -77,10 +76,9 @@ export default function Index() {
         return;
       }
 
-      // Check if it's a pack or combo (scroll to section)
+      // Check if it's a pack (scroll to section)
       const pack = packs.find(p => p.id === routeId);
-      const combo = combos.find(c => c.id === routeId);
-      if (pack || combo) {
+      if (pack) {
         const el = document.getElementById('cart-section');
         if (el) el.scrollIntoView({ behavior: 'smooth' });
       }
@@ -207,17 +205,6 @@ export default function Index() {
     });
   };
 
-  const handleComboAdd = (comboId: string) => {
-    const combo = combos.find((c) => c.id === comboId);
-    if (combo) addToCart({ 
-      id: combo.id, 
-      nome: combo.nome, 
-      preco: combo.preco, 
-      tipo: "combo",
-      imagem: `https://picsum.photos/seed/${combo.id}/100/100`
-    });
-  };
-
   const handleUpsellBuy = () => {
     if (activeUpsell) {
       const upsell = upsells.find((u) => u.id === activeUpsell);
@@ -238,11 +225,21 @@ export default function Index() {
     <div className="min-h-screen bg-white pb-24 relative">
       <Header cartCount={cart.length} />
 
-      {/* DAILY GIFT ANNOUNCEMENT BOX */}
-      <div className="max-w-6xl mx-auto px-4 mt-2">
-        <div className="bg-[#44FF00] text-[#171717] p-2.5 rounded-xl text-center text-xs font-black uppercase tracking-wide shadow-sm">
+      {/* DAILY GIFT ANNOUNCEMENT BOX (Shrunk) */}
+      <div className="max-w-6xl mx-auto px-4 mt-2 flex flex-col gap-1">
+        <div className="bg-[#44FF00] text-[#171717] p-1.5 rounded-lg text-center text-[10px] font-black uppercase tracking-wide shadow-sm">
           PRESENTE DIÁRIO: Vá até o final da página e baixe a Receita Gratuita de hoje! ↓
         </div>
+        
+        {/* WhatsApp Group Card (Glued below) */}
+        <a 
+          href="https://wa.me/5544999999999" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="bg-[#44FF00] text-[#171717] p-1.5 rounded-lg text-center text-[10px] font-black uppercase tracking-wide shadow-sm flex items-center justify-center gap-1.5 hover:scale-[1.01] active:scale-[0.99] transition-transform"
+        >
+          <MessageCircle size={14} fill="currentColor" /> Entre no nosso Grupo de Promoções do WhatsApp
+        </a>
       </div>
 
       {/* SESSÃO UNIFICADA COM FUNDO #e6dcd3 */}
@@ -403,8 +400,13 @@ export default function Index() {
               )}
             </div>
 
-            {/* SUPER MIMO AMIGUMUNDO abaixo do carrinho */}
+            {/* SUPER MIMO AMIGUMUNDO Title Card & GamificationBar below the cart */}
             <div className="max-w-2xl mx-auto my-3">
+              <div className="w-full bg-[#44FF00] py-2 px-4 mb-2 shadow-sm rounded-xl text-center border border-gray-100">
+                <h2 className="text-xs sm:text-sm font-black uppercase tracking-wider text-[#171717] m-0">
+                  SUPER MIMO AMIGUMUNDO
+                </h2>
+              </div>
               <GamificationBar cartCount={fullPriceRecipeCount} />
             </div>
           </div>
@@ -427,7 +429,7 @@ export default function Index() {
         <section className="pt-1 pb-2">
           <div className="max-w-6xl mx-auto px-4">
             {/* Card de Título de Largura Total e Altura Mínima */}
-            <div className="w-full bg-[#dede07] py-3 px-4 mb-4 shadow-sm rounded-xl text-center border border-gray-100">
+            <div className="w-full bg-[#44FF00] py-3 px-4 mb-4 shadow-sm rounded-xl text-center border border-gray-100">
               <h2 className="text-sm sm:text-base font-black uppercase tracking-wider text-[#171717] m-0">
                 PROFISSIONALIZE O SEU NEGÓCIO
               </h2>
@@ -497,7 +499,7 @@ export default function Index() {
       <section className="bg-[#F5F5F7] py-10">
         <div className="max-w-6xl mx-auto px-4">
           {/* Card de Título de Largura Total e Altura Mínima */}
-          <div className="w-full bg-[#dede07] py-3 px-4 mb-2 shadow-sm rounded-xl text-center border border-gray-100">
+          <div className="w-full bg-[#44FF00] py-3 px-4 mb-2 shadow-sm rounded-xl text-center border border-gray-100">
             <h2 className="text-sm sm:text-base font-black uppercase tracking-wider text-[#171717] m-0">
               CATEGORIAS DE AMIGURUMIS
             </h2>
@@ -518,7 +520,7 @@ export default function Index() {
       <section className="bg-[#e6dcd3] py-8">
         <div className="max-w-6xl mx-auto px-4">
           {/* Card de Título de Largura Total e Altura Mínima */}
-          <div className="w-full bg-[#dede07] py-3 px-4 mb-6 shadow-sm rounded-xl text-center border border-gray-100">
+          <div className="w-full bg-[#44FF00] py-3 px-4 mb-6 shadow-sm rounded-xl text-center border border-gray-100">
             <h2 className="text-sm sm:text-base font-black uppercase tracking-wider text-[#171717] m-0">
               PACOTES TEMÁTICOS
             </h2>
@@ -534,34 +536,6 @@ export default function Index() {
                 onToggleFavorite={() => toggleFavorite(pack.id)}
                 onAdd={() => handlePackAdd(pack.id)}
                 onRemove={() => removeFromCart(pack.id)}
-              />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* SEÇÃO 5: COMBOS (Fundo #18191a e Título #B78209) */}
-      <section className="bg-[#18191a] py-12">
-        <div className="max-w-6xl mx-auto px-4">
-          {/* Card de Título de Largura Total e Altura Mínima */}
-          <div className="w-full bg-[#dede07] py-3 px-4 mb-2 shadow-sm rounded-xl text-center border border-gray-100">
-            <h2 className="text-sm sm:text-base font-black uppercase tracking-wider text-[#171717] m-0">
-              COMBOS ELITE
-            </h2>
-          </div>
-          <p className="text-gray-400 text-xs font-medium mb-6 uppercase tracking-tight text-center">
-            escolha o combo perfeito para crescer o seu negocio ou hobby
-          </p>
-          <div className="max-w-3xl mx-auto space-y-4">
-            {combos.map((combo) => (
-              <ComboCard
-                key={combo.id}
-                combo={combo}
-                inCart={isInCart(combo.id)}
-                isFavorite={favorites.includes(combo.id)}
-                onToggleFavorite={() => toggleFavorite(combo.id)}
-                onAdd={() => handleComboAdd(combo.id)}
-                onRemove={() => removeFromCart(combo.id)}
               />
             ))}
           </div>

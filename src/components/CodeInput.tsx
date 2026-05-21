@@ -27,7 +27,10 @@ export const CodeInput = ({ onRecipeFound, onRecipeNotFound }: CodeInputProps) =
   };
 
   return (
-    <div className="max-w-[360px] mx-auto my-4 px-4">
+    <div className="max-w-[360px] mx-auto my-2 px-4">
+      <p className="text-center text-xs font-bold text-gray-600 mb-3 whitespace-pre-line leading-tight">
+        {"Gostou da receita no grupo do WhatsApp?\nDigite o código aqui e adicione direto no carrinho"}
+      </p>
       <div className="relative group">
         <input
           type="text"
@@ -35,10 +38,10 @@ export const CodeInput = ({ onRecipeFound, onRecipeNotFound }: CodeInputProps) =
           onChange={handleChange}
           maxLength={4}
           placeholder="digite o codigo"
-          className="w-full px-4 py-3 border-2 border-gray-100 rounded-xl text-xl font-black text-center focus:outline-none focus:border-[#F8DD12] transition-all placeholder:font-bold placeholder:text-gray-300 uppercase shadow-sm"
+          className="w-full px-4 py-2.5 border-2 border-gray-100 rounded-xl text-xl font-black text-center focus:outline-none focus:border-[#F8DD12] transition-all placeholder:font-bold placeholder:text-gray-300 uppercase shadow-sm"
         />
       </div>
-      <p className="text-center text-[9px] text-gray-400 mt-2 font-black uppercase tracking-[0.15em]">
+      <p className="text-center text-[9px] text-gray-400 mt-1.5 font-black uppercase tracking-[0.15em]">
         Busca automática ao digitar 4 números
       </p>
     </div>

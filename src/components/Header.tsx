@@ -23,19 +23,22 @@ export const Header = ({ cartCount = 0 }: HeaderProps) => {
     <header className="sticky top-0 z-50 bg-white h-[64px] flex items-center px-4 shadow-[0_2px_10px_rgba(0,0,0,0.05)]">
       <div className="max-w-6xl mx-auto w-full flex items-center justify-between">
         <div 
-          className="h-[44px] cursor-pointer flex items-center"
+          className="flex flex-col items-start cursor-pointer"
           onClick={() => navigate("/")}
         >
           <img 
             src="https://ik.imagekit.io/51b3srlsg/amigumundo_amigurumi.png" 
             alt="AmiguMundo" 
-            className="h-full w-auto object-contain"
+            className="h-[32px] w-auto object-contain"
           />
+          <span className="text-[8px] font-bold text-gray-500 mt-0.5 leading-none">
+            Uma Comunidade apaixonada por Amigurumis
+          </span>
         </div>
         
         <div className="flex items-center gap-2">
-          <div className="bg-[#dede07] text-black px-2.5 py-1 rounded-lg flex flex-col items-end leading-none text-[8px] font-black uppercase shrink-0 border border-black/5">
-            <span className="text-[6px] text-black/60 font-bold">um produto</span>
+          <div className="bg-[#44FF00] text-[#171717] px-2 py-0.5 rounded-md flex flex-col items-end leading-none text-[7px] font-black uppercase shrink-0 border border-black/5">
+            <span className="text-[5px] text-[#171717]/60 font-bold">um produto</span>
             <span className="tracking-tight">AMIGUMUNDO ARTES</span>
           </div>
           

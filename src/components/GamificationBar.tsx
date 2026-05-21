@@ -29,20 +29,16 @@ export const GamificationBar = ({ cartCount }: GamificationBarProps) => {
   ];
 
   return (
-    <div className="bg-white rounded-xl border border-[#F5C842] p-4 shadow-sm text-left">
-      <h2 className="text-[#E8472A] font-black text-base sm:text-lg mb-3 flex items-center gap-1.5 uppercase tracking-tight">
-        🎁 SUPER MIMO AMIGUMUNDO
-      </h2>
-      
-      <div className="space-y-3 mb-3">
+    <div className="bg-white rounded-xl border border-[#F5C842] p-2.5 shadow-sm text-left">
+      <div className="space-y-1.5 mb-2">
         {levels.map((level, i) => {
           const isActive = cartCount >= level.recipes;
           return (
-            <div key={i} className={`p-3 px-4 rounded-lg border text-sm transition-all ${isActive ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-100'}`}>
-              <div className="font-black text-gray-800 leading-none text-sm sm:text-base">
+            <div key={i} className={`p-1.5 px-2.5 rounded-lg border text-xs transition-all ${isActive ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-100'}`}>
+              <div className="font-black text-gray-800 leading-none text-xs">
                 {level.label}
               </div>
-              <p className="text-xs sm:text-sm text-gray-600 font-medium mt-1.5 leading-tight">
+              <p className="text-[11px] text-gray-600 font-medium mt-0.5 leading-tight">
                 {level.desc}
               </p>
             </div>
@@ -50,7 +46,7 @@ export const GamificationBar = ({ cartCount }: GamificationBarProps) => {
         })}
       </div>
 
-      <div className="space-y-1 border-t border-gray-100 pt-2 text-[9px] sm:text-[10px] text-gray-400 font-bold uppercase tracking-wide leading-tight">
+      <div className="space-y-0.5 border-t border-gray-100 pt-1.5 text-[8px] text-gray-400 font-bold uppercase tracking-wide leading-tight">
         <p>* Apenas receitas avulsas são contabilizadas no carrinho.</p>
         <p>* Receitas bônus não são contabilizadas no carrinho.</p>
         <p>* Packs, Combos e Super Ofertas não são contabilizadas no carrinho.</p>
