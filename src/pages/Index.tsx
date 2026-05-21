@@ -21,6 +21,7 @@ import { upsells } from "@/data/upsells";
 import { categories } from "@/data/categories";
 import { packs } from "@/data/packs";
 import { X, ShoppingBag, Heart, MessageCircle } from "lucide-react";
+import { playHeartbeatSound } from "@/utils/audio";
 
 interface CartItem {
   id: string;
@@ -92,6 +93,7 @@ export default function Index() {
   };
 
   const addToCart = (item: CartItem) => {
+    playHeartbeatSound();
     setCart((prev) => {
       if (prev.find((i) => i.id === item.id)) return prev;
       return [...prev, item];
@@ -208,14 +210,19 @@ export default function Index() {
   const handleUpsellBuy = () => {
     if (activeUpsell) {
       const upsell = upsells.find((u) => u.id === activeUpsell);
-      if (upsell) addToCart({ 
-        id: upsell.id, 
-        nome: upsell.nome, 
-        preco: upsell.precoAtual, 
-        tipo: "upsell",
-        imagem: `https://picsum.photos/seed/${upsell.id}/100/100`
-      });
-      setActiveUpsell(null);
+      if (upsell) {
+        // Add to cart
+        addToCart({ 
+          id: upsell.id, 
+          nome: upsell.nome, 
+          preco: upsell.precoAtual, 
+          tipo: "upsell",
+          imagem: `https://picsum.photos/seed/${upsell.id}/100/100`
+        });
+        setActiveUpsell(null);
+        // Fast-Pass Checkout: Redirect immediately
+        navigate("/checkout");
+      }
     }
   };
 
@@ -290,7 +297,7 @@ export default function Index() {
                       </h3>
                       <div className="space-y-1.5">
                         {partition.receitas.map((item) => (
-                          <div key={item.id} className="flex items-center gap-2 py-1.5 border-b border-gray-50 last:border-0">
+                          <div key={item.id} className="flex items-center gap-2 py-1.5 border-b border-gray-50 last:border-0 pl-3">
                             <img src={item.imagem} className="w-8 h-8 rounded-lg object-cover border border-gray-100" alt="" />
                             <div className="flex-1">
                               <h4 className="text-[0.75rem] font-black text-gray-800 leading-tight truncate uppercase">{item.nome}</h4>
@@ -314,7 +321,7 @@ export default function Index() {
                       </h3>
                       <div className="space-y-1.5">
                         {partition.mimos.map((item) => (
-                          <div key={item.id} className="flex items-center gap-2 py-1.5 border-b border-gray-50 last:border-0">
+                          <div key={item.id} className="flex items-center gap-2 py-1.5 border-b border-gray-50 last:border-0 pl-3">
                             <img src={item.imagem} className="w-8 h-8 rounded-lg object-cover border border-gray-100" alt="" />
                             <div className="flex-1">
                               <h4 className="text-[0.75rem] font-black text-gray-800 leading-tight truncate uppercase">{item.nome}</h4>
@@ -341,7 +348,7 @@ export default function Index() {
                       </h3>
                       <div className="space-y-1.5">
                         {partition.presentes.map((item) => (
-                          <div key={item.id} className="flex items-center gap-2 py-1.5 border-b border-gray-50 last:border-0">
+                          <div key={item.id} className="flex items-center gap-2 py-1.5 border-b border-gray-50 last:border-0 pl-3">
                             <img src={item.imagem} className="w-8 h-8 rounded-lg object-cover border border-gray-100" alt="" />
                             <div className="flex-1">
                               <h4 className="text-[0.75rem] font-black text-gray-800 leading-tight truncate uppercase">{item.nome}</h4>
@@ -368,7 +375,7 @@ export default function Index() {
                       </h3>
                       <div className="space-y-1.5">
                         {partition.otherItems.map((item) => (
-                          <div key={item.id} className="flex items-center gap-2 py-1.5 border-b border-gray-50 last:border-0">
+                          <div key={item.id} className="flex items-center gap-2 py-1.5 border-b border-gray-50 last:border-0 pl-3">
                             <img src={item.imagem} className="w-8 h-8 rounded-lg object-cover border border-gray-100" alt="" />
                             <div className="flex-1">
                               <h4 className="text-[0.75rem] font-black text-gray-800 leading-tight truncate uppercase">{item.nome}</h4>
@@ -390,7 +397,10 @@ export default function Index() {
                       <span className="text-[1rem] font-black text-[#171717]">R$ {total.toFixed(2)}</span>
                     </div>
                     <button 
-                      onClick={() => navigate("/checkout")}
+                      onClick={() => {
+                        playHeartbeatSound();
+                        navigate("/checkout");
+                      }}
                       className="w-full bg-[#44FF00] text-[#171717] py-2.5 rounded-full font-black text-[0.8rem] shadow-sm transition-transform active:scale-95 uppercase tracking-widest"
                     >
                       Finalizar Pedido →
@@ -400,13 +410,8 @@ export default function Index() {
               )}
             </div>
 
-            {/* SUPER MIMO AMIGUMUNDO Title Card & GamificationBar below the cart */}
+            {/* SUPER MIMO AMIGUMUNDO abaixo do carrinho */}
             <div className="max-w-2xl mx-auto my-3">
-              <div className="w-full bg-[#44FF00] py-2 px-4 mb-2 shadow-sm rounded-xl text-center border border-gray-100">
-                <h2 className="text-xs sm:text-sm font-black uppercase tracking-wider text-[#171717] m-0">
-                  SUPER MIMO AMIGUMUNDO
-                </h2>
-              </div>
               <GamificationBar cartCount={fullPriceRecipeCount} />
             </div>
           </div>
@@ -426,18 +431,18 @@ export default function Index() {
         </div>
 
         {/* SEÇÃO 2: UPSELLS (Profissionalize o seu negócio) */}
-        <section className="pt-1 pb-2">
-          <div className="max-w-6xl mx-auto px-4">
+        <section className="pt-8 pb-10 bg-[#FDFBF7]">
+          <div className="max-w-3xl mx-auto px-4">
             {/* Card de Título de Largura Total e Altura Mínima */}
             <div className="w-full bg-[#44FF00] py-3 px-4 mb-4 shadow-sm rounded-xl text-center border border-gray-100">
               <h2 className="text-sm sm:text-base font-black uppercase tracking-wider text-[#171717] m-0">
-                PROFISSIONALIZE O SEU NEGÓCIO
+                ✨ Transforme suas Peças em um Ateliê Lucrativo
               </h2>
             </div>
             
-            <div className="mb-4">
-              <p className="text-xs sm:text-sm text-gray-800 font-medium mt-1 max-w-2xl leading-relaxed">
-                Aqui você vai encontrar soluções para o marketing do seu negócio, como acelerar as vendas e como fazer a sua paixão se tornar o seu conforto financeiro
+            <div className="mb-8 text-center">
+              <p className="text-xs sm:text-sm text-gray-600 font-medium mt-1 max-w-2xl mx-auto leading-relaxed">
+                Descubra as soluções exclusivas para atrair clientes pagantes, valorizar o seu trabalho e profissionalizar suas vendas.
               </p>
             </div>
 
@@ -460,18 +465,20 @@ export default function Index() {
               </div>
             )}
 
-            <div className="mb-2">
-              <div className="grid grid-cols-2 gap-3 sm:gap-4">
-                {upsells.map((upsell) => (
-                  <UpsellCard 
-                    key={upsell.id} 
-                    upsell={upsell} 
-                    isFavorite={favorites.includes(upsell.id)}
-                    onToggleFavorite={() => toggleFavorite(upsell.id)}
-                    onOpen={() => setActiveUpsell(upsell.id)} 
-                  />
-                ))}
-              </div>
+            {/* Vertical Meta Ads Style List */}
+            <div className="space-y-6">
+              {upsells.map((upsell) => (
+                <UpsellCard 
+                  key={upsell.id} 
+                  upsell={upsell} 
+                  isFavorite={favorites.includes(upsell.id)}
+                  onToggleFavorite={() => toggleFavorite(upsell.id)}
+                  onOpen={() => {
+                    playHeartbeatSound();
+                    setActiveUpsell(upsell.id);
+                  }} 
+                />
+              ))}
             </div>
           </div>
         </section>
@@ -493,6 +500,14 @@ export default function Index() {
             />
           </div>
         </div>
+      )}
+
+      {activeUpsell && (
+        <UpsellModal
+          upsell={upsells.find((u) => u.id === activeUpsell)!}
+          onClose={() => setActiveUpsell(null)}
+          onBuy={handleUpsellBuy}
+        />
       )}
 
       {/* SEÇÃO 3: CATEGORIAS */}
@@ -571,7 +586,10 @@ export default function Index() {
       <CartFooter 
         count={cart.length} 
         total={total} 
-        onCheckout={() => navigate("/checkout")} 
+        onCheckout={() => {
+          playHeartbeatSound();
+          navigate("/checkout");
+        }} 
       />
     </div>
   );

@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import confetti from 'canvas-confetti';
 import { SuccessModal } from './SuccessModal';
 import { Download } from 'lucide-react';
+import { playHeartbeatSound } from '@/utils/audio';
 
 export const DailyGiftSection = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -15,6 +16,9 @@ export const DailyGiftSection = () => {
   };
 
   const handleDownload = () => {
+    // Play conversion sound
+    playHeartbeatSound();
+
     // Efeito de Confete - zIndex ajustado para 999 para ficar acima do modal (z-100)
     const duration = 3 * 1000;
     const animationEnd = Date.now() + duration;

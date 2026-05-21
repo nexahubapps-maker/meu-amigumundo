@@ -23,7 +23,7 @@ const RecipeCard = ({ recipe, isFavorite, onToggleFavorite, onAdd, onReject, isI
                 recipe.id === "1204" ? { text: "NOVO", bg: "bg-blue-500 text-white" } : null;
 
   return (
-    <div className="card-float overflow-hidden relative flex flex-col bg-white rounded-2xl border border-gray-100 shadow-sm">
+    <div className={`overflow-hidden relative flex flex-col bg-white rounded-2xl border border-gray-100 shadow-sm transition-all duration-300 ${isInCart ? 'animate-pulse-subtle border-[#44FF00] shadow-md' : ''}`}>
       <div className="relative h-[120px] w-full bg-gray-50">
         <img
           src={`https://picsum.photos/seed/${recipe.id}/400/300`}
@@ -56,7 +56,7 @@ const RecipeCard = ({ recipe, isFavorite, onToggleFavorite, onAdd, onReject, isI
       
       <div className="p-3 flex flex-col gap-2 flex-1 justify-between">
         <div>
-          <h3 className="text-gray-800 text-[0.85rem] font-bold leading-tight truncate uppercase tracking-tight">
+          <h3 className="text-gray-800 text-[0.85rem] font-bold leading-tight uppercase tracking-tight line-clamp-2">
             {recipe.nome}
           </h3>
           <div className="flex items-center justify-between mt-1">
@@ -68,7 +68,7 @@ const RecipeCard = ({ recipe, isFavorite, onToggleFavorite, onAdd, onReject, isI
           <button
             onClick={onAdd}
             disabled={isInCart}
-            className="flex-1 btn-premium bg-[#7BC843] text-white py-2 text-[0.75rem] font-black uppercase tracking-wider"
+            className="flex-1 bg-[#44FF00] text-[#171717] py-2 rounded-xl text-[0.75rem] font-black uppercase tracking-wider transition-all active:scale-95"
           >
             {isInCart ? "✓ No Carrinho" : "+ Adicionar"}
           </button>

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft, ShieldCheck, Zap, CreditCard, Smartphone, Mail, Phone } from "lucide-react";
 import { SupportButton } from "@/components/SupportButton";
+import { playHeartbeatSound } from "@/utils/audio";
 
 export default function Checkout() {
   const navigate = useNavigate();
@@ -30,7 +31,71 @@ export default function Checkout() {
     localStorage.setItem("amigumundo-whatsapp", whatsapp);
   }, [whatsapp]);
 
+  // Máscara dinâmica para WhatsApp brasileiro: (XX) XXXXX-XXXX
+  const handleWhatsappChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const rawValue = e.target.value.replace(/\D/g, ""); // Remove non-digits
+    let formattedValue = "";
+
+    if (rawValue.length > 0) {
+      formattedValue += `(${rawValue.substring(0, 2)}`;
+    }
+    if (rawValue.length > 2) {
+      formattedValue += `) ${rawValue.substring(2, 7)}`;
+    }
+    if (rawValue.length > 7) {
+      formattedValue += `-${rawValue.substring(7, 11)}`;
+    }
+
+    setWhatsapp(formattedValue);
+  };
+
+  // Validação: WhatsApp precisa ter exatamente 11 dígitos numéricos
+  const rawWhatsappDigits = whatsapp.replace(/\D/g, "");
+  const isWhatsappValid = rawWhatsappDigits.length === 11;
+  const isEmailValid = email.includes("@") && email.includes(".");
+  const isFormValid = isWhatsappValid && isEmailValid;
+
   const total = cart.reduce((sum, item) => sum + item.preco, 0);
+
+  // Estrutura de Webhook para o Administrador
+  const triggerAdminWebhook = async (saleData: any) => {
+    try {
+      // URL fictícia ou real do webhook do administrador
+      const webhookUrl = "https://api.amigumundo.com/v1/webhooks/sales";
+      await fetch(webhookUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...saleData,
+          timestamp: new Date().toISOString(),
+          triggerNotificationSound: "tom-tom" // Sinaliza para tocar o som no celular do admin
+        })
+      });
+    } catch (e) {
+      console.log("Webhook disparado em segundo plano (simulado):", saleData);
+    }
+  };
+
+  const handlePaymentSubmit = () => {
+    if (!isFormValid) return;
+
+    playHeartbeatSound();
+
+    const saleData = {
+      email,
+      whatsapp: rawWhatsappDigits,
+      items: cart,
+      total,
+      paymentMethod
+    };
+
+    // Dispara o webhook em segundo plano
+    triggerAdminWebhook(saleData);
+
+    alert("Pagamento processado com sucesso! Suas receitas foram enviadas para o seu WhatsApp.");
+    localStorage.removeItem("amigumundo-cart");
+    navigate("/");
+  };
 
   return (
     <div className="min-h-screen bg-[#F4F7F9] pb-20 font-sans">
@@ -90,7 +155,7 @@ export default function Checkout() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="seu@email.com"
-                  className="w-full pl-12 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-gray-700 font-medium"
+                  className="w-full pl-12 pr-4 py-3.5 bg-gray-50 border-2 border-gray-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-gray-700 font-medium"
                 />
               </div>
             </div>
@@ -101,11 +166,13 @@ export default function Checkout() {
                 <input
                   type="text"
                   value={whatsapp}
-                  onChange={(e) => setWhatsapp(e.target.value)}
-                  placeholder="(00) 00000-0000"
-                  className="w-full pl-12 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-gray-700 font-medium"
+                  onChange={handleWhatsappChange}
+                  placeholder="(00) 90000-0000"
+                  maxLength={15}
+                  className="w-full pl-12 pr-4 py-3.5 bg-gray-50 border-2 border-gray-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-gray-700 font-medium"
                 />
               </div>
+              <span className="text-[10px] text-gray-400 mt-1 block ml-1">Digite o DDD + seu número</span>
             </div>
           </div>
         </div>
@@ -142,7 +209,11 @@ export default function Checkout() {
             </div>
           )}
 
-          <button className="w-full bg-[#00D177] hover:bg-[#00B868] text-white py-5 rounded-2xl font-black text-lg shadow-lg shadow-green-200 transition-all active:scale-[0.98] uppercase tracking-widest">
+          <button 
+            onClick={handlePaymentSubmit}
+            disabled={!isFormValid}
+            className={`w-full py-5 rounded-2xl font-black text-lg shadow-lg transition-all uppercase tracking-widest ${isFormValid ? 'bg-[#00D177] hover:bg-[#00B868] text-white shadow-green-200 active:scale-[0.98]' : 'bg-gray-200 text-gray-400 cursor-not-allowed shadow-none'}`}
+          >
             Finalizar Pagamento
           </button>
         </div>

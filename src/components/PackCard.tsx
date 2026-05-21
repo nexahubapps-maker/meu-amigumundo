@@ -17,7 +17,7 @@ export const PackCard = ({ pack, inCart, isFavorite, onToggleFavorite, onAdd, on
                 pack.id === "pack2" ? { text: "NOVO", bg: "bg-blue-500 text-white" } : null;
 
   return (
-    <div className="flex flex-col rounded-2xl overflow-hidden bg-white shadow-[0_12px_24px_rgba(0,0,0,0.12)] hover:shadow-[0_18px_36px_rgba(0,0,0,0.18)] hover:-translate-y-1 transition-all duration-300 border border-gray-100/50">
+    <div className={`flex flex-col rounded-2xl overflow-hidden bg-white shadow-[0_12px_24px_rgba(0,0,0,0.12)] hover:shadow-[0_18px_36px_rgba(0,0,0,0.18)] hover:-translate-y-1 transition-all duration-300 border border-gray-100/50 ${inCart ? 'animate-pulse-subtle border-[#44FF00]' : ''}`}>
       {/* Imagem Quadrada 1x1 */}
       <div className="relative aspect-square w-full bg-gray-50">
         <img
@@ -50,10 +50,10 @@ export const PackCard = ({ pack, inCart, isFavorite, onToggleFavorite, onAdd, on
       {/* Mini Card Branco Colado */}
       <div className="p-2.5 flex flex-col justify-between flex-1 bg-white">
         <div>
-          <h3 className="text-[10px] sm:text-xs font-black leading-tight truncate text-[#171717] uppercase tracking-tight">
+          <h3 className="text-[10px] sm:text-xs font-black leading-tight text-[#171717] uppercase tracking-tight line-clamp-2">
             {pack.nome}
           </h3>
-          <p className="text-[9px] text-gray-500 font-medium line-clamp-1 mt-0.5 leading-tight">
+          <p className="text-[9px] text-gray-500 font-medium mt-0.5 leading-tight">
             {pack.descricao}
           </p>
           <div className="flex items-center gap-1.5 mt-1">
