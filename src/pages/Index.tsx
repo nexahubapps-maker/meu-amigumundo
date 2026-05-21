@@ -425,7 +425,7 @@ export default function Index() {
         <section className="pt-1 pb-2">
           <div className="max-w-6xl mx-auto px-4">
             {/* Card de Título de Largura Total e Altura Mínima */}
-            <div className="w-full bg-[#E4B721] py-3 px-4 mb-4 shadow-sm rounded-xl text-center border border-gray-100">
+            <div className="w-full bg-[#dede07] py-3 px-4 mb-4 shadow-sm rounded-xl text-center border border-gray-100">
               <h2 className="text-sm sm:text-base font-black uppercase tracking-wider text-[#171717] m-0">
                 PROFISSIONALIZE O SEU NEGÓCIO
               </h2>
@@ -495,11 +495,14 @@ export default function Index() {
       <section className="bg-[#F5F5F7] py-10">
         <div className="max-w-6xl mx-auto px-4">
           {/* Card de Título de Largura Total e Altura Mínima */}
-          <div className="w-full bg-[#E4B721] py-3 px-4 mb-6 shadow-sm rounded-xl text-center border border-gray-100">
+          <div className="w-full bg-[#dede07] py-3 px-4 mb-2 shadow-sm rounded-xl text-center border border-gray-100">
             <h2 className="text-sm sm:text-base font-black uppercase tracking-wider text-[#171717] m-0">
               CATEGORIAS DE AMIGURUMIS
             </h2>
           </div>
+          <p className="text-gray-600 text-xs font-bold mb-6 text-center uppercase tracking-tight">
+            Novas receitas adicionadas ao catalogo todos os dias
+          </p>
           
           <div className="grid grid-cols-3 gap-x-2 gap-y-2">
             {categories.map((cat) => (
@@ -513,7 +516,7 @@ export default function Index() {
       <section className="bg-[#e6dcd3] py-8">
         <div className="max-w-6xl mx-auto px-4">
           {/* Card de Título de Largura Total e Altura Mínima */}
-          <div className="w-full bg-[#E4B721] py-3 px-4 mb-6 shadow-sm rounded-xl text-center border border-gray-100">
+          <div className="w-full bg-[#dede07] py-3 px-4 mb-6 shadow-sm rounded-xl text-center border border-gray-100">
             <h2 className="text-sm sm:text-base font-black uppercase tracking-wider text-[#171717] m-0">
               PACOTES TEMÁTICOS
             </h2>
@@ -539,7 +542,7 @@ export default function Index() {
       <section className="bg-[#18191a] py-12">
         <div className="max-w-6xl mx-auto px-4">
           {/* Card de Título de Largura Total e Altura Mínima */}
-          <div className="w-full bg-[#E4B721] py-3 px-4 mb-2 shadow-sm rounded-xl text-center border border-gray-100">
+          <div className="w-full bg-[#dede07] py-3 px-4 mb-2 shadow-sm rounded-xl text-center border border-gray-100">
             <h2 className="text-sm sm:text-base font-black uppercase tracking-wider text-[#171717] m-0">
               COMBOS ELITE
             </h2>
@@ -573,10 +576,10 @@ export default function Index() {
       {/* FLOATING FAVORITES BUTTON */}
       <button
         onClick={() => setIsFavoritesOpen(true)}
-        className="fixed bottom-16 right-4 z-50 bg-[#44FF00] text-[#171717] p-3 rounded-full shadow-2xl hover:scale-110 transition-transform active:scale-95 flex items-center justify-center border-2 border-white"
+        className="fixed bottom-[60px] right-2.5 z-50 bg-[#44FF00] text-[#171717] p-2.5 rounded-full shadow-2xl hover:scale-110 transition-transform active:scale-95 flex items-center justify-center border-2 border-white"
         aria-label="Meus Favoritos"
       >
-        <Heart size={20} fill="currentColor" />
+        <Heart size={18} fill="currentColor" />
       </button>
 
       {/* FAVORITES MODAL */}

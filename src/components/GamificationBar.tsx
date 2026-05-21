@@ -9,22 +9,22 @@ export const GamificationBar = ({ cartCount }: GamificationBarProps) => {
     { 
       recipes: 3, 
       label: "🔖 Com 3 receitas no carrinho:", 
-      desc: "〽️ Você pode escolher mais 3 receitas, por 3 reais cada." 
+      desc: "Você pode escolher mais 3 receitas, por 3 reais cada." 
     },
     { 
       recipes: 6, 
       label: "🔖 Com 6 receitas no carrinho:", 
-      desc: "〽️ Você pode escolher mais 3 receitas, por 2 reais cada." 
+      desc: "Você pode escolher mais 3 receitas, por 2 reais cada." 
     },
     { 
       recipes: 9, 
       label: "🔖 Com 9 receitas no carrinho:", 
-      desc: "〽️ Você pode escolher mais 3 receitas, por 1 real cada." 
+      desc: "Você pode escolher mais 3 receitas, por 1 real cada." 
     },
     { 
       recipes: 10, 
       label: "🔖 Com 10 receitas no carrinho:", 
-      desc: "〽️ Você ganha o SUPER BONUS e pode escolher 3 receitas, GRATIS 🎁" 
+      desc: "Você ganha o SUPER BONUS e pode escolher 3 receitas, GRATIS 🎁" 
     },
   ];
 
