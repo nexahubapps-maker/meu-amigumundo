@@ -425,7 +425,7 @@ export default function Index() {
         <section className="pt-1 pb-2">
           <div className="max-w-6xl mx-auto px-4">
             {/* Card de Título de Largura Total e Altura Mínima */}
-            <div className="w-full bg-[#dbdad9] py-3 px-4 mb-4 shadow-sm rounded-xl text-center border border-gray-100">
+            <div className="w-full bg-[#E4B721] py-3 px-4 mb-4 shadow-sm rounded-xl text-center border border-gray-100">
               <h2 className="text-sm sm:text-base font-black uppercase tracking-wider text-[#171717] m-0">
                 PROFISSIONALIZE O SEU NEGÓCIO
               </h2>
@@ -495,7 +495,7 @@ export default function Index() {
       <section className="bg-[#F5F5F7] py-10">
         <div className="max-w-6xl mx-auto px-4">
           {/* Card de Título de Largura Total e Altura Mínima */}
-          <div className="w-full bg-[#dbdad9] py-3 px-4 mb-6 shadow-sm rounded-xl text-center border border-gray-100">
+          <div className="w-full bg-[#E4B721] py-3 px-4 mb-6 shadow-sm rounded-xl text-center border border-gray-100">
             <h2 className="text-sm sm:text-base font-black uppercase tracking-wider text-[#171717] m-0">
               CATEGORIAS DE AMIGURUMIS
             </h2>
@@ -513,7 +513,7 @@ export default function Index() {
       <section className="bg-[#e6dcd3] py-8">
         <div className="max-w-6xl mx-auto px-4">
           {/* Card de Título de Largura Total e Altura Mínima */}
-          <div className="w-full bg-[#dbdad9] py-3 px-4 mb-6 shadow-sm rounded-xl text-center border border-gray-100">
+          <div className="w-full bg-[#E4B721] py-3 px-4 mb-6 shadow-sm rounded-xl text-center border border-gray-100">
             <h2 className="text-sm sm:text-base font-black uppercase tracking-wider text-[#171717] m-0">
               PACOTES TEMÁTICOS
             </h2>
@@ -539,7 +539,7 @@ export default function Index() {
       <section className="bg-[#18191a] py-12">
         <div className="max-w-6xl mx-auto px-4">
           {/* Card de Título de Largura Total e Altura Mínima */}
-          <div className="w-full bg-[#dbdad9] py-3 px-4 mb-2 shadow-sm rounded-xl text-center border border-gray-100">
+          <div className="w-full bg-[#E4B721] py-3 px-4 mb-2 shadow-sm rounded-xl text-center border border-gray-100">
             <h2 className="text-sm sm:text-base font-black uppercase tracking-wider text-[#171717] m-0">
               COMBOS ELITE
             </h2>
