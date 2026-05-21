@@ -47,6 +47,19 @@ export default function Index() {
     return saved ? JSON.parse(saved) : [];
   });
 
+  // Scroll Lock Effect
+  useEffect(() => {
+    const isModalOpen = !!showRecipe || !!activeUpsell || isFavoritesOpen;
+    if (isModalOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [showRecipe, activeUpsell, isFavoritesOpen]);
+
   useEffect(() => {
     const savedCart = localStorage.getItem("amigumundo-cart");
     if (savedCart) setCart(JSON.parse(savedCart));
@@ -229,11 +242,11 @@ export default function Index() {
   const isInCart = (id: string) => cart.some((item) => item.id === id);
 
   return (
-    <div className="min-h-screen bg-white pb-24 relative">
+    <div className="min-h-screen bg-white pb-16 relative">
       <Header cartCount={cart.length} />
 
       {/* DAILY GIFT ANNOUNCEMENT BOX (Shrunk) */}
-      <div className="max-w-6xl mx-auto px-4 mt-2 flex flex-col gap-1">
+      <div className="max-w-6xl mx-auto px-4 mt-1 flex flex-col gap-1">
         <div className="bg-[#44FF00] text-[#171717] p-1.5 rounded-lg text-center text-[10px] font-black uppercase tracking-wide shadow-sm">
           PRESENTE DIÁRIO: Vá até o final da página e baixe a Receita Gratuita de hoje! ↓
         </div>
@@ -250,10 +263,10 @@ export default function Index() {
       </div>
 
       {/* SESSÃO UNIFICADA COM FUNDO #e6dcd3 */}
-      <div className="bg-[#e6dcd3] mt-1 pt-1 pb-4">
+      <div className="bg-[#e6dcd3] mt-1 pt-1 pb-2">
         
         {/* SEÇÃO 1: CHECKOUT (Topo) */}
-        <section className="pb-4">
+        <section className="pb-2">
           <div className="max-w-6xl mx-auto px-4">
             
             {/* PWA Install Prompt */}
@@ -265,9 +278,9 @@ export default function Index() {
             <BannerCarousel />
 
             {/* Carrinho Inline Compacto com CodeInput anexado no topo */}
-            <div id="cart-section" className="max-w-2xl mx-auto my-3 bg-white rounded-[20px] p-4 shadow-md border border-gray-100">
+            <div id="cart-section" className="max-w-2xl mx-auto my-2 bg-white rounded-[20px] p-4 shadow-md border border-gray-100">
               {/* CodeInput anexado no topo com margem divisória suave */}
-              <div className="pb-3 mb-3 border-b border-gray-100">
+              <div className="pb-2 mb-2 border-b border-gray-100">
                 <CodeInput onRecipeFound={handleRecipeFound} onRecipeNotFound={handleRecipeNotFound} />
               </div>
 
@@ -276,35 +289,35 @@ export default function Index() {
               </h2>
 
               {/* Dynamic UX Nudge */}
-              <div className="bg-blue-50 text-blue-700 text-xs font-bold p-2.5 rounded-xl mb-3 text-center">
+              <div className="bg-blue-50 text-blue-700 text-xs font-bold p-2 rounded-xl mb-2 text-center">
                 {getNudgeMessage()}
               </div>
               
               {cart.length === 0 ? (
-                <div className="py-4 text-center">
-                  <ShoppingBag size={32} className="mx-auto text-gray-100 mb-2" />
+                <div className="py-2 text-center">
+                  <ShoppingBag size={24} className="mx-auto text-gray-100 mb-1" />
                   <p className="text-gray-400 font-black text-[0.65rem] uppercase tracking-widest">
                     Vazio
                   </p>
                 </div>
               ) : (
-                <div className="space-y-4">
+                <div className="space-y-3">
                   {/* [Seção 1: Receitas] */}
                   {partition.receitas.length > 0 && (
                     <div>
-                      <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-wider mb-1.5">
+                      <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-wider mb-1">
                         [Seção 1: Receitas]
                       </h3>
-                      <div className="space-y-1.5">
+                      <div className="space-y-1">
                         {partition.receitas.map((item) => (
-                          <div key={item.id} className="flex items-center gap-2 py-1.5 border-b border-gray-50 last:border-0 pl-3">
-                            <img src={item.imagem} className="w-8 h-8 rounded-lg object-cover border border-gray-100" alt="" />
-                            <div className="flex-1">
-                              <h4 className="text-[0.75rem] font-black text-gray-800 leading-tight truncate uppercase">{item.nome}</h4>
+                          <div key={item.id} className="flex items-center gap-2 py-1 border-b border-gray-50 last:border-0 pl-3">
+                            <img src={item.imagem} className="w-8 h-8 rounded-lg object-cover border border-gray-100 shrink-0" alt="" />
+                            <div className="flex-1 min-w-0">
+                              <h4 className="text-[0.75rem] font-black text-gray-800 leading-tight break-words whitespace-normal line-clamp-2 uppercase">{item.nome}</h4>
                               <span className="text-[8px] font-black text-gray-300 uppercase">Cód: {item.id}</span>
                             </div>
-                            <span className="font-black text-[#171717] text-[0.8rem]">R$ {item.precoFinal.toFixed(2)}</span>
-                            <button onClick={() => removeFromCart(item.id)} className="p-1 text-gray-200 hover:text-red-500">
+                            <span className="font-black text-[#171717] text-[0.8rem] shrink-0">R$ {item.precoFinal.toFixed(2)}</span>
+                            <button onClick={() => removeFromCart(item.id)} className="p-1 text-gray-200 hover:text-red-500 shrink-0">
                               <X size={14} />
                             </button>
                           </div>
@@ -316,22 +329,22 @@ export default function Index() {
                   {/* [Seção 2: Mimos] */}
                   {partition.mimos.length > 0 && (
                     <div>
-                      <h3 className="text-[10px] font-black text-orange-500 uppercase tracking-wider mb-1.5">
+                      <h3 className="text-[10px] font-black text-orange-500 uppercase tracking-wider mb-1">
                         [Seção 2: Mimos]
                       </h3>
-                      <div className="space-y-1.5">
+                      <div className="space-y-1">
                         {partition.mimos.map((item) => (
-                          <div key={item.id} className="flex items-center gap-2 py-1.5 border-b border-gray-50 last:border-0 pl-3">
-                            <img src={item.imagem} className="w-8 h-8 rounded-lg object-cover border border-gray-100" alt="" />
-                            <div className="flex-1">
-                              <h4 className="text-[0.75rem] font-black text-gray-800 leading-tight truncate uppercase">{item.nome}</h4>
+                          <div key={item.id} className="flex items-center gap-2 py-1 border-b border-gray-50 last:border-0 pl-3">
+                            <img src={item.imagem} className="w-8 h-8 rounded-lg object-cover border border-gray-100 shrink-0" alt="" />
+                            <div className="flex-1 min-w-0">
+                              <h4 className="text-[0.75rem] font-black text-gray-800 leading-tight break-words whitespace-normal line-clamp-2 uppercase">{item.nome}</h4>
                               <span className="text-[8px] font-black text-gray-300 uppercase">Cód: {item.id}</span>
                             </div>
-                            <div className="flex items-center gap-1.5">
+                            <div className="flex items-center gap-1.5 shrink-0">
                               <span className="text-red-500 line-through text-[10px]">R$ {item.originalPreco.toFixed(2)}</span>
                               <span className="font-black text-green-600 text-[0.8rem]">R$ {item.precoFinal.toFixed(2)}</span>
                             </div>
-                            <button onClick={() => removeFromCart(item.id)} className="p-1 text-gray-200 hover:text-red-500">
+                            <button onClick={() => removeFromCart(item.id)} className="p-1 text-gray-200 hover:text-red-500 shrink-0">
                               <X size={14} />
                             </button>
                           </div>
@@ -343,22 +356,22 @@ export default function Index() {
                   {/* [Seção 3: Presentes] */}
                   {partition.presentes.length > 0 && (
                     <div>
-                      <h3 className="text-[10px] font-black text-green-600 uppercase tracking-wider mb-1.5">
+                      <h3 className="text-[10px] font-black text-green-600 uppercase tracking-wider mb-1">
                         [Seção 3: Presentes]
                       </h3>
-                      <div className="space-y-1.5">
+                      <div className="space-y-1">
                         {partition.presentes.map((item) => (
-                          <div key={item.id} className="flex items-center gap-2 py-1.5 border-b border-gray-50 last:border-0 pl-3">
-                            <img src={item.imagem} className="w-8 h-8 rounded-lg object-cover border border-gray-100" alt="" />
-                            <div className="flex-1">
-                              <h4 className="text-[0.75rem] font-black text-gray-800 leading-tight truncate uppercase">{item.nome}</h4>
+                          <div key={item.id} className="flex items-center gap-2 py-1 border-b border-gray-50 last:border-0 pl-3">
+                            <img src={item.imagem} className="w-8 h-8 rounded-lg object-cover border border-gray-100 shrink-0" alt="" />
+                            <div className="flex-1 min-w-0">
+                              <h4 className="text-[0.75rem] font-black text-gray-800 leading-tight break-words whitespace-normal line-clamp-2 uppercase">{item.nome}</h4>
                               <span className="text-[8px] font-black text-gray-300 uppercase">Cód: {item.id}</span>
                             </div>
-                            <div className="flex items-center gap-1.5">
+                            <div className="flex items-center gap-1.5 shrink-0">
                               <span className="text-red-500 line-through text-[10px]">R$ {item.originalPreco.toFixed(2)}</span>
                               <span className="font-black text-green-600 text-[0.8rem]">GRÁTIS</span>
                             </div>
-                            <button onClick={() => removeFromCart(item.id)} className="p-1 text-gray-200 hover:text-red-500">
+                            <button onClick={() => removeFromCart(item.id)} className="p-1 text-gray-200 hover:text-red-500 shrink-0">
                               <X size={14} />
                             </button>
                           </div>
@@ -370,19 +383,19 @@ export default function Index() {
                   {/* Other Items (Packs, Combos, Upsells) */}
                   {partition.otherItems.length > 0 && (
                     <div>
-                      <h3 className="text-[10px] font-black text-purple-600 uppercase tracking-wider mb-1.5">
+                      <h3 className="text-[10px] font-black text-purple-600 uppercase tracking-wider mb-1">
                         Outros Itens
                       </h3>
-                      <div className="space-y-1.5">
+                      <div className="space-y-1">
                         {partition.otherItems.map((item) => (
-                          <div key={item.id} className="flex items-center gap-2 py-1.5 border-b border-gray-50 last:border-0 pl-3">
-                            <img src={item.imagem} className="w-8 h-8 rounded-lg object-cover border border-gray-100" alt="" />
-                            <div className="flex-1">
-                              <h4 className="text-[0.75rem] font-black text-gray-800 leading-tight truncate uppercase">{item.nome}</h4>
+                          <div key={item.id} className="flex items-center gap-2 py-1 border-b border-gray-50 last:border-0 pl-3">
+                            <img src={item.imagem} className="w-8 h-8 rounded-lg object-cover border border-gray-100 shrink-0" alt="" />
+                            <div className="flex-1 min-w-0">
+                              <h4 className="text-[0.75rem] font-black text-gray-800 leading-tight break-words whitespace-normal line-clamp-2 uppercase">{item.nome}</h4>
                               <span className="text-[8px] font-black text-gray-300 uppercase">Cód: {item.id}</span>
                             </div>
-                            <span className="font-black text-[#171717] text-[0.8rem]">R$ {item.preco.toFixed(2)}</span>
-                            <button onClick={() => removeFromCart(item.id)} className="p-1 text-gray-200 hover:text-red-500">
+                            <span className="font-black text-[#171717] text-[0.8rem] shrink-0">R$ {item.preco.toFixed(2)}</span>
+                            <button onClick={() => removeFromCart(item.id)} className="p-1 text-gray-200 hover:text-red-500 shrink-0">
                               <X size={14} />
                             </button>
                           </div>
@@ -410,8 +423,13 @@ export default function Index() {
               )}
             </div>
 
-            {/* SUPER MIMO AMIGUMUNDO abaixo do carrinho */}
-            <div className="max-w-2xl mx-auto my-3">
+            {/* SUPER MIMO AMIGUMUNDO Title Card & GamificationBar below the cart */}
+            <div className="max-w-2xl mx-auto my-2">
+              <div className="w-full bg-[#44FF00] py-2 px-4 mb-2 shadow-sm rounded-xl text-center border border-gray-100">
+                <h2 className="text-xs sm:text-sm font-black uppercase tracking-wider text-[#171717] m-0">
+                  ✨ SUPER MIMOS AMIGUMUNDO
+                </h2>
+              </div>
               <GamificationBar cartCount={fullPriceRecipeCount} />
             </div>
           </div>
@@ -431,23 +449,23 @@ export default function Index() {
         </div>
 
         {/* SEÇÃO 2: UPSELLS (Profissionalize o seu negócio) */}
-        <section className="pt-8 pb-10 bg-[#FDFBF7]">
+        <section className="pt-4 pb-6 bg-[#FDFBF7]">
           <div className="max-w-3xl mx-auto px-4">
             {/* Card de Título de Largura Total e Altura Mínima */}
-            <div className="w-full bg-[#44FF00] py-3 px-4 mb-4 shadow-sm rounded-xl text-center border border-gray-100">
+            <div className="w-full bg-[#44FF00] py-2 px-4 mb-3 shadow-sm rounded-xl text-center border border-gray-100">
               <h2 className="text-sm sm:text-base font-black uppercase tracking-wider text-[#171717] m-0">
                 ✨ Transforme suas Peças em um Ateliê Lucrativo
               </h2>
             </div>
             
-            <div className="mb-8 text-center">
+            <div className="mb-4 text-center">
               <p className="text-xs sm:text-sm text-gray-600 font-medium mt-1 max-w-2xl mx-auto leading-relaxed">
                 Descubra as soluções exclusivas para atrair clientes pagantes, valorizar o seu trabalho e profissionalizar suas vendas.
               </p>
             </div>
 
             {foundRecipes.length > 0 && (
-              <div className="mb-6">
+              <div className="mb-4">
                 <h2 className="section-title text-[#171717] italic">✨ Receitas Adicionadas</h2>
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                   {foundRecipes.map((recipe) => (
@@ -466,7 +484,7 @@ export default function Index() {
             )}
 
             {/* Vertical Meta Ads Style List */}
-            <div className="space-y-6">
+            <div className="space-y-4">
               {upsells.map((upsell) => (
                 <UpsellCard 
                   key={upsell.id} 
@@ -511,15 +529,15 @@ export default function Index() {
       )}
 
       {/* SEÇÃO 3: CATEGORIAS */}
-      <section className="bg-[#F5F5F7] py-10">
+      <section className="bg-[#F5F5F7] py-6">
         <div className="max-w-6xl mx-auto px-4">
           {/* Card de Título de Largura Total e Altura Mínima */}
-          <div className="w-full bg-[#44FF00] py-3 px-4 mb-2 shadow-sm rounded-xl text-center border border-gray-100">
+          <div className="w-full bg-[#44FF00] py-2 px-4 mb-2 shadow-sm rounded-xl text-center border border-gray-100">
             <h2 className="text-sm sm:text-base font-black uppercase tracking-wider text-[#171717] m-0">
               CATEGORIAS DE AMIGURUMIS
             </h2>
           </div>
-          <p className="text-gray-600 text-xs font-bold mb-6 text-center uppercase tracking-tight">
+          <p className="text-gray-600 text-xs font-bold mb-4 text-center uppercase tracking-tight">
             Novas receitas adicionadas ao catalogo todos os dias
           </p>
           
@@ -532,10 +550,10 @@ export default function Index() {
       </section>
 
       {/* SEÇÃO 4: PACKS (Fundo #e6dcd3) */}
-      <section className="bg-[#e6dcd3] py-8">
+      <section className="bg-[#e6dcd3] py-6">
         <div className="max-w-6xl mx-auto px-4">
           {/* Card de Título de Largura Total e Altura Mínima */}
-          <div className="w-full bg-[#44FF00] py-3 px-4 mb-6 shadow-sm rounded-xl text-center border border-gray-100">
+          <div className="w-full bg-[#44FF00] py-2 px-4 mb-4 shadow-sm rounded-xl text-center border border-gray-100">
             <h2 className="text-sm sm:text-base font-black uppercase tracking-wider text-[#171717] m-0">
               PACOTES TEMÁTICOS
             </h2>

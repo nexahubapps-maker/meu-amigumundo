@@ -11,7 +11,7 @@ interface UpsellModalProps {
 export const UpsellModal = ({ upsell, onClose, onBuy }: UpsellModalProps) => {
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content relative bg-white text-gray-900 max-w-lg rounded-[24px] overflow-hidden shadow-2xl" onClick={(e) => e.stopPropagation()}>
+      <div className="modal-content relative bg-white text-gray-900 max-w-lg max-h-[90vh] overflow-y-auto rounded-[24px] shadow-2xl" onClick={(e) => e.stopPropagation()}>
         {/* Close Button */}
         <button 
           onClick={onClose} 

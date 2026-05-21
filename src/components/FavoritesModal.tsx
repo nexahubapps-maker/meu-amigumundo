@@ -1,9 +1,9 @@
 "use client";
 
 import React from 'react';
-import { X, ShoppingBag, Heart } from 'lucide-react';
+import { X, Heart } from 'lucide-react';
 import { recipes } from '@/data/recipes';
-import { packs, combos } from '@/data/packs';
+import { packs } from '@/data/packs';
 import { upsells } from '@/data/upsells';
 
 interface FavoritesModalProps {
@@ -28,10 +28,9 @@ export const FavoritesModal = ({
   // Gather all favorited items
   const favoritedRecipes = recipes.filter(r => favoriteIds.includes(r.id)).map(r => ({ ...r, tipo: 'recipe' as const }));
   const favoritedPacks = packs.filter(p => favoriteIds.includes(p.id)).map(p => ({ ...p, tipo: 'pack' as const, preco: p.precoAtual }));
-  const favoritedCombos = combos.filter(c => favoriteIds.includes(c.id)).map(c => ({ ...c, tipo: 'combo' as const }));
   const favoritedUpsells = upsells.filter(u => favoriteIds.includes(u.id)).map(u => ({ ...u, tipo: 'upsell' as const, preco: u.precoAtual }));
 
-  const allFavorites = [...favoritedRecipes, ...favoritedPacks, ...favoritedCombos, ...favoritedUpsells];
+  const allFavorites = [...favoritedRecipes, ...favoritedPacks, ...favoritedUpsells];
   const totalValue = allFavorites.reduce((sum, item) => sum + item.preco, 0);
 
   return (
@@ -128,6 +127,11 @@ export const FavoritesModal = ({
                   }
                 });
                 onClose();
+                // Scroll to cart section
+                setTimeout(() => {
+                  const el = document.getElementById('cart-section');
+                  if (el) el.scrollIntoView({ behavior: 'smooth' });
+                }, 100);
               }}
               className="w-full bg-[#44FF00] text-[#171717] py-3 rounded-xl font-black text-xs uppercase tracking-widest shadow-sm hover:scale-[1.02] active:scale-95 transition-transform"
             >
