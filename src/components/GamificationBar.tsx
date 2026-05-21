@@ -13,21 +13,21 @@ export const GamificationBar = ({ cartCount }: GamificationBarProps) => {
   ];
 
   return (
-    <div className="bg-white rounded-xl border border-[#F5C842] p-2 shadow-sm text-left">
-      <h2 className="text-[#E8472A] font-black text-[11px] mb-1 flex items-center gap-1.5 uppercase tracking-tight">
+    <div className="bg-white rounded-xl border border-[#F5C842] p-3.5 shadow-sm text-left">
+      <h2 className="text-[#E8472A] font-black text-sm sm:text-base mb-2 flex items-center gap-1.5 uppercase tracking-tight">
         🎁 SUPER MIMO AMIGUMUNDO
       </h2>
       
-      <div className="space-y-1 mb-1.5">
+      <div className="space-y-2 mb-3">
         {levels.map((level, i) => {
           const isActive = cartCount >= level.recipes;
           return (
-            <div key={i} className={`p-1 px-2 rounded-lg border text-[10px] transition-all ${isActive ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-100'}`}>
-              <div className="font-black text-gray-800 leading-none flex items-center justify-between">
+            <div key={i} className={`p-2 px-3 rounded-lg border text-xs transition-all ${isActive ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-100'}`}>
+              <div className="font-black text-gray-800 leading-none flex items-center justify-between text-xs sm:text-sm">
                 <span>{level.label}</span>
-                <span className="text-xs">{level.emoji}</span>
+                <span className="text-sm sm:text-base">{level.emoji}</span>
               </div>
-              <p className="text-[9px] text-gray-500 font-medium mt-0.5 leading-tight">
+              <p className="text-[11px] sm:text-xs text-gray-500 font-medium mt-1 leading-tight">
                 <span className="font-bold text-gray-700">Bônus {level.name}:</span> {level.desc}
               </p>
             </div>
@@ -35,7 +35,7 @@ export const GamificationBar = ({ cartCount }: GamificationBarProps) => {
         })}
       </div>
 
-      <div className="space-y-0.5 border-t border-gray-100 pt-1 text-[7px] text-gray-400 font-bold uppercase tracking-wide leading-tight">
+      <div className="space-y-1 border-t border-gray-100 pt-2 text-[9px] sm:text-[10px] text-gray-400 font-bold uppercase tracking-wide leading-tight">
         <p>* Apenas receitas avulsas são contabilizadas no carrinho.</p>
         <p>* Receitas bônus não são contabilizadas no carrinho.</p>
         <p>* Packs, Combos e Super Ofertas não são contabilizadas no carrinho.</p>

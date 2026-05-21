@@ -501,7 +501,7 @@ export default function Index() {
             </h2>
           </div>
           
-          <div className="grid grid-cols-3 gap-x-0 gap-y-4">
+          <div className="grid grid-cols-3 gap-x-2 gap-y-2">
             {categories.map((cat) => (
               <CategoryCard key={cat} nome={cat} />
             ))}
