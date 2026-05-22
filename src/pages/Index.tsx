@@ -3,7 +3,6 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { GamificationBar } from "@/components/GamificationBar";
-import { CodeInput } from "@/components/CodeInput";
 import RecipeCard from "@/components/RecipeCard";
 import { UpsellCard } from "@/components/UpsellCard";
 import { UpsellModal } from "@/components/UpsellModal";
@@ -11,7 +10,6 @@ import { CategoryCard } from "@/components/CategoryCard";
 import { PackCard } from "@/components/PackCard";
 import { ErrorToast } from "@/components/ErrorToast";
 import { BannerCarousel } from "@/components/BannerCarousel";
-import { CartFooter } from "@/components/CartFooter";
 import { DailyGiftSection } from "@/components/DailyGiftSection";
 import { LaunchBanner } from "@/components/LaunchBanner";
 import { PwaPrompt } from "@/components/PwaPrompt";
@@ -19,6 +17,9 @@ import { FavoritesModal } from "@/components/FavoritesModal";
 import { FooterNavigation } from "@/components/FooterNavigation";
 import { NotificationsModal } from "@/components/NotificationsModal";
 import { InternalPopup } from "@/components/InternalPopup";
+import { CartSection } from "@/components/CartSection";
+import { CategoryDetailView } from "@/components/CategoryDetailView";
+import { LightboxModal } from "@/components/LightboxModal";
 import { categories } from "@/data/categories";
 import { 
   getRecipes, 
@@ -30,7 +31,7 @@ import {
   type SheetPack,
   type SheetNotification
 } from "@/utils/sheets";
-import { X, ShoppingBag, Heart, MessageCircle, ArrowLeft } from "lucide-react";
+import { MessageCircle } from "lucide-react";
 import { playHeartbeatSound } from "@/utils/audio";
 
 interface CartItem {
@@ -369,150 +370,16 @@ export default function Index() {
             </div>
 
             {/* Carrinho Inline Compacto com CodeInput anexado no topo */}
-            <div id="cart-section" className="max-w-2xl mx-auto my-2 bg-white rounded-[20px] p-4 shadow-md border border-gray-100">
-              {/* CodeInput anexado no topo com margem divisória suave */}
-              <div className="pb-2 mb-2 border-b border-gray-100">
-                <CodeInput onRecipeFound={handleRecipeFound} onRecipeNotFound={handleRecipeNotFound} />
-              </div>
-
-              <h2 className="text-[0.85rem] font-extrabold mb-2 flex items-center gap-2 uppercase italic">
-                🛒 Meu Carrinho ({cart.length})
-              </h2>
-
-              {/* Dynamic UX Nudge */}
-              <div className="bg-blue-50 text-blue-700 text-xs font-bold p-2 rounded-xl mb-2 text-center">
-                {getNudgeMessage()}
-              </div>
-              
-              {cart.length === 0 ? (
-                <div className="py-2 text-center">
-                  <ShoppingBag size={24} className="mx-auto text-gray-100 mb-1" />
-                  <p className="text-gray-400 font-black text-[0.65rem] uppercase tracking-widest">
-                    Vazio
-                  </p>
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {/* [Seção 1: Receitas] */}
-                  {partition.receitas.length > 0 && (
-                    <div>
-                      <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-wider mb-1">
-                        Receitas de Amigurumi
-                      </h3>
-                      <div className="space-y-1">
-                        {partition.receitas.map((item) => (
-                          <div key={item.id} className="flex items-center gap-2 py-1 border-b border-gray-50 last:border-0 pl-3">
-                            <img src={item.imagem} className="w-8 h-8 rounded-lg object-cover border border-gray-100 shrink-0" alt="" />
-                            <div className="flex-1 min-w-0">
-                              <h4 className="text-[0.75rem] font-black text-gray-800 leading-tight break-words whitespace-normal line-clamp-2 uppercase">{item.nome}</h4>
-                              <span className="text-[8px] font-black text-gray-300 uppercase">Cód: {item.id}</span>
-                            </div>
-                            <span className="font-black text-[#171717] text-[0.8rem] shrink-0">R$ {item.precoFinal.toFixed(2)}</span>
-                            <button onClick={() => removeFromCart(item.id)} className="p-1 text-gray-200 hover:text-red-500 shrink-0">
-                              <X size={14} />
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* [Seção 2: Mimos] */}
-                  {partition.mimos.length > 0 && (
-                    <div>
-                      <h3 className="text-[10px] font-black text-orange-500 uppercase tracking-wider mb-1">
-                        Mimos Especiais
-                      </h3>
-                      <div className="space-y-1">
-                        {partition.mimos.map((item) => (
-                          <div key={item.id} className="flex items-center gap-2 py-1 border-b border-gray-50 last:border-0 pl-3">
-                            <img src={item.imagem} className="w-8 h-8 rounded-lg object-cover border border-gray-100 shrink-0" alt="" />
-                            <div className="flex-1 min-w-0">
-                              <h4 className="text-[0.75rem] font-black text-gray-800 leading-tight break-words whitespace-normal line-clamp-2 uppercase">{item.nome}</h4>
-                              <span className="text-[8px] font-black text-gray-300 uppercase">Cód: {item.id}</span>
-                            </div>
-                            <div className="flex items-center gap-1.5 shrink-0">
-                              <span className="text-red-500 line-through text-[10px]">R$ {item.originalPreco.toFixed(2)}</span>
-                              <span className="font-black text-green-600 text-[0.8rem]">R$ {item.precoFinal.toFixed(2)}</span>
-                            </div>
-                            <button onClick={() => removeFromCart(item.id)} className="p-1 text-gray-200 hover:text-red-500 shrink-0">
-                              <X size={14} />
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* [Seção 3: Presentes] */}
-                  {partition.presentes.length > 0 && (
-                    <div>
-                      <h3 className="text-[10px] font-black text-green-600 uppercase tracking-wider mb-1">
-                        Presentes Ganhos
-                      </h3>
-                      <div className="space-y-1">
-                        {partition.presentes.map((item) => (
-                          <div key={item.id} className="flex items-center gap-2 py-1 border-b border-gray-50 last:border-0 pl-3">
-                            <img src={item.imagem} className="w-8 h-8 rounded-lg object-cover border border-gray-100 shrink-0" alt="" />
-                            <div className="flex-1 min-w-0">
-                              <h4 className="text-[0.75rem] font-black text-gray-800 leading-tight break-words whitespace-normal line-clamp-2 uppercase">{item.nome}</h4>
-                              <span className="text-[8px] font-black text-gray-300 uppercase">Cód: {item.id}</span>
-                            </div>
-                            <div className="flex items-center gap-1.5 shrink-0">
-                              <span className="text-red-500 line-through text-[10px]">R$ {item.originalPreco.toFixed(2)}</span>
-                              <span className="font-black text-green-600 text-[0.8rem]">GRÁTIS</span>
-                            </div>
-                            <button onClick={() => removeFromCart(item.id)} className="p-1 text-gray-200 hover:text-red-500 shrink-0">
-                              <X size={14} />
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Other Items (Packs, Combos, Upsells) */}
-                  {partition.otherItems.length > 0 && (
-                    <div>
-                      <h3 className="text-[10px] font-black text-purple-600 uppercase tracking-wider mb-1">
-                        Outros Itens
-                      </h3>
-                      <div className="space-y-1">
-                        {partition.otherItems.map((item) => (
-                          <div key={item.id} className="flex items-center gap-2 py-1 border-b border-gray-50 last:border-0 pl-3">
-                            <img src={item.imagem} className="w-8 h-8 rounded-lg object-cover border border-gray-100 shrink-0" alt="" />
-                            <div className="flex-1 min-w-0">
-                              <h4 className="text-[0.75rem] font-black text-gray-800 leading-tight break-words whitespace-normal line-clamp-2 uppercase">{item.nome}</h4>
-                              <span className="text-[8px] font-black text-gray-300 uppercase">Cód: {item.id}</span>
-                            </div>
-                            <span className="font-black text-[#171717] text-[0.8rem] shrink-0">R$ {item.preco.toFixed(2)}</span>
-                            <button onClick={() => removeFromCart(item.id)} className="p-1 text-gray-200 hover:text-red-500 shrink-0">
-                              <X size={14} />
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  <div className="pt-2 mt-1 border-t border-gray-50">
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="font-black text-gray-400 text-[0.7rem] uppercase tracking-widest">Total</span>
-                      <span className="text-[1rem] font-black text-[#171717]">R$ {total.toFixed(2)}</span>
-                    </div>
-                    <button 
-                      onClick={() => {
-                        playHeartbeatSound();
-                        navigate("/checkout");
-                      }}
-                      className="w-full bg-[#44FF00] text-[#171717] py-2.5 rounded-full font-black text-[0.8rem] shadow-sm transition-transform active:scale-95 uppercase tracking-widest"
-                    >
-                      Finalizar Pedido →
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
+            <CartSection
+              cart={cart}
+              partition={partition}
+              total={total}
+              nudgeMessage={getNudgeMessage()}
+              onRemoveFromCart={removeFromCart}
+              onRecipeFound={handleRecipeFound}
+              onRecipeNotFound={handleRecipeNotFound}
+              onCheckout={() => navigate("/checkout")}
+            />
 
             {/* SUPER MIMOS AMIGUMUNDO Title Card (With Orange Texture) & GamificationBar below the cart */}
             <div className="max-w-2xl mx-auto my-2">
@@ -785,126 +652,23 @@ export default function Index() {
 
       {/* DYNAMIC CATEGORY DETAIL VIEW (Full-screen Overlay) */}
       {categoria_slug && (
-        <div className="fixed inset-0 z-[90] bg-[#F5F5F7] overflow-y-auto animate-in slide-in-from-bottom duration-300">
-          {/* Header with Orange Texture */}
-          <div style={textureLaranjaStyle} className="sticky top-0 z-10 py-4 px-4 flex items-center justify-between shadow-md">
-            <button 
-              onClick={() => navigate("/")}
-              className="text-white hover:scale-105 active:scale-95 transition-transform flex items-center gap-1.5 font-black text-xs uppercase tracking-wider"
-            >
-              <ArrowLeft size={18} /> Voltar
-            </button>
-            <h2 className="text-white font-black text-sm uppercase tracking-widest m-0">
-              {decodeURIComponent(categoria_slug)}
-            </h2>
-            <div className="w-12"></div> {/* Spacer for centering */}
-          </div>
-
-          <div className="max-w-6xl mx-auto px-4 py-6">
-            <p className="text-gray-500 text-xs font-bold mb-6 text-center uppercase tracking-wider">
-              Explore as receitas exclusivas da categoria {decodeURIComponent(categoria_slug)}
-            </p>
-
-            {isLoading ? (
-              /* Skeleton Loaders */
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                {Array.from({ length: 4 }).map((_, i) => (
-                  <div key={i} className="bg-gray-100 rounded-2xl aspect-[3/4] animate-pulse" />
-                ))}
-              </div>
-            ) : selectedCategoryRecipes.length === 0 ? (
-              /* Ghost Card Placeholder */
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                <div className="bg-gray-100 border border-dashed border-gray-200 rounded-2xl aspect-[3/4] flex flex-col items-center justify-center p-4 animate-pulse">
-                  <div className="w-12 h-12 bg-gray-200 rounded-full mb-3"></div>
-                  <div className="w-20 h-3 bg-gray-200 rounded mb-2"></div>
-                  <div className="w-16 h-3 bg-gray-200 rounded"></div>
-                </div>
-              </div>
-            ) : (
-              /* Real Recipe Cards */
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                {selectedCategoryRecipes.map((recipe) => {
-                  const added = isInCart(recipe.id);
-                  return (
-                    <div key={recipe.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden flex flex-col justify-between">
-                      {/* Header with Orange Texture */}
-                      <div style={textureLaranjaStyle} className="py-1.5 px-3 text-center text-[9px] font-black text-white uppercase tracking-wider">
-                        CÓD: {recipe.id}
-                      </div>
-                      
-                      {/* Image with Lightbox Zoom on Click */}
-                      <div 
-                        className="relative aspect-square bg-gray-50 cursor-zoom-in overflow-hidden group"
-                        onClick={() => setZoomImage(recipe.url_foto)}
-                      >
-                        <img 
-                          src={recipe.url_foto} 
-                          alt={recipe.nome} 
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
-                        {recipe.tamanho && (
-                          <span className="absolute bottom-1.5 right-1.5 bg-black/70 text-white text-[8px] font-bold px-1.5 py-0.5 rounded">
-                            {recipe.tamanho}
-                          </span>
-                        )}
-                      </div>
-
-                      {/* Info & Buy Button */}
-                      <div className="p-3 flex flex-col justify-between flex-1">
-                        <div>
-                          <h4 className="text-xs font-black text-gray-800 uppercase tracking-tight line-clamp-2 leading-tight">
-                            {recipe.nome}
-                          </h4>
-                          <p className="text-[10px] text-gray-400 font-medium mt-1 line-clamp-2 leading-tight">
-                            {recipe.descricao}
-                          </p>
-                        </div>
-                        
-                        <div className="mt-3 flex items-center justify-between gap-1.5">
-                          <span className="text-xs font-black text-gray-900">
-                            R$ {recipe.preco.toFixed(2)}
-                          </span>
-                          <button
-                            onClick={() => handleRecipeAdd(recipe)}
-                            disabled={added}
-                            className={`px-4 py-2 rounded-lg font-black text-[10px] uppercase tracking-wider transition-all ${
-                              added 
-                                ? 'bg-gray-100 text-gray-400' 
-                                : 'bg-[#44FF00] text-[#171717] hover:scale-105 active:scale-95'
-                            }`}
-                          >
-                            {added ? "✓" : "Quero"}
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-        </div>
+        <CategoryDetailView
+          categoriaSlug={categoria_slug}
+          recipes={selectedCategoryRecipes}
+          isLoading={isLoading}
+          isInCart={isInCart}
+          onBack={() => navigate("/")}
+          onRecipeAdd={handleRecipeAdd}
+          onZoomImage={setZoomImage}
+        />
       )}
 
       {/* Lightbox Zoom Modal */}
       {zoomImage && (
-        <div 
-          className="fixed inset-0 z-[110] bg-black/90 flex items-center justify-center p-4 cursor-zoom-out"
-          onClick={() => setZoomImage(null)}
-        >
-          <button 
-            className="absolute top-4 right-4 bg-white/10 hover:bg-white/20 text-white rounded-full p-2 transition-colors"
-            onClick={() => setZoomImage(null)}
-          >
-            <X size={24} />
-          </button>
-          <img 
-            src={zoomImage} 
-            alt="Zoom" 
-            className="max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl"
-          />
-        </div>
+        <LightboxModal
+          imageUrl={zoomImage}
+          onClose={() => setZoomImage(null)}
+        />
       )}
     </div>
   );
