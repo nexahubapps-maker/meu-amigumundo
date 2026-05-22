@@ -29,7 +29,7 @@ export const FooterNavigation = ({
     >
       <button
         onClick={onOpenFavorites}
-        className="flex items-center justify-center gap-2 text-white hover:opacity-90 transition-opacity py-1 px-4"
+        className="flex items-center justify-center gap-2 text-white hover:bg-white/10 active:scale-95 transition-all py-1 px-4 rounded-full"
       >
         <div className="relative">
           <Heart size={16} className="text-[#44FF00]" fill="#44FF00" />
@@ -39,12 +39,12 @@ export const FooterNavigation = ({
             </span>
           )}
         </div>
-        <span className="text-[10px] font-black uppercase tracking-wider text-white">Favoritos</span>
+        <span className="text-xs font-black uppercase tracking-wider text-white">Favoritos</span>
       </button>
 
       <button
         onClick={onOpenNotifications}
-        className="flex items-center justify-center gap-2 text-white hover:opacity-90 transition-opacity py-1 px-4"
+        className="flex items-center justify-center gap-2 text-white hover:bg-white/10 active:scale-95 transition-all py-1 px-4 rounded-full"
       >
         <div className="relative">
           <Bell size={16} className="text-[#44FF00]" fill="#44FF00" />
@@ -54,7 +54,7 @@ export const FooterNavigation = ({
             </span>
           )}
         </div>
-        <span className="text-[10px] font-black uppercase tracking-wider text-white">Notificações</span>
+        <span className="text-xs font-black uppercase tracking-wider text-white">Notificações</span>
       </button>
     </div>
   );

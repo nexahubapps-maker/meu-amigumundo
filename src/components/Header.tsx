@@ -29,11 +29,8 @@ export const Header = ({ cartCount = 0 }: HeaderProps) => {
           <img 
             src="https://ik.imagekit.io/51b3srlsg/logomarca_amigumundo.png" 
             alt="AmiguMundo" 
-            className="h-[36px] w-auto object-contain"
+            className="h-[48px] w-auto object-contain"
           />
-          <span className="text-[8px] font-bold text-gray-400 mt-0.5 leading-none">
-            Uma Comunidade apaixonada por Amigurumis
-          </span>
         </div>
         
         <div className="flex items-center gap-2">

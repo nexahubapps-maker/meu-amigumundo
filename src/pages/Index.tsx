@@ -284,6 +284,23 @@ export default function Index() {
     }
   };
 
+  const handleUpsellBuy = () => {
+    if (activeUpsell) {
+      const upsell = infoprodutosList.find((u) => u.id === activeUpsell);
+      if (upsell) {
+        addToCart({
+          id: upsell.id,
+          nome: upsell.nome,
+          preco: upsell.preco,
+          tipo: "upsell",
+          imagem: upsell.url_foto
+        });
+        setActiveUpsell(null);
+        navigate("/checkout");
+      }
+    }
+  };
+
   const isInCart = (id: string) => cart.some((item) => item.id === id);
 
   // Textures Styles (Fixed zoom to 150px repeat)
@@ -317,7 +334,7 @@ export default function Index() {
       <div className="max-w-6xl mx-auto px-4 mt-1 flex flex-col gap-1">
         <div 
           style={textureVerdeOlivaStyle}
-          className="text-white p-2 rounded-lg text-center text-[10px] font-black uppercase tracking-wide shadow-sm"
+          className="text-white p-2.5 rounded-lg text-center text-xs sm:text-sm font-black uppercase tracking-wide shadow-sm"
         >
           PRESENTE DIÁRIO: Vá até o final da página e baixe a Receita Gratuita de hoje! ↓
         </div>
