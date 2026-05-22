@@ -19,6 +19,7 @@ import { FavoritesModal } from "@/components/FavoritesModal";
 import { FooterNavigation } from "@/components/FooterNavigation";
 import { NotificationsModal } from "@/components/NotificationsModal";
 import { InternalPopup } from "@/components/InternalPopup";
+import { categories } from "@/data/categories";
 import { 
   getRecipes, 
   getInfoprodutos, 
