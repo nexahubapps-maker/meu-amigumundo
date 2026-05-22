@@ -200,7 +200,7 @@ export default function Index() {
         const mimos = mimosRemaining.map((r, idx) => {
           let precoFinal = r.preco;
           if (idx < 3) precoFinal = 3.00;
-          else if (idx < 6) font-bold = 2.00;
+          else if (idx < 6) precoFinal = 2.00;
           else if (idx < 9) precoFinal = 1.00;
           return { ...r, precoFinal, originalPreco: r.preco, tipo: 'mimo' };
         });
