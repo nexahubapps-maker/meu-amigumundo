@@ -200,7 +200,7 @@ export default function Index() {
         const mimos = mimosRemaining.map((r, idx) => {
           let precoFinal = r.preco;
           if (idx < 3) precoFinal = 3.00;
-          else if (idx < 6) precoFinal = 2.00;
+          else if (idx < 6) font-bold = 2.00;
           else if (idx < 9) precoFinal = 1.00;
           return { ...r, precoFinal, originalPreco: r.preco, tipo: 'mimo' };
         });
@@ -356,19 +356,26 @@ export default function Index() {
 
             <BannerCarousel />
 
-            {/* WhatsApp Group Card (With Olive Green Texture) */}
-            <div className="max-w-2xl mx-auto mb-2">
+            {/* WhatsApp Group Card (With Teal/Blue-Petrol Background and Unified Crochet Cube Asset) */}
+            <div className="max-w-2xl mx-auto mb-3">
               <a 
                 href="https://wa.me/5544999999999" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                style={textureVerdeOlivaStyle}
-                className="text-white p-3 rounded-xl text-center shadow-sm flex items-center justify-center gap-3 hover:scale-[1.01] active:scale-[0.99] transition-transform"
+                className="bg-[#0E5E6F] text-white p-4 rounded-2xl text-center shadow-md flex items-center justify-center gap-4 hover:scale-[1.01] active:scale-[0.99] transition-transform border border-white/10"
               >
-                <img src="https://ik.imagekit.io/51b3srlsg/icone_whatsapp.png" className="w-8 h-8 object-contain shrink-0" alt="WhatsApp" />
+                <img 
+                  src="https://ik.imagekit.io/51b3srlsg/icone_whatsApp_amigumundo.png" 
+                  className="h-[36px] w-auto object-contain shrink-0" 
+                  alt="WhatsApp" 
+                />
                 <div className="text-left">
-                  <p className="text-[11px] font-black uppercase tracking-wide leading-tight">Ainda não faz parte do nosso grupo?</p>
-                  <p className="text-[10px] font-bold text-white/90 leading-tight">Então CLIQUE AQUI e entre no nosso Grupo de Promoções do WhatsApp</p>
+                  <p className="text-[12px] sm:text-[13px] font-black uppercase tracking-wide leading-tight">
+                    Ainda não faz parte do nosso grupo?
+                  </p>
+                  <p className="text-[11px] sm:text-[12px] font-bold text-white/90 leading-tight mt-0.5">
+                    Então CLIQUE AQUI e entre no nosso Grupo de Promoções do WhatsApp
+                  </p>
                 </div>
               </a>
             </div>

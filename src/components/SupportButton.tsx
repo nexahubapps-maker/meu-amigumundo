@@ -1,7 +1,5 @@
 "use client";
 
-import { MessageCircle } from "lucide-react";
-
 export const SupportButton = () => {
   const handleSupport = () => {
     window.open("https://wa.me/5544999999999", "_blank"); // Substitua pelo seu número real
@@ -10,10 +8,14 @@ export const SupportButton = () => {
   return (
     <button
       onClick={handleSupport}
-      className="fixed bottom-6 right-6 z-50 bg-[#25D366] text-white p-4 rounded-full shadow-2xl hover:scale-110 transition-transform active:scale-95 flex items-center justify-center"
+      className="fixed bottom-6 right-6 z-50 hover:scale-110 transition-transform active:scale-95 flex items-center justify-center focus:outline-none drop-shadow-xl"
       aria-label="Suporte WhatsApp"
     >
-      <MessageCircle size={28} fill="currentColor" />
+      <img 
+        src="https://ik.imagekit.io/51b3srlsg/icone_whatsApp_amigumundo.png" 
+        alt="Suporte WhatsApp" 
+        className="h-[56px] w-auto object-contain"
+      />
     </button>
   );
 };
