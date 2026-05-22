@@ -250,16 +250,6 @@ export default function Index() {
         <div className="bg-[#44FF00] text-[#171717] p-1.5 rounded-lg text-center text-[10px] font-black uppercase tracking-wide shadow-sm">
           PRESENTE DIÁRIO: Vá até o final da página e baixe a Receita Gratuita de hoje! ↓
         </div>
-        
-        {/* WhatsApp Group Card (Glued below) */}
-        <a 
-          href="https://wa.me/5544999999999" 
-          target="_blank" 
-          rel="noopener noreferrer"
-          className="bg-[#44FF00] text-[#171717] p-1.5 rounded-lg text-center text-[10px] font-black uppercase tracking-wide shadow-sm flex items-center justify-center gap-1.5 hover:scale-[1.01] active:scale-[0.99] transition-transform"
-        >
-          <MessageCircle size={14} fill="currentColor" /> Entre no nosso Grupo de Promoções do WhatsApp
-        </a>
       </div>
 
       {/* SESSÃO UNIFICADA COM FUNDO #e6dcd3 */}
@@ -276,6 +266,18 @@ export default function Index() {
             <LaunchBanner />
 
             <BannerCarousel />
+
+            {/* WhatsApp Group Card (Moved below the banner and above the cart/code input) */}
+            <div className="max-w-2xl mx-auto mb-2">
+              <a 
+                href="https://wa.me/5544999999999" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="bg-[#44FF00] text-[#171717] p-2 rounded-xl text-center text-xs font-black uppercase tracking-wide shadow-sm flex items-center justify-center gap-1.5 hover:scale-[1.01] active:scale-[0.99] transition-transform"
+              >
+                <MessageCircle size={16} fill="currentColor" /> Entre no nosso Grupo de Promoções do WhatsApp
+              </a>
+            </div>
 
             {/* Carrinho Inline Compacto com CodeInput anexado no topo */}
             <div id="cart-section" className="max-w-2xl mx-auto my-2 bg-white rounded-[20px] p-4 shadow-md border border-gray-100">
