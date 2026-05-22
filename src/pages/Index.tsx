@@ -41,6 +41,7 @@ export default function Index() {
   const [foundRecipes, setFoundRecipes] = useState<Recipe[]>([]);
   const [isFavoritesOpen, setIsFavoritesOpen] = useState(false);
   const [activeUpsellIndex, setActiveUpsellIndex] = useState(0);
+  const [zoomImage, setZoomImage] = useState<string | null>(null);
   const carouselRef = useRef<HTMLDivElement>(null);
   
   // Favorites State
@@ -51,7 +52,7 @@ export default function Index() {
 
   // Scroll Lock Effect
   useEffect(() => {
-    const isModalOpen = !!showRecipe || !!activeUpsell || isFavoritesOpen;
+    const isModalOpen = !!showRecipe || !!activeUpsell || isFavoritesOpen || !!zoomImage;
     if (isModalOpen) {
       document.body.style.overflow = "hidden";
     } else {
@@ -60,7 +61,7 @@ export default function Index() {
     return () => {
       document.body.style.overflow = "";
     };
-  }, [showRecipe, activeUpsell, isFavoritesOpen]);
+  }, [showRecipe, activeUpsell, isFavoritesOpen, zoomImage]);
 
   useEffect(() => {
     const savedCart = localStorage.getItem("amigumundo-cart");
@@ -78,21 +79,18 @@ export default function Index() {
   // Deep Linking Handler
   useEffect(() => {
     if (routeId) {
-      // Check if it's a recipe
       const recipe = recipes.find(r => r.id === routeId);
       if (recipe) {
         setShowRecipe(recipe);
         return;
       }
 
-      // Check if it's an upsell
       const upsell = upsells.find(u => u.id === routeId);
       if (upsell) {
         setActiveUpsell(upsell.id);
         return;
       }
 
-      // Check if it's a pack (scroll to section)
       const pack = packs.find(p => p.id === routeId);
       if (pack) {
         const el = document.getElementById('cart-section');
@@ -226,7 +224,6 @@ export default function Index() {
     if (activeUpsell) {
       const upsell = upsells.find((u) => u.id === activeUpsell);
       if (upsell) {
-        // Add to cart
         addToCart({ 
           id: upsell.id, 
           nome: upsell.nome, 
@@ -235,7 +232,6 @@ export default function Index() {
           imagem: `https://picsum.photos/seed/${upsell.id}/100/100`
         });
         setActiveUpsell(null);
-        // Fast-Pass Checkout: Redirect immediately
         navigate("/checkout");
       }
     }
@@ -254,18 +250,18 @@ export default function Index() {
 
   const isInCart = (id: string) => cart.some((item) => item.id === id);
 
-  // Textures Styles
+  // Textures Styles (Fixed zoom to 150px repeat)
   const textureLaranjaStyle = {
     backgroundImage: "url('https://ik.imagekit.io/51b3srlsg/textura_laranja.jpeg')",
     backgroundRepeat: "repeat",
-    backgroundSize: "auto",
+    backgroundSize: "150px",
     textShadow: "1px 1px 2px rgba(0,0,0,0.5)"
   };
 
   const textureVerdeOlivaStyle = {
     backgroundImage: "url('https://ik.imagekit.io/51b3srlsg/textura_verde_oliva.jpeg')",
     backgroundRepeat: "repeat",
-    backgroundSize: "auto",
+    backgroundSize: "150px",
     textShadow: "1px 1px 2px rgba(0,0,0,0.5)"
   };
 
@@ -594,20 +590,102 @@ export default function Index() {
           {/* Card de Título de Largura Total e Altura Mínima with Orange Texture */}
           <div 
             style={textureLaranjaStyle}
-            className="w-full py-2 px-4 mb-2 shadow-sm rounded-xl text-center border border-gray-100"
+            className="w-full py-2 px-4 mb-4 shadow-sm rounded-xl text-center border border-gray-100"
           >
             <h2 className="text-sm sm:text-base font-black uppercase tracking-wider text-white m-0">
               CATEGORIAS DE AMIGURUMIS
             </h2>
           </div>
-          <p className="text-gray-600 text-xs font-bold mb-4 text-center uppercase tracking-tight">
+          <p className="text-gray-600 text-xs font-bold mb-6 text-center uppercase tracking-tight">
             Novas receitas adicionadas todos os dias
           </p>
           
-          <div className="grid grid-cols-3 gap-x-2 gap-y-2">
-            {categories.map((cat) => (
-              <CategoryCard key={cat} nome={cat} />
-            ))}
+          {/* Dynamic Category Catalog (1 Row in Sheets = 1 Card in App) */}
+          <div className="space-y-8">
+            {categories.map((cat) => {
+              const catRecipes = recipes.filter(r => r.categoria.toLowerCase() === cat.toLowerCase() || r.categoria.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() === cat.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase());
+              
+              return (
+                <div key={cat} className="border-b border-gray-100 pb-6 last:border-0">
+                  <h3 className="text-xs font-black text-gray-800 uppercase tracking-wider mb-3 flex items-center gap-2">
+                    <span className="w-1.5 h-3 bg-[#44FF00] rounded-full"></span>
+                    {cat}
+                  </h3>
+                  
+                  {catRecipes.length === 0 ? (
+                    /* Ghost Card Placeholder */
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                      <div className="bg-gray-100 border border-dashed border-gray-200 rounded-2xl aspect-[3/4] flex flex-col items-center justify-center p-4 animate-pulse">
+                        <div className="w-10 h-10 bg-gray-200 rounded-full mb-2"></div>
+                        <div className="w-16 h-2 bg-gray-200 rounded mb-1"></div>
+                        <div className="w-12 h-2 bg-gray-200 rounded"></div>
+                      </div>
+                    </div>
+                  ) : (
+                    /* Real Recipe Cards */
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                      {catRecipes.map((recipe) => {
+                        const added = isInCart(recipe.id);
+                        return (
+                          <div key={recipe.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden flex flex-col justify-between">
+                            {/* Header with Orange Texture */}
+                            <div style={textureLaranjaStyle} className="py-1.5 px-3 text-center text-[9px] font-black text-white uppercase tracking-wider">
+                              CÓD: {recipe.id}
+                            </div>
+                            
+                            {/* Image with Lightbox Zoom on Click */}
+                            <div 
+                              className="relative aspect-square bg-gray-50 cursor-zoom-in overflow-hidden group"
+                              onClick={() => setZoomImage(`https://picsum.photos/seed/${recipe.id}/800/800`)}
+                            >
+                              <img 
+                                src={`https://picsum.photos/seed/${recipe.id}/400/400`} 
+                                alt={recipe.nome} 
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                              />
+                              {recipe.tamanho && (
+                                <span className="absolute bottom-1.5 right-1.5 bg-black/70 text-white text-[8px] font-bold px-1.5 py-0.5 rounded">
+                                  {recipe.tamanho}
+                                </span>
+                              )}
+                            </div>
+
+                            {/* Info & Buy Button */}
+                            <div className="p-2.5 flex flex-col justify-between flex-1">
+                              <div>
+                                <h4 className="text-[10px] sm:text-xs font-black text-gray-800 uppercase tracking-tight line-clamp-2 leading-tight">
+                                  {recipe.nome}
+                                </h4>
+                                <p className="text-[9px] text-gray-400 font-medium mt-0.5 line-clamp-2 leading-tight">
+                                  {recipe.descricao}
+                                </p>
+                              </div>
+                              
+                              <div className="mt-2 flex items-center justify-between gap-1.5">
+                                <span className="text-[11px] font-black text-gray-900">
+                                  R$ {recipe.preco.toFixed(2)}
+                                </span>
+                                <button
+                                  onClick={() => handleRecipeAdd(recipe)}
+                                  disabled={added}
+                                  className={`px-3 py-1.5 rounded-lg font-black text-[9px] uppercase tracking-wider transition-all ${
+                                    added 
+                                      ? 'bg-gray-100 text-gray-400' 
+                                      : 'bg-[#44FF00] text-[#171717] hover:scale-105 active:scale-95'
+                                  }`}
+                                >
+                                  {added ? "✓" : "Quero"}
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -669,6 +747,26 @@ export default function Index() {
         onAddToCart={addToCart}
         isInCart={isInCart}
       />
+
+      {/* Lightbox Zoom Modal */}
+      {zoomImage && (
+        <div 
+          className="fixed inset-0 z-[110] bg-black/90 flex items-center justify-center p-4 cursor-zoom-out"
+          onClick={() => setZoomImage(null)}
+        >
+          <button 
+            className="absolute top-4 right-4 bg-white/10 hover:bg-white/20 text-white rounded-full p-2 transition-colors"
+            onClick={() => setZoomImage(null)}
+          >
+            <X size={24} />
+          </button>
+          <img 
+            src={zoomImage} 
+            alt="Zoom" 
+            className="max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl"
+          />
+        </div>
+      )}
 
       <CartFooter 
         count={cart.length} 

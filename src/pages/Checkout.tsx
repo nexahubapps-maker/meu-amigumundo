@@ -11,11 +11,9 @@ export default function Checkout() {
   const [cart, setCart] = useState<any[]>([]);
   const [paymentMethod, setPaymentMethod] = useState<"pix" | "card">("pix");
   
-  // Estados para os campos com persistência
   const [email, setEmail] = useState(() => localStorage.getItem("amigumundo-email") || "");
   const [whatsapp, setWhatsapp] = useState(() => localStorage.getItem("amigumundo-whatsapp") || "");
 
-  // Fix scroll bug: Ensure page starts at the absolute top on mount
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -27,7 +25,6 @@ export default function Checkout() {
     }
   }, []);
 
-  // Salva os dados sempre que mudarem
   useEffect(() => {
     localStorage.setItem("amigumundo-email", email);
   }, [email]);
@@ -36,9 +33,8 @@ export default function Checkout() {
     localStorage.setItem("amigumundo-whatsapp", whatsapp);
   }, [whatsapp]);
 
-  // Máscara dinâmica para WhatsApp brasileiro: (XX) XXXXX-XXXX
   const handleWhatsappChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const rawValue = e.target.value.replace(/\D/g, ""); // Remove non-digits
+    const rawValue = e.target.value.replace(/\D/g, "");
     let formattedValue = "";
 
     if (rawValue.length > 0) {
@@ -54,7 +50,6 @@ export default function Checkout() {
     setWhatsapp(formattedValue);
   };
 
-  // Validação: WhatsApp precisa ter exatamente 11 dígitos numéricos
   const rawWhatsappDigits = whatsapp.replace(/\D/g, "");
   const isWhatsappValid = rawWhatsappDigits.length === 11;
   const isEmailValid = email.includes("@") && email.includes(".");
@@ -62,7 +57,6 @@ export default function Checkout() {
 
   const total = cart.reduce((sum, item) => sum + item.preco, 0);
 
-  // Estrutura de Webhook para o Administrador
   const triggerAdminWebhook = async (saleData: any) => {
     try {
       const webhookUrl = "https://api.amigumundo.com/v1/webhooks/sales";
@@ -136,8 +130,8 @@ export default function Checkout() {
         <div className="text-center mb-6">
           <h1 className="text-2xl font-black text-gray-900 mb-3 tracking-tight">QUASE LÁ!</h1>
           
-          {/* Unified Welcome/Info Box */}
-          <div className="bg-gray-100/80 border border-gray-200 rounded-xl p-4 text-center max-w-md mx-auto">
+          {/* Elegant Instructions Card */}
+          <div className="bg-[#FDFBF7] border border-gray-200 rounded-xl p-4 text-center max-w-md mx-auto shadow-sm">
             <p className="text-gray-700 font-semibold text-sm">
               Para enviarmos suas receitas, preencha seu e-mail e WhatsApp.
             </p>
@@ -218,31 +212,32 @@ export default function Checkout() {
             </div>
           )}
 
+          {/* Vibrant Green Checkout Button */}
           <button 
             onClick={handlePaymentSubmit}
             disabled={!isFormValid}
-            className={`w-full py-5 rounded-xl font-black text-lg shadow-lg transition-all uppercase tracking-widest flex items-center justify-center gap-2 ${isFormValid ? 'bg-[#00D177] hover:bg-[#00B868] text-white shadow-green-200 active:scale-[0.98]' : 'bg-gray-200 text-gray-400 cursor-not-allowed shadow-none'}`}
+            className={`w-full py-5 rounded-xl font-black text-lg shadow-md transition-all uppercase tracking-widest flex items-center justify-center gap-2 ${isFormValid ? 'bg-[#22C55E] hover:bg-[#16a34a] text-white active:scale-[0.98]' : 'bg-gray-200 text-gray-400 cursor-not-allowed shadow-none'}`}
           >
             <Lock size={20} /> Finalizar Pagamento
           </button>
         </div>
 
-        {/* Selos de Segurança */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-12">
-          <div className="flex flex-col items-center gap-1.5 text-center p-3 bg-white rounded-xl border border-gray-200 shadow-sm">
-            <ShieldCheck size={24} className="text-gray-700" />
+        {/* High Contrast Security Badges Footer */}
+        <div className="bg-gray-100 border border-gray-200 rounded-2xl p-4 grid grid-cols-2 sm:grid-cols-4 gap-4 mb-12 shadow-sm">
+          <div className="flex flex-col items-center gap-1.5 text-center p-2">
+            <ShieldCheck size={26} className="text-gray-800" />
             <span className="text-[10px] font-black text-gray-800 uppercase tracking-wider">SSL Seguro</span>
           </div>
-          <div className="flex flex-col items-center gap-1.5 text-center p-3 bg-white rounded-xl border border-gray-200 shadow-sm">
-            <Smartphone size={24} className="text-gray-700" />
+          <div className="flex flex-col items-center gap-1.5 text-center p-2">
+            <Smartphone size={26} className="text-gray-800" />
             <span className="text-[10px] font-black text-gray-800 uppercase tracking-wider">Mercado Pago</span>
           </div>
-          <div className="flex flex-col items-center gap-1.5 text-center p-3 bg-white rounded-xl border border-gray-200 shadow-sm">
-            <Zap size={24} className="text-gray-700" />
+          <div className="flex flex-col items-center gap-1.5 text-center p-2">
+            <Zap size={26} className="text-gray-800" />
             <span className="text-[10px] font-black text-gray-800 uppercase tracking-wider">Entrega Instantânea</span>
           </div>
-          <div className="flex flex-col items-center gap-1.5 text-center p-3 bg-white rounded-xl border border-gray-200 shadow-sm">
-            <ShieldCheck size={24} className="text-gray-700" />
+          <div className="flex flex-col items-center gap-1.5 text-center p-2">
+            <ShieldCheck size={26} className="text-gray-800" />
             <span className="text-[10px] font-black text-gray-800 uppercase tracking-wider">Compra Protegida</span>
           </div>
         </div>

@@ -9,17 +9,14 @@ import { playHeartbeatSound } from '@/utils/audio';
 export const DailyGiftSection = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // CONFIGURAÇÃO DINÂMICA DO MIMO DIÁRIO
   const dailyGift = {
-    nome: "Receita: Polvinho da Sorte 🐙",
-    downloadUrl: "#", // Substitua pelo link real do PDF
+    nome: "Receita: Polvinho da Sorte",
+    downloadUrl: "#",
   };
 
   const handleDownload = () => {
-    // Play conversion sound
     playHeartbeatSound();
 
-    // Efeito de Confete - zIndex ajustado para 999 para ficar acima do modal (z-100)
     const duration = 3 * 1000;
     const animationEnd = Date.now() + duration;
     const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 999 };
@@ -38,17 +35,23 @@ export const DailyGiftSection = () => {
       confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } });
     }, 250);
 
-    // Simula o download e abre o modal
     setTimeout(() => {
       setIsModalOpen(true);
     }, 500);
   };
 
+  const textureVerdeOlivaStyle = {
+    backgroundImage: "url('https://ik.imagekit.io/51b3srlsg/textura_verde_oliva.jpeg')",
+    backgroundRepeat: "repeat",
+    backgroundSize: "150px",
+    textShadow: "1px 1px 2px rgba(0,0,0,0.5)"
+  };
+
   return (
-    <section className="bg-[#38807B] py-10 px-4">
-      <div className="max-w-xl mx-auto text-center">
-        <h2 className="text-white font-extrabold text-[1.3rem] leading-tight mb-2">
-          🎉 SEU MIMO GRATUITO DO DIA CHEGOU! 🎉
+    <section style={textureVerdeOlivaStyle} className="py-10 px-4 text-center">
+      <div className="max-w-xl mx-auto">
+        <h2 className="text-white font-extrabold text-[1.4rem] leading-tight mb-2 uppercase tracking-tight">
+          SEU MIMO GRATUITO <br /> DO DIA CHEGOU
         </h2>
         <p className="text-white/90 text-[0.9rem] font-medium mb-8">
           Nos visite todos os dias para retirar sua receita grátis e garantir seu presente diário!
