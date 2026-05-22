@@ -39,7 +39,7 @@ export const FooterNavigation = ({
             </span>
           )}
         </div>
-        <span className="text-xs font-black uppercase tracking-wider text-white">Favoritos</span>
+        <span translate="no" className="notranslate text-xs font-black uppercase tracking-wider text-white">Favoritos</span>
       </button>
 
       <button
@@ -54,7 +54,7 @@ export const FooterNavigation = ({
             </span>
           )}
         </div>
-        <span className="text-xs font-black uppercase tracking-wider text-white">Notificações</span>
+        <span translate="no" className="notranslate text-xs font-black uppercase tracking-wider text-white">Notificações</span>
       </button>
     </div>
   );

@@ -37,6 +37,21 @@ export interface SheetNotification {
   status: boolean;
 }
 
+export interface SheetReceitaGratuita {
+  data: string; // DD/MM/AAAA
+  codigo: string;
+  pdf_url: string;
+}
+
+export interface SheetOrderBump {
+  codigo: string;
+  nome: string;
+  preco: number;
+  imagem_url: string;
+  descricao: string;
+  ativo: boolean;
+}
+
 const SPREADSHEET_ID = "1lV6mLey_Bvq01CdDztUxEUKOlmDHsH6YeiNOqQcRveQ";
 
 // Helper to parse CSV rows safely
@@ -110,7 +125,7 @@ const fallbackRecipes: SheetRecipe[] = [
 const fallbackInfoprodutos: SheetInfoproduto[] = [
   { id: "info1", nome: "Instagram Profissional para Artesãs", descricao: "O segredo prático para atrair seguidores qualificados e transformá-los em clientes que pagam o valor justo.", preco: 47.00, url_foto: "https://picsum.photos/seed/info1/600/375", disparar_push: false },
   { id: "info2", nome: "Guia de Precificação sem Erros", descricao: "Descubra de forma simples e exata o valor real da sua hora de trabalho. Pare de pagar para trabalhar.", preco: 27.00, url_foto: "https://picsum.photos/seed/info2/600/375", disparar_push: false },
-  { id: "info3", nome: "Pacote de Moldes de Amigurumi Premium", descricao: "Tenha acesso a uma seleção exclusiva de moldes altamente desejados no mercado.", preco: 19.00, url_foto: "https://picsum.photos/seed/info3/600/375", disparar_push: false }
+  { id: "info3", nome: "Pacote de Moldes de Amigurumi Premium", descricao: "Tenha acesso a uma selection exclusiva de moldes altamente desejados no mercado.", preco: 19.00, url_foto: "https://picsum.photos/seed/info3/600/375", disparar_push: false }
 ];
 
 const fallbackPacks: SheetPack[] = [
@@ -183,5 +198,32 @@ export async function getNotifications(): Promise<SheetNotification[]> {
       status: row[4]?.toLowerCase() === "true"
     }),
     fallbackNotifications
+  );
+}
+
+export async function getReceitaGratuita(): Promise<SheetReceitaGratuita[]> {
+  return fetchSheetData<SheetReceitaGratuita>(
+    "receita_gratuita",
+    (row) => ({
+      data: row[0] || "",
+      codigo: row[1] || "",
+      pdf_url: row[2] || ""
+    }),
+    []
+  );
+}
+
+export async function getOrderBumps(): Promise<SheetOrderBump[]> {
+  return fetchSheetData<SheetOrderBump>(
+    "order_bumps",
+    (row) => ({
+      codigo: row[0] || "",
+      nome: row[1] || "",
+      preco: parseFloat((row[2] || "0").replace(",", ".")) || 0,
+      imagem_url: row[3] || `https://picsum.photos/seed/${row[0]}/100/100`,
+      descricao: row[4] || "",
+      ativo: row[5]?.toLowerCase() === "true"
+    }),
+    []
   );
 }
