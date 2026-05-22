@@ -20,18 +20,18 @@ export const Header = ({ cartCount = 0 }: HeaderProps) => {
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-white h-[76px] flex items-center px-4 shadow-[0_2px_10px_rgba(0,0,0,0.05)]">
-      <div className="max-w-6xl mx-auto w-full flex items-center justify-between">
+    <div className="sticky top-3 z-50 mx-4 my-2 bg-white h-[64px] flex items-center px-4 shadow-[0_8px_30px_rgb(0,0,0,0.08)] rounded-2xl border border-gray-100/80">
+      <div className="w-full flex items-center justify-between">
         <div 
           className="flex flex-col items-start cursor-pointer"
           onClick={() => navigate("/")}
         >
           <img 
-            src="https://ik.imagekit.io/51b3srlsg/amigumundo_amigurumi.png" 
+            src="https://ik.imagekit.io/51b3srlsg/logomarca_amigumundo.png" 
             alt="AmiguMundo" 
-            className="h-[40px] w-auto object-contain"
+            className="h-[36px] w-auto object-contain"
           />
-          <span className="text-[10px] font-bold text-gray-500 mt-1 leading-none">
+          <span className="text-[8px] font-bold text-gray-400 mt-0.5 leading-none">
             Uma Comunidade apaixonada por Amigurumis
           </span>
         </div>
@@ -44,9 +44,9 @@ export const Header = ({ cartCount = 0 }: HeaderProps) => {
           
           <button 
             onClick={scrollToCart}
-            className="relative p-2.5 text-[#171717] hover:text-[#44FF00] transition-colors bg-gray-50 rounded-full"
+            className="relative p-2 text-[#171717] hover:text-[#44FF00] transition-colors bg-gray-50 rounded-full"
           >
-            <ShoppingCart size={24} />
+            <ShoppingCart size={20} />
             {cartCount > 0 && (
               <span className="absolute -top-1 -right-1 bg-[#44FF00] text-[#171717] text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center border border-white">
                 {cartCount}
@@ -55,6 +55,6 @@ export const Header = ({ cartCount = 0 }: HeaderProps) => {
           </button>
         </div>
       </div>
-    </header>
+    </div>
   );
 };

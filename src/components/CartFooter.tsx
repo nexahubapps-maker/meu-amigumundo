@@ -12,7 +12,7 @@ export const CartFooter = ({ count, total, onCheckout }: CartFooterProps) => {
   if (count === 0) return null;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-100 shadow-[0_-4px_15px_rgba(0,0,0,0.05)] px-4 py-2 animate-in slide-in-from-bottom duration-300">
+    <div className="fixed bottom-[40px] left-0 right-0 z-40 bg-white border-t border-gray-100 shadow-[0_-4px_15px_rgba(0,0,0,0.05)] px-4 py-2 animate-in slide-in-from-bottom duration-300">
       <div className="max-w-6xl mx-auto flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="relative">
