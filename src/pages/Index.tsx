@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { GamificationBar } from "@/components/GamificationBar";
@@ -40,6 +40,8 @@ export default function Index() {
   const [error, setError] = useState<string | null>(null);
   const [foundRecipes, setFoundRecipes] = useState<Recipe[]>([]);
   const [isFavoritesOpen, setIsFavoritesOpen] = useState(false);
+  const [activeUpsellIndex, setActiveUpsellIndex] = useState(0);
+  const carouselRef = useRef<HTMLDivElement>(null);
   
   // Favorites State
   const [favorites, setFavorites] = useState<string[]>(() => {
@@ -235,6 +237,17 @@ export default function Index() {
         setActiveUpsell(null);
         // Fast-Pass Checkout: Redirect immediately
         navigate("/checkout");
+      }
+    }
+  };
+
+  const handleCarouselScroll = () => {
+    if (carouselRef.current) {
+      const scrollLeft = carouselRef.current.scrollLeft;
+      const width = carouselRef.current.clientWidth;
+      const index = Math.round(scrollLeft / (width * 0.85));
+      if (index >= 0 && index < upsells.length) {
+        setActiveUpsellIndex(index);
       }
     }
   };
@@ -451,7 +464,7 @@ export default function Index() {
         </div>
 
         {/* SEÇÃO 2: UPSELLS (Profissionalize o seu negócio) */}
-        <section className="pt-4 pb-6 bg-[#FDFBF7]">
+        <section className="pt-4 pb-6 bg-[#FDFBF7] overflow-hidden">
           <div className="max-w-3xl mx-auto px-4">
             {/* Card de Título de Largura Total e Altura Mínima */}
             <div className="w-full bg-[#44FF00] py-2 px-4 mb-3 shadow-sm rounded-xl text-center border border-gray-100">
@@ -463,6 +476,10 @@ export default function Index() {
             <div className="mb-4 text-center">
               <p className="text-xs sm:text-sm text-gray-600 font-medium mt-1 max-w-2xl mx-auto leading-relaxed">
                 Descubra as soluções exclusivas para atrair clientes pagantes, valorizar o seu trabalho e profissionalizar suas vendas.
+              </p>
+              {/* Helper text for horizontal scroll */}
+              <p className="text-xs text-green-600 font-bold mt-2 animate-pulse">
+                Arraste para o lado para ver todas as soluções ➔
               </p>
             </div>
 
@@ -485,18 +502,34 @@ export default function Index() {
               </div>
             )}
 
-            {/* Vertical Meta Ads Style List */}
-            <div className="space-y-4">
+            {/* Horizontal Carousel with Peek Effect */}
+            <div 
+              ref={carouselRef}
+              onScroll={handleCarouselScroll}
+              className="flex overflow-x-auto snap-x snap-mandatory scrollbar-none gap-4 pb-4 px-4 -mx-4"
+              style={{ scrollbarWidth: 'none' }}
+            >
               {upsells.map((upsell) => (
-                <UpsellCard 
-                  key={upsell.id} 
-                  upsell={upsell} 
-                  isFavorite={favorites.includes(upsell.id)}
-                  onToggleFavorite={() => toggleFavorite(upsell.id)}
-                  onOpen={() => {
-                    playHeartbeatSound();
-                    setActiveUpsell(upsell.id);
-                  }} 
+                <div key={upsell.id} className="snap-center shrink-0 w-[85vw] max-w-[320px]">
+                  <UpsellCard 
+                    upsell={upsell} 
+                    isFavorite={favorites.includes(upsell.id)}
+                    onToggleFavorite={() => toggleFavorite(upsell.id)}
+                    onOpen={() => {
+                      playHeartbeatSound();
+                      setActiveUpsell(upsell.id);
+                    }} 
+                  />
+                </div>
+              ))}
+            </div>
+
+            {/* Pagination Dots */}
+            <div className="flex justify-center gap-1.5 mt-2">
+              {upsells.map((_, i) => (
+                <div 
+                  key={i} 
+                  className={`h-1.5 rounded-full transition-all ${i === activeUpsellIndex ? 'w-4 bg-[#44FF00]' : 'w-1.5 bg-gray-300'}`}
                 />
               ))}
             </div>
@@ -540,7 +573,7 @@ export default function Index() {
             </h2>
           </div>
           <p className="text-gray-600 text-xs font-bold mb-4 text-center uppercase tracking-tight">
-            Novas receitas adicionadas ao catalogo todos os dias
+            Novas receitas adicionadas todos os dias
           </p>
           
           <div className="grid grid-cols-3 gap-x-2 gap-y-2">
@@ -560,6 +593,9 @@ export default function Index() {
               PACOTES TEMÁTICOS
             </h2>
           </div>
+          <p className="text-gray-600 text-xs font-bold mb-4 text-center uppercase tracking-tight">
+            Suas coleções favoritas reunidas em pacotes completos com descontos imperdíveis, exclusivas para o seu ateliê.
+          </p>
 
           <div className="grid grid-cols-2 gap-3 sm:gap-4">
             {packs.map((pack) => (

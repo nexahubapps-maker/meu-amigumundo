@@ -20,7 +20,7 @@ export const Header = ({ cartCount = 0 }: HeaderProps) => {
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-white h-[64px] flex items-center px-4 shadow-[0_2px_10px_rgba(0,0,0,0.05)]">
+    <header className="sticky top-0 z-50 bg-white h-[76px] flex items-center px-4 shadow-[0_2px_10px_rgba(0,0,0,0.05)]">
       <div className="max-w-6xl mx-auto w-full flex items-center justify-between">
         <div 
           className="flex flex-col items-start cursor-pointer"
@@ -29,9 +29,9 @@ export const Header = ({ cartCount = 0 }: HeaderProps) => {
           <img 
             src="https://ik.imagekit.io/51b3srlsg/amigumundo_amigurumi.png" 
             alt="AmiguMundo" 
-            className="h-[32px] w-auto object-contain"
+            className="h-[40px] w-auto object-contain"
           />
-          <span className="text-[8px] font-bold text-gray-500 mt-0.5 leading-none">
+          <span className="text-[10px] font-bold text-gray-500 mt-1 leading-none">
             Uma Comunidade apaixonada por Amigurumis
           </span>
         </div>
