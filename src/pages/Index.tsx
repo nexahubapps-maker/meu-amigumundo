@@ -16,10 +16,19 @@ import { DailyGiftSection } from "@/components/DailyGiftSection";
 import { LaunchBanner } from "@/components/LaunchBanner";
 import { PwaPrompt } from "@/components/PwaPrompt";
 import { FavoritesModal } from "@/components/FavoritesModal";
-import { recipes, type Recipe } from "@/data/recipes";
-import { upsells } from "@/data/upsells";
-import { categories } from "@/data/categories";
-import { packs } from "@/data/packs";
+import { FooterNavigation } from "@/components/FooterNavigation";
+import { NotificationsModal } from "@/components/NotificationsModal";
+import { InternalPopup } from "@/components/InternalPopup";
+import { 
+  getRecipes, 
+  getInfoprodutos, 
+  getPacks, 
+  getNotifications,
+  type SheetRecipe,
+  type SheetInfoproduto,
+  type SheetPack,
+  type SheetNotification
+} from "@/utils/sheets";
 import { X, ShoppingBag, Heart, MessageCircle, ArrowLeft } from "lucide-react";
 import { playHeartbeatSound } from "@/utils/audio";
 
@@ -33,16 +42,24 @@ interface CartItem {
 
 export default function Index() {
   const navigate = useNavigate();
-  const { id: routeId } = useParams();
+  const { categoria_slug, id: routeProductId } = useParams();
+  
+  // State for fetched data
+  const [recipesList, setRecipesList] = useState<SheetRecipe[]>([]);
+  const [infoprodutosList, setInfoprodutosList] = useState<SheetInfoproduto[]>([]);
+  const [packsList, setPacksList] = useState<SheetPack[]>([]);
+  const [notificationsList, setNotificationsList] = useState<SheetNotification[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
   const [cart, setCart] = useState<CartItem[]>([]);
-  const [showRecipe, setShowRecipe] = useState<Recipe | null>(null);
+  const [showRecipe, setShowRecipe] = useState<SheetRecipe | null>(null);
   const [activeUpsell, setActiveUpsell] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [foundRecipes, setFoundRecipes] = useState<Recipe[]>([]);
+  const [foundRecipes, setFoundRecipes] = useState<SheetRecipe[]>([]);
   const [isFavoritesOpen, setIsFavoritesOpen] = useState(false);
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [activeUpsellIndex, setActiveUpsellIndex] = useState(0);
   const [zoomImage, setZoomImage] = useState<string | null>(null);
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const carouselRef = useRef<HTMLDivElement>(null);
   
   // Favorites State
@@ -51,9 +68,56 @@ export default function Index() {
     return saved ? JSON.parse(saved) : [];
   });
 
+  // Fetch all data from Google Sheets
+  useEffect(() => {
+    const loadAllData = async () => {
+      setIsLoading(true);
+      try {
+        const [recipesData, infoprodutosData, packsData, notificationsData] = await Promise.all([
+          getRecipes(),
+          getInfoprodutos(),
+          getPacks(),
+          getNotifications()
+        ]);
+
+        setRecipesList(recipesData);
+        setInfoprodutosList(infoprodutosData);
+        setPacksList(packsData);
+        setNotificationsList(notificationsData);
+
+        // Push Notification Listener (Client-side simulation)
+        const pushItem = [...recipesData, ...infoprodutosData, ...packsData].find(item => item.disparar_push);
+        if (pushItem) {
+          if (Notification.permission === "granted") {
+            new Notification(`Novidade: ${pushItem.nome}`, {
+              body: pushItem.descricao,
+              icon: "https://ik.imagekit.io/51b3srlsg/icone_amigumundo.png"
+            });
+          } else if (Notification.permission !== "denied") {
+            Notification.requestPermission().then(permission => {
+              if (permission === "granted") {
+                new Notification(`Novidade: ${pushItem.nome}`, {
+                  body: pushItem.descricao
+                });
+              }
+            });
+          }
+          console.log(`[Push Notification Triggered] ${pushItem.nome}: ${pushItem.descricao}`);
+        }
+
+      } catch (e) {
+        console.error("Error loading sheets data:", e);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadAllData();
+  }, []);
+
   // Scroll Lock Effect
   useEffect(() => {
-    const isModalOpen = !!showRecipe || !!activeUpsell || isFavoritesOpen || !!zoomImage || !!selectedCategory;
+    const isModalOpen = !!showRecipe || !!activeUpsell || isFavoritesOpen || !!zoomImage || !!categoria_slug || !!routeProductId;
     if (isModalOpen) {
       document.body.style.overflow = "hidden";
     } else {
@@ -62,7 +126,7 @@ export default function Index() {
     return () => {
       document.body.style.overflow = "";
     };
-  }, [showRecipe, activeUpsell, isFavoritesOpen, zoomImage, selectedCategory]);
+  }, [showRecipe, activeUpsell, isFavoritesOpen, zoomImage, categoria_slug, routeProductId]);
 
   useEffect(() => {
     const savedCart = localStorage.getItem("amigumundo-cart");
@@ -77,28 +141,15 @@ export default function Index() {
     localStorage.setItem("amigumundo-favorites", JSON.stringify(favorites));
   }, [favorites]);
 
-  // Deep Linking Handler
+  // Deep Linking Handler for Product Detail
   useEffect(() => {
-    if (routeId) {
-      const recipe = recipes.find(r => r.id === routeId);
+    if (routeProductId && recipesList.length > 0) {
+      const recipe = recipesList.find(r => r.id === routeProductId);
       if (recipe) {
         setShowRecipe(recipe);
-        return;
-      }
-
-      const upsell = upsells.find(u => u.id === routeId);
-      if (upsell) {
-        setActiveUpsell(upsell.id);
-        return;
-      }
-
-      const pack = packs.find(p => p.id === routeId);
-      if (pack) {
-        const el = document.getElementById('cart-section');
-        if (el) el.scrollIntoView({ behavior: 'smooth' });
       }
     }
-  }, [routeId]);
+  }, [routeProductId, recipesList]);
 
   const toggleFavorite = (id: string) => {
     setFavorites((prev) => 
@@ -186,7 +237,7 @@ export default function Index() {
     }
   };
 
-  const handleRecipeFound = (recipe: Recipe) => {
+  const handleRecipeFound = (recipe: SheetRecipe) => {
     setError(null);
     setShowRecipe(recipe);
   };
@@ -196,13 +247,13 @@ export default function Index() {
     setTimeout(() => setError(null), 3000);
   };
 
-  const handleRecipeAdd = (recipe: Recipe) => {
+  const handleRecipeAdd = (recipe: SheetRecipe) => {
     addToCart({ 
       id: recipe.id, 
       nome: recipe.nome, 
       preco: recipe.preco, 
       tipo: "recipe",
-      imagem: `https://picsum.photos/seed/${recipe.id}/100/100`
+      imagem: recipe.url_foto
     });
     setFoundRecipes((prev) => {
       if (prev.find((r) => r.id === recipe.id)) return prev;
@@ -211,31 +262,14 @@ export default function Index() {
   };
 
   const handlePackAdd = (packId: string) => {
-    const pack = packs.find((p) => p.id === packId);
+    const pack = packsList.find((p) => p.id === packId);
     if (pack) addToCart({ 
       id: pack.id, 
       nome: pack.nome, 
-      preco: pack.precoAtual, 
+      preco: pack.preco, 
       tipo: "pack",
-      imagem: `https://picsum.photos/seed/${pack.id}/100/100`
+      imagem: pack.url_foto
     });
-  };
-
-  const handleUpsellBuy = () => {
-    if (activeUpsell) {
-      const upsell = upsells.find((u) => u.id === activeUpsell);
-      if (upsell) {
-        addToCart({ 
-          id: upsell.id, 
-          nome: upsell.nome, 
-          preco: upsell.precoAtual, 
-          tipo: "upsell",
-          imagem: `https://picsum.photos/seed/${upsell.id}/100/100`
-        });
-        setActiveUpsell(null);
-        navigate("/checkout");
-      }
-    }
   };
 
   const handleCarouselScroll = () => {
@@ -243,7 +277,7 @@ export default function Index() {
       const scrollLeft = carouselRef.current.scrollLeft;
       const width = carouselRef.current.clientWidth;
       const index = Math.round(scrollLeft / (width * 0.85));
-      if (index >= 0 && index < upsells.length) {
+      if (index >= 0 && index < infoprodutosList.length) {
         setActiveUpsellIndex(index);
       }
     }
@@ -267,13 +301,16 @@ export default function Index() {
   };
 
   // Filter recipes for the selected category
-  const selectedCategoryRecipes = selectedCategory 
-    ? recipes.filter(r => r.categoria.toLowerCase() === selectedCategory.toLowerCase() || r.categoria.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() === selectedCategory.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase())
+  const selectedCategoryRecipes = categoria_slug 
+    ? recipesList.filter(r => r.categoria.toLowerCase() === categoria_slug.toLowerCase() || r.categoria.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() === categoria_slug.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase())
     : [];
 
   return (
-    <div className="min-h-screen bg-white pb-16 relative">
+    <div className="min-h-screen bg-white pb-24 relative">
       <Header cartCount={cart.length} />
+
+      {/* Internal Popup for active notifications */}
+      <InternalPopup notifications={notificationsList} />
 
       {/* DAILY GIFT ANNOUNCEMENT BOX (Shrunk with Olive Green Texture) */}
       <div className="max-w-6xl mx-auto px-4 mt-1 flex flex-col gap-1">
@@ -342,7 +379,7 @@ export default function Index() {
                   {partition.receitas.length > 0 && (
                     <div>
                       <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-wider mb-1">
-                        [Seção 1: Receitas]
+                        Receitas de Amigurumi
                       </h3>
                       <div className="space-y-1">
                         {partition.receitas.map((item) => (
@@ -366,7 +403,7 @@ export default function Index() {
                   {partition.mimos.length > 0 && (
                     <div>
                       <h3 className="text-[10px] font-black text-orange-500 uppercase tracking-wider mb-1">
-                        [Seção 2: Mimos]
+                        Mimos Especiais
                       </h3>
                       <div className="space-y-1">
                         {partition.mimos.map((item) => (
@@ -393,7 +430,7 @@ export default function Index() {
                   {partition.presentes.length > 0 && (
                     <div>
                       <h3 className="text-[10px] font-black text-green-600 uppercase tracking-wider mb-1">
-                        [Seção 3: Presentes]
+                        Presentes Ganhos
                       </h3>
                       <div className="space-y-1">
                         {partition.presentes.map((item) => (
@@ -487,7 +524,7 @@ export default function Index() {
           </div>
         </div>
 
-        {/* SEÇÃO 2: UPSELLS (Profissionalize o seu negócio with Orange Texture) */}
+        {/* SEÇÃO 2: UPSELLS (TRANSFORME SUAS PEÇAS EM UM ATELIÊ LUCRATIVO) */}
         <section className="pt-4 pb-6 bg-[#FDFBF7] overflow-hidden">
           <div className="max-w-3xl mx-auto px-4">
             {/* Card de Título de Largura Total e Altura Mínima with Orange Texture */}
@@ -536,24 +573,42 @@ export default function Index() {
               className="flex overflow-x-auto snap-x snap-mandatory scrollbar-none gap-4 pb-4 px-4 -mx-4"
               style={{ scrollbarWidth: 'none' }}
             >
-              {upsells.map((upsell) => (
-                <div key={upsell.id} className="snap-center shrink-0 w-[85vw] max-w-[320px]">
-                  <UpsellCard 
-                    upsell={upsell} 
-                    isFavorite={favorites.includes(upsell.id)}
-                    onToggleFavorite={() => toggleFavorite(upsell.id)}
-                    onOpen={() => {
-                      playHeartbeatSound();
-                      setActiveUpsell(upsell.id);
-                    }} 
-                  />
-                </div>
-              ))}
+              {isLoading ? (
+                /* Skeleton Loaders */
+                Array.from({ length: 3 }).map((_, i) => (
+                  <div key={i} className="snap-center shrink-0 w-[85vw] max-w-[320px] bg-gray-100 rounded-2xl aspect-[16/10] animate-pulse" />
+                ))
+              ) : (
+                infoprodutosList.map((upsell) => (
+                  <div key={upsell.id} className="snap-center shrink-0 w-[85vw] max-w-[320px]">
+                    <UpsellCard 
+                      upsell={{
+                        id: upsell.id,
+                        nome: upsell.nome,
+                        descricao: upsell.descricao,
+                        descricaoLonga: upsell.descricao,
+                        precoOriginal: upsell.preco * 1.5,
+                        precoAtual: upsell.preco,
+                        emoji: "💡",
+                        cor: "#FF3D9A",
+                        beneficios: ["Acesso imediato", "Suporte exclusivo"],
+                        copiaVendas: [upsell.descricao]
+                      }} 
+                      isFavorite={favorites.includes(upsell.id)}
+                      onToggleFavorite={() => toggleFavorite(upsell.id)}
+                      onOpen={() => {
+                        playHeartbeatSound();
+                        setActiveUpsell(upsell.id);
+                      }} 
+                    />
+                  </div>
+                ))
+              )}
             </div>
 
             {/* Pagination Dots */}
             <div className="flex justify-center gap-1.5 mt-2">
-              {upsells.map((_, i) => (
+              {infoprodutosList.map((_, i) => (
                 <div 
                   key={i} 
                   className={`h-1.5 rounded-full transition-all ${i === activeUpsellIndex ? 'w-4 bg-[#44FF00]' : 'w-1.5 bg-gray-300'}`}
@@ -584,7 +639,16 @@ export default function Index() {
 
       {activeUpsell && (
         <UpsellModal
-          upsell={upsells.find((u) => u.id === activeUpsell)!}
+          upsell={{
+            ...infoprodutosList.find((u) => u.id === activeUpsell)!,
+            descricaoLonga: infoprodutosList.find((u) => u.id === activeUpsell)!.descricao,
+            precoOriginal: infoprodutosList.find((u) => u.id === activeUpsell)!.preco * 1.5,
+            precoAtual: infoprodutosList.find((u) => u.id === activeUpsell)!.preco,
+            emoji: "💡",
+            cor: "#FF3D9A",
+            beneficios: ["Acesso imediato", "Suporte exclusivo"],
+            copiaVendas: [infoprodutosList.find((u) => u.id === activeUpsell)!.descricao]
+          }}
           onClose={() => setActiveUpsell(null)}
           onBuy={handleUpsellBuy}
         />
@@ -614,7 +678,7 @@ export default function Index() {
                 nome={cat} 
                 onClick={() => {
                   playHeartbeatSound();
-                  setSelectedCategory(cat);
+                  navigate(`/categoria/${encodeURIComponent(cat.toLowerCase())}`);
                 }} 
               />
             ))}
@@ -631,7 +695,7 @@ export default function Index() {
             className="w-full py-2 px-4 mb-4 shadow-sm rounded-xl text-center border border-gray-100"
           >
             <h2 className="text-sm sm:text-base font-black uppercase tracking-wider text-white m-0">
-              PACOTES TEMÁTICOS
+              Packs e Combos Especiais
             </h2>
           </div>
           <p className="text-gray-600 text-xs font-bold mb-4 text-center uppercase tracking-tight">
@@ -639,17 +703,32 @@ export default function Index() {
           </p>
 
           <div className="grid grid-cols-2 gap-3 sm:gap-4">
-            {packs.map((pack) => (
-              <PackCard
-                key={pack.id}
-                pack={pack}
-                inCart={isInCart(pack.id)}
-                isFavorite={favorites.includes(pack.id)}
-                onToggleFavorite={() => toggleFavorite(pack.id)}
-                onAdd={() => handlePackAdd(pack.id)}
-                onRemove={() => removeFromCart(pack.id)}
-              />
-            ))}
+            {isLoading ? (
+              /* Skeleton Loaders */
+              Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="bg-gray-100 rounded-2xl aspect-square animate-pulse" />
+              ))
+            ) : (
+              packsList.map((pack) => (
+                <PackCard
+                  key={pack.id}
+                  pack={{
+                    id: pack.id,
+                    nome: pack.nome,
+                    descricao: pack.descricao,
+                    receitas: 20,
+                    precoOriginal: pack.preco * 1.5,
+                    precoAtual: pack.preco,
+                    emoji: "🎁"
+                  }}
+                  inCart={isInCart(pack.id)}
+                  isFavorite={favorites.includes(pack.id)}
+                  onToggleFavorite={() => toggleFavorite(pack.id)}
+                  onAdd={() => handlePackAdd(pack.id)}
+                  onRemove={() => removeFromCart(pack.id)}
+                />
+              ))
+            )}
           </div>
         </div>
       </section>
@@ -661,14 +740,13 @@ export default function Index() {
         <p className="text-[10px] text-gray-300 font-black uppercase tracking-[0.3em]">© 2024 AmiguMundo Artes</p>
       </footer>
 
-      {/* FLOATING FAVORITES BUTTON */}
-      <button
-        onClick={() => setIsFavoritesOpen(true)}
-        className="fixed bottom-[60px] right-2.5 z-50 bg-[#44FF00] text-[#171717] p-2.5 rounded-full shadow-2xl hover:scale-110 transition-transform active:scale-95 flex items-center justify-center border-2 border-white"
-        aria-label="Meus Favoritos"
-      >
-        <Heart size={18} fill="currentColor" />
-      </button>
+      {/* FOOTER NAVIGATION BAR */}
+      <FooterNavigation
+        onOpenFavorites={() => setIsFavoritesOpen(true)}
+        onOpenNotifications={() => setIsNotificationsOpen(true)}
+        favoritesCount={favorites.length}
+        notificationsCount={notificationsList.filter(n => n.status).length}
+      />
 
       {/* FAVORITES MODAL */}
       <FavoritesModal
@@ -680,29 +758,43 @@ export default function Index() {
         isInCart={isInCart}
       />
 
+      {/* NOTIFICATIONS MODAL */}
+      <NotificationsModal
+        isOpen={isNotificationsOpen}
+        onClose={() => setIsNotificationsOpen(false)}
+        notifications={notificationsList}
+      />
+
       {/* DYNAMIC CATEGORY DETAIL VIEW (Full-screen Overlay) */}
-      {selectedCategory && (
+      {categoria_slug && (
         <div className="fixed inset-0 z-[90] bg-[#F5F5F7] overflow-y-auto animate-in slide-in-from-bottom duration-300">
           {/* Header with Orange Texture */}
           <div style={textureLaranjaStyle} className="sticky top-0 z-10 py-4 px-4 flex items-center justify-between shadow-md">
             <button 
-              onClick={() => setSelectedCategory(null)}
+              onClick={() => navigate("/")}
               className="text-white hover:scale-105 active:scale-95 transition-transform flex items-center gap-1.5 font-black text-xs uppercase tracking-wider"
             >
               <ArrowLeft size={18} /> Voltar
             </button>
             <h2 className="text-white font-black text-sm uppercase tracking-widest m-0">
-              {selectedCategory}
+              {decodeURIComponent(categoria_slug)}
             </h2>
             <div className="w-12"></div> {/* Spacer for centering */}
           </div>
 
           <div className="max-w-6xl mx-auto px-4 py-6">
             <p className="text-gray-500 text-xs font-bold mb-6 text-center uppercase tracking-wider">
-              Explore as receitas exclusivas da categoria {selectedCategory}
+              Explore as receitas exclusivas da categoria {decodeURIComponent(categoria_slug)}
             </p>
 
-            {selectedCategoryRecipes.length === 0 ? (
+            {isLoading ? (
+              /* Skeleton Loaders */
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <div key={i} className="bg-gray-100 rounded-2xl aspect-[3/4] animate-pulse" />
+                ))}
+              </div>
+            ) : selectedCategoryRecipes.length === 0 ? (
               /* Ghost Card Placeholder */
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                 <div className="bg-gray-100 border border-dashed border-gray-200 rounded-2xl aspect-[3/4] flex flex-col items-center justify-center p-4 animate-pulse">
@@ -726,10 +818,10 @@ export default function Index() {
                       {/* Image with Lightbox Zoom on Click */}
                       <div 
                         className="relative aspect-square bg-gray-50 cursor-zoom-in overflow-hidden group"
-                        onClick={() => setZoomImage(`https://picsum.photos/seed/${recipe.id}/800/800`)}
+                        onClick={() => setZoomImage(recipe.url_foto)}
                       >
                         <img 
-                          src={`https://picsum.photos/seed/${recipe.id}/400/400`} 
+                          src={recipe.url_foto} 
                           alt={recipe.nome} 
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                         />
@@ -796,15 +888,6 @@ export default function Index() {
           />
         </div>
       )}
-
-      <CartFooter 
-        count={cart.length} 
-        total={total} 
-        onCheckout={() => {
-          playHeartbeatSound();
-          navigate("/checkout");
-        }} 
-      />
     </div>
   );
 }

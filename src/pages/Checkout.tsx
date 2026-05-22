@@ -1,29 +1,62 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { ChevronLeft, ShieldCheck, Zap, CreditCard, Smartphone, Mail, Phone, Lock } from "lucide-react";
 import { SupportButton } from "@/components/SupportButton";
 import { playHeartbeatSound } from "@/utils/audio";
+import { getRecipes, getInfoprodutos, getPacks } from "@/utils/sheets";
 
 export default function Checkout() {
   const navigate = useNavigate();
+  const { id: checkoutProductId } = useParams();
   const [cart, setCart] = useState<any[]>([]);
   const [paymentMethod, setPaymentMethod] = useState<"pix" | "card">("pix");
   
   const [email, setEmail] = useState(() => localStorage.getItem("amigumundo-email") || "");
   const [whatsapp, setWhatsapp] = useState(() => localStorage.getItem("amigumundo-whatsapp") || "");
 
+  // Fix scroll bug: Ensure page starts at the absolute top on mount
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
+  // Load cart or direct product
   useEffect(() => {
-    const savedCart = localStorage.getItem("amigumundo-cart");
-    if (savedCart) {
-      setCart(JSON.parse(savedCart));
-    }
-  }, []);
+    const loadCheckoutData = async () => {
+      if (checkoutProductId) {
+        // Fetch from sheets to find the specific product
+        const [recipesList, infoprodutosList, packsList] = await Promise.all([
+          getRecipes(),
+          getInfoprodutos(),
+          getPacks()
+        ]);
+
+        const foundProduct = 
+          recipesList.find(r => r.id === checkoutProductId) ||
+          infoprodutosList.find(i => i.id === checkoutProductId) ||
+          packsList.find(p => p.id === checkoutProductId);
+
+        if (foundProduct) {
+          setCart([{
+            id: foundProduct.id,
+            nome: foundProduct.nome,
+            preco: foundProduct.preco,
+            tipo: "recipe"
+          }]);
+          return;
+        }
+      }
+
+      // Fallback to general cart
+      const savedCart = localStorage.getItem("amigumundo-cart");
+      if (savedCart) {
+        setCart(JSON.parse(savedCart));
+      }
+    };
+
+    loadCheckoutData();
+  }, [checkoutProductId]);
 
   useEffect(() => {
     localStorage.setItem("amigumundo-email", email);
@@ -90,7 +123,9 @@ export default function Checkout() {
     triggerAdminWebhook(saleData);
 
     alert("Pagamento processado com sucesso! Suas receitas foram enviadas para o seu WhatsApp.");
-    localStorage.removeItem("amigumundo-cart");
+    if (!checkoutProductId) {
+      localStorage.removeItem("amigumundo-cart");
+    }
     navigate("/");
   };
 
