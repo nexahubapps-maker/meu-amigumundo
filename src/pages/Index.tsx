@@ -20,7 +20,7 @@ import { recipes, type Recipe } from "@/data/recipes";
 import { upsells } from "@/data/upsells";
 import { categories } from "@/data/categories";
 import { packs } from "@/data/packs";
-import { X, ShoppingBag, Heart, MessageCircle } from "lucide-react";
+import { X, ShoppingBag, Heart, MessageCircle, ArrowLeft } from "lucide-react";
 import { playHeartbeatSound } from "@/utils/audio";
 
 interface CartItem {
@@ -42,6 +42,7 @@ export default function Index() {
   const [isFavoritesOpen, setIsFavoritesOpen] = useState(false);
   const [activeUpsellIndex, setActiveUpsellIndex] = useState(0);
   const [zoomImage, setZoomImage] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const carouselRef = useRef<HTMLDivElement>(null);
   
   // Favorites State
@@ -52,7 +53,7 @@ export default function Index() {
 
   // Scroll Lock Effect
   useEffect(() => {
-    const isModalOpen = !!showRecipe || !!activeUpsell || isFavoritesOpen || !!zoomImage;
+    const isModalOpen = !!showRecipe || !!activeUpsell || isFavoritesOpen || !!zoomImage || !!selectedCategory;
     if (isModalOpen) {
       document.body.style.overflow = "hidden";
     } else {
@@ -61,7 +62,7 @@ export default function Index() {
     return () => {
       document.body.style.overflow = "";
     };
-  }, [showRecipe, activeUpsell, isFavoritesOpen, zoomImage]);
+  }, [showRecipe, activeUpsell, isFavoritesOpen, zoomImage, selectedCategory]);
 
   useEffect(() => {
     const savedCart = localStorage.getItem("amigumundo-cart");
@@ -264,6 +265,11 @@ export default function Index() {
     backgroundSize: "150px",
     textShadow: "1px 1px 2px rgba(0,0,0,0.5)"
   };
+
+  // Filter recipes for the selected category
+  const selectedCategoryRecipes = selectedCategory 
+    ? recipes.filter(r => r.categoria.toLowerCase() === selectedCategory.toLowerCase() || r.categoria.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() === selectedCategory.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase())
+    : [];
 
   return (
     <div className="min-h-screen bg-white pb-16 relative">
@@ -600,92 +606,18 @@ export default function Index() {
             Novas receitas adicionadas todos os dias
           </p>
           
-          {/* Dynamic Category Catalog (1 Row in Sheets = 1 Card in App) */}
-          <div className="space-y-8">
-            {categories.map((cat) => {
-              const catRecipes = recipes.filter(r => r.categoria.toLowerCase() === cat.toLowerCase() || r.categoria.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() === cat.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase());
-              
-              return (
-                <div key={cat} className="border-b border-gray-100 pb-6 last:border-0">
-                  <h3 className="text-xs font-black text-gray-800 uppercase tracking-wider mb-3 flex items-center gap-2">
-                    <span className="w-1.5 h-3 bg-[#44FF00] rounded-full"></span>
-                    {cat}
-                  </h3>
-                  
-                  {catRecipes.length === 0 ? (
-                    /* Ghost Card Placeholder */
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                      <div className="bg-gray-100 border border-dashed border-gray-200 rounded-2xl aspect-[3/4] flex flex-col items-center justify-center p-4 animate-pulse">
-                        <div className="w-10 h-10 bg-gray-200 rounded-full mb-2"></div>
-                        <div className="w-16 h-2 bg-gray-200 rounded mb-1"></div>
-                        <div className="w-12 h-2 bg-gray-200 rounded"></div>
-                      </div>
-                    </div>
-                  ) : (
-                    /* Real Recipe Cards */
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                      {catRecipes.map((recipe) => {
-                        const added = isInCart(recipe.id);
-                        return (
-                          <div key={recipe.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden flex flex-col justify-between">
-                            {/* Header with Orange Texture */}
-                            <div style={textureLaranjaStyle} className="py-1.5 px-3 text-center text-[9px] font-black text-white uppercase tracking-wider">
-                              CÓD: {recipe.id}
-                            </div>
-                            
-                            {/* Image with Lightbox Zoom on Click */}
-                            <div 
-                              className="relative aspect-square bg-gray-50 cursor-zoom-in overflow-hidden group"
-                              onClick={() => setZoomImage(`https://picsum.photos/seed/${recipe.id}/800/800`)}
-                            >
-                              <img 
-                                src={`https://picsum.photos/seed/${recipe.id}/400/400`} 
-                                alt={recipe.nome} 
-                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                              />
-                              {recipe.tamanho && (
-                                <span className="absolute bottom-1.5 right-1.5 bg-black/70 text-white text-[8px] font-bold px-1.5 py-0.5 rounded">
-                                  {recipe.tamanho}
-                                </span>
-                              )}
-                            </div>
-
-                            {/* Info & Buy Button */}
-                            <div className="p-2.5 flex flex-col justify-between flex-1">
-                              <div>
-                                <h4 className="text-[10px] sm:text-xs font-black text-gray-800 uppercase tracking-tight line-clamp-2 leading-tight">
-                                  {recipe.nome}
-                                </h4>
-                                <p className="text-[9px] text-gray-400 font-medium mt-0.5 line-clamp-2 leading-tight">
-                                  {recipe.descricao}
-                                </p>
-                              </div>
-                              
-                              <div className="mt-2 flex items-center justify-between gap-1.5">
-                                <span className="text-[11px] font-black text-gray-900">
-                                  R$ {recipe.preco.toFixed(2)}
-                                </span>
-                                <button
-                                  onClick={() => handleRecipeAdd(recipe)}
-                                  disabled={added}
-                                  className={`px-3 py-1.5 rounded-lg font-black text-[9px] uppercase tracking-wider transition-all ${
-                                    added 
-                                      ? 'bg-gray-100 text-gray-400' 
-                                      : 'bg-[#44FF00] text-[#171717] hover:scale-105 active:scale-95'
-                                  }`}
-                                >
-                                  {added ? "✓" : "Quero"}
-                                </button>
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+          {/* Grid of 3 Columns representing Category Buttons */}
+          <div className="grid grid-cols-3 gap-3">
+            {categories.map((cat) => (
+              <CategoryCard 
+                key={cat} 
+                nome={cat} 
+                onClick={() => {
+                  playHeartbeatSound();
+                  setSelectedCategory(cat);
+                }} 
+              />
+            ))}
           </div>
         </div>
       </section>
@@ -747,6 +679,103 @@ export default function Index() {
         onAddToCart={addToCart}
         isInCart={isInCart}
       />
+
+      {/* DYNAMIC CATEGORY DETAIL VIEW (Full-screen Overlay) */}
+      {selectedCategory && (
+        <div className="fixed inset-0 z-[90] bg-[#F5F5F7] overflow-y-auto animate-in slide-in-from-bottom duration-300">
+          {/* Header with Orange Texture */}
+          <div style={textureLaranjaStyle} className="sticky top-0 z-10 py-4 px-4 flex items-center justify-between shadow-md">
+            <button 
+              onClick={() => setSelectedCategory(null)}
+              className="text-white hover:scale-105 active:scale-95 transition-transform flex items-center gap-1.5 font-black text-xs uppercase tracking-wider"
+            >
+              <ArrowLeft size={18} /> Voltar
+            </button>
+            <h2 className="text-white font-black text-sm uppercase tracking-widest m-0">
+              {selectedCategory}
+            </h2>
+            <div className="w-12"></div> {/* Spacer for centering */}
+          </div>
+
+          <div className="max-w-6xl mx-auto px-4 py-6">
+            <p className="text-gray-500 text-xs font-bold mb-6 text-center uppercase tracking-wider">
+              Explore as receitas exclusivas da categoria {selectedCategory}
+            </p>
+
+            {selectedCategoryRecipes.length === 0 ? (
+              /* Ghost Card Placeholder */
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                <div className="bg-gray-100 border border-dashed border-gray-200 rounded-2xl aspect-[3/4] flex flex-col items-center justify-center p-4 animate-pulse">
+                  <div className="w-12 h-12 bg-gray-200 rounded-full mb-3"></div>
+                  <div className="w-20 h-3 bg-gray-200 rounded mb-2"></div>
+                  <div className="w-16 h-3 bg-gray-200 rounded"></div>
+                </div>
+              </div>
+            ) : (
+              /* Real Recipe Cards */
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                {selectedCategoryRecipes.map((recipe) => {
+                  const added = isInCart(recipe.id);
+                  return (
+                    <div key={recipe.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden flex flex-col justify-between">
+                      {/* Header with Orange Texture */}
+                      <div style={textureLaranjaStyle} className="py-1.5 px-3 text-center text-[9px] font-black text-white uppercase tracking-wider">
+                        CÓD: {recipe.id}
+                      </div>
+                      
+                      {/* Image with Lightbox Zoom on Click */}
+                      <div 
+                        className="relative aspect-square bg-gray-50 cursor-zoom-in overflow-hidden group"
+                        onClick={() => setZoomImage(`https://picsum.photos/seed/${recipe.id}/800/800`)}
+                      >
+                        <img 
+                          src={`https://picsum.photos/seed/${recipe.id}/400/400`} 
+                          alt={recipe.nome} 
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                        {recipe.tamanho && (
+                          <span className="absolute bottom-1.5 right-1.5 bg-black/70 text-white text-[8px] font-bold px-1.5 py-0.5 rounded">
+                            {recipe.tamanho}
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Info & Buy Button */}
+                      <div className="p-3 flex flex-col justify-between flex-1">
+                        <div>
+                          <h4 className="text-xs font-black text-gray-800 uppercase tracking-tight line-clamp-2 leading-tight">
+                            {recipe.nome}
+                          </h4>
+                          <p className="text-[10px] text-gray-400 font-medium mt-1 line-clamp-2 leading-tight">
+                            {recipe.descricao}
+                          </p>
+                        </div>
+                        
+                        <div className="mt-3 flex items-center justify-between gap-1.5">
+                          <span className="text-xs font-black text-gray-900">
+                            R$ {recipe.preco.toFixed(2)}
+                          </span>
+                          <button
+                            onClick={() => handleRecipeAdd(recipe)}
+                            disabled={added}
+                            className={`px-4 py-2 rounded-lg font-black text-[10px] uppercase tracking-wider transition-all ${
+                              added 
+                                ? 'bg-gray-100 text-gray-400' 
+                                : 'bg-[#44FF00] text-[#171717] hover:scale-105 active:scale-95'
+                            }`}
+                          >
+                            {added ? "✓" : "Quero"}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Lightbox Zoom Modal */}
       {zoomImage && (

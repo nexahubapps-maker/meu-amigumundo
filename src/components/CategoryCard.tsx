@@ -2,9 +2,10 @@
 
 interface CategoryCardProps {
   nome: string;
+  onClick?: () => void;
 }
 
-export const CategoryCard = ({ nome }: CategoryCardProps) => {
+export const CategoryCard = ({ nome, onClick }: CategoryCardProps) => {
   const categoryImages: Record<string, string> = {
     "Princesas": "https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?q=80&w=400&auto=format&fit=crop",
     "Personagens TV": "https://images.unsplash.com/photo-1558679908-541bcf1249ff?q=80&w=400&auto=format&fit=crop",
@@ -17,7 +18,10 @@ export const CategoryCard = ({ nome }: CategoryCardProps) => {
   const imageUrl = categoryImages[nome] || `https://picsum.photos/seed/${nome}/400/400`;
 
   return (
-    <div className="flex flex-col items-center cursor-pointer group w-full">
+    <div 
+      onClick={onClick}
+      className="flex flex-col items-center cursor-pointer group w-full"
+    >
       <div className="w-full aspect-square rounded-2xl overflow-hidden bg-gray-50 shadow-sm border border-gray-100">
         <img 
           src={imageUrl} 
