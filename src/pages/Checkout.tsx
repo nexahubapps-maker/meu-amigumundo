@@ -144,7 +144,7 @@ export default function Checkout() {
         {/* Resumo do Pedido no Topo */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
           <div className="flex items-center gap-2 mb-4 text-gray-800">
-            <Smartphone size={20} className="text-blue-500" />
+            <img src="https://ik.imagekit.io/51b3srlsg/icone_whatsapp.png" className="w-5 h-5 object-contain" alt="WhatsApp" />
             <h2 className="font-bold uppercase tracking-tight text-sm">Resumo do Pedido</h2>
           </div>
           <div className="space-y-3">

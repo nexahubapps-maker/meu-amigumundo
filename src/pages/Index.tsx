@@ -18,6 +18,7 @@ import { FooterNavigation } from "@/components/FooterNavigation";
 import { NotificationsModal } from "@/components/NotificationsModal";
 import { InternalPopup } from "@/components/InternalPopup";
 import { CartSection } from "@/components/CartSection";
+import { CartFooter } from "@/components/CartFooter";
 import { CategoryDetailView } from "@/components/CategoryDetailView";
 import { LightboxModal } from "@/components/LightboxModal";
 import { categories } from "@/data/categories";
@@ -31,7 +32,6 @@ import {
   type SheetPack,
   type SheetNotification
 } from "@/utils/sheets";
-import { MessageCircle } from "lucide-react";
 import { playHeartbeatSound } from "@/utils/audio";
 
 interface CartItem {
@@ -363,9 +363,13 @@ export default function Index() {
                 target="_blank" 
                 rel="noopener noreferrer"
                 style={textureVerdeOlivaStyle}
-                className="text-white p-2.5 rounded-xl text-center text-xs font-black uppercase tracking-wide shadow-sm flex items-center justify-center gap-1.5 hover:scale-[1.01] active:scale-[0.99] transition-transform"
+                className="text-white p-3 rounded-xl text-center shadow-sm flex items-center justify-center gap-3 hover:scale-[1.01] active:scale-[0.99] transition-transform"
               >
-                <MessageCircle size={16} fill="currentColor" /> Entre no nosso Grupo de Promoções do WhatsApp
+                <img src="https://ik.imagekit.io/51b3srlsg/icone_whatsapp.png" className="w-8 h-8 object-contain shrink-0" alt="WhatsApp" />
+                <div className="text-left">
+                  <p className="text-[11px] font-black uppercase tracking-wide leading-tight">Ainda não faz parte do nosso grupo?</p>
+                  <p className="text-[10px] font-bold text-white/90 leading-tight">Então CLIQUE AQUI e entre no nosso Grupo de Promoções do WhatsApp</p>
+                </div>
               </a>
             </div>
 
@@ -624,6 +628,13 @@ export default function Index() {
       <footer className="text-center py-3 px-4 border-t border-gray-100 bg-white">
         <p className="text-[10px] text-gray-300 font-black uppercase tracking-[0.3em]">© 2024 AmiguMundo Artes</p>
       </footer>
+
+      {/* CART FOOTER PREVIEW */}
+      <CartFooter
+        count={cart.length}
+        total={total}
+        onCheckout={() => navigate("/checkout")}
+      />
 
       {/* FOOTER NAVIGATION BAR */}
       <FooterNavigation
