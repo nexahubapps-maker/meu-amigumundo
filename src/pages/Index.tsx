@@ -183,7 +183,7 @@ export default function Index() {
     } else if (fullPriceRecipeCount < 10) {
       return `Adicione mais ${10 - fullPriceRecipeCount} receitas para ganhar uma receita GRÁTIS!`;
     } else {
-      return "🎉 VOCÊ GANHOU UMA RECEITA GRÁTIS! Escolha qualquer uma na loja.";
+      return "Você ganhou uma receita grátis! Escolha qualquer uma na loja.";
     }
   };
 
@@ -254,13 +254,31 @@ export default function Index() {
 
   const isInCart = (id: string) => cart.some((item) => item.id === id);
 
+  // Textures Styles
+  const textureLaranjaStyle = {
+    backgroundImage: "url('https://ik.imagekit.io/51b3srlsg/textura_laranja.jpeg')",
+    backgroundRepeat: "repeat",
+    backgroundSize: "auto",
+    textShadow: "1px 1px 2px rgba(0,0,0,0.5)"
+  };
+
+  const textureVerdeOlivaStyle = {
+    backgroundImage: "url('https://ik.imagekit.io/51b3srlsg/textura_verde_oliva.jpeg')",
+    backgroundRepeat: "repeat",
+    backgroundSize: "auto",
+    textShadow: "1px 1px 2px rgba(0,0,0,0.5)"
+  };
+
   return (
     <div className="min-h-screen bg-white pb-16 relative">
       <Header cartCount={cart.length} />
 
-      {/* DAILY GIFT ANNOUNCEMENT BOX (Shrunk) */}
+      {/* DAILY GIFT ANNOUNCEMENT BOX (Shrunk with Olive Green Texture) */}
       <div className="max-w-6xl mx-auto px-4 mt-1 flex flex-col gap-1">
-        <div className="bg-[#44FF00] text-[#171717] p-1.5 rounded-lg text-center text-[10px] font-black uppercase tracking-wide shadow-sm">
+        <div 
+          style={textureVerdeOlivaStyle}
+          className="text-white p-2 rounded-lg text-center text-[10px] font-black uppercase tracking-wide shadow-sm"
+        >
           PRESENTE DIÁRIO: Vá até o final da página e baixe a Receita Gratuita de hoje! ↓
         </div>
       </div>
@@ -280,13 +298,14 @@ export default function Index() {
 
             <BannerCarousel />
 
-            {/* WhatsApp Group Card (Moved below the banner and above the cart/code input) */}
+            {/* WhatsApp Group Card (With Olive Green Texture) */}
             <div className="max-w-2xl mx-auto mb-2">
               <a 
                 href="https://wa.me/5544999999999" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="bg-[#44FF00] text-[#171717] p-2 rounded-xl text-center text-xs font-black uppercase tracking-wide shadow-sm flex items-center justify-center gap-1.5 hover:scale-[1.01] active:scale-[0.99] transition-transform"
+                style={textureVerdeOlivaStyle}
+                className="text-white p-2.5 rounded-xl text-center text-xs font-black uppercase tracking-wide shadow-sm flex items-center justify-center gap-1.5 hover:scale-[1.01] active:scale-[0.99] transition-transform"
               >
                 <MessageCircle size={16} fill="currentColor" /> Entre no nosso Grupo de Promoções do WhatsApp
               </a>
@@ -438,11 +457,14 @@ export default function Index() {
               )}
             </div>
 
-            {/* SUPER MIMO AMIGUMUNDO Title Card & GamificationBar below the cart */}
+            {/* SUPER MIMOS AMIGUMUNDO Title Card (With Orange Texture) & GamificationBar below the cart */}
             <div className="max-w-2xl mx-auto my-2">
-              <div className="w-full bg-[#44FF00] py-2 px-4 mb-2 shadow-sm rounded-xl text-center border border-gray-100">
-                <h2 className="text-xs sm:text-sm font-black uppercase tracking-wider text-[#171717] m-0">
-                  ✨ SUPER MIMOS AMIGUMUNDO
+              <div 
+                style={textureLaranjaStyle}
+                className="w-full py-2 px-4 mb-2 shadow-sm rounded-xl text-center border border-gray-100"
+              >
+                <h2 className="text-xs sm:text-sm font-black uppercase tracking-wider text-white m-0">
+                  SUPER MIMOS AMIGUMUNDO
                 </h2>
               </div>
               <GamificationBar cartCount={fullPriceRecipeCount} />
@@ -463,13 +485,16 @@ export default function Index() {
           </div>
         </div>
 
-        {/* SEÇÃO 2: UPSELLS (Profissionalize o seu negócio) */}
+        {/* SEÇÃO 2: UPSELLS (Profissionalize o seu negócio with Orange Texture) */}
         <section className="pt-4 pb-6 bg-[#FDFBF7] overflow-hidden">
           <div className="max-w-3xl mx-auto px-4">
-            {/* Card de Título de Largura Total e Altura Mínima */}
-            <div className="w-full bg-[#44FF00] py-2 px-4 mb-3 shadow-sm rounded-xl text-center border border-gray-100">
-              <h2 className="text-sm sm:text-base font-black uppercase tracking-wider text-[#171717] m-0">
-                ✨ Transforme suas Peças em um Ateliê Lucrativo
+            {/* Card de Título de Largura Total e Altura Mínima with Orange Texture */}
+            <div 
+              style={textureLaranjaStyle}
+              className="w-full py-2 px-4 mb-3 shadow-sm rounded-xl text-center border border-gray-100"
+            >
+              <h2 className="text-sm sm:text-base font-black uppercase tracking-wider text-white m-0">
+                TRANSFORME SUAS PEÇAS EM UM ATELIÊ LUCRATIVO
               </h2>
             </div>
             
@@ -485,7 +510,7 @@ export default function Index() {
 
             {foundRecipes.length > 0 && (
               <div className="mb-4">
-                <h2 className="section-title text-[#171717] italic">✨ Receitas Adicionadas</h2>
+                <h2 className="section-title text-[#171717] italic">Receitas Adicionadas</h2>
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                   {foundRecipes.map((recipe) => (
                     <RecipeCard
@@ -563,12 +588,15 @@ export default function Index() {
         />
       )}
 
-      {/* SEÇÃO 3: CATEGORIAS */}
+      {/* SEÇÃO 3: CATEGORIAS (With Orange Texture) */}
       <section className="bg-[#F5F5F7] py-6">
         <div className="max-w-6xl mx-auto px-4">
-          {/* Card de Título de Largura Total e Altura Mínima */}
-          <div className="w-full bg-[#44FF00] py-2 px-4 mb-2 shadow-sm rounded-xl text-center border border-gray-100">
-            <h2 className="text-sm sm:text-base font-black uppercase tracking-wider text-[#171717] m-0">
+          {/* Card de Título de Largura Total e Altura Mínima with Orange Texture */}
+          <div 
+            style={textureLaranjaStyle}
+            className="w-full py-2 px-4 mb-2 shadow-sm rounded-xl text-center border border-gray-100"
+          >
+            <h2 className="text-sm sm:text-base font-black uppercase tracking-wider text-white m-0">
               CATEGORIAS DE AMIGURUMIS
             </h2>
           </div>
@@ -584,17 +612,20 @@ export default function Index() {
         </div>
       </section>
 
-      {/* SEÇÃO 4: PACKS (Fundo #e6dcd3) */}
+      {/* SEÇÃO 4: PACKS (Fundo #e6dcd3 with Orange Texture) */}
       <section className="bg-[#e6dcd3] py-6">
         <div className="max-w-6xl mx-auto px-4">
-          {/* Card de Título de Largura Total e Altura Mínima */}
-          <div className="w-full bg-[#44FF00] py-2 px-4 mb-4 shadow-sm rounded-xl text-center border border-gray-100">
-            <h2 className="text-sm sm:text-base font-black uppercase tracking-wider text-[#171717] m-0">
+          {/* Card de Título de Largura Total e Altura Mínima with Orange Texture */}
+          <div 
+            style={textureLaranjaStyle}
+            className="w-full py-2 px-4 mb-4 shadow-sm rounded-xl text-center border border-gray-100"
+          >
+            <h2 className="text-sm sm:text-base font-black uppercase tracking-wider text-white m-0">
               PACOTES TEMÁTICOS
             </h2>
           </div>
           <p className="text-gray-600 text-xs font-bold mb-4 text-center uppercase tracking-tight">
-            Suas coleções favoritas reunidas em pacotes completos com descontos imperdíveis, exclusivas para o seu ateliê.
+            Suas coleções favoritas reunidas em pacotes completos com descontos imperdíveis.
           </p>
 
           <div className="grid grid-cols-2 gap-3 sm:gap-4">

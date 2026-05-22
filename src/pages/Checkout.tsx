@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ChevronLeft, ShieldCheck, Zap, CreditCard, Smartphone, Mail, Phone } from "lucide-react";
+import { ChevronLeft, ShieldCheck, Zap, CreditCard, Smartphone, Mail, Phone, Lock } from "lucide-react";
 import { SupportButton } from "@/components/SupportButton";
 import { playHeartbeatSound } from "@/utils/audio";
 
@@ -14,6 +14,11 @@ export default function Checkout() {
   // Estados para os campos com persistência
   const [email, setEmail] = useState(() => localStorage.getItem("amigumundo-email") || "");
   const [whatsapp, setWhatsapp] = useState(() => localStorage.getItem("amigumundo-whatsapp") || "");
+
+  // Fix scroll bug: Ensure page starts at the absolute top on mount
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   useEffect(() => {
     const savedCart = localStorage.getItem("amigumundo-cart");
@@ -60,7 +65,6 @@ export default function Checkout() {
   // Estrutura de Webhook para o Administrador
   const triggerAdminWebhook = async (saleData: any) => {
     try {
-      // URL fictícia ou real do webhook do administrador
       const webhookUrl = "https://api.amigumundo.com/v1/webhooks/sales";
       await fetch(webhookUrl, {
         method: "POST",
@@ -68,7 +72,7 @@ export default function Checkout() {
         body: JSON.stringify({
           ...saleData,
           timestamp: new Date().toISOString(),
-          triggerNotificationSound: "tom-tom" // Sinaliza para tocar o som no celular do admin
+          triggerNotificationSound: "tom-tom"
         })
       });
     } catch (e) {
@@ -89,7 +93,6 @@ export default function Checkout() {
       paymentMethod
     };
 
-    // Dispara o webhook em segundo plano
     triggerAdminWebhook(saleData);
 
     alert("Pagamento processado com sucesso! Suas receitas foram enviadas para o seu WhatsApp.");
@@ -110,7 +113,7 @@ export default function Checkout() {
         </button>
 
         {/* Resumo do Pedido no Topo */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-6">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
           <div className="flex items-center gap-2 mb-4 text-gray-800">
             <Smartphone size={20} className="text-blue-500" />
             <h2 className="font-bold uppercase tracking-tight text-sm">Resumo do Pedido</h2>
@@ -130,16 +133,22 @@ export default function Checkout() {
         </div>
 
         {/* Mensagem de Boas-vindas */}
-        <div className="text-center mb-8">
-          <h1 className="text-2xl font-black text-gray-900 mb-2">QUASE LÁ! 🎉</h1>
-          <p className="text-gray-600 font-medium">
-            Para enviarmos suas receitas, <span className="text-blue-600 font-bold">PREENCHA EMAIL E WHATSAPP:</span>
-          </p>
-          <p className="text-sm text-green-600 font-bold mt-1">Você recebe as receitas em segundos!</p>
+        <div className="text-center mb-6">
+          <h1 className="text-2xl font-black text-gray-900 mb-3 tracking-tight">QUASE LÁ!</h1>
+          
+          {/* Unified Welcome/Info Box */}
+          <div className="bg-gray-100/80 border border-gray-200 rounded-xl p-4 text-center max-w-md mx-auto">
+            <p className="text-gray-700 font-semibold text-sm">
+              Para enviarmos suas receitas, preencha seu e-mail e WhatsApp.
+            </p>
+            <p className="text-xs text-gray-500 mt-1">
+              Você receberá as receitas em segundos após a confirmação do pagamento.
+            </p>
+          </div>
         </div>
 
         {/* Dados Pessoais */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-6">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
           <div className="flex items-center gap-2 mb-6 text-gray-800">
             <ShieldCheck size={20} className="text-blue-500" />
             <h2 className="font-bold uppercase tracking-tight text-sm">Dados para Entrega</h2>
@@ -149,7 +158,7 @@ export default function Checkout() {
             <div className="relative">
               <label className="block text-[10px] font-bold text-gray-400 uppercase mb-1 ml-1">E-mail</label>
               <div className="relative">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" size={18} />
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                 <input
                   type="email"
                   value={email}
@@ -162,7 +171,7 @@ export default function Checkout() {
             <div className="relative">
               <label className="block text-[10px] font-bold text-gray-400 uppercase mb-1 ml-1">WhatsApp</label>
               <div className="relative">
-                <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" size={18} />
+                <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                 <input
                   type="text"
                   value={whatsapp}
@@ -178,7 +187,7 @@ export default function Checkout() {
         </div>
 
         {/* Pagamento */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-8">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
           <div className="flex items-center gap-2 mb-6 text-gray-800">
             <CreditCard size={20} className="text-blue-500" />
             <h2 className="font-bold uppercase tracking-tight text-sm">Forma de Pagamento</h2>
@@ -187,14 +196,14 @@ export default function Checkout() {
           <div className="grid grid-cols-2 gap-4 mb-6">
             <button 
               onClick={() => setPaymentMethod("pix")}
-              className={`flex flex-col items-center justify-center gap-2 p-4 rounded-2xl border-2 transition-all ${paymentMethod === "pix" ? "border-blue-500 bg-blue-50" : "border-gray-100 bg-gray-50 hover:bg-gray-100"}`}
+              className={`flex flex-col items-center justify-center gap-2 p-4 rounded-xl border-2 transition-all ${paymentMethod === "pix" ? "border-blue-500 bg-blue-50" : "border-gray-200 bg-gray-50 hover:bg-gray-100"}`}
             >
               <Zap size={24} className={paymentMethod === "pix" ? "text-blue-600" : "text-gray-400"} fill={paymentMethod === "pix" ? "currentColor" : "none"} />
               <span className={`text-xs font-bold uppercase ${paymentMethod === "pix" ? "text-blue-700" : "text-gray-500"}`}>Pix</span>
             </button>
             <button 
               onClick={() => setPaymentMethod("card")}
-              className={`flex flex-col items-center justify-center gap-2 p-4 rounded-2xl border-2 transition-all ${paymentMethod === "card" ? "border-blue-500 bg-blue-50" : "border-gray-100 bg-gray-50 hover:bg-gray-100"}`}
+              className={`flex flex-col items-center justify-center gap-2 p-4 rounded-xl border-2 transition-all ${paymentMethod === "card" ? "border-blue-500 bg-blue-50" : "border-gray-200 bg-gray-50 hover:bg-gray-100"}`}
             >
               <CreditCard size={24} className={paymentMethod === "card" ? "text-blue-600" : "text-gray-400"} />
               <span className={`text-xs font-bold uppercase ${paymentMethod === "card" ? "text-blue-700" : "text-gray-500"}`}>Cartão</span>
@@ -202,9 +211,9 @@ export default function Checkout() {
           </div>
 
           {paymentMethod === "pix" && (
-            <div className="bg-green-50 border border-green-100 rounded-xl p-4 mb-6">
-              <p className="text-green-700 text-xs font-bold text-center uppercase tracking-wider">
-                ⚡ LIBERAÇÃO IMEDIATA AO PAGAR NO PIX!
+            <div className="bg-[#e6eedc] border border-[#c8dcb4] rounded-xl p-4 mb-6">
+              <p className="text-[#4a613c] text-xs font-bold text-center uppercase tracking-wider">
+                Liberação imediata ao pagar no Pix!
               </p>
             </div>
           )}
@@ -212,35 +221,35 @@ export default function Checkout() {
           <button 
             onClick={handlePaymentSubmit}
             disabled={!isFormValid}
-            className={`w-full py-5 rounded-2xl font-black text-lg shadow-lg transition-all uppercase tracking-widest ${isFormValid ? 'bg-[#00D177] hover:bg-[#00B868] text-white shadow-green-200 active:scale-[0.98]' : 'bg-gray-200 text-gray-400 cursor-not-allowed shadow-none'}`}
+            className={`w-full py-5 rounded-xl font-black text-lg shadow-lg transition-all uppercase tracking-widest flex items-center justify-center gap-2 ${isFormValid ? 'bg-[#00D177] hover:bg-[#00B868] text-white shadow-green-200 active:scale-[0.98]' : 'bg-gray-200 text-gray-400 cursor-not-allowed shadow-none'}`}
           >
-            Finalizar Pagamento
+            <Lock size={20} /> Finalizar Pagamento
           </button>
         </div>
 
         {/* Selos de Segurança */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-12">
-          <div className="flex flex-col items-center gap-1 text-center">
-            <ShieldCheck size={20} className="text-gray-400" />
-            <span className="text-[9px] font-bold text-gray-400 uppercase">SSL Seguro</span>
+          <div className="flex flex-col items-center gap-1.5 text-center p-3 bg-white rounded-xl border border-gray-200 shadow-sm">
+            <ShieldCheck size={24} className="text-gray-700" />
+            <span className="text-[10px] font-black text-gray-800 uppercase tracking-wider">SSL Seguro</span>
           </div>
-          <div className="flex flex-col items-center gap-1 text-center">
-            <Smartphone size={20} className="text-gray-400" />
-            <span className="text-[9px] font-bold text-gray-400 uppercase">Mercado Pago</span>
+          <div className="flex flex-col items-center gap-1.5 text-center p-3 bg-white rounded-xl border border-gray-200 shadow-sm">
+            <Smartphone size={24} className="text-gray-700" />
+            <span className="text-[10px] font-black text-gray-800 uppercase tracking-wider">Mercado Pago</span>
           </div>
-          <div className="flex flex-col items-center gap-1 text-center">
-            <Zap size={20} className="text-gray-400" />
-            <span className="text-[9px] font-bold text-gray-400 uppercase">Entrega Instantânea</span>
+          <div className="flex flex-col items-center gap-1.5 text-center p-3 bg-white rounded-xl border border-gray-200 shadow-sm">
+            <Zap size={24} className="text-gray-700" />
+            <span className="text-[10px] font-black text-gray-800 uppercase tracking-wider">Entrega Instantânea</span>
           </div>
-          <div className="flex flex-col items-center gap-1 text-center">
-            <ShieldCheck size={20} className="text-gray-400" />
-            <span className="text-[9px] font-bold text-gray-400 uppercase">Compra Protegida</span>
+          <div className="flex flex-col items-center gap-1.5 text-center p-3 bg-white rounded-xl border border-gray-200 shadow-sm">
+            <ShieldCheck size={24} className="text-gray-700" />
+            <span className="text-[10px] font-black text-gray-800 uppercase tracking-wider">Compra Protegida</span>
           </div>
         </div>
 
         {/* Footer */}
         <footer className="text-center pb-10">
-          <p className="text-[10px] text-gray-300 font-bold uppercase tracking-[0.2em]">AmiguMundo Artes 2016</p>
+          <p className="text-[10px] text-gray-400 font-bold uppercase tracking-[0.2em]">AmiguMundo Artes 2016</p>
         </footer>
       </div>
 
