@@ -16,12 +16,12 @@ export const SupportButton = ({ className }: SupportButtonProps) => {
       style={{ borderRadius: '14px', overflow: 'hidden' }}
       aria-label="Suporte WhatsApp"
     >
-      <div className="w-[55px] h-[55px] rounded-[14px] overflow-hidden bg-transparent flex items-center justify-center">
+      <div className="w-[55px] h-[55px] rounded-[14px] overflow-hidden bg-transparent flex items-center justify-center relative">
         <img 
           src="/Gemini_Generated_Image_c43hoxc43hoxc43h (1).png" 
           alt="Suporte WhatsApp" 
-          className="w-full h-full object-cover !bg-transparent !border-none !p-0 !shadow-none"
-          style={{ background: 'transparent', backgroundColor: 'transparent', border: 'none', boxShadow: 'none', padding: '0', display: 'block' }}
+          className="w-full h-full object-cover scale-[1.12] origin-center"
+          style={{ display: 'block' }}
         />
       </div>
     </button>

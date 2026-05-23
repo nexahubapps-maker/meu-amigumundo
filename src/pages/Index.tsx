@@ -364,12 +364,13 @@ export default function Index() {
                 rel="noopener noreferrer"
                 className="bg-[#0E5E6F] text-white p-5 rounded-2xl text-center shadow-md flex items-center justify-center gap-5 hover:scale-[1.01] active:scale-[0.99] transition-transform border border-white/10"
               >
-                <img 
-                  src="/Gemini_Generated_Image_c43hoxc43hoxc43h (1).png" 
-                  className="h-[44px] w-auto object-contain shrink-0 !bg-transparent !border-none !p-0 !shadow-none" 
-                  style={{ background: 'transparent', backgroundColor: 'transparent', border: 'none', boxShadow: 'none', padding: '0', display: 'block' }}
-                  alt="WhatsApp" 
-                />
+                <div className="h-[44px] w-[44px] rounded-[10px] overflow-hidden shrink-0 flex items-center justify-center bg-transparent">
+                  <img 
+                    src="/Gemini_Generated_Image_c43hoxc43hoxc43h (1).png" 
+                    className="w-full h-full object-cover scale-[1.12] origin-center" 
+                    alt="WhatsApp" 
+                  />
+                </div>
                 <div className="text-left">
                   <p className="text-[14px] sm:text-[15px] font-black uppercase tracking-wide leading-tight">
                     Ainda não faz parte do nosso grupo?
