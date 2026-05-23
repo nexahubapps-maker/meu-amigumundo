@@ -366,7 +366,7 @@ export default function Index() {
               >
                 <img 
                   src="https://ik.imagekit.io/51b3srlsg/icone_whatsApp_amigumundo.png" 
-                  className="h-[44px] w-auto object-contain shrink-0 bg-transparent border-none p-0 shadow-none" 
+                  className="h-[44px] w-auto object-contain shrink-0 !bg-transparent !border-none !p-0 !shadow-none" 
                   style={{ background: 'transparent', backgroundColor: 'transparent', border: 'none', boxShadow: 'none', padding: '0', display: 'block' }}
                   alt="WhatsApp" 
                 />

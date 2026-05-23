@@ -1,14 +1,18 @@
 "use client";
 
-export const SupportButton = () => {
+interface SupportButtonProps {
+  className?: string;
+}
+
+export const SupportButton = ({ className }: SupportButtonProps) => {
   const handleSupport = () => {
-    window.open("https://wa.me/5544999999999", "_blank"); // Substitua pelo seu número real
+    window.open("https://wa.me/5544999999999", "_blank");
   };
 
   return (
     <button
       onClick={handleSupport}
-      className="fixed bottom-[90px] right-[20px] z-[9999] hover:scale-110 transition-transform active:scale-95 flex items-center justify-center focus:outline-none"
+      className={`!fixed !bottom-[15px] !right-[15px] !z-[9999] hover:scale-110 transition-transform active:scale-95 flex items-center justify-center focus:outline-none ${className || ''}`}
       aria-label="Suporte WhatsApp"
     >
       <div className="w-[55px] h-[55px] rounded-[14px] overflow-hidden bg-transparent shadow-[0_4px_12px_rgba(0,0,0,0.15)] flex items-center justify-center">
