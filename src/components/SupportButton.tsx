@@ -18,7 +18,7 @@ export const SupportButton = ({ className }: SupportButtonProps) => {
     >
       <div className="w-[55px] h-[55px] rounded-[14px] overflow-hidden bg-transparent flex items-center justify-center">
         <img 
-          src="https://ik.imagekit.io/51b3srlsg/icone_whatsApp_amigumundo.png" 
+          src="/Gemini_Generated_Image_c43hoxc43hoxc43h (1).png" 
           alt="Suporte WhatsApp" 
           className="w-full h-full object-cover !bg-transparent !border-none !p-0 !shadow-none"
           style={{ background: 'transparent', backgroundColor: 'transparent', border: 'none', boxShadow: 'none', padding: '0', display: 'block' }}
