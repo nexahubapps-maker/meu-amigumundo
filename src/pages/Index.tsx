@@ -364,7 +364,7 @@ export default function Index() {
                 rel="noopener noreferrer"
                 className="bg-[#0E5E6F] text-white p-5 rounded-2xl text-center shadow-md flex items-center justify-center gap-5 hover:scale-[1.01] active:scale-[0.99] transition-transform border border-white/10"
               >
-                <div className="h-[44px] w-[44px] rounded-[10px] overflow-hidden shrink-0 flex items-center justify-center bg-transparent">
+                <div className="h-[88px] w-[88px] rounded-[20px] overflow-hidden shrink-0 flex items-center justify-center bg-transparent">
                   <img 
                     src="/Gemini_Generated_Image_c43hoxc43hoxc43h (1).png" 
                     className="w-full h-full object-cover scale-[1.12] origin-center" 
