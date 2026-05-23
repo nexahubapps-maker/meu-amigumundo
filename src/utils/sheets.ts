@@ -40,7 +40,6 @@ export interface SheetNotification {
 export interface SheetReceitaGratuita {
   data: string; // DD/MM/AAAA
   codigo: string;
-  pdf_url: string;
 }
 
 export interface SheetOrderBump {
@@ -53,6 +52,10 @@ export interface SheetOrderBump {
 }
 
 const SPREADSHEET_ID = "1lV6mLey_Bvq01CdDztUxEUKOlmDHsH6YeiNOqQcRveQ";
+
+// Configurações do Google Drive para busca dinâmica de PDFs por código
+export const GOOGLE_DRIVE_FOLDER_ID = "YOUR_GOOGLE_DRIVE_FOLDER_ID";
+export const GOOGLE_DRIVE_API_KEY = "YOUR_GOOGLE_DRIVE_API_KEY"; // Opcional
 
 // Helper to parse CSV rows safely
 function parseCSV(text: string): string[][] {
@@ -149,7 +152,7 @@ const getTodayDateString = () => {
 };
 
 const fallbackReceitaGratuita: SheetReceitaGratuita[] = [
-  { data: getTodayDateString(), codigo: "3872", pdf_url: "https://drive.google.com/file/d/1u2v3w4x5y6z/view" }
+  { data: getTodayDateString(), codigo: "3872" }
 ];
 
 // Fetchers
@@ -219,8 +222,7 @@ export async function getReceitaGratuita(): Promise<SheetReceitaGratuita[]> {
     "receita_gratuita",
     (row) => ({
       data: row[0] || "",
-      codigo: row[1] || "",
-      pdf_url: row[2] || ""
+      codigo: row[1] || ""
     }),
     fallbackReceitaGratuita
   );
@@ -239,4 +241,28 @@ export async function getOrderBumps(): Promise<SheetOrderBump[]> {
     }),
     []
   );
+}
+
+/**
+ * Busca dinamicamente o arquivo PDF correspondente ao código no Google Drive.
+ * Se o GOOGLE_DRIVE_FOLDER_ID estiver configurado, consulta a API do Google Drive.
+ * Caso contrário, retorna um link de download direto estruturado.
+ */
+export async function getDriveFileUrl(codigo: string): Promise<string> {
+  try {
+    if (GOOGLE_DRIVE_FOLDER_ID && GOOGLE_DRIVE_FOLDER_ID !== "YOUR_GOOGLE_DRIVE_FOLDER_ID") {
+      const url = `https://www.googleapis.com/drive/v3/files?q='${GOOGLE_DRIVE_FOLDER_ID}'+in+parents+and+name='${codigo}.pdf'+and+trashed=false&fields=files(id,webContentLink)&key=${GOOGLE_DRIVE_API_KEY || ''}`;
+      const res = await fetch(url);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.files && data.files.length > 0) {
+          return `https://drive.google.com/uc?export=download&id=${data.files[0].id}`;
+        }
+      }
+    }
+  } catch (e) {
+    console.warn("Erro ao buscar arquivo no Google Drive:", e);
+  }
+  // Fallback estruturado para download direto
+  return `https://drive.google.com/uc?export=download&id=FILE_ID_FOR_${codigo}`;
 }

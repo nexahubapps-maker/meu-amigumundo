@@ -3,26 +3,16 @@
 import React, { useState, useEffect } from 'react';
 import confetti from 'canvas-confetti';
 import { SuccessModal } from './SuccessModal';
-import { Download, Send } from 'lucide-react';
+import { Send } from 'lucide-react';
 import { playHeartbeatSound } from '@/utils/audio';
-import { getReceitaGratuita, getRecipes, type SheetRecipe } from '@/utils/sheets';
+import { getReceitaGratuita, getRecipes, getDriveFileUrl, type SheetRecipe } from '@/utils/sheets';
 
 const EVOLUTION_API_URL = "https://api.evolution-api.com/v1/messages/sendMedia";
 const EVOLUTION_API_TOKEN = "YOUR_EVOLUTION_API_TOKEN";
 
-export function sanitizeDriveUrl(url: string): string {
-  if (!url) return "";
-  const match = url.match(/\/d\/([a-zA-Z0-9-_]+)/);
-  if (match && match[1]) {
-    return `https://drive.google.com/uc?export=download&id=${match[1]}`;
-  }
-  return url;
-}
-
 export const DailyGiftSection = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [dailyRecipe, setDailyRecipe] = useState<SheetRecipe | null>(null);
-  const [pdfUrl, setPdfUrl] = useState<string>("");
   const [whatsapp, setWhatsapp] = useState<string>("");
   const [statusMessage, setStatusMessage] = useState<string>("");
   const [isSending, setIsSending] = useState(false);
@@ -42,10 +32,10 @@ export const DailyGiftSection = () => {
         const year = today.getFullYear();
         const todayStr = `${day}/${month}/${year}`;
 
-        // Try to find today's gift
+        // Tenta encontrar o presente de hoje
         let targetGift = receitasGratuitas.find(g => g.data === todayStr);
         
-        // Fallback: If today's date is not found, use the first available gift in the list
+        // Fallback: Se a data de hoje não estiver na planilha, usa o primeiro presente disponível
         if (!targetGift && receitasGratuitas.length > 0) {
           targetGift = receitasGratuitas[0];
         }
@@ -62,10 +52,9 @@ export const DailyGiftSection = () => {
         }
 
         setDailyRecipe(matchedRecipe);
-        setPdfUrl(sanitizeDriveUrl(targetGift.pdf_url));
         setIsVisible(true);
       } catch (error) {
-        console.warn("Error loading daily gift, hiding section silently:", error);
+        console.warn("Erro ao carregar presente diário, ocultando seção silenciosamente:", error);
         setIsVisible(false);
       }
     };
@@ -98,16 +87,21 @@ export const DailyGiftSection = () => {
       return;
     }
 
+    if (!dailyRecipe) return;
+
     setIsSending(true);
     setStatusMessage("");
     playHeartbeatSound();
 
     try {
+      // Busca dinamicamente o link do PDF no Google Drive usando o código universal
+      const pdfUrl = await getDriveFileUrl(dailyRecipe.id);
+
       const payload = {
         number: rawDigits,
         mediatype: "document",
         media: pdfUrl,
-        fileName: `${dailyRecipe?.nome || "Receita_Gratis"}.pdf`,
+        fileName: `${dailyRecipe.nome}.pdf`,
         caption: "Aqui está o seu presente diário! 🎁"
       };
 
@@ -124,7 +118,7 @@ export const DailyGiftSection = () => {
         setStatusMessage("🎉 Presente enviado! Abra seu WhatsApp, o arquivo PDF já chegou para você.");
         setWhatsapp("");
         
-        // Trigger confetti
+        // Dispara confetes
         const duration = 3 * 1000;
         const animationEnd = Date.now() + duration;
         const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 999 };
@@ -142,10 +136,10 @@ export const DailyGiftSection = () => {
           setIsModalOpen(true);
         }, 500);
       } else {
-        throw new Error("Failed to send via Evolution API");
+        throw new Error("Falha ao enviar via Evolution API");
       }
     } catch (error) {
-      console.error("Error sending gift:", error);
+      console.error("Erro ao enviar presente:", error);
       setStatusMessage("❌ Ocorreu um erro ao enviar. Tente novamente mais tarde.");
     } finally {
       setIsSending(false);
@@ -181,7 +175,7 @@ export const DailyGiftSection = () => {
               {dailyRecipe.nome}
             </h3>
             <p className="text-gray-400 text-[0.75rem] font-medium uppercase tracking-wider">
-              Disponível apenas hoje
+              Disponível apenas hoje (CÓD: {dailyRecipe.id})
             </p>
           </div>
 
