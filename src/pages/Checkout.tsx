@@ -173,7 +173,22 @@ export default function Checkout() {
           <ChevronLeft size={20} /> Voltar para a loja
         </button>
 
-        {/* Resumo do Pedido no Topo */}
+        {/* Mensagem de Boas-vindas no Topo */}
+        <div className="text-center mb-6">
+          <h1 className="text-2xl font-black text-gray-900 mb-3 tracking-tight">QUASE LÁ!</h1>
+          
+          {/* Elegant Instructions Card */}
+          <div className="bg-[#FDFBF7] border border-gray-200 rounded-xl p-4 text-center max-w-md mx-auto shadow-sm">
+            <p className="text-gray-700 font-semibold text-sm">
+              Para enviarmos suas receitas, preencha seu e-mail e WhatsApp.
+            </p>
+            <p className="text-xs text-gray-500 mt-1">
+              Você receberá as receitas em segundos após a confirmação do pagamento.
+            </p>
+          </div>
+        </div>
+
+        {/* Resumo do Pedido */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
           <div className="flex items-center mb-4 text-gray-800">
             <h2 className="font-bold uppercase tracking-tight text-sm">Resumo do Pedido</h2>
@@ -192,7 +207,7 @@ export default function Checkout() {
           </div>
         </div>
 
-        {/* ORDER BUMPS SECTION */}
+        {/* ORDER BUMPS SECTION (Posicionado exatamente entre o Resumo do Pedido e os Dados para Entrega) */}
         {orderBumps.length > 0 && (
           <div className="bg-white rounded-xl shadow-sm border-2 border-dashed border-orange-300 p-6 mb-6">
             <h3 className="font-black text-sm text-orange-600 uppercase tracking-wider mb-4 flex items-center gap-2">
@@ -232,22 +247,7 @@ export default function Checkout() {
           </div>
         )}
 
-        {/* Mensagem de Boas-vindas */}
-        <div className="text-center mb-6">
-          <h1 className="text-2xl font-black text-gray-900 mb-3 tracking-tight">QUASE LÁ!</h1>
-          
-          {/* Elegant Instructions Card */}
-          <div className="bg-[#FDFBF7] border border-gray-200 rounded-xl p-4 text-center max-w-md mx-auto shadow-sm">
-            <p className="text-gray-700 font-semibold text-sm">
-              Para enviarmos suas receitas, preencha seu e-mail e WhatsApp.
-            </p>
-            <p className="text-xs text-gray-500 mt-1">
-              Você receberá as receitas em segundos após a confirmação do pagamento.
-            </p>
-          </div>
-        </div>
-
-        {/* Dados Pessoais */}
+        {/* Dados Pessoais (Dados para Entrega) */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
           <div className="flex items-center gap-2 mb-6 text-gray-800">
             <ShieldCheck size={20} className="text-blue-500" />
