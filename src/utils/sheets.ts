@@ -139,6 +139,19 @@ const fallbackNotifications: SheetNotification[] = [
   { id: "notif2", titulo: "Super Desconto no Pack Safari", mensagem: "Apenas hoje, garanta 20 receitas por apenas R$ 19,90.", data_hora: new Date(Date.now() - 3600000).toISOString(), status: true }
 ];
 
+// Generate dynamic today date for fallback gift
+const getTodayDateString = () => {
+  const today = new Date();
+  const day = String(today.getDate()).padStart(2, '0');
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const year = today.getFullYear();
+  return `${day}/${month}/${year}`;
+};
+
+const fallbackReceitaGratuita: SheetReceitaGratuita[] = [
+  { data: getTodayDateString(), codigo: "3872", pdf_url: "https://drive.google.com/file/d/1u2v3w4x5y6z/view" }
+];
+
 // Fetchers
 export async function getRecipes(): Promise<SheetRecipe[]> {
   return fetchSheetData<SheetRecipe>(
@@ -209,7 +222,7 @@ export async function getReceitaGratuita(): Promise<SheetReceitaGratuita[]> {
       codigo: row[1] || "",
       pdf_url: row[2] || ""
     }),
-    []
+    fallbackReceitaGratuita
   );
 }
 

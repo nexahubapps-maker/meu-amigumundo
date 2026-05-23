@@ -42,20 +42,28 @@ export const DailyGiftSection = () => {
         const year = today.getFullYear();
         const todayStr = `${day}/${month}/${year}`;
 
-        const todayGift = receitasGratuitas.find(g => g.data === todayStr);
-        if (!todayGift) {
+        // Try to find today's gift
+        let targetGift = receitasGratuitas.find(g => g.data === todayStr);
+        
+        // Fallback: If today's date is not found, use the first available gift in the list
+        if (!targetGift && receitasGratuitas.length > 0) {
+          targetGift = receitasGratuitas[0];
+        }
+
+        if (!targetGift) {
           setIsVisible(false);
           return;
         }
 
-        const matchedRecipe = recipes.find(r => r.id === todayGift.codigo);
+        const matchedRecipe = recipes.find(r => r.id === targetGift.codigo);
         if (!matchedRecipe) {
           setIsVisible(false);
           return;
         }
 
         setDailyRecipe(matchedRecipe);
-        setPdfUrl(sanitizeDriveUrl(todayGift.pdf_url));
+        setPdfUrl(sanitizeDriveUrl(targetGift.pdf_url));
+        setIsVisible(true);
       } catch (error) {
         console.warn("Error loading daily gift, hiding section silently:", error);
         setIsVisible(false);
