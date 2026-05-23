@@ -362,18 +362,19 @@ export default function Index() {
                 href="https://wa.me/5544999999999" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="bg-[#0E5E6F] text-white p-4 rounded-2xl text-center shadow-md flex items-center justify-center gap-4 hover:scale-[1.01] active:scale-[0.99] transition-transform border border-white/10"
+                className="bg-[#0E5E6F] text-white p-5 rounded-2xl text-center shadow-md flex items-center justify-center gap-5 hover:scale-[1.01] active:scale-[0.99] transition-transform border border-white/10"
               >
                 <img 
                   src="https://ik.imagekit.io/51b3srlsg/icone_whatsApp_amigumundo.png" 
-                  className="h-[36px] w-auto object-contain shrink-0" 
+                  className="h-[44px] w-auto object-contain shrink-0" 
+                  style={{ background: 'transparent !important', border: 'none !important', boxShadow: 'none !important', padding: '0 !important', display: 'block' }}
                   alt="WhatsApp" 
                 />
                 <div className="text-left">
-                  <p className="text-[12px] sm:text-[13px] font-black uppercase tracking-wide leading-tight">
+                  <p className="text-[14px] sm:text-[15px] font-black uppercase tracking-wide leading-tight">
                     Ainda não faz parte do nosso grupo?
                   </p>
-                  <p className="text-[11px] sm:text-[12px] font-bold text-white/90 leading-tight mt-0.5">
+                  <p className="text-[12px] sm:text-[13px] font-bold text-white/90 leading-tight mt-1">
                     Então CLIQUE AQUI e entre no nosso Grupo de Promoções do WhatsApp
                   </p>
                 </div>
