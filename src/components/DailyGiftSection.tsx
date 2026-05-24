@@ -23,7 +23,6 @@ export const DailyGiftSection = () => {
   
   // Gamification States
   const [isOpened, setIsOpened] = useState(false);
-  const [showForm, setShowForm] = useState(false);
 
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -113,15 +112,10 @@ export const DailyGiftSection = () => {
     
     // Trigger a small burst of confetti when clicked
     confetti({
-      particleCount: 40,
-      spread: 60,
+      particleCount: 50,
+      spread: 70,
       origin: { y: 0.7 }
     });
-
-    // Smoothly reveal the form shortly after the opening animation starts
-    setTimeout(() => {
-      setShowForm(true);
-    }, 300);
   };
 
   const handleSendGift = async (e: React.FormEvent) => {
@@ -207,98 +201,108 @@ export const DailyGiftSection = () => {
   return (
     <section style={textureVerdeOlivaStyle} className="py-12 px-4 text-center">
       <div className="max-w-xl mx-auto">
-        <h2 className="text-white font-extrabold text-[1.5rem] leading-tight mb-3 uppercase tracking-tight">
+        <h2 className="text-white font-extrabold text-[1.5rem] leading-tight mb-2 uppercase tracking-tight">
           SEU MIMO GRATUITO <br /> DO DIA CHEGOU
         </h2>
-        <p className="text-white/90 text-[0.95rem] font-medium mb-10">
+        <p className="text-white/90 text-[0.85rem] font-medium mb-8">
           Nos visite todos os dias para retirar sua receita grátis e garantir seu presente diário!
         </p>
 
         {/* Card Branco com Espaçamento Premium e Confortável */}
-        <div className="bg-white rounded-[32px] p-8 sm:p-10 shadow-2xl border border-white/50 flex flex-col items-center gap-6 relative overflow-hidden min-h-[480px] justify-center">
+        <div className="bg-white rounded-[32px] p-8 sm:p-10 shadow-2xl border border-white/50 flex flex-col items-center justify-center relative overflow-hidden min-h-[460px]">
           
-          {/* Recipiente do Vídeo da Caixinha Roxa com Animação de Pulo Elástico */}
-          {!isOpened && (
-            <div 
-              onClick={handleOpenPresent}
-              className="relative w-48 h-48 flex items-center justify-center cursor-pointer transition-all duration-500 hover:scale-105 active:scale-95 shrink-0"
-            >
-              <video
-                ref={videoRef}
-                src={giftVideo}
-                autoPlay
-                loop
-                muted
-                playsInline
-                className="w-full h-full object-cover rounded-2xl"
-                style={{ mixBlendMode: 'multiply' }}
-              />
-              <span className="absolute -bottom-2 bg-[#44FF00] text-[#171717] text-[10px] font-black px-4 py-1.5 rounded-full uppercase tracking-wider animate-bounce shadow-md">
-                Toque para Abrir! 🎁
-              </span>
-            </div>
-          )}
-
-          {/* Revelado: Polvinho de Crochê surgindo com fade-in e scale-in */}
-          {isOpened && (
-            <div className="relative w-40 h-40 rounded-full bg-gradient-to-b from-green-50 to-green-100/50 border-2 border-[#44FF00]/30 p-2 flex items-center justify-center animate-in zoom-in-75 duration-500 shrink-0">
-              <img 
-                src={dailyRecipe.url_foto} 
-                alt={dailyRecipe.nome} 
-                className="w-32 h-32 object-cover rounded-full shadow-lg border-2 border-white animate-pulse-subtle"
-              />
-              <div className="absolute -bottom-1 bg-[#44FF00] text-[#171717] text-[9px] font-black px-3 py-0.5 rounded-full uppercase tracking-wider shadow-sm">
-                REVELADO! 🎉
+          {!isOpened ? (
+            /* ================= FASE 1: JOGO / LOOPING ================= */
+            <div className="flex flex-col items-center gap-6 w-full animate-in fade-in duration-300">
+              <div className="text-center space-y-1">
+                <span className="text-[10px] font-black text-purple-600 uppercase tracking-widest">Mimo Exclusivo</span>
+                <h3 className="text-gray-800 text-lg font-black uppercase tracking-tight">Você tem 1 presente pendente!</h3>
+                <p className="text-gray-400 text-xs font-bold">Toque na caixinha abaixo para descobrir o que ganhou</p>
               </div>
-            </div>
-          )}
-          
-          {/* Identificação do Produto e Código */}
-          <div className="space-y-1.5 text-center">
-            <h3 className="text-[#171717] text-xl sm:text-2xl font-black uppercase tracking-tight font-sans">
-              {dailyRecipe.nome}
-            </h3>
-            <p className="text-gray-400 text-xs font-bold uppercase tracking-widest">
-              Disponível apenas hoje (CÓD: {dailyRecipe.id})
-            </p>
-          </div>
 
-          {/* Formulário de Captura de Lead com Transição Suave */}
-          <div className={`w-full transition-all duration-700 ease-out ${showForm ? 'opacity-100 max-h-[300px] translate-y-0' : 'opacity-30 max-h-[120px] pointer-events-none translate-y-2'}`}>
-            
-            {!showForm && (
-              <p className="text-xs font-bold text-gray-400 uppercase tracking-wider animate-pulse mb-2">
-                🔒 Toque no presente acima para liberar o formulário de resgate
-              </p>
-            )}
-
-            <form onSubmit={handleSendGift} className="w-full space-y-4">
-              <div className="relative">
-                <input
-                  type="text"
-                  value={whatsapp}
-                  onChange={handleWhatsappChange}
-                  placeholder="+55 (00) 00000-0000"
-                  maxLength={19}
-                  disabled={!showForm}
-                  className="w-full px-5 py-4 border-2 border-gray-200 rounded-2xl text-center font-black text-gray-700 focus:outline-none focus:border-[#44FF00] transition-all shadow-sm focus:shadow-md placeholder:text-gray-300 text-base"
-                  required
+              {/* Container do Vídeo da Caixinha Roxa */}
+              <div 
+                onClick={handleOpenPresent}
+                className="relative w-48 h-48 flex items-center justify-center cursor-pointer transition-all duration-500 hover:scale-105 active:scale-95 shrink-0"
+              >
+                <video
+                  ref={videoRef}
+                  src={giftVideo}
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  webkit-playsinline="true"
+                  preload="auto"
+                  className="w-full h-full object-cover rounded-2xl"
+                  style={{ mixBlendMode: 'multiply' }}
                 />
               </div>
-              
-              <button
-                type="submit"
-                disabled={isSending || !showForm}
-                className="w-full bg-[#44FF00] hover:bg-[#3ee600] active:bg-[#38cc00] text-[#171717] py-4.5 rounded-2xl font-black text-sm sm:text-base flex items-center justify-center gap-2 shadow-lg hover:shadow-xl active:scale-[0.98] transition-all disabled:opacity-50 uppercase tracking-wider"
-              >
-                {isSending ? "Enviando..." : "Desbloquear Meu Presente Diário no WhatsApp"}
-              </button>
-            </form>
 
-            {statusMessage && (
-              <p className="text-xs font-bold text-gray-700 mt-3 animate-fade-in">{statusMessage}</p>
-            )}
-          </div>
+              {/* Botão de Ação de Toque */}
+              <button
+                onClick={handleOpenPresent}
+                className="bg-[#44FF00] text-[#171717] py-4 px-8 rounded-2xl font-black text-sm uppercase tracking-widest shadow-lg hover:scale-105 active:scale-95 transition-transform"
+              >
+                TOQUE PARA ABRIR! 🎁
+              </button>
+            </div>
+          ) : (
+            /* ================= FASE 2: RESULTADO / REVELADO ================= */
+            <div className="flex flex-col items-center gap-5 w-full animate-in fade-in zoom-in-95 duration-500">
+              
+              {/* Foto do Amigurumi Sorteado */}
+              <div className="relative w-40 h-40 rounded-full bg-gradient-to-b from-green-50 to-green-100/50 border-2 border-[#44FF00]/30 p-2 flex items-center justify-center shrink-0">
+                <img 
+                  src={dailyRecipe.url_foto} 
+                  alt={dailyRecipe.nome} 
+                  className="w-32 h-32 object-cover rounded-full shadow-lg border-2 border-white animate-pulse-subtle"
+                />
+                <div className="absolute -bottom-1.5 bg-[#44FF00] text-[#171717] text-[9px] font-black px-3.5 py-1 rounded-full uppercase tracking-wider shadow-md">
+                  REVELADO! 🎉
+                </div>
+              </div>
+              
+              {/* Identificação do Produto e Código */}
+              <div className="space-y-1 text-center">
+                <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Parabéns! Você ganhou a receita do:</p>
+                <h3 className="text-[#171717] text-xl sm:text-2xl font-black uppercase tracking-tight">
+                  {dailyRecipe.nome}
+                </h3>
+                <p className="text-gray-400 text-[10px] font-bold uppercase tracking-widest">
+                  Disponível apenas hoje (CÓD: {dailyRecipe.id})
+                </p>
+              </div>
+
+              {/* Formulário de Captura de Lead */}
+              <form onSubmit={handleSendGift} className="w-full space-y-3 max-w-md">
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={whatsapp}
+                    onChange={handleWhatsappChange}
+                    placeholder="+55 (00) 00000-0000"
+                    maxLength={19}
+                    className="w-full px-5 py-4 border-2 border-gray-200 rounded-2xl text-center font-black text-gray-700 focus:outline-none focus:border-[#44FF00] transition-all shadow-sm focus:shadow-md placeholder:text-gray-300 text-base"
+                    required
+                  />
+                </div>
+                
+                <button
+                  type="submit"
+                  disabled={isSending}
+                  className="w-full bg-[#44FF00] hover:bg-[#3ee600] active:bg-[#38cc00] text-[#171717] py-4 rounded-2xl font-black text-sm sm:text-base flex items-center justify-center gap-2 shadow-lg hover:shadow-xl active:scale-[0.98] transition-all disabled:opacity-50 uppercase tracking-wider"
+                >
+                  {isSending ? "Enviando..." : "Desbloquear Meu Presente Diário no WhatsApp"}
+                </button>
+              </form>
+
+              {statusMessage && (
+                <p className="text-xs font-bold text-gray-700 mt-1 animate-fade-in">{statusMessage}</p>
+              )}
+            </div>
+          )}
+
         </div>
       </div>
 
