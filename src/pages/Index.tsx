@@ -289,32 +289,6 @@ export default function Index() {
           <BannerCarousel />
         </div>
 
-        {/* WhatsApp Group Card (With Teal/Blue-Petrol Background and Unified Crochet Cube Asset) */}
-        <div className="max-w-2xl mx-auto px-4 mb-3">
-          <a 
-            href="https://wa.me/5544999999999" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="bg-[#0E5E6F] text-white p-3.5 rounded-2xl text-center shadow-md flex items-center justify-center gap-4 hover:scale-[1.01] active:scale-[0.99] transition-transform border border-white/10"
-          >
-            <div className="h-[44px] w-[44px] rounded-[10px] overflow-hidden shrink-0 flex items-center justify-center bg-transparent">
-              <img 
-                src="/Gemini_Generated_Image_c43hoxc43hoxc43h (1).png" 
-                className="w-full h-full object-cover scale-[1.12] origin-center" 
-                alt="WhatsApp" 
-              />
-            </div>
-            <div className="text-left">
-              <p className="text-[12px] sm:text-[13px] font-black uppercase tracking-wide leading-tight">
-                Ainda não faz parte do nosso grupo?
-              </p>
-              <p className="text-[10px] sm:text-[11px] font-bold text-white/90 leading-tight mt-0.5">
-                Então CLIQUE AQUI e entre no nosso Grupo de Promoções do WhatsApp
-              </p>
-            </div>
-          </a>
-        </div>
-
         {/* CARD FLUTUANTE COM O BANNER E A DESCRIÇÃO DA LOJA */}
         <div className="max-w-6xl mx-auto px-4 mb-1">
           <div className="bg-white rounded-2xl p-3 shadow-lg border border-gray-100/50">
@@ -536,6 +510,32 @@ export default function Index() {
           </div>
         </div>
       </section>
+
+      {/* WhatsApp Group Card (With Teal/Blue-Petrol Background and Unified Crochet Cube Asset) */}
+      <div className="max-w-2xl mx-auto px-4 my-6">
+        <a 
+          href="https://wa.me/5544999999999" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="bg-[#0E5E6F] text-white p-3.5 rounded-2xl text-center shadow-md flex items-center justify-center gap-4 hover:scale-[1.01] active:scale-[0.99] transition-transform border border-white/10"
+        >
+          <div className="h-[44px] w-[44px] rounded-[10px] overflow-hidden shrink-0 flex items-center justify-center bg-transparent">
+            <img 
+              src="/Gemini_Generated_Image_c43hoxc43hoxc43h (1).png" 
+              className="w-full h-full object-cover scale-[1.12] origin-center" 
+              alt="WhatsApp" 
+            />
+          </div>
+          <div className="text-left">
+            <p className="text-[12px] sm:text-[13px] font-black uppercase tracking-wide leading-tight">
+              Ainda não faz parte do nosso grupo?
+            </p>
+            <p className="text-[10px] sm:text-[11px] font-bold text-white/90 leading-tight mt-0.5">
+              Então CLIQUE AQUI e entre no nosso Grupo de Promoções do WhatsApp
+            </p>
+          </div>
+        </a>
+      </div>
 
       {/* SEÇÃO 6: MIMO GRATUITO DIÁRIO */}
       <DailyGiftSection />

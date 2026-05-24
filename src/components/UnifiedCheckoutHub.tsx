@@ -164,7 +164,7 @@ export const UnifiedCheckoutHub = ({
         </div>
 
         {/* Dynamic High-Contrast Message */}
-        <div className="text-center p-2 bg-white rounded-lg border border-gray-100 shadow-sm">
+        <div className="text-center p-2 bg-white rounded-lg border border-gray-100 shadow-sm mb-3">
           <p className="text-xs font-bold text-gray-900 leading-tight">
             {calculated.recipeCount >= 10 ? (
               <span>
@@ -184,16 +184,22 @@ export const UnifiedCheckoutHub = ({
           </p>
         </div>
 
-        {/* Visual Milestones */}
-        <div className="grid grid-cols-3 gap-1.5 mt-2 text-center text-[8px] font-bold uppercase text-gray-400">
-          <div className={`p-1 rounded border ${calculated.recipeCount >= 5 ? 'bg-green-50 border-green-200 text-green-700' : 'bg-white border-gray-100'}`}>
-            5 Rec. = R$ 4,00
+        {/* LISTA VERTICAL MINIMALISTA DE PROMOÇÕES */}
+        <div className="flex flex-col text-[13px] text-gray-700 leading-tight">
+          <div className="py-1.5 border-b border-gray-200">
+            💡 <strong>Todas as receitas</strong> do AmiguMundo por <strong>R$ 5,00</strong> cada!
           </div>
-          <div className={`p-1 rounded border ${calculated.recipeCount >= 10 ? 'bg-green-50 border-green-200 text-green-700' : 'bg-white border-gray-100'}`}>
-            10 Rec. = R$ 3,00 + 1 GRÁTIS
+          <div className="py-1.5 border-b border-gray-200">
+            🏷️ De <strong>5 a 9 receitas</strong>: <strong>R$ 4,00</strong> cada
           </div>
-          <div className={`p-1 rounded border ${calculated.recipeCount >= 20 ? 'bg-green-50 border-green-200 text-green-700' : 'bg-white border-gray-100'}`}>
-            20 Rec. = R$ 2,50 + 5 GRÁTIS
+          <div className="py-1.5 border-b border-gray-200">
+            🏷️ De <strong>10 a 14 receitas</strong>: <strong>R$ 3,00</strong> cada + <strong className="text-green-600">RECEITA GRÁTIS 🎁</strong>
+          </div>
+          <div className="py-1.5 border-b border-gray-200">
+            🏷️ Acima de <strong>15 receitas</strong>: <strong>R$ 2,50</strong> cada + <strong className="text-green-600">2 RECEITAS GRÁTIS 🎁</strong>
+          </div>
+          <div className="py-1.5">
+            🏷️ Atingiu <strong>20 receitas</strong>: <strong className="text-green-600">+ 5 RECEITAS GRÁTIS 🎁</strong>
           </div>
         </div>
       </div>
