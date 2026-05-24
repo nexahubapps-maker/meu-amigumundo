@@ -7,9 +7,6 @@ import { Send } from 'lucide-react';
 import { playHeartbeatSound } from '@/utils/audio';
 import { getReceitaGratuita, getRecipes, getDriveFileUrl, type SheetRecipe } from '@/utils/sheets';
 
-// Importando o vídeo diretamente para que o Vite resolva o caminho correto no build
-import giftVideo from '../../.dyad/media/2d065365dd7ed608b3e68233f498831a81e9327b533dcd1754371f8679b01860.mp4';
-
 const EVOLUTION_API_URL = "https://api.evolution-api.com/v1/messages/sendMedia";
 const EVOLUTION_API_TOKEN = "YOUR_EVOLUTION_API_TOKEN";
 
@@ -227,7 +224,7 @@ export const DailyGiftSection = () => {
               >
                 <video
                   ref={videoRef}
-                  src={giftVideo}
+                  src="/gift-video.mp4"
                   autoPlay
                   loop
                   muted
