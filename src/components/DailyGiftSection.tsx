@@ -3,7 +3,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import confetti from 'canvas-confetti';
 import { SuccessModal } from './SuccessModal';
-import { Send } from 'lucide-react';
 import { playHeartbeatSound } from '@/utils/audio';
 import { getReceitaGratuita, getRecipes, getDriveFileUrl, type SheetRecipe } from '@/utils/sheets';
 
