@@ -2,7 +2,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Header } from "@/components/Header";
-import { GamificationBar } from "@/components/GamificationBar";
 import RecipeCard from "@/components/RecipeCard";
 import { UpsellCard } from "@/components/UpsellCard";
 import { UpsellModal } from "@/components/UpsellModal";
@@ -17,7 +16,7 @@ import { FavoritesModal } from "@/components/FavoritesModal";
 import { FooterNavigation } from "@/components/FooterNavigation";
 import { NotificationsModal } from "@/components/NotificationsModal";
 import { InternalPopup } from "@/components/InternalPopup";
-import { CartSection } from "@/components/CartSection";
+import { UnifiedCheckoutHub } from "@/components/UnifiedCheckoutHub";
 import { CartFooter } from "@/components/CartFooter";
 import { CategoryDetailView } from "@/components/CategoryDetailView";
 import { LightboxModal } from "@/components/LightboxModal";
@@ -33,14 +32,7 @@ import {
   type SheetNotification
 } from "@/utils/sheets";
 import { playHeartbeatSound } from "@/utils/audio";
-
-interface CartItem {
-  id: string;
-  nome: string;
-  preco: number;
-  tipo: "recipe" | "pack" | "combo" | "upsell";
-  imagem?: string;
-}
+import { type CartItem, calculateCart } from "@/utils/pricing";
 
 export default function Index() {
   const navigate = useNavigate();
@@ -172,82 +164,8 @@ export default function Index() {
     setCart((prev) => prev.filter((i) => i.id !== id));
   };
 
-  // --- GAMIFIED PRICING LOGIC ---
-  const getCartPartition = () => {
-    const selectedRecipes = cart.filter(item => item.tipo === "recipe");
-    const otherItems = cart.filter(item => item.tipo !== "recipe");
-
-    const sorted = [...selectedRecipes].sort((a, b) => b.preco - a.preco);
-    let bestPartition = { receitas: sorted, mimos: [] as any[], presentes: [] as any[] };
-
-    for (let R = 0; R <= sorted.length; R++) {
-      let allowedFree = 0;
-      if (R >= 20) allowedFree = 2;
-      else if (R >= 10) allowedFree = 1;
-
-      let allowedMimos = 0;
-      if (R >= 9) allowedMimos = 9;
-      else if (R >= 6) allowedMimos = 6;
-      else if (R >= 3) allowedMimos = 3;
-
-      if (R + allowedFree + allowedMimos >= sorted.length) {
-        const receitas = sorted.slice(0, R);
-        const remaining = sorted.slice(R);
-
-        const presentes = remaining.slice(0, allowedFree).map(r => ({ ...r, precoFinal: 0, originalPreco: r.preco, tipo: 'presente' }));
-        const mimosRemaining = remaining.slice(allowedFree);
-
-        const mimos = mimosRemaining.map((r, idx) => {
-          let precoFinal = r.preco;
-          if (idx < 3) precoFinal = 3.00;
-          else if (idx < 6) precoFinal = 2.00;
-          else if (idx < 9) precoFinal = 1.00;
-          return { ...r, precoFinal, originalPreco: r.preco, tipo: 'mimo' };
-        });
-
-        bestPartition = {
-          receitas: receitas.map(r => ({ ...r, precoFinal: r.preco, originalPreco: r.preco, tipo: 'receita' })),
-          mimos,
-          presentes
-        };
-        break;
-      }
-    }
-
-    return { ...bestPartition, otherItems };
-  };
-
-  const partition = getCartPartition();
-  const fullPriceRecipeCount = partition.receitas.length;
-
-  const total = [
-    ...partition.receitas,
-    ...partition.mimos,
-    ...partition.presentes,
-    ...partition.otherItems
-  ].reduce((sum, item) => sum + (item.precoFinal !== undefined ? item.precoFinal : item.preco), 0);
-
-  const getNudgeMessage = () => {
-    if (fullPriceRecipeCount < 3) {
-      return `Adicione mais ${3 - fullPriceRecipeCount} receitas para liberar mimos por R$ 3!`;
-    } else if (fullPriceRecipeCount < 6) {
-      return "Você liberou mimos! Escolha suas receitas na loja.";
-    } else if (fullPriceRecipeCount < 10) {
-      return `Adicione mais ${10 - fullPriceRecipeCount} receitas para ganhar uma receita GRÁTIS!`;
-    } else {
-      return "Você ganhou uma receita grátis! Escolha qualquer uma na loja.";
-    }
-  };
-
-  const handleRecipeFound = (recipe: SheetRecipe) => {
-    setError(null);
-    setShowRecipe(recipe);
-  };
-
-  const handleRecipeNotFound = () => {
-    setError("Código não encontrado.");
-    setTimeout(() => setError(null), 3000);
-  };
+  // Calculate cart values using the centralized pricing utility
+  const calculatedCart = calculateCart(cart, recipesList);
 
   const handleRecipeAdd = (recipe: SheetRecipe) => {
     addToCart({ 
@@ -356,30 +274,15 @@ export default function Index() {
 
             <BannerCarousel />
 
-            {/* Carrinho Inline Compacto com CodeInput anexado no topo */}
-            <CartSection
+            {/* Unified Checkout Hub Component */}
+            <UnifiedCheckoutHub
               cart={cart}
-              partition={partition}
-              total={total}
-              nudgeMessage={getNudgeMessage()}
+              allRecipes={recipesList}
               onRemoveFromCart={removeFromCart}
-              onRecipeFound={handleRecipeFound}
-              onRecipeNotFound={handleRecipeNotFound}
+              onAddToCart={addToCart}
               onCheckout={() => navigate("/checkout")}
             />
 
-            {/* SUPER MIMOS AMIGUMUNDO Title Card (With Orange Texture) & GamificationBar below the cart */}
-            <div className="max-w-2xl mx-auto my-2">
-              <div 
-                style={textureLaranjaStyle}
-                className="w-full py-2 px-4 mb-2 shadow-sm rounded-xl text-center border border-gray-100"
-              >
-                <h2 className="text-xs sm:text-sm font-black uppercase tracking-wider text-white m-0">
-                  SUPER MIMOS AMIGUMUNDO
-                </h2>
-              </div>
-              <GamificationBar cartCount={fullPriceRecipeCount} />
-            </div>
           </div>
         </section>
 
@@ -641,7 +544,7 @@ export default function Index() {
       {/* CART FOOTER PREVIEW */}
       <CartFooter
         count={cart.length}
-        total={total}
+        total={calculatedCart.total}
         onCheckout={() => navigate("/checkout")}
       />
 
