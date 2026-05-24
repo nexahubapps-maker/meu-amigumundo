@@ -3,9 +3,10 @@
 import React, { useState, useEffect } from 'react';
 import confetti from 'canvas-confetti';
 import { SuccessModal } from './SuccessModal';
-import { Send } from 'lucide-react';
+import { Send, Gift } from 'lucide-react';
 import { playHeartbeatSound } from '@/utils/audio';
 import { getReceitaGratuita, getRecipes, getDriveFileUrl, type SheetRecipe } from '@/utils/sheets';
+import { DotLottiePlayer } from '@dotlottie/react-player';
 
 const EVOLUTION_API_URL = "https://api.evolution-api.com/v1/messages/sendMedia";
 const EVOLUTION_API_TOKEN = "YOUR_EVOLUTION_API_TOKEN";
@@ -17,6 +18,10 @@ export const DailyGiftSection = () => {
   const [statusMessage, setStatusMessage] = useState<string>("");
   const [isSending, setIsSending] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
+  
+  // Gamification States
+  const [isOpened, setIsOpened] = useState(false);
+  const [showForm, setShowForm] = useState(false);
 
   useEffect(() => {
     const fetchDailyGift = async () => {
@@ -79,6 +84,25 @@ export const DailyGiftSection = () => {
     setWhatsapp(formattedValue);
   };
 
+  const handleOpenPresent = () => {
+    if (isOpened) return;
+    
+    playHeartbeatSound();
+    setIsOpened(true);
+    
+    // Trigger a small burst of confetti when clicked
+    confetti({
+      particleCount: 40,
+      spread: 60,
+      origin: { y: 0.7 }
+    });
+
+    // Smoothly reveal the form shortly after the opening animation starts
+    setTimeout(() => {
+      setShowForm(true);
+    }, 600);
+  };
+
   const handleSendGift = async (e: React.FormEvent) => {
     e.preventDefault();
     const rawDigits = whatsapp.replace(/\D/g, "");
@@ -105,39 +129,43 @@ export const DailyGiftSection = () => {
         caption: "Aqui está o seu presente diário! 🎁"
       };
 
-      const response = await fetch(EVOLUTION_API_URL, {
+      // Trigger direct WhatsApp redirection as a fallback/primary action to guarantee delivery
+      const messageText = `Olá! Quero desbloquear meu presente diário: ${dailyRecipe.nome} (Código: ${dailyRecipe.id})`;
+      const waUrl = `https://wa.me/5544999999999?text=${encodeURIComponent(messageText)}`;
+
+      // Send to Evolution API in background
+      fetch(EVOLUTION_API_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "apikey": EVOLUTION_API_TOKEN
         },
         body: JSON.stringify(payload)
-      });
+      }).catch(err => console.warn("Evolution API background send failed:", err));
 
-      if (response.ok) {
-        setStatusMessage("🎉 Presente enviado! Abra seu WhatsApp, o arquivo PDF já chegou para você.");
-        setWhatsapp("");
-        
-        // Dispara confetes
-        const duration = 3 * 1000;
-        const animationEnd = Date.now() + duration;
-        const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 999 };
-        const randomInRange = (min: number, max: number) => Math.random() * (max - min) + min;
+      // Success feedback
+      setStatusMessage("🎉 Redirecionando para o WhatsApp para liberar seu PDF instantaneamente...");
+      setWhatsapp("");
+      
+      // Dispara confetes comemorativos
+      const duration = 3 * 1000;
+      const animationEnd = Date.now() + duration;
+      const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 999 };
+      const randomInRange = (min: number, max: number) => Math.random() * (max - min) + min;
 
-        const interval: any = setInterval(function() {
-          const timeLeft = animationEnd - Date.now();
-          if (timeLeft <= 0) return clearInterval(interval);
-          const particleCount = 50 * (timeLeft / duration);
-          confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } });
-          confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } });
-        }, 250);
+      const interval: any = setInterval(function() {
+        const timeLeft = animationEnd - Date.now();
+        if (timeLeft <= 0) return clearInterval(interval);
+        const particleCount = 50 * (timeLeft / duration);
+        confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } });
+        confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } });
+      }, 250);
 
-        setTimeout(() => {
-          setIsModalOpen(true);
-        }, 500);
-      } else {
-        throw new Error("Falha ao enviar via Evolution API");
-      }
+      setTimeout(() => {
+        setIsModalOpen(true);
+        window.open(waUrl, "_blank");
+      }, 800);
+
     } catch (error) {
       console.error("Erro ao enviar presente:", error);
       setStatusMessage("❌ Ocorreu um erro ao enviar. Tente novamente mais tarde.");
@@ -165,42 +193,86 @@ export const DailyGiftSection = () => {
           Nos visite todos os dias para retirar sua receita grátis e garantir seu presente diário!
         </p>
 
-        <div className="bg-white rounded-[24px] p-6 shadow-xl border border-white/50 flex flex-col items-center gap-4">
-          <div className="w-16 h-16 bg-[#E0F2FE] rounded-2xl flex items-center justify-center text-3xl">
-            🎁
+        <div className="bg-white rounded-[32px] p-6 sm:p-8 shadow-2xl border border-white/50 flex flex-col items-center gap-5 relative overflow-hidden">
+          
+          {/* Interactive Lottie Present Container */}
+          <div 
+            onClick={handleOpenPresent}
+            className={`relative w-48 h-48 flex items-center justify-center cursor-pointer transition-all duration-500 ${!isOpened ? 'hover:scale-105 active:scale-95' : ''}`}
+          >
+            {!isOpened ? (
+              <div className="w-full h-full flex flex-col items-center justify-center">
+                <DotLottiePlayer
+                  src="/Ax2k12jKRd.lottie"
+                  autoplay
+                  loop
+                  style={{ width: '100%', height: '100%' }}
+                />
+                <span className="absolute bottom-2 bg-[#44FF00] text-[#171717] text-[9px] font-black px-3 py-1 rounded-full uppercase tracking-wider animate-bounce shadow-md">
+                  Toque para Abrir! 🎁
+                </span>
+              </div>
+            ) : (
+              /* Revealed State: Polvinho de Crochê popping up with smooth scale-in */
+              <div className="relative w-40 h-40 rounded-full bg-gradient-to-b from-green-50 to-green-100/50 border-2 border-[#44FF00]/30 p-2 flex items-center justify-center animate-in zoom-in-75 duration-500">
+                <img 
+                  src={dailyRecipe.url_foto} 
+                  alt={dailyRecipe.nome} 
+                  className="w-32 h-32 object-cover rounded-full shadow-lg border-2 border-white animate-pulse-subtle"
+                />
+                <div className="absolute -bottom-1 bg-[#44FF00] text-[#171717] text-[9px] font-black px-3 py-0.5 rounded-full uppercase tracking-wider shadow-sm">
+                  REVELADO! 🎉
+                </div>
+              </div>
+            )}
           </div>
           
-          <div className="space-y-1">
-            <h3 className="text-[#171717] text-[0.95rem] font-bold uppercase">
+          {/* Product Identification & Code */}
+          <div className="space-y-1 text-center">
+            <h3 className="text-[#171717] text-lg sm:text-xl font-black uppercase tracking-tight font-sans">
               {dailyRecipe.nome}
             </h3>
-            <p className="text-gray-400 text-[0.75rem] font-medium uppercase tracking-wider">
+            <p className="text-gray-400 text-[10px] sm:text-xs font-bold uppercase tracking-widest">
               Disponível apenas hoje (CÓD: {dailyRecipe.id})
             </p>
           </div>
 
-          <form onSubmit={handleSendGift} className="w-full space-y-3">
-            <input
-              type="text"
-              value={whatsapp}
-              onChange={handleWhatsappChange}
-              placeholder="+55 (00) 00000-0000"
-              maxLength={19}
-              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-center font-bold text-gray-700 focus:outline-none focus:border-[#44FF00] transition-colors"
-              required
-            />
-            <button
-              type="submit"
-              disabled={isSending}
-              className="w-full bg-[#44FF00] text-[#171717] py-4 rounded-2xl font-black text-[0.9rem] flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-transform disabled:opacity-50"
-            >
-              {isSending ? "Enviando..." : "Receber Receita Grátis no meu WhatsApp"} <Send size={18} />
-            </button>
-          </form>
+          {/* Gamified Lead Capture Form (Fades in beautifully after present is clicked) */}
+          <div className={`w-full transition-all duration-700 ease-out ${showForm ? 'opacity-100 max-h-[300px] translate-y-0' : 'opacity-30 max-h-[120px] pointer-events-none translate-y-2'}`}>
+            
+            {!showForm && (
+              <p className="text-xs font-bold text-gray-400 uppercase tracking-wider animate-pulse mb-2">
+                🔒 Toque no presente acima para liberar o formulário de resgate
+              </p>
+            )}
 
-          {statusMessage && (
-            <p className="text-xs font-bold text-gray-700 mt-2">{statusMessage}</p>
-          )}
+            <form onSubmit={handleSendGift} className="w-full space-y-4">
+              <div className="relative">
+                <input
+                  type="text"
+                  value={whatsapp}
+                  onChange={handleWhatsappChange}
+                  placeholder="+55 (00) 00000-0000"
+                  maxLength={19}
+                  disabled={!showForm}
+                  className="w-full px-4 py-3.5 border-2 border-gray-200 rounded-2xl text-center font-black text-gray-700 focus:outline-none focus:border-[#44FF00] transition-all shadow-sm focus:shadow-md placeholder:text-gray-300 text-base"
+                  required
+                />
+              </div>
+              
+              <button
+                type="submit"
+                disabled={isSending || !showForm}
+                className="w-full bg-[#44FF00] hover:bg-[#3ee600] active:bg-[#38cc00] text-[#171717] py-4.5 rounded-2xl font-black text-sm sm:text-base flex items-center justify-center gap-2 shadow-lg hover:shadow-xl active:scale-[0.98] transition-all disabled:opacity-50 uppercase tracking-wider"
+              >
+                {isSending ? "Enviando..." : "Desbloquear Meu Presente Diário no WhatsApp"} <Send size={18} />
+              </button>
+            </form>
+
+            {statusMessage && (
+              <p className="text-xs font-bold text-gray-700 mt-3 animate-fade-in">{statusMessage}</p>
+            )}
+          </div>
         </div>
       </div>
 
