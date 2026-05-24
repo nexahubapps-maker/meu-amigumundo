@@ -272,8 +272,6 @@ export default function Index() {
             {/* Thursday Launch Banner */}
             <LaunchBanner />
 
-            <BannerCarousel />
-
             {/* Unified Checkout Hub Component */}
             <UnifiedCheckoutHub
               cart={cart}
@@ -285,6 +283,11 @@ export default function Index() {
 
           </div>
         </section>
+
+        {/* Banner Rotativo posicionado acima do banner do WhatsApp */}
+        <div className="max-w-2xl mx-auto px-4">
+          <BannerCarousel />
+        </div>
 
         {/* WhatsApp Group Card (With Teal/Blue-Petrol Background and Unified Crochet Cube Asset) */}
         <div className="max-w-2xl mx-auto px-4 mb-3">
