@@ -7,6 +7,9 @@ import { Send } from 'lucide-react';
 import { playHeartbeatSound } from '@/utils/audio';
 import { getReceitaGratuita, getRecipes, getDriveFileUrl, type SheetRecipe } from '@/utils/sheets';
 
+// Importando o vídeo diretamente para que o Vite resolva o caminho correto no build
+import giftVideo from '../../.dyad/media/2d065365dd7ed608b3e68233f498831a81e9327b533dcd1754371f8679b01860.mp4';
+
 const EVOLUTION_API_URL = "https://api.evolution-api.com/v1/messages/sendMedia";
 const EVOLUTION_API_TOKEN = "YOUR_EVOLUTION_API_TOKEN";
 
@@ -68,12 +71,22 @@ export const DailyGiftSection = () => {
     fetchDailyGift();
   }, []);
 
-  // Acelera o vídeo para 3x assim que ele carregar
+  // Acelera o vídeo para 3x assim que ele carregar e quando der play
   useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.playbackRate = 3.0;
+    const video = videoRef.current;
+    if (video) {
+      video.playbackRate = 3.0;
+      
+      const handlePlay = () => {
+        video.playbackRate = 3.0;
+      };
+
+      video.addEventListener('play', handlePlay);
+      return () => {
+        video.removeEventListener('play', handlePlay);
+      };
     }
-  }, [dailyRecipe]);
+  }, [isOpened, dailyRecipe]);
 
   const handleWhatsappChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const rawValue = e.target.value.replace(/\D/g, "");
@@ -202,17 +215,17 @@ export const DailyGiftSection = () => {
         </p>
 
         {/* Card Branco com Espaçamento Premium e Confortável */}
-        <div className="bg-white rounded-[32px] p-8 sm:p-10 shadow-2xl border border-white/50 flex flex-col items-center gap-6 relative overflow-hidden">
+        <div className="bg-white rounded-[32px] p-8 sm:p-10 shadow-2xl border border-white/50 flex flex-col items-center gap-6 relative overflow-hidden min-h-[480px] justify-center">
           
           {/* Recipiente do Vídeo da Caixinha Roxa com Animação de Pulo Elástico */}
           {!isOpened && (
             <div 
               onClick={handleOpenPresent}
-              className="relative w-44 h-44 flex items-center justify-center cursor-pointer transition-all duration-500 hover:scale-105 active:scale-95"
+              className="relative w-48 h-48 flex items-center justify-center cursor-pointer transition-all duration-500 hover:scale-105 active:scale-95 shrink-0"
             >
               <video
                 ref={videoRef}
-                src="/Purple_gift_box_bouncing_animation_202605240042.mp4"
+                src={giftVideo}
                 autoPlay
                 loop
                 muted
@@ -228,7 +241,7 @@ export const DailyGiftSection = () => {
 
           {/* Revelado: Polvinho de Crochê surgindo com fade-in e scale-in */}
           {isOpened && (
-            <div className="relative w-40 h-40 rounded-full bg-gradient-to-b from-green-50 to-green-100/50 border-2 border-[#44FF00]/30 p-2 flex items-center justify-center animate-in zoom-in-75 duration-500">
+            <div className="relative w-40 h-40 rounded-full bg-gradient-to-b from-green-50 to-green-100/50 border-2 border-[#44FF00]/30 p-2 flex items-center justify-center animate-in zoom-in-75 duration-500 shrink-0">
               <img 
                 src={dailyRecipe.url_foto} 
                 alt={dailyRecipe.nome} 
