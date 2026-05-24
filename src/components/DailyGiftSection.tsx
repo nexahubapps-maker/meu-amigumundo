@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import confetti from 'canvas-confetti';
 import { SuccessModal } from './SuccessModal';
 import { Send } from 'lucide-react';
@@ -21,6 +21,8 @@ export const DailyGiftSection = () => {
   // Gamification States
   const [isOpened, setIsOpened] = useState(false);
   const [showForm, setShowForm] = useState(false);
+
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     const fetchDailyGift = async () => {
@@ -65,6 +67,13 @@ export const DailyGiftSection = () => {
 
     fetchDailyGift();
   }, []);
+
+  // Acelera o vídeo para 3x assim que ele carregar
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.playbackRate = 3.0;
+    }
+  }, [dailyRecipe]);
 
   const handleWhatsappChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const rawValue = e.target.value.replace(/\D/g, "");
@@ -195,58 +204,41 @@ export const DailyGiftSection = () => {
         {/* Card Branco com Espaçamento Premium e Confortável */}
         <div className="bg-white rounded-[32px] p-8 sm:p-10 shadow-2xl border border-white/50 flex flex-col items-center gap-6 relative overflow-hidden">
           
-          {/* Recipiente da Caixinha Roxa com Animação de Pulo Elástico */}
-          <div 
-            onClick={handleOpenPresent}
-            className={`relative w-44 h-44 flex items-center justify-center cursor-pointer transition-all duration-500 ${!isOpened ? 'hover:scale-105 active:scale-95' : ''}`}
-          >
-            {!isOpened ? (
-              <div className="w-full h-full flex flex-col items-center justify-center animate-elastic-bounce">
-                {/* SVG da Caixinha Roxa com Laço Amarelo */}
-                <svg viewBox="0 0 200 200" className="w-full h-full drop-shadow-xl">
-                  {/* Sombra */}
-                  <ellipse cx="100" cy="175" rx="60" ry="12" fill="rgba(0,0,0,0.15)" />
-                  
-                  {/* Corpo da Caixa (Roxo) */}
-                  <rect x="45" y="85" width="110" height="80" rx="16" fill="#9B59B6" />
-                  
-                  {/* Tampa da Caixa (Roxo Escuro) */}
-                  <rect x="35" y="65" width="130" height="30" rx="10" fill="#8E44AD" />
-                  
-                  {/* Fita Amarela Vertical */}
-                  <rect x="90" y="85" width="20" height="80" fill="#F1C40F" />
-                  <rect x="90" y="65" width="20" height="30" fill="#F1C40F" />
-                  
-                  {/* Fita Amarela Horizontal */}
-                  <rect x="45" y="115" width="110" height="20" fill="#F1C40F" />
-                  
-                  {/* Laço Amarelo (Esquerda) */}
-                  <path d="M100,65 C70,35 50,55 100,65 Z" fill="#F1C40F" stroke="#D4AC0D" strokeWidth="2" />
-                  
-                  {/* Laço Amarelo (Direita) */}
-                  <path d="M100,65 C130,35 150,55 100,65 Z" fill="#F1C40F" stroke="#D4AC0D" strokeWidth="2" />
-                  
-                  {/* Nó do Laço */}
-                  <circle cx="100" cy="65" r="12" fill="#F39C12" />
-                </svg>
-                <span className="absolute -bottom-2 bg-[#44FF00] text-[#171717] text-[10px] font-black px-4 py-1.5 rounded-full uppercase tracking-wider animate-bounce shadow-md">
-                  Toque para Abrir! 🎁
-                </span>
+          {/* Recipiente do Vídeo da Caixinha Roxa com Animação de Pulo Elástico */}
+          {!isOpened && (
+            <div 
+              onClick={handleOpenPresent}
+              className="relative w-44 h-44 flex items-center justify-center cursor-pointer transition-all duration-500 hover:scale-105 active:scale-95"
+            >
+              <video
+                ref={videoRef}
+                src="/Purple_gift_box_bouncing_animation_202605240042.mp4"
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="w-full h-full object-cover rounded-2xl"
+                style={{ mixBlendMode: 'multiply' }}
+              />
+              <span className="absolute -bottom-2 bg-[#44FF00] text-[#171717] text-[10px] font-black px-4 py-1.5 rounded-full uppercase tracking-wider animate-bounce shadow-md">
+                Toque para Abrir! 🎁
+              </span>
+            </div>
+          )}
+
+          {/* Revelado: Polvinho de Crochê surgindo com fade-in e scale-in */}
+          {isOpened && (
+            <div className="relative w-40 h-40 rounded-full bg-gradient-to-b from-green-50 to-green-100/50 border-2 border-[#44FF00]/30 p-2 flex items-center justify-center animate-in zoom-in-75 duration-500">
+              <img 
+                src={dailyRecipe.url_foto} 
+                alt={dailyRecipe.nome} 
+                className="w-32 h-32 object-cover rounded-full shadow-lg border-2 border-white animate-pulse-subtle"
+              />
+              <div className="absolute -bottom-1 bg-[#44FF00] text-[#171717] text-[9px] font-black px-3 py-0.5 rounded-full uppercase tracking-wider shadow-sm">
+                REVELADO! 🎉
               </div>
-            ) : (
-              /* Revelado: Polvinho de Crochê surgindo com fade-in e scale-in */
-              <div className="relative w-40 h-40 rounded-full bg-gradient-to-b from-green-50 to-green-100/50 border-2 border-[#44FF00]/30 p-2 flex items-center justify-center animate-in zoom-in-75 duration-500">
-                <img 
-                  src={dailyRecipe.url_foto} 
-                  alt={dailyRecipe.nome} 
-                  className="w-32 h-32 object-cover rounded-full shadow-lg border-2 border-white animate-pulse-subtle"
-                />
-                <div className="absolute -bottom-1 bg-[#44FF00] text-[#171717] text-[9px] font-black px-3 py-0.5 rounded-full uppercase tracking-wider shadow-sm">
-                  REVELADO! 🎉
-                </div>
-              </div>
-            )}
-          </div>
+            </div>
+          )}
           
           {/* Identificação do Produto e Código */}
           <div className="space-y-1.5 text-center">
@@ -286,7 +278,7 @@ export const DailyGiftSection = () => {
                 disabled={isSending || !showForm}
                 className="w-full bg-[#44FF00] hover:bg-[#3ee600] active:bg-[#38cc00] text-[#171717] py-4.5 rounded-2xl font-black text-sm sm:text-base flex items-center justify-center gap-2 shadow-lg hover:shadow-xl active:scale-[0.98] transition-all disabled:opacity-50 uppercase tracking-wider"
               >
-                {isSending ? "Enviando..." : "Desbloquear Meu Presente Diário no WhatsApp"} <Send size={18} />
+                {isSending ? "Enviando..." : "Desbloquear Meu Presente Diário no WhatsApp"}
               </button>
             </form>
 
