@@ -76,3 +76,30 @@
 .animate-pulse-subtle {
   animation: pulse-subtle 2s infinite ease-in-out;
 }
+
+/* Animação de Pulo Elástico (Squash & Stretch) de 1 segundo */
+@keyframes elastic-bounce {
+  0%, 100% {
+    transform: scale(1, 1) translateY(0);
+  }
+  10% {
+    transform: scale(1.15, 0.8) translateY(0);
+  }
+  30% {
+    transform: scale(0.8, 1.15) translateY(-24px);
+  }
+  50% {
+    transform: scale(1.05, 0.95) translateY(0);
+  }
+  57% {
+    transform: scale(0.98, 1.02) translateY(-4px);
+  }
+  64% {
+    transform: scale(1, 1) translateY(0);
+  }
+}
+
+.animate-elastic-bounce {
+  animation: elastic-bounce 1s infinite ease-in-out;
+  transform-origin: bottom center;
+}

@@ -3,10 +3,9 @@
 import React, { useState, useEffect } from 'react';
 import confetti from 'canvas-confetti';
 import { SuccessModal } from './SuccessModal';
-import { Send, Gift } from 'lucide-react';
+import { Send } from 'lucide-react';
 import { playHeartbeatSound } from '@/utils/audio';
 import { getReceitaGratuita, getRecipes, getDriveFileUrl, type SheetRecipe } from '@/utils/sheets';
-import { DotLottiePlayer } from '@dotlottie/react-player';
 
 const EVOLUTION_API_URL = "https://api.evolution-api.com/v1/messages/sendMedia";
 const EVOLUTION_API_TOKEN = "YOUR_EVOLUTION_API_TOKEN";
@@ -100,7 +99,7 @@ export const DailyGiftSection = () => {
     // Smoothly reveal the form shortly after the opening animation starts
     setTimeout(() => {
       setShowForm(true);
-    }, 600);
+    }, 300);
   };
 
   const handleSendGift = async (e: React.FormEvent) => {
@@ -184,36 +183,58 @@ export const DailyGiftSection = () => {
   };
 
   return (
-    <section style={textureVerdeOlivaStyle} className="py-10 px-4 text-center">
+    <section style={textureVerdeOlivaStyle} className="py-12 px-4 text-center">
       <div className="max-w-xl mx-auto">
-        <h2 className="text-white font-extrabold text-[1.4rem] leading-tight mb-2 uppercase tracking-tight">
+        <h2 className="text-white font-extrabold text-[1.5rem] leading-tight mb-3 uppercase tracking-tight">
           SEU MIMO GRATUITO <br /> DO DIA CHEGOU
         </h2>
-        <p className="text-white/90 text-[0.9rem] font-medium mb-8">
+        <p className="text-white/90 text-[0.95rem] font-medium mb-10">
           Nos visite todos os dias para retirar sua receita grátis e garantir seu presente diário!
         </p>
 
-        <div className="bg-white rounded-[32px] p-6 sm:p-8 shadow-2xl border border-white/50 flex flex-col items-center gap-5 relative overflow-hidden">
+        {/* Card Branco com Espaçamento Premium e Confortável */}
+        <div className="bg-white rounded-[32px] p-8 sm:p-10 shadow-2xl border border-white/50 flex flex-col items-center gap-6 relative overflow-hidden">
           
-          {/* Interactive Lottie Present Container */}
+          {/* Recipiente da Caixinha Roxa com Animação de Pulo Elástico */}
           <div 
             onClick={handleOpenPresent}
-            className={`relative w-48 h-48 flex items-center justify-center cursor-pointer transition-all duration-500 ${!isOpened ? 'hover:scale-105 active:scale-95' : ''}`}
+            className={`relative w-44 h-44 flex items-center justify-center cursor-pointer transition-all duration-500 ${!isOpened ? 'hover:scale-105 active:scale-95' : ''}`}
           >
             {!isOpened ? (
-              <div className="w-full h-full flex flex-col items-center justify-center">
-                <DotLottiePlayer
-                  src="/Ax2k12jKRd.lottie"
-                  autoplay
-                  loop
-                  style={{ width: '100%', height: '100%' }}
-                />
-                <span className="absolute bottom-2 bg-[#44FF00] text-[#171717] text-[9px] font-black px-3 py-1 rounded-full uppercase tracking-wider animate-bounce shadow-md">
+              <div className="w-full h-full flex flex-col items-center justify-center animate-elastic-bounce">
+                {/* SVG da Caixinha Roxa com Laço Amarelo */}
+                <svg viewBox="0 0 200 200" className="w-full h-full drop-shadow-xl">
+                  {/* Sombra */}
+                  <ellipse cx="100" cy="175" rx="60" ry="12" fill="rgba(0,0,0,0.15)" />
+                  
+                  {/* Corpo da Caixa (Roxo) */}
+                  <rect x="45" y="85" width="110" height="80" rx="16" fill="#9B59B6" />
+                  
+                  {/* Tampa da Caixa (Roxo Escuro) */}
+                  <rect x="35" y="65" width="130" height="30" rx="10" fill="#8E44AD" />
+                  
+                  {/* Fita Amarela Vertical */}
+                  <rect x="90" y="85" width="20" height="80" fill="#F1C40F" />
+                  <rect x="90" y="65" width="20" height="30" fill="#F1C40F" />
+                  
+                  {/* Fita Amarela Horizontal */}
+                  <rect x="45" y="115" width="110" height="20" fill="#F1C40F" />
+                  
+                  {/* Laço Amarelo (Esquerda) */}
+                  <path d="M100,65 C70,35 50,55 100,65 Z" fill="#F1C40F" stroke="#D4AC0D" strokeWidth="2" />
+                  
+                  {/* Laço Amarelo (Direita) */}
+                  <path d="M100,65 C130,35 150,55 100,65 Z" fill="#F1C40F" stroke="#D4AC0D" strokeWidth="2" />
+                  
+                  {/* Nó do Laço */}
+                  <circle cx="100" cy="65" r="12" fill="#F39C12" />
+                </svg>
+                <span className="absolute -bottom-2 bg-[#44FF00] text-[#171717] text-[10px] font-black px-4 py-1.5 rounded-full uppercase tracking-wider animate-bounce shadow-md">
                   Toque para Abrir! 🎁
                 </span>
               </div>
             ) : (
-              /* Revealed State: Polvinho de Crochê popping up with smooth scale-in */
+              /* Revelado: Polvinho de Crochê surgindo com fade-in e scale-in */
               <div className="relative w-40 h-40 rounded-full bg-gradient-to-b from-green-50 to-green-100/50 border-2 border-[#44FF00]/30 p-2 flex items-center justify-center animate-in zoom-in-75 duration-500">
                 <img 
                   src={dailyRecipe.url_foto} 
@@ -227,17 +248,17 @@ export const DailyGiftSection = () => {
             )}
           </div>
           
-          {/* Product Identification & Code */}
-          <div className="space-y-1 text-center">
-            <h3 className="text-[#171717] text-lg sm:text-xl font-black uppercase tracking-tight font-sans">
+          {/* Identificação do Produto e Código */}
+          <div className="space-y-1.5 text-center">
+            <h3 className="text-[#171717] text-xl sm:text-2xl font-black uppercase tracking-tight font-sans">
               {dailyRecipe.nome}
             </h3>
-            <p className="text-gray-400 text-[10px] sm:text-xs font-bold uppercase tracking-widest">
+            <p className="text-gray-400 text-xs font-bold uppercase tracking-widest">
               Disponível apenas hoje (CÓD: {dailyRecipe.id})
             </p>
           </div>
 
-          {/* Gamified Lead Capture Form (Fades in beautifully after present is clicked) */}
+          {/* Formulário de Captura de Lead com Transição Suave */}
           <div className={`w-full transition-all duration-700 ease-out ${showForm ? 'opacity-100 max-h-[300px] translate-y-0' : 'opacity-30 max-h-[120px] pointer-events-none translate-y-2'}`}>
             
             {!showForm && (
@@ -255,7 +276,7 @@ export const DailyGiftSection = () => {
                   placeholder="+55 (00) 00000-0000"
                   maxLength={19}
                   disabled={!showForm}
-                  className="w-full px-4 py-3.5 border-2 border-gray-200 rounded-2xl text-center font-black text-gray-700 focus:outline-none focus:border-[#44FF00] transition-all shadow-sm focus:shadow-md placeholder:text-gray-300 text-base"
+                  className="w-full px-5 py-4 border-2 border-gray-200 rounded-2xl text-center font-black text-gray-700 focus:outline-none focus:border-[#44FF00] transition-all shadow-sm focus:shadow-md placeholder:text-gray-300 text-base"
                   required
                 />
               </div>
