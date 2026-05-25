@@ -7,7 +7,6 @@ import { type CartItem, calculateCart } from "@/utils/pricing";
 import { playHeartbeatSound } from "@/utils/audio";
 
 interface UnifiedCheckoutHubProps {
-  cart={cart}
   cart: CartItem[];
   allRecipes: SheetRecipe[];
   onRemoveFromCart: (id: string) => void;
