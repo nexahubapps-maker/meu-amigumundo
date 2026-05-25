@@ -65,6 +65,10 @@ export const UnifiedCheckoutHub = ({
 
   const count = calculated.recipeCount;
 
+  // Split items into regular and bonus items for separate display
+  const regularItems = calculated.items.filter(item => !item.isBonus);
+  const bonusItems = calculated.items.filter(item => item.isBonus);
+
   // Define the table rows with active state logic matching the pricing tiers
   const tableRows = [
     {
@@ -231,10 +235,10 @@ export const UnifiedCheckoutHub = ({
       {/* 3. RESUMO DO CARRINHO */}
       <div className="mb-3">
         <h3 className="text-xs font-bold text-gray-900 uppercase tracking-tight mb-1.5 flex items-center gap-1.5">
-          🛒 Meu Carrinho ({calculated.recipeCount} {calculated.recipeCount === 1 ? "receita" : "receitas"})
+          🛒 Meu Carrinho ({regularItems.length} {regularItems.length === 1 ? "receita" : "receitas"})
         </h3>
 
-        {calculated.items.length === 0 ? (
+        {regularItems.length === 0 ? (
           <div className="py-4 text-center bg-gray-50 rounded-lg border border-dashed border-gray-200 p-3">
             <ShoppingBag size={24} className="mx-auto text-gray-300 mb-1" />
             <p className="text-gray-600 font-bold text-xs uppercase">
@@ -245,15 +249,11 @@ export const UnifiedCheckoutHub = ({
             </p>
           </div>
         ) : (
-          <div className="space-y-1.5 max-h-[180px] overflow-y-auto pr-1">
-            {calculated.items.map((item) => (
+          <div className="space-y-1.5 h-auto overflow-visible pr-1">
+            {regularItems.map((item) => (
               <div
                 key={item.id}
-                className={`flex items-center gap-2 p-2 rounded-lg border transition-all ${
-                  item.isBonus
-                    ? "bg-green-50 border-green-200"
-                    : "bg-white border-gray-100"
-                }`}
+                className="flex items-center gap-2 p-2 rounded-lg border transition-all bg-white border-gray-100"
               >
                 {item.imagem && (
                   <img
@@ -267,28 +267,64 @@ export const UnifiedCheckoutHub = ({
                     {item.nome}
                   </h4>
                   <span className="text-[9px] font-bold text-gray-400 uppercase">
-                    {item.isBonus ? "🎁 PRESENTE AUTOMÁTICO" : `CÓD: ${item.id}`}
+                    CÓD: {item.id}
                   </span>
                 </div>
                 <div className="text-right shrink-0 flex items-center gap-2">
                   <span className="font-bold text-gray-900 text-xs">
-                    {item.isBonus ? "GRÁTIS" : `R$ ${item.precoFinal.toFixed(2)}`}
+                    R$ {item.precoFinal.toFixed(2)}
                   </span>
-                  {!item.isBonus && (
-                    <button
-                      onClick={() => onRemoveFromCart(item.id)}
-                      className="p-1 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors"
-                      aria-label="Remover item"
-                    >
-                      <X size={14} />
-                    </button>
-                  )}
+                  <button
+                    onClick={() => onRemoveFromCart(item.id)}
+                    className="p-1 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors"
+                    aria-label="Remover item"
+                  >
+                    <X size={14} />
+                  </button>
                 </div>
               </div>
             ))}
           </div>
         )}
       </div>
+
+      {/* 3.1 SEÇÃO DE BÔNUS CONQUISTADOS */}
+      {bonusItems.length > 0 && (
+        <div className="mb-3 p-3 bg-[#f0fdf4] border border-[#22c55e] rounded-xl space-y-2">
+          <h4 className="text-xs font-black text-[#16a34a] uppercase tracking-wider flex items-center gap-1.5">
+            🎁 Seus Bônus Conquistados
+          </h4>
+          <div className="space-y-1.5">
+            {bonusItems.map((item) => (
+              <div
+                key={item.id}
+                className="flex items-center gap-2 p-2 rounded-lg bg-white border border-green-100"
+              >
+                {item.imagem && (
+                  <img
+                    src={item.imagem}
+                    className="w-8 h-8 rounded object-cover border border-gray-200 shrink-0"
+                    alt=""
+                  />
+                )}
+                <div className="flex-1 min-w-0">
+                  <h4 className="text-xs font-bold text-gray-800 uppercase truncate leading-tight">
+                    {item.nome}
+                  </h4>
+                  <span className="text-[9px] font-bold text-gray-400 uppercase">
+                    PRESENTE AUTOMÁTICO
+                  </span>
+                </div>
+                <div className="shrink-0">
+                  <span className="text-xs font-black text-[#22c55e] uppercase tracking-wider">
+                    GRÁTIS
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* 4. BOTÃO DE CHAMADA PARA AÇÃO */}
       {calculated.items.length > 0 && (
