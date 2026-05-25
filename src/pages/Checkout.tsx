@@ -162,8 +162,12 @@ export default function Checkout() {
   };
 
   return (
-    <div className="min-h-[100dvh] w-full overflow-x-hidden bg-[#F4F7F9] pb-[140px] font-sans">
-      <div className="max-w-2xl mx-auto px-4 pt-3">
+    <div className="min-h-screen w-full overflow-y-auto overflow-x-hidden bg-[#F4F7F9] font-sans">
+      {/* Container de Scroll com aceleração de GPU isolada */}
+      <div 
+        className="max-w-2xl mx-auto px-4 pt-3 pb-[140px]" 
+        style={{ transform: "translateZ(0)", WebkitTransform: "translateZ(0)" }}
+      >
         
         {/* Botão Voltar */}
         <button 
@@ -365,7 +369,7 @@ export default function Checkout() {
         </footer>
       </div>
 
-      {/* Botão de Suporte */}
+      {/* Botão de Suporte posicionado fora do container transformado para manter o position: fixed perfeito */}
       <SupportButton />
     </div>
   );
