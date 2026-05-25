@@ -26,7 +26,7 @@ export const NotificationsModal = ({
         <div className="p-4 border-b border-gray-100 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Bell className="text-[#44FF00]" size={20} />
-            <h2 className="text-base font-black uppercase tracking-tight text-gray-800">Histórico de Avisos</h2>
+            <h2 className="text-base font-black uppercase tracking-tight text-gray-800">Histórico de Notificações</h2>
           </div>
           <button onClick={onClose} className="p-1.5 hover:bg-gray-50 rounded-full text-gray-400 hover:text-gray-600 transition-colors">
             <X size={20} />

@@ -4,10 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import confetti from 'canvas-confetti';
 import { SuccessModal } from './SuccessModal';
 import { playHeartbeatSound } from '@/utils/audio';
-import { getReceitaGratuita, getDriveFileUrl, type SheetReceitaGratuita } from '@/utils/sheets';
-
-const EVOLUTION_API_URL = "https://api.evolution-api.com/v1/messages/sendMedia";
-const EVOLUTION_API_TOKEN = "YOUR_EVOLUTION_API_TOKEN";
+import { getReceitaGratuita, type SheetReceitaGratuita } from '@/utils/sheets';
 
 export const DailyGiftSection = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -120,30 +117,9 @@ export const DailyGiftSection = () => {
     playHeartbeatSound();
 
     try {
-      // Busca dinamicamente o link do PDF no Google Drive usando o código universal
-      const pdfUrl = await getDriveFileUrl(dailyRecipe.codigo);
-
-      const payload = {
-        number: rawDigits,
-        mediatype: "document",
-        media: pdfUrl,
-        fileName: `${dailyRecipe.nome}.pdf`,
-        caption: "Aqui está o seu presente diário! 🎁"
-      };
-
-      // Trigger direct WhatsApp redirection as a fallback/primary action to guarantee delivery
-      const messageText = `Olá! Quero desbloquear meu presente diário: ${dailyRecipe.nome} (Código: ${dailyRecipe.codigo})`;
+      // Trigger direct WhatsApp redirection with pre-defined security message
+      const messageText = `Quero minha receita grátis: ${dailyRecipe.nome} (Código: ${dailyRecipe.codigo})`;
       const waUrl = `https://wa.me/5544999999999?text=${encodeURIComponent(messageText)}`;
-
-      // Send to Evolution API in background
-      fetch(EVOLUTION_API_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "apikey": EVOLUTION_API_TOKEN
-        },
-        body: JSON.stringify(payload)
-      }).catch(err => console.warn("Evolution API background send failed:", err));
 
       // Success feedback
       setStatusMessage("🎉 Redirecionando para o WhatsApp para liberar seu PDF instantaneamente...");

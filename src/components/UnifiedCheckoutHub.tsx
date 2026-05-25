@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { ShoppingBag, X, ArrowRight } from "lucide-react";
+import { ShoppingBag, X, ArrowRight, Gift } from "lucide-react";
 import { type SheetRecipe } from "@/utils/sheets";
 import { type CartItem, calculateCart } from "@/utils/pricing";
 import { playHeartbeatSound } from "@/utils/audio";
@@ -28,12 +28,12 @@ export const UnifiedCheckoutHub = ({
   // Calculate cart values using the centralized pricing utility
   const calculated = calculateCart(cart, allRecipes);
 
-  // Handle code input change with automatic search on 3 digits
+  // Handle code input change with automatic search strictly on 4 digits (MOTOR A)
   const handleCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/\D/g, ""); // Only digits
     setCode(value);
 
-    if (value.length === 3) {
+    if (value.length === 4) {
       const recipe = allRecipes.find((r) => r.id === value);
       if (recipe) {
         setFoundRecipe(recipe);
@@ -63,11 +63,35 @@ export const UnifiedCheckoutHub = ({
     }
   };
 
-  const count = calculated.recipeCount;
+  const P = calculated.recipeCount; // Paid recipes count
+  const F = calculated.bonusCount;  // Filled free slots count
+  const maxSlots = calculated.maxBonusSlots; // Total allowed free slots
 
-  // Split items into regular and bonus items for separate display
-  const regularItems = calculated.items.filter(item => !item.isBonus);
-  const bonusItems = calculated.items.filter(item => item.isBonus);
+  // Neuromarketing Banner Text Logic
+  let neuromarketingText = "";
+  if (P >= 1 && P <= 4) {
+    neuromarketingText = `✨ Adicione mais ${5 - P} receitas e o preço de todas cairá para R$ 4,00 cada! Aproveite!`;
+  } else if (P >= 5 && P <= 9) {
+    neuromarketingText = `🔥 Faltam só ${10 - P} receitas para o preço de todas cair para R$ 3,00 e você ganhar 1 RECEITA GRÁTIS! 🎁`;
+  } else if (P >= 10 && P <= 14) {
+    if (F === 0) {
+      neuromarketingText = `🎉 Parabéns! Você ganhou 1 RECEITA! Escolha o modelo que quiser, ela sairá GRÁTIS.`;
+    } else {
+      neuromarketingText = `🚀 Muito bem! Adicione mais ${15 - P} receitas para o preço cair para R$ 2,50 e levar mais 1 GRÁTIS!`;
+    }
+  } else if (P >= 15 && P <= 19) {
+    if (F < 2) {
+      neuromarketingText = `🎁 Você liberou mais 1 RECEITA GRÁTIS! Pode escolher o seu próximo presente na loja.`;
+    } else {
+      neuromarketingText = `🏆 Você está imparável! Mais ${20 - P} receitas e você ganha o prêmio máximo: 5 RECEITAS GRÁTIS!`;
+    }
+  } else if (P >= 20) {
+    if (F < 5) {
+      neuromarketingText = `👑 Sensacional! Você atingiu o topo e liberou 5 RECEITAS GRÁTIS no total! Escolha as suas receitas preferidas!`;
+    } else {
+      neuromarketingText = `❤️ Carrinho perfeito! Você garantiu o melhor preço e todos os seus presentes!`;
+    }
+  }
 
   // Define the table rows with active state logic matching the pricing tiers
   const tableRows = [
@@ -76,7 +100,7 @@ export const UnifiedCheckoutHub = ({
       price: "R$ 5,00 cada",
       bonus: "—",
       isBonusActive: false,
-      isActive: count <= 4,
+      isActive: P <= 4,
       isBasePrice: true
     },
     {
@@ -84,7 +108,7 @@ export const UnifiedCheckoutHub = ({
       price: "R$ 4,00 cada",
       bonus: "—",
       isBonusActive: false,
-      isActive: count >= 5 && count <= 9,
+      isActive: P >= 5 && P <= 9,
       isBasePrice: false
     },
     {
@@ -92,7 +116,7 @@ export const UnifiedCheckoutHub = ({
       price: "R$ 3,00 cada",
       bonus: "+1 GRÁTIS",
       isBonusActive: true,
-      isActive: count >= 10 && count <= 14,
+      isActive: P >= 10 && P <= 14,
       isBasePrice: false
     },
     {
@@ -100,7 +124,7 @@ export const UnifiedCheckoutHub = ({
       price: "R$ 2,50 cada",
       bonus: "+2 GRÁTIS",
       isBonusActive: true,
-      isActive: count >= 15 && count <= 19,
+      isActive: P >= 15 && P <= 19,
       isBasePrice: false
     },
     {
@@ -108,7 +132,7 @@ export const UnifiedCheckoutHub = ({
       price: "R$ 2,50 cada",
       bonus: "+5 GRÁTIS",
       isBonusActive: true,
-      isActive: count >= 20,
+      isActive: P >= 20,
       isBasePrice: false
     }
   ];
@@ -134,7 +158,7 @@ export const UnifiedCheckoutHub = ({
             inputMode="numeric"
             value={code}
             onChange={handleCodeChange}
-            maxLength={3}
+            maxLength={4}
             placeholder="DIGITE O CÓDIGO"
             className="w-full h-11 px-3 border-2 border-gray-300 rounded-lg text-base font-bold text-center focus:outline-none focus:border-[#44FF00] transition-all placeholder:text-gray-300 uppercase text-gray-800"
           />
@@ -239,13 +263,22 @@ export const UnifiedCheckoutHub = ({
         </div>
       </div>
 
+      {/* NEUROMARKETING BANNER */}
+      {neuromarketingText && (
+        <div className="mb-3 p-3 bg-yellow-50 border border-yellow-200 rounded-xl text-center animate-pulse-subtle">
+          <p className="text-xs font-bold text-yellow-800 leading-relaxed">
+            {neuromarketingText}
+          </p>
+        </div>
+      )}
+
       {/* 3. RESUMO DO CARRINHO */}
       <div className="mb-3">
         <h3 className="text-xs font-bold text-gray-900 uppercase tracking-tight mb-1.5 flex items-center gap-1.5">
-          🛒 Meu Carrinho ({regularItems.length} {regularItems.length === 1 ? "receita" : "receitas"})
+          🛒 Meu Carrinho ({calculated.paidRecipes.length} {calculated.paidRecipes.length === 1 ? "receita" : "receitas"})
         </h3>
 
-        {regularItems.length === 0 ? (
+        {calculated.paidRecipes.length === 0 ? (
           <div className="py-4 text-center bg-gray-50 rounded-lg border border-dashed border-gray-200 p-3">
             <ShoppingBag size={24} className="mx-auto text-gray-300 mb-1" />
             <p className="text-gray-600 font-bold text-xs uppercase">
@@ -257,7 +290,7 @@ export const UnifiedCheckoutHub = ({
           </div>
         ) : (
           <div className="space-y-1.5 h-auto overflow-visible pr-1">
-            {regularItems.map((item) => (
+            {calculated.paidRecipes.map((item) => (
               <div
                 key={item.id}
                 className="flex items-center gap-2 p-2 rounded-lg border transition-all bg-white border-gray-100"
@@ -295,14 +328,15 @@ export const UnifiedCheckoutHub = ({
         )}
       </div>
 
-      {/* 3.1 SEÇÃO DE BÔNUS CONQUISTADOS */}
-      {bonusItems.length > 0 && (
+      {/* 3.1 SEÇÃO DE MIMOS GRATUITOS (RODAPÉ DE MIMOS) */}
+      {maxSlots > 0 && (
         <div className="mb-3 p-3 bg-[#f0fdf4] border border-[#22c55e] rounded-xl space-y-2">
           <h4 className="text-xs font-black text-[#16a34a] uppercase tracking-wider flex items-center gap-1.5">
-            🎁 Seus Bônus Conquistados
+            🎁 Seus Mimos Gratuitos ({F} de {maxSlots} liberados)
           </h4>
           <div className="space-y-1.5">
-            {bonusItems.map((item) => (
+            {/* Render filled free slots */}
+            {calculated.freeRecipes.map((item) => (
               <div
                 key={item.id}
                 className="flex items-center gap-2 p-2 rounded-lg bg-white border border-green-100"
@@ -319,14 +353,36 @@ export const UnifiedCheckoutHub = ({
                     {item.nome}
                   </h4>
                   <span className="text-[9px] font-bold text-gray-400 uppercase">
-                    PRESENTE AUTOMÁTICO
+                    CÓD: {item.id}
                   </span>
                 </div>
-                <div className="shrink-0">
+                <div className="text-right shrink-0 flex items-center gap-2">
+                  <span className="text-gray-400 line-through text-[10px] font-bold">
+                    R$ 5,00
+                  </span>
                   <span className="text-xs font-black text-[#22c55e] uppercase tracking-wider">
-                    GRÁTIS
+                    Grátis
                   </span>
+                  <button
+                    onClick={() => onRemoveFromCart(item.id)}
+                    className="p-1 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors"
+                    aria-label="Remover item"
+                  >
+                    <X size={14} />
+                  </button>
                 </div>
+              </div>
+            ))}
+
+            {/* Render empty free slots */}
+            {Array.from({ length: maxSlots - F }).map((_, index) => (
+              <div
+                key={`empty-${index}`}
+                className="flex items-center justify-center p-3 rounded-lg border-2 border-dashed border-green-200 bg-green-50/30 text-center"
+              >
+                <p className="text-[10px] font-bold text-green-600 uppercase tracking-wider flex items-center gap-1">
+                  <Gift size={12} /> Aguardando sua escolha grátis...
+                </p>
               </div>
             ))}
           </div>

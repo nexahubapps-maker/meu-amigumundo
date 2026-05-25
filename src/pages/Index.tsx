@@ -54,6 +54,9 @@ export default function Index() {
   const [zoomImage, setZoomImage] = useState<string | null>(null);
   const carouselRef = useRef<HTMLDivElement>(null);
   
+  // Notifications Read State
+  const [hasUnreadNotifications, setHasUnreadNotifications] = useState(true);
+
   // Favorites State
   const [favorites, setFavorites] = useState<string[]>(() => {
     const saved = localStorage.getItem("amigumundo-favorites");
@@ -76,6 +79,16 @@ export default function Index() {
         setInfoprodutosList(infoprodutosData);
         setPacksList(packsData);
         setNotificationsList(notificationsData);
+
+        // Check if there are new notifications since last read
+        const lastRead = localStorage.getItem("notifications-last-read");
+        if (lastRead) {
+          const activeNotifs = notificationsData.filter(n => n.status);
+          const hasNew = activeNotifs.some(n => new Date(n.data_hora) > new Date(lastRead));
+          setHasUnreadNotifications(hasNew);
+        } else {
+          setHasUnreadNotifications(notificationsData.filter(n => n.status).length > 0);
+        }
 
         // Push Notification Listener (Client-side simulation)
         const pushItem = [...recipesData, ...infoprodutosData, ...packsData].find(item => item.disparar_push);
@@ -239,6 +252,12 @@ export default function Index() {
   const selectedCategoryRecipes = categoria_slug 
     ? recipesList.filter(r => r.categoria.toLowerCase() === categoria_slug.toLowerCase() || r.categoria.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() === categoria_slug.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase())
     : [];
+
+  const handleOpenNotifications = () => {
+    setIsNotificationsOpen(true);
+    setHasUnreadNotifications(false);
+    localStorage.setItem("notifications-last-read", new Date().toISOString());
+  };
 
   return (
     <div className="min-h-screen bg-white pb-24 relative">
@@ -549,9 +568,9 @@ export default function Index() {
       {/* FOOTER NAVIGATION BAR */}
       <FooterNavigation
         onOpenFavorites={() => setIsFavoritesOpen(true)}
-        onOpenNotifications={() => setIsNotificationsOpen(true)}
+        onOpenNotifications={handleOpenNotifications}
         favoritesCount={favorites.length}
-        notificationsCount={notificationsList.filter(n => n.status).length}
+        notificationsCount={hasUnreadNotifications ? notificationsList.filter(n => n.status).length : 0}
       />
 
       {/* FAVORITES MODAL */}
