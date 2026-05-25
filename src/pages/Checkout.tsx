@@ -327,23 +327,35 @@ export default function Checkout() {
           </button>
         </div>
 
-        {/* High Contrast Security Badges Footer */}
-        <div className="bg-gray-100 border border-gray-200 rounded-2xl p-4 grid grid-cols-2 sm:grid-cols-4 gap-4 mb-12 shadow-sm">
-          <div className="flex flex-col items-center gap-1.5 text-center p-2">
-            <ShieldCheck size={26} className="text-gray-800" />
-            <span className="text-[10px] font-black text-gray-800 uppercase tracking-wider">SSL Seguro</span>
+        {/* Premium Security Badges Footer */}
+        <div className="bg-[#0f172a] border border-[#22c55e] rounded-2xl p-6 grid grid-cols-2 gap-6 mb-12 shadow-xl">
+          <div className="flex flex-col items-center gap-2 text-center p-3 bg-white/5 rounded-xl shadow-md border border-white/5">
+            <Lock size={32} className="text-[#22c55e]" />
+            <div className="flex flex-col">
+              <span className="text-[11px] font-black text-white uppercase tracking-wider">SSL SEGURO</span>
+              <span className="text-[9px] text-gray-400 font-medium mt-0.5">Seus dados protegidos</span>
+            </div>
           </div>
-          <div className="flex flex-col items-center gap-1.5 text-center p-2">
-            <ShieldCheck size={26} className="text-gray-800" />
-            <span className="text-[10px] font-black text-gray-800 uppercase tracking-wider">Mercado Pago</span>
+          <div className="flex flex-col items-center gap-2 text-center p-3 bg-white/5 rounded-xl shadow-md border border-white/5">
+            <ShieldCheck size={32} className="text-[#22c55e]" />
+            <div className="flex flex-col">
+              <span className="text-[11px] font-black text-white uppercase tracking-wider">MERCADO PAGO</span>
+              <span className="text-[9px] text-gray-400 font-medium mt-0.5">Pagamento certificado</span>
+            </div>
           </div>
-          <div className="flex flex-col items-center gap-1.5 text-center p-2">
-            <Zap size={26} className="text-gray-800" />
-            <span className="text-[10px] font-black text-gray-800 uppercase tracking-wider">Entrega Instantânea</span>
+          <div className="flex flex-col items-center gap-2 text-center p-3 bg-white/5 rounded-xl shadow-md border border-white/5">
+            <Zap size={32} className="text-[#22c55e]" />
+            <div className="flex flex-col">
+              <span className="text-[11px] font-black text-white uppercase tracking-wider">ENTREGA INSTANTÂNEA</span>
+              <span className="text-[9px] text-gray-400 font-medium mt-0.5">Receitas em segundos</span>
+            </div>
           </div>
-          <div className="flex flex-col items-center gap-1.5 text-center p-2">
-            <ShieldCheck size={26} className="text-gray-800" />
-            <span className="text-[10px] font-black text-gray-800 uppercase tracking-wider">Compra Protegida</span>
+          <div className="flex flex-col items-center gap-2 text-center p-3 bg-white/5 rounded-xl shadow-md border border-white/5">
+            <ShieldCheck size={32} className="text-[#f59e0b]" />
+            <div className="flex flex-col">
+              <span className="text-[11px] font-black text-white uppercase tracking-wider">COMPRE PROTEGIDA</span>
+              <span className="text-[9px] text-gray-400 font-medium mt-0.5">Garantia de entrega</span>
+            </div>
           </div>
         </div>
 

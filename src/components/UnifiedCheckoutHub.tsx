@@ -63,24 +63,66 @@ export const UnifiedCheckoutHub = ({
     }
   };
 
-  // Progress bar percentage calculation
-  const getProgressPercentage = () => {
-    const count = calculated.recipeCount;
-    if (count >= 20) return 100;
-    if (count >= 15) return 75 + ((count - 15) / 5) * 25;
-    if (count >= 10) return 50 + ((count - 10) / 5) * 25;
-    if (count >= 5) return 25 + ((count - 5) / 5) * 25;
-    return (count / 5) * 25;
-  };
+  const count = calculated.recipeCount;
+
+  // 5 Tiers of progressive discounts
+  const tiers = [
+    {
+      id: 1,
+      emoji: "💡",
+      active: count >= 1 && count <= 4,
+      border: "border-l-4 border-l-green-500",
+      activeBg: "bg-green-50/80 border-green-300 ring-2 ring-green-400",
+      pillBg: "bg-green-100 text-green-800"
+    },
+    {
+      id: 2,
+      emoji: "🏷️",
+      active: count >= 5 && count <= 9,
+      border: "border-l-4 border-l-green-500",
+      activeBg: "bg-green-50/80 border-green-300 ring-2 ring-green-400",
+      pillBg: "bg-green-100 text-green-800"
+    },
+    {
+      id: 3,
+      emoji: "🏷️",
+      active: count >= 10 && count <= 14,
+      border: "border-l-4 border-l-green-500",
+      activeBg: "bg-green-50/80 border-green-300 ring-2 ring-green-400",
+      pillBg: "bg-green-100 text-green-800"
+    },
+    {
+      id: 4,
+      emoji: "🏷️",
+      active: count >= 15 && count <= 19,
+      border: "border-l-4 border-l-green-500",
+      activeBg: "bg-green-50/80 border-green-300 ring-2 ring-green-400",
+      pillBg: "bg-green-100 text-green-800"
+    },
+    {
+      id: 5,
+      emoji: "🏷️",
+      active: count >= 20,
+      border: "border-l-4 border-l-yellow-500",
+      activeBg: "bg-yellow-50/80 border-yellow-300 ring-2 ring-yellow-400",
+      pillBg: "bg-yellow-100 text-yellow-800"
+    }
+  ];
 
   return (
     <div className="max-w-md mx-auto my-4 bg-white rounded-xl p-4 shadow-md border-2 border-[#44FF00] text-left">
       
       {/* 1. CAIXA DE CÓDIGO (TOPO DO CARD) */}
-      <div className="bg-gray-50 rounded-lg p-3 border border-gray-200 mb-3">
-        <label className="block text-center text-xs font-bold text-gray-700 uppercase tracking-wide mb-1.5">
-          🔍 Encontrou um código no WhatsApp?
-        </label>
+      <div className="bg-gray-50 rounded-lg p-4 border border-gray-200 mb-4">
+        <div className="text-center mb-3">
+          <p className="text-sm font-extrabold text-gray-900 leading-tight">
+            Se apaixonou por alguma receita do grupo?
+          </p>
+          <p className="text-xs text-gray-500 font-medium mt-1">
+            Digite abaixo o código da receita e adicione ao carrinho.
+          </p>
+        </div>
+
         <div className="relative max-w-[200px] mx-auto">
           <input
             type="text"
@@ -90,12 +132,18 @@ export const UnifiedCheckoutHub = ({
             onChange={handleCodeChange}
             maxLength={4}
             placeholder="DIGITE O CÓDIGO"
-            className="w-full h-10 px-3 border-2 border-gray-300 rounded-lg text-base font-bold text-center focus:outline-none focus:border-[#44FF00] transition-all placeholder:text-gray-300 uppercase text-gray-800"
+            className="w-full h-11 px-3 border-2 border-gray-300 rounded-lg text-base font-bold text-center focus:outline-none focus:border-[#44FF00] transition-all placeholder:text-gray-300 uppercase text-gray-800"
           />
         </div>
-        <p className="text-center text-[10px] text-gray-400 font-bold mt-1 uppercase tracking-wider">
-          Busca automática ao digitar 4 números
-        </p>
+
+        <div className="text-center mt-3 leading-tight">
+          <p className="text-xs font-bold text-[#22c55e] flex items-center justify-center gap-1">
+            🔒 Pagamento 100% Seguro
+          </p>
+          <p className="text-[10px] font-bold text-[#22c55e] mt-0.5">
+            Receba em segundos no seu WhatsApp
+          </p>
+        </div>
 
         {/* Search Error Feedback */}
         {searchError && (
@@ -146,61 +194,42 @@ export const UnifiedCheckoutHub = ({
         )}
       </div>
 
-      {/* 2. RÉGUA DE PROGRESSO GAMIFICADA */}
-      <div className="mb-3 bg-gray-50 rounded-lg p-3 border border-gray-200">
-        <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2 text-center">
-          🏆 Descontos Progressivos e Presentes
-        </h3>
-        
-        {/* Progress Bar */}
-        <div className="w-full bg-gray-200 h-4 rounded-full overflow-hidden border border-gray-300 mb-2 relative">
-          <div
-            className="bg-gradient-to-r from-[#44FF00] to-green-500 h-full transition-all duration-500"
-            style={{ width: `${getProgressPercentage()}%` }}
-          />
-          <span className="absolute inset-0 flex items-center justify-center text-[9px] font-bold text-gray-800 uppercase">
-            {calculated.recipeCount} {calculated.recipeCount === 1 ? "Receita" : "Receitas"} no Carrinho
-          </span>
-        </div>
-
-        {/* Dynamic High-Contrast Message */}
-        <div className="text-center p-2 bg-white rounded-lg border border-gray-100 shadow-sm mb-3">
-          <p className="text-xs font-bold text-gray-900 leading-tight">
-            {calculated.recipeCount >= 10 ? (
-              <span>
-                Parabéns! Você ganhou{" "}
-                <span className="text-green-600 font-bold uppercase">
-                  +{calculated.bonusCount} {calculated.bonusCount === 1 ? "RECEITA" : "RECEITAS"} de PRESENTE! 🎁
-                </span>
-              </span>
-            ) : (
-              <span className="text-gray-800">
-                {calculated.nextTierMessage.replace("PRESENTE", "PRESENTE 🎁").replace("GRÁTIS", "GRÁTIS 🎁")}
-              </span>
-            )}
-          </p>
-          <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider mt-1">
-            Preço atual por receita: <span className="text-blue-600 font-bold">R$ {calculated.pricePerRecipe.toFixed(2)}</span>
+      {/* 2. SEÇÃO DE DESCONTOS PROGRESSIVOS */}
+      <div className="mb-4 bg-gray-50 rounded-lg p-4 border border-gray-200">
+        <div className="mb-4 text-center">
+          <p className="text-xs sm:text-sm text-gray-700 font-semibold leading-snug">
+            Quanto mais receitas você adicionar ao carrinho, mais baratas elas ficam
           </p>
         </div>
 
-        {/* LISTA VERTICAL MINIMALISTA DE PROMOÇÕES */}
-        <div className="flex flex-col text-[13px] text-gray-700 leading-tight">
-          <div className="py-1.5 border-b border-gray-200">
-            💡 <strong>Todas as receitas</strong> do AmiguMundo por <strong>R$ 5,00</strong> cada!
-          </div>
-          <div className="py-1.5 border-b border-gray-200">
-            🏷️ De <strong>5 a 9 receitas</strong>: <strong>R$ 4,00</strong> cada
-          </div>
-          <div className="py-1.5 border-b border-gray-200">
-            🏷️ De <strong>10 a 14 receitas</strong>: <strong>R$ 3,00</strong> cada + <strong className="text-green-600">RECEITA GRÁTIS 🎁</strong>
-          </div>
-          <div className="py-1.5 border-b border-gray-200">
-            🏷️ Acima de <strong>15 receitas</strong>: <strong>R$ 2,50</strong> cada + <strong className="text-green-600">2 RECEITAS GRÁTIS 🎁</strong>
-          </div>
-          <div className="py-1.5">
-            🏷️ Atingiu <strong>20 receitas</strong>: <strong className="text-green-600">+ 5 RECEITAS GRÁTIS 🎁</strong>
-          </div>
+        {/* Cards de Faixas de Desconto */}
+        <div className="space-y-2.5">
+          {tiers.map((tier) => (
+            <div
+              key={tier.id}
+              className={`flex items-center justify-between p-3 rounded-xl bg-white border border-gray-100 shadow-sm transition-all ${tier.border} ${
+                tier.active ? `${tier.activeBg} scale-[1.02]` : ''
+              }`}
+            >
+              <div className="flex items-center gap-2 min-w-0">
+                <span className="text-base shrink-0">{tier.emoji}</span>
+                <p className="text-xs text-gray-800 font-bold leading-tight">
+                  {tier.id === 1 && <>Todas as receitas do AmiguMundo por <span className="text-green-600 font-black">R$ 5,00</span> cada</>}
+                  {tier.id === 2 && <>De 5 a 9 receitas: <span className="text-green-600 font-black">R$ 4,00</span> cada</>}
+                  {tier.id === 3 && <>De 10 a 14 receitas: <span className="text-green-600 font-black">R$ 3,00</span> cada + <span className="text-green-600 font-black">RECEITA GRÁTIS</span> 🎁</>}
+                  {tier.id === 4 && <>Acima de 15 receitas: <span className="text-green-600 font-black">R$ 2,50</span> cada + <span className="text-green-600 font-black">2 RECEITAS GRÁTIS</span> 🎁</>}
+                  {tier.id === 5 && <>Atingiu 20 receitas: <span className="text-green-600 font-black">+ 5 RECEITAS GRÁTIS</span> 🎁</>}
+                </p>
+              </div>
+              <div className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider shrink-0 ${tier.pillBg}`}>
+                {tier.id === 1 && "R$ 5,00"}
+                {tier.id === 2 && "R$ 4,00"}
+                {tier.id === 3 && "R$ 3,00 + Grátis"}
+                {tier.id === 4 && "R$ 2,50 + 2 Grátis"}
+                {tier.id === 5 && "+ 5 Grátis"}
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 
@@ -284,7 +313,6 @@ export const UnifiedCheckoutHub = ({
                   🎉 {calculated.bonusCount} PRESENTE(S) INCLUÍDO(S)!
                 </span>
               )}
-              Sem taxas adicionais
             </div>
           </div>
 
