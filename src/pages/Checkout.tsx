@@ -162,7 +162,7 @@ export default function Checkout() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F4F7F9] pb-12 font-sans">
+    <div className="min-h-[100dvh] w-full overflow-x-hidden bg-[#F4F7F9] pb-36 font-sans">
       <div className="max-w-2xl mx-auto px-4 pt-3">
         
         {/* Botão Voltar */}
