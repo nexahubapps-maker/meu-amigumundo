@@ -261,7 +261,7 @@ export default function Index() {
       <div className="bg-[#e6dcd3] mt-1 pt-1 pb-2">
         
         {/* SEÇÃO 1: CHECKOUT (Topo) */}
-        <section className="pb-2">
+        <section className="pb-1">
           <div className="max-w-6xl mx-auto px-4">
             
             {/* PWA Install Prompt */}
@@ -279,50 +279,55 @@ export default function Index() {
           </div>
         </section>
 
-        {/* CARD FLUTUANTE COM O BANNER E A DESCRIÇÃO DA LOJA */}
-        <div className="max-w-6xl mx-auto px-4 mb-1">
-          <div className="bg-white rounded-2xl p-3 shadow-lg border border-gray-100/50">
-            <div className="rounded-xl overflow-hidden">
+      </div>
+
+      {/* SEÇÃO 3: CATEGORIAS UNIFICADA COM O BANNER DA LOJA */}
+      <section className="bg-[#F5F5F7] py-3">
+        <div className="max-w-6xl mx-auto px-2 sm:px-4">
+          
+          {/* CARD ÚNICO UNIFICADO (BANNER + TÍTULO + CATEGORIAS) */}
+          <div className="bg-white rounded-3xl p-2 sm:p-3 shadow-lg border border-gray-100/80 flex flex-col gap-2">
+            
+            {/* 1. BANNER DA LOJA (No topo absoluto do card, sem margem extra) */}
+            <div className="w-full rounded-2xl overflow-hidden">
               <img 
                 src="https://ik.imagekit.io/51b3srlsg/Loja_AmiguMundo_amigurumis.jpeg" 
                 alt="Loja AmiguMundo" 
                 className="w-full h-auto object-cover"
               />
             </div>
-          </div>
-        </div>
 
-      </div>
+            {/* 2. CARD DE TÍTULO (Textura Laranja) - Bem colado ao banner */}
+            <div 
+              style={textureLaranjaStyle}
+              className="w-full py-1.5 px-3 shadow-sm rounded-xl text-center border border-gray-100"
+            >
+              <h2 className="text-xs sm:text-sm font-black uppercase tracking-wider text-white m-0">
+                CATEGORIAS DE AMIGURUMIS
+              </h2>
+            </div>
+            
+            {/* 3. SUBTÍTULO - Espaçamento mínimo */}
+            <p className="text-gray-600 text-[10px] sm:text-xs font-bold text-center uppercase tracking-tight -mt-1 mb-1">
+              Novas receitas adicionadas todos os dias
+            </p>
+            
+            {/* 4. GRID DE CATEGORIAS (3 em 3 colunas, espaçamento mínimo lateral e vertical) */}
+            <div className="grid grid-cols-3 gap-x-1 gap-y-1.5 px-0.5">
+              {categories.map((cat) => (
+                <CategoryCard 
+                  key={cat} 
+                  nome={cat} 
+                  onClick={() => {
+                    playHeartbeatSound();
+                    navigate(`/categoria/${encodeURIComponent(cat.toLowerCase())}`);
+                  }} 
+                />
+              ))}
+            </div>
 
-      {/* SEÇÃO 3: CATEGORIAS (With Orange Texture) - SUBIU */}
-      <section className="bg-[#F5F5F7] py-6">
-        <div className="max-w-6xl mx-auto px-4">
-          {/* Card de Título de Largura Total e Altura Mínima with Orange Texture */}
-          <div 
-            style={textureLaranjaStyle}
-            className="w-full py-2 px-4 mb-4 shadow-sm rounded-xl text-center border border-gray-100"
-          >
-            <h2 className="text-sm sm:text-base font-black uppercase tracking-wider text-white m-0">
-              CATEGORIAS DE AMIGURUMIS
-            </h2>
           </div>
-          <p className="text-gray-600 text-xs font-bold mb-6 text-center uppercase tracking-tight">
-            Novas receitas adicionadas todos os dias
-          </p>
-          
-          {/* Grid of 3 Columns representing Category Buttons */}
-          <div className="grid grid-cols-3 gap-3">
-            {categories.map((cat) => (
-              <CategoryCard 
-                key={cat} 
-                nome={cat} 
-                onClick={() => {
-                  playHeartbeatSound();
-                  navigate(`/categoria/${encodeURIComponent(cat.toLowerCase())}`);
-                }} 
-              />
-            ))}
-          </div>
+
         </div>
       </section>
 
