@@ -16,15 +16,13 @@ export const FooterNavigation = ({
   favoritesCount,
   notificationsCount
 }: FooterNavigationProps) => {
-  const orangeTextureStyle = {
-    backgroundImage: "url('https://ik.imagekit.io/51b3srlsg/textura_laranja.jpeg?updatedAt=1779416079770')",
-    backgroundSize: "cover",
-    backgroundPosition: "center",
+  const tealBackgroundStyle = {
+    backgroundColor: "#0E5E6F",
   };
 
   return (
     <div 
-      style={orangeTextureStyle}
+      style={tealBackgroundStyle}
       className="fixed bottom-0 left-0 right-0 z-50 h-[40px] flex items-center justify-around px-6 shadow-[0_-4px_15px_rgba(0,0,0,0.15)] border-t border-white/10"
     >
       <button
