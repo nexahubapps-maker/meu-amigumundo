@@ -86,7 +86,7 @@ export const UnifiedCheckoutHub = ({
     {
       range: "Com 10 a 14 receitas no carrinho",
       price: "R$ 3,00 cada",
-      bonus: "+1 GRÁTIS 🎁",
+      bonus: "+1 GRÁTIS",
       isBonusActive: true,
       isActive: count >= 10 && count <= 14,
       isBasePrice: false
@@ -94,7 +94,7 @@ export const UnifiedCheckoutHub = ({
     {
       range: "Acima de 15 receitas no carrinho",
       price: "R$ 2,50 cada",
-      bonus: "+2 GRÁTIS 🎁",
+      bonus: "+2 GRÁTIS",
       isBonusActive: true,
       isActive: count >= 15 && count <= 19,
       isBasePrice: false
@@ -102,7 +102,7 @@ export const UnifiedCheckoutHub = ({
     {
       range: "Com 20 ou mais receitas no carrinho",
       price: "R$ 2,50 cada",
-      bonus: "+5 GRÁTIS 🎁",
+      bonus: "+5 GRÁTIS",
       isBonusActive: true,
       isActive: count >= 20,
       isBasePrice: false
@@ -110,13 +110,13 @@ export const UnifiedCheckoutHub = ({
   ];
 
   return (
-    <div className="max-w-md mx-auto my-4 bg-white rounded-xl p-4 shadow-md border-2 border-[#44FF00] text-left">
+    <div className="max-w-xl mx-auto my-2 bg-white rounded-xl p-3 shadow-md border-2 border-[#44FF00] text-left w-full">
       
       {/* 1. CAIXA DE CÓDIGO (TOPO DO CARD) */}
-      <div className="bg-gray-50 rounded-lg p-4 border border-gray-200 mb-4">
-        <div className="text-center mb-3">
+      <div className="bg-gray-50 rounded-lg p-3 border border-gray-200 mb-3">
+        <div className="text-center mb-2">
           <p className="text-sm font-extrabold text-gray-900 leading-tight">
-            Se apaixonou por alguma receita do grupo?
+            Se apaixonou por alguma<br />receita do grupo?
           </p>
           <p className="text-xs text-gray-500 font-medium mt-1">
             Digite abaixo o código da receita e adicione ao carrinho.
@@ -134,15 +134,6 @@ export const UnifiedCheckoutHub = ({
             placeholder="DIGITE O CÓDIGO"
             className="w-full h-11 px-3 border-2 border-gray-300 rounded-lg text-base font-bold text-center focus:outline-none focus:border-[#44FF00] transition-all placeholder:text-gray-300 uppercase text-gray-800"
           />
-        </div>
-
-        <div className="text-center mt-3 leading-tight">
-          <p className="text-xs font-bold text-[#22c55e] flex items-center justify-center gap-1">
-            🔒 Pagamento 100% Seguro
-          </p>
-          <p className="text-[10px] font-bold text-[#22c55e] mt-0.5">
-            Receba em segundos no seu WhatsApp
-          </p>
         </div>
 
         {/* Search Error Feedback */}
@@ -195,9 +186,9 @@ export const UnifiedCheckoutHub = ({
       </div>
 
       {/* 2. SEÇÃO DE DESCONTOS PROGRESSIVOS (TABELA MINIMALISTA) */}
-      <div className="mb-4">
-        <div className="mb-3 text-center">
-          <p className="text-xs sm:text-sm text-gray-700 font-semibold leading-snug">
+      <div className="mb-3">
+        <div className="mb-2 text-center">
+          <p className="text-xs sm:text-sm text-gray-700 font-black leading-snug">
             Quanto mais receitas você adicionar ao carrinho, mais baratas elas ficam
           </p>
         </div>
@@ -205,19 +196,6 @@ export const UnifiedCheckoutHub = ({
         {/* Tabela de Descontos */}
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
           <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-[#f8f8f8] border-b border-[#e5e5e5]">
-                <th className="py-2 px-3 text-[10px] font-bold text-[#555555] uppercase tracking-wider">
-                  Quantidade
-                </th>
-                <th className="py-2 px-3 text-[10px] font-bold text-[#555555] uppercase tracking-wider text-center">
-                  Preço
-                </th>
-                <th className="py-2 px-3 text-[10px] font-bold text-[#555555] uppercase tracking-wider text-center">
-                  Bônus
-                </th>
-              </tr>
-            </thead>
             <tbody>
               {tableRows.map((row, index) => (
                 <tr
@@ -230,13 +208,13 @@ export const UnifiedCheckoutHub = ({
                         : "bg-white"
                   }`}
                 >
-                  <td className={`py-2 px-3 text-xs font-medium text-[#333333] ${row.isBasePrice ? "font-bold text-gray-900" : ""}`}>
+                  <td className={`py-1.5 px-2.5 text-xs font-medium text-[#333333] ${row.isBasePrice ? "font-bold text-gray-900" : ""}`}>
                     {row.range}
                   </td>
-                  <td className={`py-2 px-3 text-xs font-bold text-[#333333] text-center ${row.isBasePrice ? "text-sm" : ""}`}>
+                  <td className={`py-1.5 px-2.5 text-xs font-bold text-[#333333] text-center ${row.isBasePrice ? "text-sm" : ""}`}>
                     {row.price}
                   </td>
-                  <td className="py-2 px-3 text-xs text-center">
+                  <td className="py-1.5 px-2.5 text-xs text-center">
                     {row.isBonusActive ? (
                       <span className="text-[#22c55e] font-bold">{row.bonus}</span>
                     ) : (
@@ -315,22 +293,18 @@ export const UnifiedCheckoutHub = ({
       {/* 4. BOTÃO DE CHAMADA PARA AÇÃO */}
       {calculated.items.length > 0 && (
         <div className="pt-2.5 border-t border-gray-100">
-          <div className="flex justify-between items-end mb-2.5">
-            <div>
-              <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest block">
-                VALOR TOTAL DO PEDIDO
+          <div className="flex flex-col items-end mb-2.5 w-full">
+            <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest block">
+              VALOR TOTAL DO PEDIDO
+            </span>
+            <span className="text-lg font-bold text-blue-600">
+              R$ {calculated.total.toFixed(2)}
+            </span>
+            {calculated.bonusCount > 0 && (
+              <span className="text-green-600 font-bold text-[9px] uppercase mt-1">
+                🎉 {calculated.bonusCount} PRESENTE(S) INCLUÍDO(S)!
               </span>
-              <span className="text-lg font-bold text-blue-600">
-                R$ {calculated.total.toFixed(2)}
-              </span>
-            </div>
-            <div className="text-right text-[9px] font-bold text-gray-500 uppercase">
-              {calculated.bonusCount > 0 && (
-                <span className="text-green-600 font-bold block">
-                  🎉 {calculated.bonusCount} PRESENTE(S) INCLUÍDO(S)!
-                </span>
-              )}
-            </div>
+            )}
           </div>
 
           <button

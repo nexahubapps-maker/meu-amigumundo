@@ -10,7 +10,6 @@ import { PackCard } from "@/components/PackCard";
 import { ErrorToast } from "@/components/ErrorToast";
 import { BannerCarousel } from "@/components/BannerCarousel";
 import { DailyGiftSection } from "@/components/DailyGiftSection";
-import { LaunchBanner } from "@/components/LaunchBanner";
 import { PwaPrompt } from "@/components/PwaPrompt";
 import { FavoritesModal } from "@/components/FavoritesModal";
 import { FooterNavigation } from "@/components/FooterNavigation";
@@ -268,9 +267,6 @@ export default function Index() {
             
             {/* PWA Install Prompt */}
             <PwaPrompt />
-
-            {/* Thursday Launch Banner */}
-            <LaunchBanner />
 
             {/* Unified Checkout Hub Component */}
             <UnifiedCheckoutHub

@@ -197,11 +197,11 @@ export const DailyGiftSection = () => {
   return (
     <section style={textureVerdeOlivaStyle} className="py-12 px-4 text-center">
       <div className="max-w-xl mx-auto">
-        <h2 className="text-white font-extrabold text-[1.5rem] leading-tight mb-2 uppercase tracking-tight">
+        <h2 className="font-extrabold text-[1.5rem] leading-tight mb-2 uppercase tracking-tight" style={{ color: '#9241B1' }}>
           SEU MIMO GRATUITO <br /> DO DIA CHEGOU
         </h2>
         <p className="text-white/90 text-[0.85rem] font-medium mb-8">
-          Nos visite todos os dias para retirar sua receita grátis e garantir seu presente diário!
+          Volte todos os dias para retirar sua receita grátis e garantir seu presente diário!
         </p>
 
         {/* Card Branco com Espaçamento Premium e Confortável */}
@@ -209,11 +209,17 @@ export const DailyGiftSection = () => {
           
           {!isOpened ? (
             /* ================= FASE 1: JOGO / LOOPING ================= */
-            <div className="flex flex-col items-center gap-6 w-full animate-in fade-in duration-300">
-              <div className="text-center space-y-1">
-                <span className="text-[10px] font-black text-purple-600 uppercase tracking-widest">Mimo Exclusivo</span>
-                <h3 className="text-gray-800 text-lg font-black uppercase tracking-tight">Você tem 1 presente pendente!</h3>
-                <p className="text-gray-400 text-xs font-bold">Toque na caixinha abaixo para descobrir o que ganhou</p>
+            <div className="flex flex-col items-center gap-4 w-full animate-in fade-in duration-300">
+              <div className="text-center space-y-2">
+                <span className="text-xl font-black uppercase tracking-widest block" style={{ color: '#9241B1' }}>
+                  Mimo Exclusivo
+                </span>
+                <h3 className="text-gray-800 text-lg font-black uppercase tracking-tight leading-tight">
+                  Você tem 1<br />PRESENTE LIBERADO!
+                </h3>
+                <p className="text-sm font-bold leading-tight" style={{ color: '#9241B1' }}>
+                  Toque na caixinha abaixo para<br />descobrir o que ganhou
+                </p>
               </div>
 
               {/* Container do Vídeo da Caixinha Roxa */}
