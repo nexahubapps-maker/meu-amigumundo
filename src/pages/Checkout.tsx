@@ -332,33 +332,35 @@ export default function Checkout() {
         </div>
 
         {/* Premium Security Badges Footer */}
-        <div className="bg-[#0f172a] border border-[#22c55e] rounded-2xl p-4 grid grid-cols-2 gap-4 mb-6 shadow-xl">
-          <div className="flex flex-col items-center gap-1.5 text-center p-2 bg-white/5 rounded-xl shadow-md border border-white/5">
-            <Lock size={24} className="text-[#22c55e]" />
-            <div className="flex flex-col">
-              <span className="text-[10px] font-black text-white uppercase tracking-wider">SSL SEGURO</span>
-              <span className="text-[8px] text-gray-400 font-medium mt-0.5">Seus dados protegidos</span>
+        <div className="w-full overflow-visible mb-6">
+          <div className="relative grid grid-cols-2 gap-3 w-full bg-[#0f172a] border border-[#22c55e] rounded-2xl p-4 shadow-xl">
+            <div className="flex flex-col items-center gap-1.5 text-center p-2.5 bg-[#1e293b] rounded-xl border border-white/10">
+              <Lock size={24} className="text-[#22c55e]" />
+              <div className="flex flex-col">
+                <span className="text-[10px] font-black text-white uppercase tracking-wider">SSL SEGURO</span>
+                <span className="text-[8px] text-gray-400 font-medium mt-0.5">Seus dados protegidos</span>
+              </div>
             </div>
-          </div>
-          <div className="flex flex-col items-center gap-1.5 text-center p-2 bg-white/5 rounded-xl shadow-md border border-white/5">
-            <ShieldCheck size={24} className="text-[#22c55e]" />
-            <div className="flex flex-col">
-              <span className="text-[10px] font-black text-white uppercase tracking-wider">MERCADO PAGO</span>
-              <span className="text-[8px] text-gray-400 font-medium mt-0.5">Pagamento certificado</span>
+            <div className="flex flex-col items-center gap-1.5 text-center p-2.5 bg-[#1e293b] rounded-xl border border-white/10">
+              <ShieldCheck size={24} className="text-[#22c55e]" />
+              <div className="flex flex-col">
+                <span className="text-[10px] font-black text-white uppercase tracking-wider">MERCADO PAGO</span>
+                <span className="text-[8px] text-gray-400 font-medium mt-0.5">Pagamento certificado</span>
+              </div>
             </div>
-          </div>
-          <div className="flex flex-col items-center gap-1.5 text-center p-2 bg-white/5 rounded-xl shadow-md border border-white/5">
-            <Zap size={24} className="text-[#22c55e]" />
-            <div className="flex flex-col">
-              <span className="text-[10px] font-black text-white uppercase tracking-wider">ENTREGA INSTANTÂNEA</span>
-              <span className="text-[8px] text-gray-400 font-medium mt-0.5">Receitas em segundos</span>
+            <div className="flex flex-col items-center gap-1.5 text-center p-2.5 bg-[#1e293b] rounded-xl border border-white/10">
+              <Zap size={24} className="text-[#22c55e]" />
+              <div className="flex flex-col">
+                <span className="text-[10px] font-black text-white uppercase tracking-wider">ENTREGA INSTANTÂNEA</span>
+                <span className="text-[8px] text-gray-400 font-medium mt-0.5">Receitas em segundos</span>
+              </div>
             </div>
-          </div>
-          <div className="flex flex-col items-center gap-1.5 text-center p-2 bg-white/5 rounded-xl shadow-md border border-white/5">
-            <ShieldCheck size={24} className="text-[#f59e0b]" />
-            <div className="flex flex-col">
-              <span className="text-[10px] font-black text-white uppercase tracking-wider">COMPRE PROTEGIDA</span>
-              <span className="text-[8px] text-gray-400 font-medium mt-0.5">Garantia de entrega</span>
+            <div className="flex flex-col items-center gap-1.5 text-center p-2.5 bg-[#1e293b] rounded-xl border border-white/10">
+              <ShieldCheck size={24} className="text-[#f59e0b]" />
+              <div className="flex flex-col">
+                <span className="text-[10px] font-black text-white uppercase tracking-wider">COMPRE PROTEGIDA</span>
+                <span className="text-[8px] text-gray-400 font-medium mt-0.5">Garantia de entrega</span>
+              </div>
             </div>
           </div>
         </div>
