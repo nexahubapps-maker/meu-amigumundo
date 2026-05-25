@@ -65,47 +65,42 @@ export const UnifiedCheckoutHub = ({
 
   const count = calculated.recipeCount;
 
-  // 5 Tiers of progressive discounts
-  const tiers = [
+  // Define the table rows with active state logic matching the pricing tiers
+  const tableRows = [
     {
-      id: 1,
-      emoji: "💡",
-      active: count >= 1 && count <= 4,
-      border: "border-l-4 border-l-green-500",
-      activeBg: "bg-green-50/80 border-green-300 ring-2 ring-green-400",
-      pillBg: "bg-green-100 text-green-800"
+      range: "Até 4 Receitas",
+      price: "R$ 5,00",
+      bonus: "—",
+      isBonusActive: false,
+      isActive: count <= 4
     },
     {
-      id: 2,
-      emoji: "🏷️",
-      active: count >= 5 && count <= 9,
-      border: "border-l-4 border-l-green-500",
-      activeBg: "bg-green-50/80 border-green-300 ring-2 ring-green-400",
-      pillBg: "bg-green-100 text-green-800"
+      range: "5 a 9 Receitas",
+      price: "R$ 4,00",
+      bonus: "—",
+      isBonusActive: false,
+      isActive: count >= 5 && count <= 9
     },
     {
-      id: 3,
-      emoji: "🏷️",
-      active: count >= 10 && count <= 14,
-      border: "border-l-4 border-l-green-500",
-      activeBg: "bg-green-50/80 border-green-300 ring-2 ring-green-400",
-      pillBg: "bg-green-100 text-green-800"
+      range: "10 a 14 Receitas",
+      price: "R$ 3,00",
+      bonus: "+1 Receita Grátis",
+      isBonusActive: true,
+      isActive: count >= 10 && count <= 14
     },
     {
-      id: 4,
-      emoji: "🏷️",
-      active: count >= 15 && count <= 19,
-      border: "border-l-4 border-l-green-500",
-      activeBg: "bg-green-50/80 border-green-300 ring-2 ring-green-400",
-      pillBg: "bg-green-100 text-green-800"
+      range: "15 a 19 Receitas",
+      price: "R$ 2,50",
+      bonus: "+2 Receitas Grátis",
+      isBonusActive: true,
+      isActive: count >= 15 && count <= 19
     },
     {
-      id: 5,
-      emoji: "🏷️",
-      active: count >= 20,
-      border: "border-l-4 border-l-yellow-500",
-      activeBg: "bg-yellow-50/80 border-yellow-300 ring-2 ring-yellow-400",
-      pillBg: "bg-yellow-100 text-yellow-800"
+      range: "Acima de 20 Receitas",
+      price: "R$ 2,50",
+      bonus: "+5 Receitas Grátis",
+      isBonusActive: true,
+      isActive: count >= 20
     }
   ];
 
@@ -194,42 +189,57 @@ export const UnifiedCheckoutHub = ({
         )}
       </div>
 
-      {/* 2. SEÇÃO DE DESCONTOS PROGRESSIVOS */}
-      <div className="mb-4 bg-gray-50 rounded-lg p-4 border border-gray-200">
-        <div className="mb-4 text-center">
+      {/* 2. SEÇÃO DE DESCONTOS PROGRESSIVOS (TABELA MINIMALISTA) */}
+      <div className="mb-4">
+        <div className="mb-3 text-center">
           <p className="text-xs sm:text-sm text-gray-700 font-semibold leading-snug">
             Quanto mais receitas você adicionar ao carrinho, mais baratas elas ficam
           </p>
         </div>
 
-        {/* Cards de Faixas de Desconto */}
-        <div className="space-y-2.5">
-          {tiers.map((tier) => (
-            <div
-              key={tier.id}
-              className={`flex items-center justify-between p-3 rounded-xl bg-white border border-gray-100 shadow-sm transition-all ${tier.border} ${
-                tier.active ? `${tier.activeBg} scale-[1.02]` : ''
-              }`}
-            >
-              <div className="flex items-center gap-2 min-w-0">
-                <span className="text-base shrink-0">{tier.emoji}</span>
-                <p className="text-xs text-gray-800 font-bold leading-tight">
-                  {tier.id === 1 && <>Todas as receitas do AmiguMundo por <span className="text-green-600 font-black">R$ 5,00</span> cada</>}
-                  {tier.id === 2 && <>De 5 a 9 receitas: <span className="text-green-600 font-black">R$ 4,00</span> cada</>}
-                  {tier.id === 3 && <>De 10 a 14 receitas: <span className="text-green-600 font-black">R$ 3,00</span> cada + <span className="text-green-600 font-black">RECEITA GRÁTIS</span> 🎁</>}
-                  {tier.id === 4 && <>Acima de 15 receitas: <span className="text-green-600 font-black">R$ 2,50</span> cada + <span className="text-green-600 font-black">2 RECEITAS GRÁTIS</span> 🎁</>}
-                  {tier.id === 5 && <>Atingiu 20 receitas: <span className="text-green-600 font-black">+ 5 RECEITAS GRÁTIS</span> 🎁</>}
-                </p>
-              </div>
-              <div className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider shrink-0 ${tier.pillBg}`}>
-                {tier.id === 1 && "R$ 5,00"}
-                {tier.id === 2 && "R$ 4,00"}
-                {tier.id === 3 && "R$ 3,00 + Grátis"}
-                {tier.id === 4 && "R$ 2,50 + 2 Grátis"}
-                {tier.id === 5 && "+ 5 Grátis"}
-              </div>
-            </div>
-          ))}
+        {/* Tabela de Descontos */}
+        <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="bg-[#f8f8f8] border-b border-[#e5e5e5]">
+                <th className="py-2.5 px-3 text-[10px] font-bold text-[#555555] uppercase tracking-wider">
+                  Quantidade no Carrinho
+                </th>
+                <th className="py-2.5 px-3 text-[10px] font-bold text-[#555555] uppercase tracking-wider text-center">
+                  Preço Unitário
+                </th>
+                <th className="py-2.5 px-3 text-[10px] font-bold text-[#555555] uppercase tracking-wider text-center">
+                  Mimo / Bônus
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {tableRows.map((row, index) => (
+                <tr
+                  key={index}
+                  className={`border-b border-[#f0f0f0] last:border-0 transition-colors ${
+                    row.isActive 
+                      ? "bg-[#f0fdf4] border-l-4 border-l-[#22c55e]" 
+                      : "bg-white"
+                  }`}
+                >
+                  <td className="py-3 px-3 text-xs font-medium text-[#333333]">
+                    {row.range}
+                  </td>
+                  <td className="py-3 px-3 text-xs font-bold text-[#333333] text-center">
+                    {row.price}
+                  </td>
+                  <td className="py-3 px-3 text-xs text-center">
+                    {row.isBonusActive ? (
+                      <span className="text-[#22c55e] font-bold">{row.bonus}</span>
+                    ) : (
+                      <span className="text-gray-300 font-medium">{row.bonus}</span>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
 
