@@ -195,16 +195,9 @@ export const DailyGiftSection = () => {
   };
 
   return (
-    <section style={textureVerdeOlivaStyle} className="py-12 px-4 text-center">
+    <section style={textureVerdeOlivaStyle} className="py-6 px-4 text-center">
       <div className="max-w-xl mx-auto">
-        {/* Card Branco Pequeno para o Título Principal */}
-        <div className="bg-white rounded-2xl p-4 shadow-md max-w-sm mx-auto mb-6 border border-white/20">
-          <h2 className="font-extrabold text-[1.4rem] leading-tight uppercase tracking-tight m-0" style={{ color: '#9241B1' }}>
-            SEU MIMO GRATUITO <br /> DO DIA CHEGOU
-          </h2>
-        </div>
-        
-        <p className="text-white/90 text-[0.85rem] font-medium mb-8">
+        <p className="text-white text-sm sm:text-base font-black uppercase tracking-wide mb-4">
           Volte todos os dias para retirar sua receita grátis e garantir seu presente diário!
         </p>
 
@@ -218,7 +211,7 @@ export const DailyGiftSection = () => {
                 <span className="text-2xl font-black uppercase tracking-widest block" style={{ color: '#9241B1' }}>
                   Mimo Exclusivo
                 </span>
-                <h3 className="text-lg font-black uppercase tracking-tight leading-tight" style={{ color: '#9241B1' }}>
+                <h3 className="text-black text-lg font-black uppercase tracking-tight leading-tight">
                   Você tem 1<br />PRESENTE LIBERADO!
                 </h3>
                 <p className="text-base font-bold leading-tight" style={{ color: '#9241B1' }}>
