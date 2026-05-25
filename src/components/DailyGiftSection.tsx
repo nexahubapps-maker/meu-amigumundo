@@ -257,18 +257,20 @@ export const DailyGiftSection = () => {
                   alt={dailyRecipe.nome} 
                   className="w-32 h-32 object-cover rounded-full shadow-lg border-2 border-white animate-pulse-subtle"
                 />
-                <div className="absolute -bottom-1.5 bg-[#44FF00] text-[#171717] text-[9px] font-black px-3.5 py-1 rounded-full uppercase tracking-wider shadow-md">
+                <div className="absolute -bottom-2 bg-[#44FF00] text-[#171717] text-xs font-black px-5 py-1.5 rounded-full uppercase tracking-wider shadow-md">
                   REVELADO! 🎉
                 </div>
               </div>
               
               {/* Identificação do Produto e Código */}
               <div className="space-y-1 text-center">
-                <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Parabéns! Você ganhou a receita do:</p>
+                <p className="text-xs font-bold uppercase tracking-wider leading-tight" style={{ color: '#9241B1' }}>
+                  Parabéns!<br />Você ganhou a receita do:
+                </p>
                 <h3 className="text-[#171717] text-xl sm:text-2xl font-black uppercase tracking-tight">
                   {dailyRecipe.nome}
                 </h3>
-                <p className="text-gray-400 text-[10px] font-bold uppercase tracking-widest">
+                <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: '#9241B1' }}>
                   Disponível apenas hoje (CÓD: {dailyRecipe.id})
                 </p>
               </div>
@@ -290,9 +292,13 @@ export const DailyGiftSection = () => {
                 <button
                   type="submit"
                   disabled={isSending}
-                  className="w-full bg-[#44FF00] hover:bg-[#3ee600] active:bg-[#38cc00] text-[#171717] py-4 rounded-2xl font-black text-sm sm:text-base flex items-center justify-center gap-2 shadow-lg hover:shadow-xl active:scale-[0.98] transition-all disabled:opacity-50 uppercase tracking-wider"
+                  className="w-full bg-[#44FF00] hover:bg-[#3ee600] active:bg-[#38cc00] text-[#171717] py-4 rounded-2xl font-black text-sm sm:text-base flex items-center justify-center gap-2 shadow-lg hover:shadow-xl active:scale-[0.98] transition-all disabled:opacity-50 uppercase tracking-wider leading-tight"
                 >
-                  {isSending ? "Enviando..." : "Desbloquear Meu Presente Diário no WhatsApp"}
+                  {isSending ? "Enviando..." : (
+                    <span>
+                      Quero receber meu<br />Presente no WhatsApp
+                    </span>
+                  )}
                 </button>
               </form>
 
