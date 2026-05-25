@@ -123,7 +123,7 @@ export const UnifiedCheckoutHub = ({
             Se apaixonou por alguma<br />receita do grupo?
           </p>
           <p className="text-xs text-gray-500 font-medium mt-1">
-            Digite abaixo o código da receita e adicione ao carrinho.
+            Digite abaixo o código da receita <br /> e adicione ao carrinho.
           </p>
         </div>
 
@@ -191,6 +191,13 @@ export const UnifiedCheckoutHub = ({
 
       {/* 2. SEÇÃO DE DESCONTOS PROGRESSIVOS (TABELA MINIMALISTA) */}
       <div className="mb-3">
+        {/* Mini Card Verde de Preços Acessíveis */}
+        <div className="mb-2 flex justify-center">
+          <div className="bg-[#44FF00] text-[#171717] px-3 py-1 rounded-lg text-[10px] sm:text-xs font-black uppercase tracking-wider shadow-sm text-center">
+            Preços acessíveis para todas as Crocheteiras
+          </div>
+        </div>
+
         <div className="mb-2 text-center">
           <p className="text-xs sm:text-sm text-gray-700 font-black leading-snug">
             Quanto mais receitas você adicionar ao carrinho, mais baratas elas ficam
