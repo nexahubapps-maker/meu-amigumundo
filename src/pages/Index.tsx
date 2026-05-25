@@ -303,12 +303,12 @@ export default function Index() {
         </div>
 
         {/* SEÇÃO 2: UPSELLS (TRANSFORME SUAS PEÇAS EM UM ATELIÊ LUCRATIVO) */}
-        <section className="pt-4 pb-6 bg-[#FDFBF7] overflow-hidden">
-          <div className="max-w-3xl mx-auto px-4">
+        <section className="pt-6 pb-8 bg-[#2A2A2A] overflow-hidden rounded-3xl mx-4 sm:mx-auto max-w-3xl shadow-xl border border-white/5">
+          <div className="px-4">
             {/* Card de Título de Largura Total e Altura Mínima with Orange Texture */}
             <div 
               style={textureLaranjaStyle}
-              className="w-full py-2 px-4 mb-3 shadow-sm rounded-xl text-center border border-gray-100"
+              className="w-full py-2 px-4 mb-3 shadow-sm rounded-xl text-center border border-white/10"
             >
               <h2 className="text-sm sm:text-base font-black uppercase tracking-wider text-white m-0">
                 TRANSFORME SUAS PEÇAS EM UM ATELIÊ LUCRATIVO
@@ -316,18 +316,18 @@ export default function Index() {
             </div>
             
             <div className="mb-4 text-center">
-              <p className="text-xs sm:text-sm text-gray-600 font-medium mt-1 max-w-2xl mx-auto leading-relaxed">
+              <p className="text-xs sm:text-sm text-gray-300 font-medium mt-1 max-w-2xl mx-auto leading-relaxed">
                 Descubra as soluções exclusivas para atrair clientes pagantes, valorizar o seu trabalho e profissionalizar suas vendas.
               </p>
               {/* Helper text for horizontal scroll */}
-              <p className="text-xs text-green-600 font-bold mt-2 animate-pulse">
+              <p className="text-xs text-[#44FF00] font-bold mt-2 animate-pulse">
                 Arraste para o lado para ver todas as soluções ➔
               </p>
             </div>
 
             {foundRecipes.length > 0 && (
               <div className="mb-4">
-                <h2 className="section-title text-[#171717] italic">Receitas Adicionadas</h2>
+                <h2 className="section-title text-white italic">Receitas Adicionadas</h2>
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                   {foundRecipes.map((recipe) => (
                     <RecipeCard
@@ -354,7 +354,7 @@ export default function Index() {
               {isLoading ? (
                 /* Skeleton Loaders */
                 Array.from({ length: 3 }).map((_, i) => (
-                  <div key={i} className="snap-center shrink-0 w-[85vw] max-w-[320px] bg-gray-100 rounded-2xl aspect-[16/10] animate-pulse" />
+                  <div key={i} className="snap-center shrink-0 w-[85vw] max-w-[320px] bg-gray-800 rounded-2xl aspect-[16/10] animate-pulse" />
                 ))
               ) : (
                 infoprodutosList.map((upsell) => (
@@ -389,7 +389,7 @@ export default function Index() {
               {infoprodutosList.map((_, i) => (
                 <div 
                   key={i} 
-                  className={`h-1.5 rounded-full transition-all ${i === activeUpsellIndex ? 'w-4 bg-[#44FF00]' : 'w-1.5 bg-gray-300'}`}
+                  className={`h-1.5 rounded-full transition-all ${i === activeUpsellIndex ? 'w-4 bg-[#44FF00]' : 'w-1.5 bg-gray-500'}`}
                 />
               ))}
             </div>

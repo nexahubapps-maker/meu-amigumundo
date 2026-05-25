@@ -177,75 +177,15 @@ export default function Checkout() {
         <div className="text-center mb-6">
           <h1 className="text-2xl font-black text-gray-900 mb-3 tracking-tight">QUASE LÁ!</h1>
           
-          {/* Elegant Instructions Card */}
-          <div className="bg-[#FDFBF7] border border-gray-200 rounded-xl p-4 text-center max-w-md mx-auto shadow-sm">
-            <p className="text-gray-700 font-semibold text-sm">
-              Para enviarmos suas receitas, preencha seu e-mail e WhatsApp.
-            </p>
-            <p className="text-xs text-gray-500 mt-1">
+          {/* Elegant Instructions Card with Teal Background and White Text */}
+          <div className="bg-[#0E5E6F] text-white border border-white/10 rounded-xl p-4 text-center max-w-md mx-auto shadow-sm">
+            <p className="font-semibold text-sm leading-relaxed">
+              Para enviarmos suas receitas, preencha <br />
+              seu e-mail e WhatsApp.<br />
               Você receberá as receitas em segundos após a confirmação do pagamento.
             </p>
           </div>
         </div>
-
-        {/* Resumo do Pedido */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
-          <div className="flex items-center mb-4 text-gray-800">
-            <h2 className="font-bold uppercase tracking-tight text-sm">Resumo do Pedido</h2>
-          </div>
-          <div className="space-y-3">
-            {cart.map((item, i) => (
-              <div key={i} className="flex justify-between items-center text-sm">
-                <span className="text-gray-600">{item.nome}</span>
-                <span className="font-bold text-gray-800">R$ {item.preco.toFixed(2)}</span>
-              </div>
-            ))}
-            <div className="pt-4 border-t border-dashed border-gray-200 flex justify-between items-center">
-              <span className="font-bold text-gray-800">Total</span>
-              <span className="text-xl font-black text-blue-600">R$ {total.toFixed(2)}</span>
-            </div>
-          </div>
-        </div>
-
-        {/* ORDER BUMPS SECTION (Posicionado exatamente entre o Resumo do Pedido e os Dados para Entrega) */}
-        {orderBumps.length > 0 && (
-          <div className="bg-white rounded-xl shadow-sm border-2 border-dashed border-orange-300 p-6 mb-6">
-            <h3 className="font-black text-sm text-orange-600 uppercase tracking-wider mb-4 flex items-center gap-2">
-              🔥 Ofertas Especiais para Você!
-            </h3>
-            <div className="space-y-4">
-              {orderBumps.map((bump) => {
-                const isChecked = selectedBumps.includes(bump.codigo);
-                return (
-                  <div 
-                    key={bump.codigo}
-                    onClick={() => handleBumpToggle(bump)}
-                    className={`flex items-center gap-4 p-3 rounded-xl border-2 cursor-pointer transition-all ${isChecked ? 'border-orange-500 bg-orange-50/50' : 'border-gray-100 hover:border-gray-200 bg-gray-50/30'}`}
-                  >
-                    <input 
-                      type="checkbox"
-                      checked={isChecked}
-                      onChange={() => {}} // Handled by parent div click
-                      className="w-5 h-5 rounded text-orange-500 focus:ring-orange-500 shrink-0"
-                    />
-                    <img 
-                      src={bump.imagem_url} 
-                      alt={bump.nome} 
-                      className="w-12 h-12 rounded-lg object-cover border border-gray-200 shrink-0"
-                    />
-                    <div className="flex-1 min-w-0">
-                      <h4 className="text-xs font-black text-gray-800 uppercase leading-tight truncate">{bump.nome}</h4>
-                      <p className="text-[10px] text-gray-500 font-medium leading-tight mt-0.5 line-clamp-2">{bump.descricao}</p>
-                    </div>
-                    <div className="text-right shrink-0">
-                      <span className="text-xs font-black text-orange-600">R$ {bump.preco.toFixed(2)}</span>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
 
         {/* Dados Pessoais (Dados para Entrega) */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
@@ -285,6 +225,65 @@ export default function Checkout() {
             </div>
           </div>
         </div>
+
+        {/* Resumo do Pedido (Posicionado abaixo de Dados para Entrega) */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+          <div className="flex items-center mb-4 text-gray-800">
+            <h2 className="font-bold uppercase tracking-tight text-sm">Resumo do Pedido</h2>
+          </div>
+          <div className="space-y-3">
+            {cart.map((item, i) => (
+              <div key={i} className="flex justify-between items-center text-sm">
+                <span className="text-gray-600">{item.nome}</span>
+                <span className="font-bold text-gray-800">R$ {item.preco.toFixed(2)}</span>
+              </div>
+            ))}
+            <div className="pt-4 border-t border-dashed border-gray-200 flex justify-between items-center">
+              <span className="font-bold text-gray-800">Total</span>
+              <span className="text-xl font-black text-blue-600">R$ {total.toFixed(2)}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* ORDER BUMPS SECTION */}
+        {orderBumps.length > 0 && (
+          <div className="bg-white rounded-xl shadow-sm border-2 border-dashed border-orange-300 p-6 mb-6">
+            <h3 className="font-black text-sm text-orange-600 uppercase tracking-wider mb-4 flex items-center gap-2">
+              🔥 Ofertas Especiais para Você!
+            </h3>
+            <div className="space-y-4">
+              {orderBumps.map((bump) => {
+                const isChecked = selectedBumps.includes(bump.codigo);
+                return (
+                  <div 
+                    key={bump.codigo}
+                    onClick={() => handleBumpToggle(bump)}
+                    className={`flex items-center gap-4 p-3 rounded-xl border-2 cursor-pointer transition-all ${isChecked ? 'border-orange-500 bg-orange-50/50' : 'border-gray-100 hover:border-gray-200 bg-gray-50/30'}`}
+                  >
+                    <input 
+                      type="checkbox"
+                      checked={isChecked}
+                      onChange={() => {}} // Handled by parent div click
+                      className="w-5 h-5 rounded text-orange-500 focus:ring-orange-500 shrink-0"
+                    />
+                    <img 
+                      src={bump.imagem_url} 
+                      alt={bump.nome} 
+                      className="w-12 h-12 rounded-lg object-cover border border-gray-200 shrink-0"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <h4 className="text-xs font-black text-gray-800 uppercase leading-tight truncate">{bump.nome}</h4>
+                      <p className="text-[10px] text-gray-500 font-medium leading-tight mt-0.5 line-clamp-2">{bump.descricao}</p>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <span className="text-xs font-black text-orange-600">R$ {bump.preco.toFixed(2)}</span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         {/* Pagamento */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
