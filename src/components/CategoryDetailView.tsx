@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Heart } from "lucide-react";
 import { type SheetRecipe } from "@/utils/sheets";
 
 interface CategoryDetailViewProps {
@@ -12,6 +12,8 @@ interface CategoryDetailViewProps {
   onBack: () => void;
   onRecipeAdd: (recipe: SheetRecipe) => void;
   onZoomImage: (url: string) => void;
+  favorites: string[];
+  onToggleFavorite: (id: string) => void;
 }
 
 export const CategoryDetailView = ({
@@ -22,6 +24,8 @@ export const CategoryDetailView = ({
   onBack,
   onRecipeAdd,
   onZoomImage,
+  favorites,
+  onToggleFavorite,
 }: CategoryDetailViewProps) => {
   const textureLaranjaStyle = {
     backgroundImage: "url('https://ik.imagekit.io/51b3srlsg/textura_laranja.jpeg')",
@@ -72,6 +76,7 @@ export const CategoryDetailView = ({
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
             {recipes.map((recipe) => {
               const added = isInCart(recipe.id);
+              const isFavorite = favorites.includes(recipe.id);
               return (
                 <div key={recipe.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden flex flex-col justify-between">
                   {/* Header with Orange Texture */}
@@ -79,16 +84,25 @@ export const CategoryDetailView = ({
                     CÓD: {recipe.id}
                   </div>
                   
-                  {/* Image with Lightbox Zoom on Click */}
-                  <div 
-                    className="relative aspect-square bg-gray-50 cursor-zoom-in overflow-hidden group"
-                    onClick={() => onZoomImage(recipe.url_foto)}
-                  >
+                  {/* Image with Lightbox Zoom on Click & Favorite Heart */}
+                  <div className="relative aspect-square bg-gray-50 overflow-hidden group">
                     <img 
                       src={recipe.url_foto} 
                       alt={recipe.nome} 
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 cursor-zoom-in"
+                      onClick={() => onZoomImage(recipe.url_foto)}
                     />
+                    
+                    {/* Favorite Heart Icon */}
+                    <button 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onToggleFavorite(recipe.id);
+                      }}
+                      className={`absolute top-2.5 right-2.5 bg-white/90 backdrop-blur-sm p-1.5 rounded-full shadow-md hover:scale-110 active:scale-90 transition-transform z-10 ${isFavorite ? 'text-[#44FF00]' : 'text-gray-400'}`}
+                    >
+                      <Heart size={14} fill={isFavorite ? "currentColor" : "none"} />
+                    </button>
                   </div>
 
                   {/* Info & Buy Button */}

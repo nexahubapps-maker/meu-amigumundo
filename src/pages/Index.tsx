@@ -562,6 +562,9 @@ export default function Index() {
         onToggleFavorite={toggleFavorite}
         onAddToCart={addToCart}
         isInCart={isInCart}
+        recipes={recipesList}
+        packs={packsList}
+        infoprodutos={infoprodutosList}
       />
 
       {/* NOTIFICATIONS MODAL */}
@@ -581,6 +584,8 @@ export default function Index() {
           onBack={() => navigate("/")}
           onRecipeAdd={handleRecipeAdd}
           onZoomImage={setZoomImage}
+          favorites={favorites}
+          onToggleFavorite={toggleFavorite}
         />
       )}
 

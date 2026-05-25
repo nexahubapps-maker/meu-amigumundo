@@ -2,9 +2,7 @@
 
 import React from 'react';
 import { X, Heart } from 'lucide-react';
-import { recipes } from '@/data/recipes';
-import { packs } from '@/data/packs';
-import { upsells } from '@/data/upsells';
+import { type SheetRecipe, type SheetInfoproduto, type SheetPack } from '@/utils/sheets';
 
 interface FavoritesModalProps {
   isOpen: boolean;
@@ -13,6 +11,9 @@ interface FavoritesModalProps {
   onToggleFavorite: (id: string) => void;
   onAddToCart: (item: any) => void;
   isInCart: (id: string) => boolean;
+  recipes: SheetRecipe[];
+  packs: SheetPack[];
+  infoprodutos: SheetInfoproduto[];
 }
 
 export const FavoritesModal = ({
@@ -21,14 +22,17 @@ export const FavoritesModal = ({
   favoriteIds,
   onToggleFavorite,
   onAddToCart,
-  isInCart
+  isInCart,
+  recipes,
+  packs,
+  infoprodutos
 }: FavoritesModalProps) => {
   if (!isOpen) return null;
 
-  // Gather all favorited items
-  const favoritedRecipes = recipes.filter(r => favoriteIds.includes(r.id)).map(r => ({ ...r, tipo: 'recipe' as const }));
-  const favoritedPacks = packs.filter(p => favoriteIds.includes(p.id)).map(p => ({ ...p, tipo: 'pack' as const, preco: p.precoAtual }));
-  const favoritedUpsells = upsells.filter(u => favoriteIds.includes(u.id)).map(u => ({ ...u, tipo: 'upsell' as const, preco: u.precoAtual }));
+  // Gather all favorited items from dynamic lists
+  const favoritedRecipes = recipes.filter(r => favoriteIds.includes(r.id)).map(r => ({ ...r, tipo: 'recipe' as const, preco: r.preco, imagem: r.url_foto }));
+  const favoritedPacks = packs.filter(p => favoriteIds.includes(p.id)).map(p => ({ ...p, tipo: 'pack' as const, preco: p.preco, imagem: p.url_foto }));
+  const favoritedUpsells = infoprodutos.filter(u => favoriteIds.includes(u.id)).map(u => ({ ...u, tipo: 'upsell' as const, preco: u.preco, imagem: u.url_foto }));
 
   const allFavorites = [...favoritedRecipes, ...favoritedPacks, ...favoritedUpsells];
   const totalValue = allFavorites.reduce((sum, item) => sum + item.preco, 0);
@@ -62,7 +66,7 @@ export const FavoritesModal = ({
                 return (
                   <div key={item.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-2xl border border-gray-100 relative group">
                     <img 
-                      src={`https://picsum.photos/seed/${item.id}/100/100`} 
+                      src={item.imagem || `https://picsum.photos/seed/${item.id}/100/100`} 
                       className="w-12 h-12 rounded-xl object-cover border border-gray-200" 
                       alt="" 
                     />
@@ -78,7 +82,7 @@ export const FavoritesModal = ({
                           nome: item.nome,
                           preco: item.preco,
                           tipo: item.tipo,
-                          imagem: `https://picsum.photos/seed/${item.id}/100/100`
+                          imagem: item.imagem
                         })}
                         disabled={added}
                         className={`px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-wider transition-all ${
@@ -122,7 +126,7 @@ export const FavoritesModal = ({
                       nome: item.nome,
                       preco: item.preco,
                       tipo: item.tipo,
-                      imagem: `https://picsum.photos/seed/${item.id}/100/100`
+                      imagem: item.imagem
                     });
                   }
                 });
