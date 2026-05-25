@@ -282,20 +282,20 @@ export default function Index() {
       </div>
 
       {/* SEÇÃO 3: CATEGORIAS UNIFICADA COM O BANNER DA LOJA */}
-      <section className="bg-[#F5F5F7] py-3">
-        <div className="max-w-6xl mx-auto px-2 sm:px-4">
+      <section className="bg-[#F5F5F7] pt-0 pb-6">
+        {/* 1. BANNER DA LOJA (Colado nas laterais absolutas da tela, sem espaçamento lateral) */}
+        <div className="w-full overflow-hidden">
+          <img 
+            src="https://ik.imagekit.io/51b3srlsg/Loja_AmiguMundo_amigurumis.jpeg" 
+            alt="Loja AmiguMundo" 
+            className="w-full h-auto object-cover"
+          />
+        </div>
+
+        <div className="max-w-6xl mx-auto px-2 sm:px-4 mt-3">
           
-          {/* CARD ÚNICO UNIFICADO (BANNER + TÍTULO + CATEGORIAS) */}
+          {/* CARD ÚNICO UNIFICADO (TÍTULO + CATEGORIAS) */}
           <div className="bg-white rounded-3xl p-2 sm:p-3 shadow-lg border border-gray-100/80 flex flex-col gap-2">
-            
-            {/* 1. BANNER DA LOJA (No topo absoluto do card, sem margem extra) */}
-            <div className="w-full rounded-2xl overflow-hidden">
-              <img 
-                src="https://ik.imagekit.io/51b3srlsg/Loja_AmiguMundo_amigurumis.jpeg" 
-                alt="Loja AmiguMundo" 
-                className="w-full h-auto object-cover"
-              />
-            </div>
 
             {/* 2. CARD DE TÍTULO (Textura Laranja) - Bem colado ao banner */}
             <div 

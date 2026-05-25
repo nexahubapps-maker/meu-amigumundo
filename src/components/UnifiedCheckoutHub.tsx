@@ -193,8 +193,8 @@ export const UnifiedCheckoutHub = ({
       <div className="mb-3">
         {/* Mini Card Verde de Preços Acessíveis */}
         <div className="mb-2 flex justify-center">
-          <div className="bg-[#44FF00] text-[#171717] px-3 py-1 rounded-lg text-[10px] sm:text-xs font-black uppercase tracking-wider shadow-sm text-center">
-            Preços acessíveis para todas as Crocheteiras
+          <div className="bg-[#44FF00] text-[#171717] px-4 py-1.5 rounded-lg text-[10px] sm:text-xs font-black uppercase tracking-wider shadow-sm text-center leading-tight">
+            Preços acessíveis para todas as <br /> Crocheteiras Apaixonadas
           </div>
         </div>
 
