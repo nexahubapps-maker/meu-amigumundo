@@ -8,7 +8,6 @@ import { UpsellModal } from "@/components/UpsellModal";
 import { CategoryCard } from "@/components/CategoryCard";
 import { PackCard } from "@/components/PackCard";
 import { ErrorToast } from "@/components/ErrorToast";
-import { BannerCarousel } from "@/components/BannerCarousel";
 import { DailyGiftSection } from "@/components/DailyGiftSection";
 import { PwaPrompt } from "@/components/PwaPrompt";
 import { FavoritesModal } from "@/components/FavoritesModal";
@@ -279,11 +278,6 @@ export default function Index() {
 
           </div>
         </section>
-
-        {/* Banner Rotativo posicionado acima do banner do WhatsApp */}
-        <div className="max-w-2xl mx-auto px-4">
-          <BannerCarousel />
-        </div>
 
         {/* CARD FLUTUANTE COM O BANNER E A DESCRIÇÃO DA LOJA */}
         <div className="max-w-6xl mx-auto px-4 mb-1">

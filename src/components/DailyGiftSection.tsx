@@ -197,9 +197,13 @@ export const DailyGiftSection = () => {
   return (
     <section style={textureVerdeOlivaStyle} className="py-12 px-4 text-center">
       <div className="max-w-xl mx-auto">
-        <h2 className="font-extrabold text-[1.5rem] leading-tight mb-2 uppercase tracking-tight" style={{ color: '#9241B1' }}>
-          SEU MIMO GRATUITO <br /> DO DIA CHEGOU
-        </h2>
+        {/* Card Branco Pequeno para o Título Principal */}
+        <div className="bg-white rounded-2xl p-4 shadow-md max-w-sm mx-auto mb-6 border border-white/20">
+          <h2 className="font-extrabold text-[1.4rem] leading-tight uppercase tracking-tight m-0" style={{ color: '#9241B1' }}>
+            SEU MIMO GRATUITO <br /> DO DIA CHEGOU
+          </h2>
+        </div>
+        
         <p className="text-white/90 text-[0.85rem] font-medium mb-8">
           Volte todos os dias para retirar sua receita grátis e garantir seu presente diário!
         </p>
@@ -211,13 +215,13 @@ export const DailyGiftSection = () => {
             /* ================= FASE 1: JOGO / LOOPING ================= */
             <div className="flex flex-col items-center gap-4 w-full animate-in fade-in duration-300">
               <div className="text-center space-y-2">
-                <span className="text-xl font-black uppercase tracking-widest block" style={{ color: '#9241B1' }}>
+                <span className="text-2xl font-black uppercase tracking-widest block" style={{ color: '#9241B1' }}>
                   Mimo Exclusivo
                 </span>
-                <h3 className="text-gray-800 text-lg font-black uppercase tracking-tight leading-tight">
+                <h3 className="text-lg font-black uppercase tracking-tight leading-tight" style={{ color: '#9241B1' }}>
                   Você tem 1<br />PRESENTE LIBERADO!
                 </h3>
-                <p className="text-sm font-bold leading-tight" style={{ color: '#9241B1' }}>
+                <p className="text-base font-bold leading-tight" style={{ color: '#9241B1' }}>
                   Toque na caixinha abaixo para<br />descobrir o que ganhou
                 </p>
               </div>

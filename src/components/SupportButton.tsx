@@ -26,7 +26,7 @@ export const SupportButton = ({ className }: SupportButtonProps) => {
         aria-label="Suporte WhatsApp"
       >
         <span className="text-[11px] font-black text-gray-800 leading-tight text-left max-w-[180px]">
-          Dúvidas ou problemas no pagamento? Nos chame no WhatsApp!
+          Precisa de ajuda? <br /> Fale com nosso suporte no WhatsApp
         </span>
         <div className="w-[40px] h-[40px] rounded-full overflow-hidden bg-transparent flex items-center justify-center relative shrink-0">
           <img 
