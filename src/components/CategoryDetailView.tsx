@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { ArrowLeft, X } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { type SheetRecipe } from "@/utils/sheets";
 
 interface CategoryDetailViewProps {
@@ -89,11 +89,6 @@ export const CategoryDetailView = ({
                       alt={recipe.nome} 
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
-                    {recipe.tamanho && (
-                      <span className="absolute bottom-1.5 right-1.5 bg-black/70 text-white text-[8px] font-bold px-1.5 py-0.5 rounded">
-                        {recipe.tamanho}
-                      </span>
-                    )}
                   </div>
 
                   {/* Info & Buy Button */}
@@ -102,9 +97,6 @@ export const CategoryDetailView = ({
                       <h4 className="text-xs font-black text-gray-800 uppercase tracking-tight line-clamp-2 leading-tight">
                         {recipe.nome}
                       </h4>
-                      <p className="text-[10px] text-gray-400 font-medium mt-1 line-clamp-2 leading-tight">
-                        {recipe.descricao}
-                      </p>
                     </div>
                     
                     <div className="mt-3 flex items-center justify-between gap-1.5">

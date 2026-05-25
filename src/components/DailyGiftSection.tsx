@@ -4,14 +4,14 @@ import React, { useState, useEffect, useRef } from 'react';
 import confetti from 'canvas-confetti';
 import { SuccessModal } from './SuccessModal';
 import { playHeartbeatSound } from '@/utils/audio';
-import { getReceitaGratuita, getRecipes, getDriveFileUrl, type SheetRecipe } from '@/utils/sheets';
+import { getReceitaGratuita, getDriveFileUrl, type SheetReceitaGratuita } from '@/utils/sheets';
 
 const EVOLUTION_API_URL = "https://api.evolution-api.com/v1/messages/sendMedia";
 const EVOLUTION_API_TOKEN = "YOUR_EVOLUTION_API_TOKEN";
 
 export const DailyGiftSection = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [dailyRecipe, setDailyRecipe] = useState<SheetRecipe | null>(null);
+  const [dailyRecipe, setDailyRecipe] = useState<SheetReceitaGratuita | null>(null);
   const [whatsapp, setWhatsapp] = useState<string>("");
   const [statusMessage, setStatusMessage] = useState<string>("");
   const [isSending, setIsSending] = useState(false);
@@ -25,10 +25,7 @@ export const DailyGiftSection = () => {
   useEffect(() => {
     const fetchDailyGift = async () => {
       try {
-        const [receitasGratuitas, recipes] = await Promise.all([
-          getReceitaGratuita(),
-          getRecipes()
-        ]);
+        const receitasGratuitas = await getReceitaGratuita();
 
         const today = new Date();
         const day = String(today.getDate()).padStart(2, '0');
@@ -37,11 +34,11 @@ export const DailyGiftSection = () => {
         const todayStr = `${day}/${month}/${year}`;
 
         // Tenta encontrar o presente de hoje
-        let targetGift = receitasGratuitas.find(g => g.data === todayStr);
+        let targetGift = receitasGratuitas.find(g => g.data === todayStr && g.ativo);
         
-        // Fallback: Se a data de hoje não estiver na planilha, usa o primeiro presente disponível
+        // Fallback: Se a data de hoje não estiver na planilha, usa o primeiro presente disponível ativo
         if (!targetGift && receitasGratuitas.length > 0) {
-          targetGift = receitasGratuitas[0];
+          targetGift = receitasGratuitas.find(g => g.ativo) || receitasGratuitas[0];
         }
 
         if (!targetGift) {
@@ -49,13 +46,7 @@ export const DailyGiftSection = () => {
           return;
         }
 
-        const matchedRecipe = recipes.find(r => r.id === targetGift.codigo);
-        if (!matchedRecipe) {
-          setIsVisible(false);
-          return;
-        }
-
-        setDailyRecipe(matchedRecipe);
+        setDailyRecipe(targetGift);
         setIsVisible(true);
       } catch (error) {
         console.warn("Erro ao carregar presente diário, ocultando seção silenciosamente:", error);
@@ -130,7 +121,7 @@ export const DailyGiftSection = () => {
 
     try {
       // Busca dinamicamente o link do PDF no Google Drive usando o código universal
-      const pdfUrl = await getDriveFileUrl(dailyRecipe.id);
+      const pdfUrl = await getDriveFileUrl(dailyRecipe.codigo);
 
       const payload = {
         number: rawDigits,
@@ -141,7 +132,7 @@ export const DailyGiftSection = () => {
       };
 
       // Trigger direct WhatsApp redirection as a fallback/primary action to guarantee delivery
-      const messageText = `Olá! Quero desbloquear meu presente diário: ${dailyRecipe.nome} (Código: ${dailyRecipe.id})`;
+      const messageText = `Olá! Quero desbloquear meu presente diário: ${dailyRecipe.nome} (Código: ${dailyRecipe.codigo})`;
       const waUrl = `https://wa.me/5544999999999?text=${encodeURIComponent(messageText)}`;
 
       // Send to Evolution API in background
@@ -271,7 +262,7 @@ export const DailyGiftSection = () => {
                   {dailyRecipe.nome}
                 </h3>
                 <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: '#9241B1' }}>
-                  Disponível apenas hoje (CÓD: {dailyRecipe.id})
+                  Disponível apenas hoje (CÓD: {dailyRecipe.codigo})
                 </p>
               </div>
 

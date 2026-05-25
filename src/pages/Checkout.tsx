@@ -5,15 +5,13 @@ import { useNavigate, useParams } from "react-router-dom";
 import { ChevronLeft, ShieldCheck, Zap, CreditCard, Mail, Phone, Lock } from "lucide-react";
 import { SupportButton } from "@/components/SupportButton";
 import { playHeartbeatSound } from "@/utils/audio";
-import { getRecipes, getInfoprodutos, getPacks, getOrderBumps, type SheetOrderBump } from "@/utils/sheets";
+import { getRecipes, getInfoprodutos, getPacks } from "@/utils/sheets";
 
 export default function Checkout() {
   const navigate = useNavigate();
   const { id: checkoutProductId } = useParams();
   const [cart, setCart] = useState<any[]>([]);
   const [paymentMethod, setPaymentMethod] = useState<"pix" | "card">("pix");
-  const [orderBumps, setOrderBumps] = useState<SheetOrderBump[]>([]);
-  const [selectedBumps, setSelectedBumps] = useState<string[]>([]);
   
   const [email, setEmail] = useState(() => localStorage.getItem("amigumundo-email") || "");
   const [whatsapp, setWhatsapp] = useState(() => localStorage.getItem("amigumundo-whatsapp") || "");
@@ -60,19 +58,6 @@ export default function Checkout() {
     loadCheckoutData();
   }, [checkoutProductId]);
 
-  // Load Order Bumps
-  useEffect(() => {
-    const loadOrderBumps = async () => {
-      try {
-        const bumps = await getOrderBumps();
-        setOrderBumps(bumps.filter(b => b.ativo).slice(0, 3));
-      } catch (error) {
-        console.warn("Error loading order bumps:", error);
-      }
-    };
-    loadOrderBumps();
-  }, []);
-
   useEffect(() => {
     localStorage.setItem("amigumundo-email", email);
   }, [email]);
@@ -96,22 +81,6 @@ export default function Checkout() {
     }
 
     setWhatsapp(formattedValue);
-  };
-
-  const handleBumpToggle = (bump: SheetOrderBump) => {
-    playHeartbeatSound();
-    if (selectedBumps.includes(bump.codigo)) {
-      setSelectedBumps(prev => prev.filter(id => id !== bump.codigo));
-      setCart(prev => prev.filter(item => item.id !== bump.codigo));
-    } else {
-      setSelectedBumps(prev => [...prev, bump.codigo]);
-      setCart(prev => [...prev, {
-        id: bump.codigo,
-        nome: bump.nome,
-        preco: bump.preco,
-        tipo: "upsell"
-      }]);
-    }
   };
 
   const rawWhatsappDigits = whatsapp.replace(/\D/g, "");
@@ -148,8 +117,7 @@ export default function Checkout() {
       whatsapp: rawWhatsappDigits,
       items: cart,
       total,
-      paymentMethod,
-      selectedBumps
+      paymentMethod
     };
 
     triggerAdminWebhook(saleData);
@@ -248,46 +216,6 @@ export default function Checkout() {
             </div>
           </div>
         </div>
-
-        {/* ORDER BUMPS SECTION */}
-        {orderBumps.length > 0 && (
-          <div className="bg-white rounded-xl shadow-sm border-2 border-dashed border-orange-300 p-4 mb-3">
-            <h3 className="font-black text-xs text-orange-600 uppercase tracking-wider mb-3 flex items-center gap-2">
-              🔥 Ofertas Especiais para Você!
-            </h3>
-            <div className="space-y-3">
-              {orderBumps.map((bump) => {
-                const isChecked = selectedBumps.includes(bump.codigo);
-                return (
-                  <div 
-                    key={bump.codigo}
-                    onClick={() => handleBumpToggle(bump)}
-                    className={`flex items-center gap-3 p-2.5 rounded-xl border-2 cursor-pointer transition-all ${isChecked ? 'border-orange-500 bg-orange-50/50' : 'border-gray-100 hover:border-gray-200 bg-gray-50/30'}`}
-                  >
-                    <input 
-                      type="checkbox"
-                      checked={isChecked}
-                      onChange={() => {}} // Handled by parent div click
-                      className="w-4.5 h-4.5 rounded text-orange-500 focus:ring-orange-500 shrink-0"
-                    />
-                    <img 
-                      src={bump.imagem_url} 
-                      alt={bump.nome} 
-                      className="w-10 h-10 rounded-lg object-cover border border-gray-200 shrink-0"
-                    />
-                    <div className="flex-1 min-w-0">
-                      <h4 className="text-[11px] font-black text-gray-800 uppercase leading-tight truncate">{bump.nome}</h4>
-                      <p className="text-[9px] text-gray-500 font-medium leading-tight mt-0.5 line-clamp-2">{bump.descricao}</p>
-                    </div>
-                    <div className="text-right shrink-0">
-                      <span className="text-[11px] font-black text-orange-600">R$ {bump.preco.toFixed(2)}</span>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
 
         {/* Pagamento */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-4">

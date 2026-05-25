@@ -3,51 +3,51 @@
 export interface SheetRecipe {
   id: string;
   nome: string;
-  descricao: string;
+  slug: string;
   preco: number;
-  categoria: string;
-  tamanho: string;
   url_foto: string;
+  categoria: string;
+  ativo: boolean;
   disparar_push: boolean;
 }
 
 export interface SheetInfoproduto {
   id: string;
   nome: string;
-  descricao: string;
+  slug: string;
   preco: number;
   url_foto: string;
+  descricao: string;
+  ativo: boolean;
   disparar_push: boolean;
 }
 
 export interface SheetPack {
   id: string;
   nome: string;
-  descricao: string;
+  slug: string;
   preco: number;
   url_foto: string;
+  descricao: string;
+  ativo: boolean;
   disparar_push: boolean;
 }
 
 export interface SheetNotification {
   id: string;
+  status: boolean;
+  data_hora: string;
   titulo: string;
   mensagem: string;
-  data_hora: string; // ISO string or YYYY-MM-DD HH:mm:ss
-  status: boolean;
+  url_foto: string;
+  link: string;
 }
 
 export interface SheetReceitaGratuita {
-  data: string; // DD/MM/AAAA
   codigo: string;
-}
-
-export interface SheetOrderBump {
-  codigo: string;
+  data: string;
   nome: string;
-  preco: number;
-  imagem_url: string;
-  descricao: string;
+  url_foto: string;
   ativo: boolean;
 }
 
@@ -117,29 +117,29 @@ export async function fetchSheetData<T>(sheetName: string, mapper: (row: string[
 
 // Fallback Mock Data matching the exact requested structure
 const fallbackRecipes: SheetRecipe[] = [
-  { id: "3872", nome: "Unicórnio Pastel", descricao: "Crina arco-íris e chifre dourado. Encanta crianças.", preco: 8.90, categoria: "Princesas", tamanho: "22cm", url_foto: "https://picsum.photos/seed/3872/400/400", disparar_push: false },
-  { id: "1204", nome: "Coelhinho Apaixonado", descricao: "Perfeito para o Dia dos Namorados e festas.", preco: 6.90, categoria: "Personagens TV", tamanho: "18cm", url_foto: "https://picsum.photos/seed/1204/400/400", disparar_push: false },
-  { id: "5531", nome: "Gatinho Soneca", descricao: "Gatinho com olhinhos fechados e bocejo fofo.", preco: 6.50, categoria: "Super-Herois", tamanho: "15cm", url_foto: "https://picsum.photos/seed/5531/400/400", disparar_push: false },
-  { id: "7743", nome: "Dinossauro Baby", descricao: "Dino verde com barriguinha redonda e expressão simpática.", preco: 7.50, categoria: "Animais da Fazenda", tamanho: "20cm", url_foto: "https://picsum.photos/seed/7743/400/400", disparar_push: false },
-  { id: "2290", nome: "Polvinho Reversível", descricao: "Polvo com duas faces: feliz e bravo. Sucesso garantido.", preco: 7.90, categoria: "Animais Selvagens", tamanho: "12cm", url_foto: "https://picsum.photos/seed/2290/400/400", disparar_push: false },
-  { id: "4418", nome: "Mini Ursinho Pocket", descricao: "Ursinho pequenininho, cabe no bolso. Ultra fofo.", preco: 5.90, categoria: "Fundo do Mar", tamanho: "10cm", url_foto: "https://picsum.photos/seed/4418/400/400", disparar_push: false }
+  { id: "387", nome: "Unicórnio Pastel", slug: "unicornio-pastel", preco: 8.90, categoria: "Princesas", url_foto: "https://picsum.photos/seed/387/400/400", ativo: true, disparar_push: false },
+  { id: "120", nome: "Coelhinho Apaixonado", slug: "coelhinho-apaixonado", preco: 6.90, categoria: "Personagens TV", url_foto: "https://picsum.photos/seed/120/400/400", ativo: true, disparar_push: false },
+  { id: "553", nome: "Gatinho Soneca", slug: "gatinho-soneca", preco: 6.50, categoria: "Super-Herois", url_foto: "https://picsum.photos/seed/553/400/400", ativo: true, disparar_push: false },
+  { id: "774", nome: "Dinossauro Baby", slug: "dinossauro-baby", preco: 7.50, categoria: "Animais da Fazenda", url_foto: "https://picsum.photos/seed/774/400/400", ativo: true, disparar_push: false },
+  { id: "229", nome: "Polvinho Reversível", slug: "polvinho-reversivel", preco: 7.90, categoria: "Animais Selvagens", url_foto: "https://picsum.photos/seed/229/400/400", ativo: true, disparar_push: false },
+  { id: "441", nome: "Mini Ursinho Pocket", slug: "mini-ursinho-pocket", preco: 5.90, categoria: "Fundo do Mar", url_foto: "https://picsum.photos/seed/441/400/400", ativo: true, disparar_push: false }
 ];
 
 const fallbackInfoprodutos: SheetInfoproduto[] = [
-  { id: "info1", nome: "Instagram Profissional para Artesãs", descricao: "O segredo prático para atrair seguidores qualificados e transformá-los em clientes que pagam o valor justo.", preco: 47.00, url_foto: "https://picsum.photos/seed/info1/600/375", disparar_push: false },
-  { id: "info2", nome: "Guia de Precificação sem Erros", descricao: "Descubra de forma simples e exata o valor real da sua hora de trabalho. Pare de pagar para trabalhar.", preco: 27.00, url_foto: "https://picsum.photos/seed/info2/600/375", disparar_push: false },
-  { id: "info3", nome: "Pacote de Moldes de Amigurumi Premium", descricao: "Tenha acesso a uma selection exclusiva de moldes altamente desejados no mercado.", preco: 19.00, url_foto: "https://picsum.photos/seed/info3/600/375", disparar_push: false }
+  { id: "info1", nome: "Instagram Profissional para Artesãs", slug: "instagram-artesas", preco: 47.00, url_foto: "https://picsum.photos/seed/info1/600/375", descricao: "O segredo prático para atrair seguidores qualificados e transformá-los em clientes que pagam o valor justo.", ativo: true, disparar_push: false },
+  { id: "info2", nome: "Guia de Precificação sem Erros", slug: "guia-precificacao", preco: 27.00, url_foto: "https://picsum.photos/seed/info2/600/375", descricao: "Descubra de forma simples e exata o valor real da sua hora de trabalho. Pare de pagar para trabalhar.", ativo: true, disparar_push: false },
+  { id: "info3", nome: "Pacote de Moldes de Amigurumi Premium", slug: "moldes-premium", preco: 19.00, url_foto: "https://picsum.photos/seed/info3/600/375", descricao: "Tenha acesso a uma selection exclusiva de moldes altamente desejados no mercado.", ativo: true, disparar_push: false }
 ];
 
 const fallbackPacks: SheetPack[] = [
-  { id: "pack1", nome: "Pack Safari Completo", descricao: "20 receitas de animais selvagens", preco: 19.90, url_foto: "https://picsum.photos/seed/pack1/400/400", disparar_push: false },
-  { id: "pack2", nome: "Pack Princesas Encantadas", descricao: "20 receitas de princesas", preco: 19.90, url_foto: "https://picsum.photos/seed/pack2/400/400", disparar_push: false },
-  { id: "pack3", nome: "Pack Super-Herois", descricao: "20 receitas de heroi e viloes", preco: 19.90, url_foto: "https://picsum.photos/seed/pack3/400/400", disparar_push: false }
+  { id: "pack1", nome: "Pack Safari Completo", slug: "pack-safari", preco: 19.90, url_foto: "https://picsum.photos/seed/pack1/400/400", descricao: "20 receitas de animais selvagens", ativo: true, disparar_push: false },
+  { id: "pack2", nome: "Pack Princesas Encantadas", slug: "pack-princesas", preco: 19.90, url_foto: "https://picsum.photos/seed/pack2/400/400", descricao: "20 receitas de princesas", ativo: true, disparar_push: false },
+  { id: "pack3", nome: "Pack Super-Herois", slug: "pack-super-herois", preco: 19.90, url_foto: "https://picsum.photos/seed/pack3/400/400", descricao: "20 receitas de heroi e viloes", ativo: true, disparar_push: false }
 ];
 
 const fallbackNotifications: SheetNotification[] = [
-  { id: "notif1", titulo: "Nova Receita de Páscoa Liberada!", mensagem: "Corra para a categoria Páscoa e confira o novo coelhinho fofo.", data_hora: new Date().toISOString(), status: true },
-  { id: "notif2", titulo: "Super Desconto no Pack Safari", mensagem: "Apenas hoje, garanta 20 receitas por apenas R$ 19,90.", data_hora: new Date(Date.now() - 3600000).toISOString(), status: true }
+  { id: "notif1", status: true, data_hora: new Date().toISOString(), titulo: "Nova Receita de Páscoa Liberada!", mensagem: "Corra para a categoria Páscoa e confira o novo coelhinho fofo.", url_foto: "", link: "" },
+  { id: "notif2", status: true, data_hora: new Date(Date.now() - 3600000).toISOString(), titulo: "Super Desconto no Pack Safari", mensagem: "Apenas hoje, garanta 20 receitas por apenas R$ 19,90.", url_foto: "", link: "" }
 ];
 
 // Generate dynamic today date for fallback gift
@@ -152,7 +152,7 @@ const getTodayDateString = () => {
 };
 
 const fallbackReceitaGratuita: SheetReceitaGratuita[] = [
-  { data: getTodayDateString(), codigo: "3872" }
+  { codigo: "387", data: getTodayDateString(), nome: "Unicórnio Pastel", url_foto: "https://picsum.photos/seed/387/400/400", ativo: true }
 ];
 
 // Fetchers
@@ -162,11 +162,11 @@ export async function getRecipes(): Promise<SheetRecipe[]> {
     (row) => ({
       id: row[0] || "",
       nome: row[1] || "",
-      descricao: row[2] || "",
+      slug: row[2] || "",
       preco: parseFloat(row[3]) || 0,
-      categoria: row[4] || "",
-      tamanho: row[5] || "",
-      url_foto: row[6] || `https://picsum.photos/seed/${row[0]}/400/400`,
+      url_foto: row[4] || `https://picsum.photos/seed/${row[0]}/400/400`,
+      categoria: row[5] || "",
+      ativo: row[6]?.toLowerCase() === "true",
       disparar_push: row[7]?.toLowerCase() === "true"
     }),
     fallbackRecipes
@@ -179,10 +179,12 @@ export async function getInfoprodutos(): Promise<SheetInfoproduto[]> {
     (row) => ({
       id: row[0] || "",
       nome: row[1] || "",
-      descricao: row[2] || "",
+      slug: row[2] || "",
       preco: parseFloat(row[3]) || 0,
       url_foto: row[4] || `https://picsum.photos/seed/${row[0]}/600/375`,
-      disparar_push: row[5]?.toLowerCase() === "true"
+      descricao: row[5] || "",
+      ativo: row[6]?.toLowerCase() === "true",
+      disparar_push: row[7]?.toLowerCase() === "true"
     }),
     fallbackInfoprodutos
   );
@@ -194,10 +196,12 @@ export async function getPacks(): Promise<SheetPack[]> {
     (row) => ({
       id: row[0] || "",
       nome: row[1] || "",
-      descricao: row[2] || "",
+      slug: row[2] || "",
       preco: parseFloat(row[3]) || 0,
       url_foto: row[4] || `https://picsum.photos/seed/${row[0]}/400/400`,
-      disparar_push: row[5]?.toLowerCase() === "true"
+      descricao: row[5] || "",
+      ativo: row[6]?.toLowerCase() === "true",
+      disparar_push: row[7]?.toLowerCase() === "true"
     }),
     fallbackPacks
   );
@@ -208,10 +212,12 @@ export async function getNotifications(): Promise<SheetNotification[]> {
     "notificacoes_internas",
     (row) => ({
       id: row[0] || "",
-      titulo: row[1] || "",
-      mensagem: row[2] || "",
-      data_hora: row[3] || new Date().toISOString(),
-      status: row[4]?.toLowerCase() === "true"
+      status: row[1]?.toLowerCase() === "true",
+      data_hora: row[2] || new Date().toISOString(),
+      titulo: row[3] || "",
+      mensagem: row[4] || "",
+      url_foto: row[5] || "",
+      link: row[6] || ""
     }),
     fallbackNotifications
   );
@@ -219,27 +225,15 @@ export async function getNotifications(): Promise<SheetNotification[]> {
 
 export async function getReceitaGratuita(): Promise<SheetReceitaGratuita[]> {
   return fetchSheetData<SheetReceitaGratuita>(
-    "receita_gratuita",
-    (row) => ({
-      data: row[0] || "",
-      codigo: row[1] || ""
-    }),
-    fallbackReceitaGratuita
-  );
-}
-
-export async function getOrderBumps(): Promise<SheetOrderBump[]> {
-  return fetchSheetData<SheetOrderBump>(
-    "order_bumps",
+    "receitas_gratuitas",
     (row) => ({
       codigo: row[0] || "",
-      nome: row[1] || "",
-      preco: parseFloat((row[2] || "0").replace(",", ".")) || 0,
-      imagem_url: row[3] || `https://picsum.photos/seed/${row[0]}/100/100`,
-      descricao: row[4] || "",
-      ativo: row[5]?.toLowerCase() === "true"
+      data: row[1] || "",
+      nome: row[2] || "",
+      url_foto: row[3] || `https://picsum.photos/seed/${row[0]}/400/400`,
+      ativo: row[4]?.toLowerCase() === "true"
     }),
-    []
+    fallbackReceitaGratuita
   );
 }
 

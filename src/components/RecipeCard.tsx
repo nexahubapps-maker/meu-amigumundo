@@ -6,7 +6,6 @@ interface RecipeCardProps {
   recipe: {
     id: string;
     nome: string;
-    descricao: string;
     preco: number;
     categoria: string;
   };
@@ -19,8 +18,8 @@ interface RecipeCardProps {
 
 const RecipeCard = ({ recipe, isFavorite, onToggleFavorite, onAdd, onReject, isInCart }: RecipeCardProps) => {
   // Determine a badge based on recipe ID
-  const badge = recipe.id === "3872" ? { text: "MAIS VENDIDO", bg: "bg-[#44FF00] text-[#171717]" } : 
-                recipe.id === "1204" ? { text: "NOVO", bg: "bg-blue-500 text-white" } : null;
+  const badge = recipe.id === "387" ? { text: "MAIS VENDIDO", bg: "bg-[#44FF00] text-[#171717]" } : 
+                recipe.id === "120" ? { text: "NOVO", bg: "bg-blue-500 text-white" } : null;
 
   return (
     <div className={`overflow-hidden relative flex flex-col bg-white rounded-2xl border border-gray-100 shadow-sm transition-all duration-300 ${isInCart ? 'animate-pulse-subtle border-[#44FF00] shadow-md' : ''}`}>

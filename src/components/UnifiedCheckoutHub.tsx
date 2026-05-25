@@ -28,12 +28,12 @@ export const UnifiedCheckoutHub = ({
   // Calculate cart values using the centralized pricing utility
   const calculated = calculateCart(cart, allRecipes);
 
-  // Handle code input change with automatic search on 4 digits
+  // Handle code input change with automatic search on 3 digits
   const handleCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/\D/g, ""); // Only digits
     setCode(value);
 
-    if (value.length === 4) {
+    if (value.length === 3) {
       const recipe = allRecipes.find((r) => r.id === value);
       if (recipe) {
         setFoundRecipe(recipe);
@@ -134,7 +134,7 @@ export const UnifiedCheckoutHub = ({
             inputMode="numeric"
             value={code}
             onChange={handleCodeChange}
-            maxLength={4}
+            maxLength={3}
             placeholder="DIGITE O CÓDIGO"
             className="w-full h-11 px-3 border-2 border-gray-300 rounded-lg text-base font-bold text-center focus:outline-none focus:border-[#44FF00] transition-all placeholder:text-gray-300 uppercase text-gray-800"
           />
