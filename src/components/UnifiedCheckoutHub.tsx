@@ -68,39 +68,44 @@ export const UnifiedCheckoutHub = ({
   // Define the table rows with active state logic matching the pricing tiers
   const tableRows = [
     {
-      range: "Até 4 Receitas",
-      price: "R$ 5,00",
+      range: "Todas as receitas AmiguMundo",
+      price: "R$ 5,00 cada",
       bonus: "—",
       isBonusActive: false,
-      isActive: count <= 4
+      isActive: count <= 4,
+      isBasePrice: true
     },
     {
-      range: "5 a 9 Receitas",
-      price: "R$ 4,00",
+      range: "Com 5 a 9 receitas no carrinho",
+      price: "R$ 4,00 cada",
       bonus: "—",
       isBonusActive: false,
-      isActive: count >= 5 && count <= 9
+      isActive: count >= 5 && count <= 9,
+      isBasePrice: false
     },
     {
-      range: "10 a 14 Receitas",
-      price: "R$ 3,00",
-      bonus: "+1 Receita Grátis",
+      range: "Com 10 a 14 receitas no carrinho",
+      price: "R$ 3,00 cada",
+      bonus: "+1 GRÁTIS 🎁",
       isBonusActive: true,
-      isActive: count >= 10 && count <= 14
+      isActive: count >= 10 && count <= 14,
+      isBasePrice: false
     },
     {
-      range: "15 a 19 Receitas",
-      price: "R$ 2,50",
-      bonus: "+2 Receitas Grátis",
+      range: "Acima de 15 receitas no carrinho",
+      price: "R$ 2,50 cada",
+      bonus: "+2 GRÁTIS 🎁",
       isBonusActive: true,
-      isActive: count >= 15 && count <= 19
+      isActive: count >= 15 && count <= 19,
+      isBasePrice: false
     },
     {
-      range: "Acima de 20 Receitas",
-      price: "R$ 2,50",
-      bonus: "+5 Receitas Grátis",
+      range: "Com 20 ou mais receitas no carrinho",
+      price: "R$ 2,50 cada",
+      bonus: "+5 GRÁTIS 🎁",
       isBonusActive: true,
-      isActive: count >= 20
+      isActive: count >= 20,
+      isBasePrice: false
     }
   ];
 
@@ -202,14 +207,14 @@ export const UnifiedCheckoutHub = ({
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-[#f8f8f8] border-b border-[#e5e5e5]">
-                <th className="py-2.5 px-3 text-[10px] font-bold text-[#555555] uppercase tracking-wider">
-                  Quantidade no Carrinho
+                <th className="py-2 px-3 text-[10px] font-bold text-[#555555] uppercase tracking-wider">
+                  Quantidade
                 </th>
-                <th className="py-2.5 px-3 text-[10px] font-bold text-[#555555] uppercase tracking-wider text-center">
-                  Preço Unitário
+                <th className="py-2 px-3 text-[10px] font-bold text-[#555555] uppercase tracking-wider text-center">
+                  Preço
                 </th>
-                <th className="py-2.5 px-3 text-[10px] font-bold text-[#555555] uppercase tracking-wider text-center">
-                  Mimo / Bônus
+                <th className="py-2 px-3 text-[10px] font-bold text-[#555555] uppercase tracking-wider text-center">
+                  Bônus
                 </th>
               </tr>
             </thead>
@@ -220,16 +225,18 @@ export const UnifiedCheckoutHub = ({
                   className={`border-b border-[#f0f0f0] last:border-0 transition-colors ${
                     row.isActive 
                       ? "bg-[#f0fdf4] border-l-4 border-l-[#22c55e]" 
-                      : "bg-white"
+                      : row.isBasePrice 
+                        ? "bg-gray-50/50" 
+                        : "bg-white"
                   }`}
                 >
-                  <td className="py-3 px-3 text-xs font-medium text-[#333333]">
+                  <td className={`py-2 px-3 text-xs font-medium text-[#333333] ${row.isBasePrice ? "font-bold text-gray-900" : ""}`}>
                     {row.range}
                   </td>
-                  <td className="py-3 px-3 text-xs font-bold text-[#333333] text-center">
+                  <td className={`py-2 px-3 text-xs font-bold text-[#333333] text-center ${row.isBasePrice ? "text-sm" : ""}`}>
                     {row.price}
                   </td>
-                  <td className="py-3 px-3 text-xs text-center">
+                  <td className="py-2 px-3 text-xs text-center">
                     {row.isBonusActive ? (
                       <span className="text-[#22c55e] font-bold">{row.bonus}</span>
                     ) : (
