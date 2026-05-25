@@ -8,6 +8,7 @@ import { UpsellModal } from "@/components/UpsellModal";
 import { CategoryCard } from "@/components/CategoryCard";
 import { PackCard } from "@/components/PackCard";
 import { ErrorToast } from "@/components/ErrorToast";
+import { BannerCarousel } from "@/components/BannerCarousel";
 import { DailyGiftSection } from "@/components/DailyGiftSection";
 import { PwaPrompt } from "@/components/PwaPrompt";
 import { FavoritesModal } from "@/components/FavoritesModal";
@@ -279,6 +280,11 @@ export default function Index() {
           </div>
         </section>
 
+        {/* Banner Rotativo posicionado acima do banner do WhatsApp */}
+        <div className="max-w-2xl mx-auto px-4">
+          <BannerCarousel />
+        </div>
+
         {/* CARD FLUTUANTE COM O BANNER E A DESCRIÇÃO DA LOJA */}
         <div className="max-w-6xl mx-auto px-4 mb-1">
           <div className="bg-white rounded-2xl p-3 shadow-lg border border-gray-100/50">
@@ -292,101 +298,133 @@ export default function Index() {
           </div>
         </div>
 
-        {/* SEÇÃO 2: UPSELLS (TRANSFORME SUAS PEÇAS EM UM ATELIÊ LUCRATIVO) */}
-        <section className="pt-6 pb-8 bg-[#2A2A2A] overflow-hidden rounded-3xl mx-4 sm:mx-auto max-w-3xl shadow-xl border border-white/5">
-          <div className="px-4">
-            {/* Card de Título de Largura Total e Altura Mínima with Orange Texture */}
-            <div 
-              style={textureLaranjaStyle}
-              className="w-full py-2 px-4 mb-3 shadow-sm rounded-xl text-center border border-white/10"
-            >
-              <h2 className="text-sm sm:text-base font-black uppercase tracking-wider text-white m-0">
-                TRANSFORME SUAS PEÇAS EM UM ATELIÊ LUCRATIVO
-              </h2>
-            </div>
-            
-            <div className="mb-4 text-center">
-              <p className="text-xs sm:text-sm text-gray-300 font-medium mt-1 max-w-2xl mx-auto leading-relaxed">
-                Descubra as soluções exclusivas para atrair clientes pagantes, valorizar o seu trabalho e profissionalizar suas vendas.
-              </p>
-              {/* Helper text for horizontal scroll */}
-              <p className="text-xs text-[#44FF00] font-bold mt-2 animate-pulse">
-                Arraste para o lado para ver todas as soluções ➔
-              </p>
-            </div>
-
-            {foundRecipes.length > 0 && (
-              <div className="mb-4">
-                <h2 className="section-title text-white italic">Receitas Adicionadas</h2>
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-                  {foundRecipes.map((recipe) => (
-                    <RecipeCard
-                      key={recipe.id}
-                      recipe={recipe}
-                      isFavorite={favorites.includes(recipe.id)}
-                      onToggleFavorite={() => toggleFavorite(recipe.id)}
-                      onAdd={() => handleRecipeAdd(recipe)}
-                      onReject={() => {}}
-                      isInCart={isInCart(recipe.id)}
-                    />
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Horizontal Carousel with Peek Effect */}
-            <div 
-              ref={carouselRef}
-              onScroll={handleCarouselScroll}
-              className="flex overflow-x-auto snap-x snap-mandatory scrollbar-none gap-4 pb-4 px-4 -mx-4"
-              style={{ scrollbarWidth: 'none' }}
-            >
-              {isLoading ? (
-                /* Skeleton Loaders */
-                Array.from({ length: 3 }).map((_, i) => (
-                  <div key={i} className="snap-center shrink-0 w-[85vw] max-w-[320px] bg-gray-800 rounded-2xl aspect-[16/10] animate-pulse" />
-                ))
-              ) : (
-                infoprodutosList.map((upsell) => (
-                  <div key={upsell.id} className="snap-center shrink-0 w-[85vw] max-w-[320px]">
-                    <UpsellCard 
-                      upsell={{
-                        id: upsell.id,
-                        nome: upsell.nome,
-                        descricao: upsell.descricao,
-                        descricaoLonga: upsell.descricao,
-                        precoOriginal: upsell.preco * 1.5,
-                        precoAtual: upsell.preco,
-                        emoji: "💡",
-                        cor: "#FF3D9A",
-                        beneficios: ["Acesso imediato", "Suporte exclusivo"],
-                        copiaVendas: [upsell.descricao]
-                      }} 
-                      isFavorite={favorites.includes(upsell.id)}
-                      onToggleFavorite={() => toggleFavorite(upsell.id)}
-                      onOpen={() => {
-                        playHeartbeatSound();
-                        setActiveUpsell(upsell.id);
-                      }} 
-                    />
-                  </div>
-                ))
-              )}
-            </div>
-
-            {/* Pagination Dots */}
-            <div className="flex justify-center gap-1.5 mt-2">
-              {infoprodutosList.map((_, i) => (
-                <div 
-                  key={i} 
-                  className={`h-1.5 rounded-full transition-all ${i === activeUpsellIndex ? 'w-4 bg-[#44FF00]' : 'w-1.5 bg-gray-500'}`}
-                />
-              ))}
-            </div>
-          </div>
-        </section>
-
       </div>
+
+      {/* SEÇÃO 3: CATEGORIAS (With Orange Texture) - SUBIU */}
+      <section className="bg-[#F5F5F7] py-6">
+        <div className="max-w-6xl mx-auto px-4">
+          {/* Card de Título de Largura Total e Altura Mínima with Orange Texture */}
+          <div 
+            style={textureLaranjaStyle}
+            className="w-full py-2 px-4 mb-4 shadow-sm rounded-xl text-center border border-gray-100"
+          >
+            <h2 className="text-sm sm:text-base font-black uppercase tracking-wider text-white m-0">
+              CATEGORIAS DE AMIGURUMIS
+            </h2>
+          </div>
+          <p className="text-gray-600 text-xs font-bold mb-6 text-center uppercase tracking-tight">
+            Novas receitas adicionadas todos os dias
+          </p>
+          
+          {/* Grid of 3 Columns representing Category Buttons */}
+          <div className="grid grid-cols-3 gap-3">
+            {categories.map((cat) => (
+              <CategoryCard 
+                key={cat} 
+                nome={cat} 
+                onClick={() => {
+                  playHeartbeatSound();
+                  navigate(`/categoria/${encodeURIComponent(cat.toLowerCase())}`);
+                }} 
+              />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* SEÇÃO 2: UPSELLS (TRANSFORME SUAS PEÇAS EM UM ATELIÊ LUCRATIVO) - DESCEU */}
+      <section className="py-8 bg-[#2A2A2A] overflow-hidden rounded-3xl mx-4 sm:mx-auto max-w-3xl shadow-xl border border-white/5 my-6">
+        <div className="px-4">
+          {/* Card de Título de Largura Total e Altura Mínima with Orange Texture */}
+          <div 
+            style={textureLaranjaStyle}
+            className="w-full py-2 px-4 mb-3 shadow-sm rounded-xl text-center border border-white/10"
+          >
+            <h2 className="text-sm sm:text-base font-black uppercase tracking-wider text-white m-0">
+              TRANSFORME SUAS PEÇAS EM UM ATELIÊ LUCRATIVO
+            </h2>
+          </div>
+          
+          <div className="mb-4 text-center">
+            <p className="text-xs sm:text-sm text-gray-300 font-medium mt-1 max-w-2xl mx-auto leading-relaxed">
+              Descubra as soluções exclusivas para atrair clientes pagantes, valorizar o seu trabalho e profissionalizar suas vendas.
+            </p>
+            {/* Helper text for horizontal scroll */}
+            <p className="text-xs text-[#44FF00] font-bold mt-2 animate-pulse">
+              Arraste para o lado para ver todas as soluções ➔
+            </p>
+          </div>
+
+          {foundRecipes.length > 0 && (
+            <div className="mb-4">
+              <h2 className="section-title text-white italic">Receitas Adicionadas</h2>
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                {foundRecipes.map((recipe) => (
+                  <RecipeCard
+                    key={recipe.id}
+                    recipe={recipe}
+                    isFavorite={favorites.includes(recipe.id)}
+                    onToggleFavorite={() => toggleFavorite(recipe.id)}
+                    onAdd={() => handleRecipeAdd(recipe)}
+                    onReject={() => {}}
+                    isInCart={isInCart(recipe.id)}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Horizontal Carousel with Peek Effect */}
+          <div 
+            ref={carouselRef}
+            onScroll={handleCarouselScroll}
+            className="flex overflow-x-auto snap-x snap-mandatory scrollbar-none gap-4 pb-4 px-4 -mx-4"
+            style={{ scrollbarWidth: 'none' }}
+          >
+            {isLoading ? (
+              /* Skeleton Loaders */
+              Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className="snap-center shrink-0 w-[85vw] max-w-[320px] bg-gray-800 rounded-2xl aspect-[16/10] animate-pulse" />
+              ))
+            ) : (
+              infoprodutosList.map((upsell) => (
+                <div key={upsell.id} className="snap-center shrink-0 w-[85vw] max-w-[320px]">
+                  <UpsellCard 
+                    upsell={{
+                      id: upsell.id,
+                      nome: upsell.nome,
+                      descricao: upsell.descricao,
+                      descricaoLonga: upsell.descricao,
+                      precoOriginal: upsell.preco * 1.5,
+                      precoAtual: upsell.preco,
+                      emoji: "💡",
+                      cor: "#FF3D9A",
+                      beneficios: ["Acesso imediato", "Suporte exclusivo"],
+                      copiaVendas: [upsell.descricao]
+                    }} 
+                    isFavorite={favorites.includes(upsell.id)}
+                    onToggleFavorite={() => toggleFavorite(upsell.id)}
+                    onOpen={() => {
+                      playHeartbeatSound();
+                      setActiveUpsell(upsell.id);
+                    }} 
+                  />
+                </div>
+              ))
+            )}
+          </div>
+
+          {/* Pagination Dots */}
+          <div className="flex justify-center gap-1.5 mt-2">
+            {infoprodutosList.map((_, i) => (
+              <div 
+                key={i} 
+                className={`h-1.5 rounded-full transition-all ${i === activeUpsellIndex ? 'w-4 bg-[#44FF00]' : 'w-1.5 bg-gray-500'}`}
+              />
+            ))}
+          </div>
+        </div>
+      </section>
 
       {error && <ErrorToast message={error} onClose={() => setError(null)} />}
 
@@ -421,38 +459,6 @@ export default function Index() {
           onBuy={handleUpsellBuy}
         />
       )}
-
-      {/* SEÇÃO 3: CATEGORIAS (With Orange Texture) */}
-      <section className="bg-[#F5F5F7] py-6">
-        <div className="max-w-6xl mx-auto px-4">
-          {/* Card de Título de Largura Total e Altura Mínima with Orange Texture */}
-          <div 
-            style={textureLaranjaStyle}
-            className="w-full py-2 px-4 mb-4 shadow-sm rounded-xl text-center border border-gray-100"
-          >
-            <h2 className="text-sm sm:text-base font-black uppercase tracking-wider text-white m-0">
-              CATEGORIAS DE AMIGURUMIS
-            </h2>
-          </div>
-          <p className="text-gray-600 text-xs font-bold mb-6 text-center uppercase tracking-tight">
-            Novas receitas adicionadas todos os dias
-          </p>
-          
-          {/* Grid of 3 Columns representing Category Buttons */}
-          <div className="grid grid-cols-3 gap-3">
-            {categories.map((cat) => (
-              <CategoryCard 
-                key={cat} 
-                nome={cat} 
-                onClick={() => {
-                  playHeartbeatSound();
-                  navigate(`/categoria/${encodeURIComponent(cat.toLowerCase())}`);
-                }} 
-              />
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* SEÇÃO 4: PACKS (Fundo #e6dcd3 with Orange Texture) */}
       <section className="bg-[#e6dcd3] py-6">
