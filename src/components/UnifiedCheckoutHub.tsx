@@ -7,6 +7,7 @@ import { type CartItem, calculateCart } from "@/utils/pricing";
 import { playHeartbeatSound } from "@/utils/audio";
 
 interface UnifiedCheckoutHubProps {
+  cart={cart}
   cart: CartItem[];
   allRecipes: SheetRecipe[];
   onRemoveFromCart: (id: string) => void;
@@ -110,7 +111,7 @@ export const UnifiedCheckoutHub = ({
   ];
 
   return (
-    <div className="max-w-xl mx-auto my-2 bg-white rounded-xl p-3 shadow-md border-2 border-[#44FF00] text-left w-full">
+    <div id="cart-section" className="max-w-xl mx-auto my-2 bg-white rounded-xl p-3 shadow-md border-2 border-[#44FF00] text-left w-full">
       
       {/* 1. CAIXA DE CÓDIGO (TOPO DO CARD) */}
       <div className="bg-gray-50 rounded-lg p-3 border border-gray-200 mb-3">

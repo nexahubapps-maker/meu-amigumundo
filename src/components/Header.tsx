@@ -1,7 +1,7 @@
 "use client";
 
 import { ShoppingCart } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 interface HeaderProps {
   cartCount?: number;
@@ -9,13 +9,22 @@ interface HeaderProps {
 
 export const Header = ({ cartCount = 0 }: HeaderProps) => {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const scrollToCart = () => {
-    const cartElement = document.getElementById('cart-section');
-    if (cartElement) {
-      cartElement.scrollIntoView({ behavior: 'smooth' });
+    if (location.pathname !== "/") {
+      navigate("/");
+      setTimeout(() => {
+        const cartElement = document.getElementById('cart-section');
+        if (cartElement) {
+          cartElement.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 150);
     } else {
-      navigate("/checkout");
+      const cartElement = document.getElementById('cart-section');
+      if (cartElement) {
+        cartElement.scrollIntoView({ behavior: 'smooth' });
+      }
     }
   };
 
