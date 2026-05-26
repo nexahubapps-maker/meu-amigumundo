@@ -13,6 +13,11 @@ export const InstallGuideModal = ({ isOpen, onClose }: InstallGuideModalProps) =
 
   if (!isOpen) return null;
 
+  const handleConfirmInstall = () => {
+    localStorage.setItem('amigumundo-installed', 'true');
+    onClose();
+  };
+
   return (
     <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-300">
       <div className="bg-white rounded-[28px] w-full max-w-md p-6 shadow-2xl border border-gray-100 relative animate-in zoom-in-95 duration-300 max-h-[90vh] overflow-y-auto">
@@ -62,15 +67,12 @@ export const InstallGuideModal = ({ isOpen, onClose }: InstallGuideModalProps) =
           </button>
         </div>
 
-        {/* Conteúdo Didático */}
+        {/* Conteúdo Didático Simplificado */}
         {activeTab === "android" ? (
           <div className="space-y-4 animate-in fade-in duration-200">
-            <div className="flex gap-3 items-start">
-              <div className="w-6 h-6 rounded-full bg-[#44FF00] text-[#171717] font-black text-xs flex items-center justify-center shrink-0">1</div>
-              <p className="text-xs text-gray-600 font-medium leading-relaxed">
-                Abra o site no navegador <strong className="text-gray-900">Google Chrome</strong> do seu celular.
-              </p>
-            </div>
+            <p className="text-xs font-black text-gray-800 uppercase tracking-wider">
+              São 2 passos simples:
+            </p>
             <div className="flex gap-3 items-start">
               <div className="w-6 h-6 rounded-full bg-[#44FF00] text-[#171717] font-black text-xs flex items-center justify-center shrink-0">2</div>
               <p className="text-xs text-gray-600 font-medium leading-relaxed">
@@ -80,18 +82,15 @@ export const InstallGuideModal = ({ isOpen, onClose }: InstallGuideModalProps) =
             <div className="flex gap-3 items-start">
               <div className="w-6 h-6 rounded-full bg-[#44FF00] text-[#171717] font-black text-xs flex items-center justify-center shrink-0">3</div>
               <p className="text-xs text-gray-600 font-medium leading-relaxed">
-                Selecione a opção <strong className="text-gray-900">"Instalar aplicativo"</strong> ou <strong className="text-gray-900">"Adicionar à tela inicial"</strong>.
+                Selecione a opção <strong className="text-gray-900">"Instalar aplicativo"</strong> ou <strong className="text-gray-900">"Adicionar à tela inicial"</strong> e Pronto.
               </p>
             </div>
           </div>
         ) : (
           <div className="space-y-4 animate-in fade-in duration-200">
-            <div className="flex gap-3 items-start">
-              <div className="w-6 h-6 rounded-full bg-[#44FF00] text-[#171717] font-black text-xs flex items-center justify-center shrink-0">1</div>
-              <p className="text-xs text-gray-600 font-medium leading-relaxed">
-                Abra o site usando o navegador padrão <strong className="text-gray-900">Safari</strong> do seu iPhone.
-              </p>
-            </div>
+            <p className="text-xs font-black text-gray-800 uppercase tracking-wider">
+              São 2 passos simples:
+            </p>
             <div className="flex gap-3 items-start">
               <div className="w-6 h-6 rounded-full bg-[#44FF00] text-[#171717] font-black text-xs flex items-center justify-center shrink-0">2</div>
               <p className="text-xs text-gray-600 font-medium leading-relaxed">
@@ -101,7 +100,7 @@ export const InstallGuideModal = ({ isOpen, onClose }: InstallGuideModalProps) =
             <div className="flex gap-3 items-start">
               <div className="w-6 h-6 rounded-full bg-[#44FF00] text-[#171717] font-black text-xs flex items-center justify-center shrink-0">3</div>
               <p className="text-xs text-gray-600 font-medium leading-relaxed">
-                Role a lista para baixo e toque em <strong className="text-gray-900">"Adicionar à Tela de Início"</strong>.
+                Role a lista para baixo e toque em <strong className="text-gray-900">"Adicionar à Tela de Início"</strong> e Pronto.
               </p>
             </div>
           </div>
@@ -109,7 +108,7 @@ export const InstallGuideModal = ({ isOpen, onClose }: InstallGuideModalProps) =
 
         {/* Botão de Fechar/Entendido */}
         <button
-          onClick={onClose}
+          onClick={handleConfirmInstall}
           className="w-full bg-[#44FF00] text-[#171717] py-3.5 rounded-xl font-black text-xs uppercase tracking-widest shadow-sm hover:scale-[1.02] active:scale-95 transition-transform mt-6"
         >
           Entendido, vou instalar! 👍
