@@ -118,7 +118,7 @@ export const DailyGiftSection = () => {
 
     try {
       // Trigger direct WhatsApp redirection with pre-defined security message
-      const messageText = `Quero minha receita grátis: ${dailyRecipe.nome} (Código: ${dailyRecipe.codigo})`;
+      const messageText = `Quero minha receita grátis: ${dailyRecipe.nome} (${dailyRecipe.codigo})`;
       const waUrl = `https://wa.me/5544999999999?text=${encodeURIComponent(messageText)}`;
 
       // Success feedback
@@ -238,7 +238,7 @@ export const DailyGiftSection = () => {
                   {dailyRecipe.nome}
                 </h3>
                 <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: '#9241B1' }}>
-                  Disponível apenas hoje (CÓD: {dailyRecipe.codigo})
+                  Disponível apenas hoje ({dailyRecipe.codigo})
                 </p>
               </div>
 

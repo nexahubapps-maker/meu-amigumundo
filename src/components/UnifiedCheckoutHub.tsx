@@ -196,33 +196,47 @@ export const UnifiedCheckoutHub = ({
                 <Search size={8} />
               </div>
             </div>
-            <div className="flex-1 min-w-0">
-              <span className="text-[8px] font-black bg-black text-white px-1.5 py-0.5 rounded uppercase">
-                CÓD: {foundRecipe.id}
-              </span>
-              <h4 className="text-xs font-bold text-gray-900 uppercase truncate mt-0.5">
-                {foundRecipe.nome}
-              </h4>
-              <p className="text-[10px] text-gray-500 font-bold">
-                R$ {foundRecipe.preco.toFixed(2)}
-              </p>
-            </div>
-            <div className="flex gap-1.5 shrink-0">
-              <button
-                onClick={handleAddFoundRecipe}
-                className="bg-[#44FF00] text-[#171717] px-3 py-1.5 rounded-lg font-bold text-[10px] uppercase tracking-wider shadow-sm active:scale-95 transition-transform"
-              >
-                Adicionar
-              </button>
-              <button
-                onClick={() => {
-                  setFoundRecipe(null);
-                  setCode("");
-                }}
-                className="bg-gray-200 text-gray-600 p-1.5 rounded-lg hover:bg-gray-300 transition-colors"
-              >
-                <X size={14} />
-              </button>
+            
+            {/* Info Block with strict layout hierarchy */}
+            <div className="flex-1 flex flex-col justify-between h-16 min-w-0">
+              {/* Nome da Receita (No Topo) */}
+              <div className="w-full">
+                <h4 className="text-xs font-bold text-gray-900 uppercase leading-tight break-words">
+                  {foundRecipe.nome}
+                </h4>
+              </div>
+
+              {/* Código (Esquerda) e Preço + Botão (Direita) */}
+              <div className="flex items-end justify-between w-full">
+                {/* Código puro entre parênteses */}
+                <span className="text-[10px] font-black text-gray-500">
+                  ({foundRecipe.id})
+                </span>
+
+                {/* Preço acima do botão */}
+                <div className="flex flex-col items-end gap-1">
+                  <span className="text-[10px] text-gray-900 font-black leading-none">
+                    R$ {foundRecipe.preco.toFixed(2)}
+                  </span>
+                  <div className="flex gap-1">
+                    <button
+                      onClick={handleAddFoundRecipe}
+                      className="bg-[#44FF00] text-[#171717] px-3 py-1 rounded-lg font-bold text-[10px] uppercase tracking-wider shadow-sm active:scale-95 transition-transform"
+                    >
+                      Adicionar
+                    </button>
+                    <button
+                      onClick={() => {
+                        setFoundRecipe(null);
+                        setCode("");
+                      }}
+                      className="bg-gray-200 text-gray-600 p-1 rounded-lg hover:bg-gray-300 transition-colors"
+                    >
+                      <X size={12} />
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         )}
@@ -322,7 +336,7 @@ export const UnifiedCheckoutHub = ({
                     {item.nome}
                   </h4>
                   <span className="text-[8px] font-black bg-gray-100 text-gray-500 px-1 rounded shrink-0 leading-none py-0.5">
-                    {item.tipo === "recipe" ? `CÓD: ${item.id}` : item.tipo.toUpperCase()}
+                    {item.tipo === "recipe" ? `(${item.id})` : item.tipo.toUpperCase()}
                   </span>
                 </div>
                 <div className="text-right shrink-0 flex items-center gap-2">
@@ -368,7 +382,7 @@ export const UnifiedCheckoutHub = ({
                     {item.nome}
                   </h4>
                   <span className="text-[8px] font-black bg-green-50 text-green-600 px-1 rounded shrink-0 leading-none py-0.5">
-                    CÓD: {item.id}
+                    (${item.id})
                   </span>
                 </div>
                 <div className="text-right shrink-0 flex items-center gap-2">

@@ -49,7 +49,7 @@ const RecipeCard = ({ recipe, isFavorite, onToggleFavorite, onAdd, onReject, isI
         </button>
 
         <div className="absolute bottom-2 left-2 bg-black/70 backdrop-blur-sm text-white text-[8px] font-bold px-2 py-0.5 rounded-md shadow-md">
-          CÓD: {recipe.id}
+          ({recipe.id})
         </div>
       </div>
       

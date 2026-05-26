@@ -115,7 +115,7 @@ export const CategoryDetailView = ({
                         {recipe.nome}
                       </h4>
                       <div className="flex items-center justify-between text-[8px] text-gray-400 font-bold mb-1.5">
-                        <span>CÓD: {recipe.id}</span>
+                        <span>({recipe.id})</span>
                         <span className="text-gray-900 font-black">R$ {recipe.preco.toFixed(2)}</span>
                       </div>
                     </div>
