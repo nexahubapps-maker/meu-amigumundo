@@ -11,6 +11,7 @@ interface CategoryDetailViewProps {
   isInCart: (id: string) => boolean;
   onBack: () => void;
   onRecipeAdd: (recipe: SheetRecipe) => void;
+  onRecipeRemove: (id: string) => void;
   onZoomImage: (url: string) => void;
   favorites: string[];
   onToggleFavorite: (id: string) => void;
@@ -23,6 +24,7 @@ export const CategoryDetailView = ({
   isInCart,
   onBack,
   onRecipeAdd,
+  onRecipeRemove,
   onZoomImage,
   favorites,
   onToggleFavorite,
@@ -118,17 +120,27 @@ export const CategoryDetailView = ({
                       </div>
                     </div>
                     
-                    <button
-                      onClick={() => onRecipeAdd(recipe)}
-                      disabled={added}
-                      className={`w-full py-1 rounded-lg font-black text-[8px] uppercase tracking-wider transition-all ${
-                        added 
-                          ? 'bg-gray-100 text-gray-400' 
-                          : 'bg-[#44FF00] text-[#171717] hover:scale-105 active:scale-95'
-                      }`}
-                    >
-                      {added ? "✓" : "Quero"}
-                    </button>
+                    <div className="flex gap-1">
+                      <button
+                        onClick={() => onRecipeAdd(recipe)}
+                        disabled={added}
+                        className={`flex-1 py-1 rounded-lg font-black text-[8px] uppercase tracking-wider transition-all ${
+                          added 
+                            ? 'bg-gray-100 text-gray-400' 
+                            : 'bg-[#44FF00] text-[#171717] hover:scale-105 active:scale-95'
+                        }`}
+                      >
+                        {added ? "✓" : "Quero"}
+                      </button>
+                      {added && (
+                        <button 
+                          onClick={() => onRecipeRemove(recipe.id)} 
+                          className="px-1.5 rounded-lg bg-red-50 text-red-500 text-[10px] hover:bg-red-100 transition-colors"
+                        >
+                          ✕
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
               );
@@ -139,3 +151,4 @@ export const CategoryDetailView = ({
     </div>
   );
 };
+</font>

@@ -313,6 +313,7 @@ export default function Index() {
               onRemoveFromCart={removeFromCart}
               onAddToCart={addToCart}
               onCheckout={() => navigate("/checkout")}
+              onZoomImage={setZoomImage}
             />
 
           </div>
@@ -603,6 +604,7 @@ export default function Index() {
           isInCart={isInCart}
           onBack={() => navigate("/")}
           onRecipeAdd={handleRecipeAdd}
+          onRecipeRemove={removeFromCart}
           onZoomImage={setZoomImage}
           favorites={favorites}
           onToggleFavorite={toggleFavorite}

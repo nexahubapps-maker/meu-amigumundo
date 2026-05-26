@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { ShoppingBag, X, ArrowRight, Gift } from "lucide-react";
+import { ShoppingBag, X, ArrowRight, Gift, Search } from "lucide-react";
 import { type SheetRecipe } from "@/utils/sheets";
 import { type CartItem, calculateCart } from "@/utils/pricing";
 import { playHeartbeatSound } from "@/utils/audio";
@@ -12,6 +12,7 @@ interface UnifiedCheckoutHubProps {
   onRemoveFromCart: (id: string) => void;
   onAddToCart: (item: CartItem) => void;
   onCheckout: () => void;
+  onZoomImage?: (url: string) => void;
 }
 
 export const UnifiedCheckoutHub = ({
@@ -20,6 +21,7 @@ export const UnifiedCheckoutHub = ({
   onRemoveFromCart,
   onAddToCart,
   onCheckout,
+  onZoomImage,
 }: UnifiedCheckoutHubProps) => {
   const [code, setCode] = useState("");
   const [foundRecipe, setFoundRecipe] = useState<SheetRecipe | null>(null);
@@ -180,11 +182,20 @@ export const UnifiedCheckoutHub = ({
         {/* Found Recipe Mini-Card */}
         {foundRecipe && (
           <div className="mt-3 p-2.5 bg-green-50 border-2 border-[#44FF00] rounded-lg flex items-center gap-3 animate-in zoom-in-95 duration-200">
-            <img
-              src={foundRecipe.url_foto}
-              alt={foundRecipe.nome}
-              className="w-12 h-12 rounded-md object-cover border border-white shadow-sm shrink-0"
-            />
+            <div 
+              className="relative aspect-square w-16 h-16 bg-gray-50 rounded-lg overflow-hidden shrink-0 group cursor-zoom-in"
+              onClick={() => onZoomImage?.(foundRecipe.url_foto)}
+            >
+              <img
+                src={foundRecipe.url_foto}
+                alt={foundRecipe.nome}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              />
+              {/* Ícone de Lupa no Canto Superior Direito */}
+              <div className="absolute top-1 right-1 bg-black/50 text-white p-0.5 rounded-full pointer-events-none">
+                <Search size={8} />
+              </div>
+            </div>
             <div className="flex-1 min-w-0">
               <span className="text-[8px] font-black bg-black text-white px-1.5 py-0.5 rounded uppercase">
                 CÓD: {foundRecipe.id}
