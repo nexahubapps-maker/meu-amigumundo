@@ -62,14 +62,14 @@ export const PwaPrompt = () => {
             <Smartphone size={24} />
           </div>
           
-          {/* Textos com quebras de linha exatas */}
+          {/* Textos com quebras de linha exatas e sem quebra na frase chave */}
           <div className="text-left flex-1">
             <p className="text-[11px] sm:text-xs font-black uppercase tracking-wider text-[#44FF00]">
               Dica de Ouro! 📱
             </p>
             <p className="text-[11px] sm:text-xs font-bold text-gray-200 leading-tight mt-0.5">
               Não perca nenhuma <br />
-              "Receita Gratuita e Promoções" <br />
+              <span className="whitespace-nowrap">"Receita Gratuita e Promoções"</span> <br />
               instale o Icone do aplicativo <br />
               no seu celular, é de graça!
             </p>
