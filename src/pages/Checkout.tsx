@@ -6,11 +6,13 @@ import { ChevronLeft, ShieldCheck, Zap, CreditCard, Mail, Phone, Lock } from "lu
 import { SupportButton } from "@/components/SupportButton";
 import { playHeartbeatSound } from "@/utils/audio";
 import { getRecipes, getInfoprodutos, getPacks } from "@/utils/sheets";
+import { calculateCart } from "@/utils/pricing";
 
 export default function Checkout() {
   const navigate = useNavigate();
   const { id: checkoutProductId } = useParams();
   const [cart, setCart] = useState<any[]>([]);
+  const [recipesList, setRecipesList] = useState<any[]>([]);
   const [paymentMethod, setPaymentMethod] = useState<"pix" | "card">("pix");
   
   const [email, setEmail] = useState(() => localStorage.getItem("amigumundo-email") || "");
@@ -24,16 +26,16 @@ export default function Checkout() {
   // Load cart or direct product
   useEffect(() => {
     const loadCheckoutData = async () => {
-      if (checkoutProductId) {
-        // Fetch from sheets to find the specific product
-        const [recipesList, infoprodutosList, packsList] = await Promise.all([
-          getRecipes(),
-          getInfoprodutos(),
-          getPacks()
-        ]);
+      const [recipesData, infoprodutosList, packsList] = await Promise.all([
+        getRecipes(),
+        getInfoprodutos(),
+        getPacks()
+      ]);
+      setRecipesList(recipesData);
 
+      if (checkoutProductId) {
         const foundProduct = 
-          recipesList.find(r => r.id === checkoutProductId) ||
+          recipesData.find(r => r.id === checkoutProductId) ||
           infoprodutosList.find(i => i.id === checkoutProductId) ||
           packsList.find(p => p.id === checkoutProductId);
 
@@ -88,7 +90,9 @@ export default function Checkout() {
   const isEmailValid = email.includes("@") && email.includes(".");
   const isFormValid = isWhatsappValid && isEmailValid;
 
-  const total = cart.reduce((sum, item) => sum + item.preco, 0);
+  // Calculate cart values using the centralized pricing utility to sync discounts
+  const calculated = calculateCart(cart, recipesList);
+  const total = calculated.total;
 
   const triggerAdminWebhook = async (saleData: any) => {
     try {
@@ -115,7 +119,7 @@ export default function Checkout() {
     const saleData = {
       email,
       whatsapp: rawWhatsappDigits,
-      items: cart,
+      items: calculated.items,
       total,
       paymentMethod
     };
@@ -208,10 +212,14 @@ export default function Checkout() {
             <h2 className="font-bold uppercase tracking-tight text-xs">Resumo do Pedido</h2>
           </div>
           <div className="space-y-2">
-            {cart.map((item, i) => (
+            {calculated.items.map((item, i) => (
               <div key={i} className="flex justify-between items-center text-xs">
-                <span className="text-gray-600">{item.nome}</span>
-                <span className="font-bold text-gray-800">R$ {item.preco.toFixed(2)}</span>
+                <span className="text-gray-600">
+                  {item.nome} {item.isBonus && <span className="text-green-600 font-bold">(BRINDE)</span>}
+                </span>
+                <span className="font-bold text-gray-800">
+                  {item.precoFinal === 0 ? "Grátis" : `R$ ${item.precoFinal.toFixed(2)}`}
+                </span>
               </div>
             ))}
             <div className="pt-2 border-t border-dashed border-gray-200 flex justify-between items-center">

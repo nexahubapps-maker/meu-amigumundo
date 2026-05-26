@@ -276,7 +276,7 @@ export const UnifiedCheckoutHub = ({
         </div>
       )}
 
-      {/* 3. RESUMO DO CARRINHO */}
+      {/* 3. RESUMO DO CARRINHO (COMPACTAÇÃO RADICAL - FIM DOS MINI-CARDS) */}
       <div className="mb-3">
         <h3 className="text-xs font-bold text-gray-900 uppercase tracking-tight mb-1.5 flex items-center gap-1.5">
           🛒 Meu Carrinho ({regularItems.length} {regularItems.length === 1 ? "item" : "itens"})
@@ -293,29 +293,29 @@ export const UnifiedCheckoutHub = ({
             </p>
           </div>
         ) : (
-          <div className="space-y-1.5 h-auto overflow-visible pr-1">
+          <div className="divide-y divide-gray-100 border-t border-b border-gray-100">
             {regularItems.map((item) => (
               <div
                 key={item.id}
-                className="flex items-center gap-2 p-2 rounded-lg border transition-all bg-white border-gray-100"
+                className="flex items-center gap-2 py-1.5 transition-all bg-white"
               >
                 {item.imagem && (
                   <img
                     src={item.imagem}
-                    className="w-8 h-8 rounded object-cover border border-gray-200 shrink-0"
+                    className="w-7 h-7 rounded object-cover border border-gray-100 shrink-0"
                     alt=""
                   />
                 )}
-                <div className="flex-1 min-w-0">
-                  <h4 className="text-xs font-bold text-gray-800 uppercase truncate leading-tight">
+                <div className="flex-1 min-w-0 flex items-center gap-1.5">
+                  <h4 className="text-[11px] font-bold text-gray-800 uppercase truncate leading-none">
                     {item.nome}
                   </h4>
-                  <span className="text-[9px] font-bold text-gray-400 uppercase">
+                  <span className="text-[8px] font-black bg-gray-100 text-gray-500 px-1 rounded shrink-0 leading-none py-0.5">
                     {item.tipo === "recipe" ? `CÓD: ${item.id}` : item.tipo.toUpperCase()}
                   </span>
                 </div>
                 <div className="text-right shrink-0 flex items-center gap-2">
-                  <span className="font-bold text-gray-900 text-xs">
+                  <span className="font-black text-gray-900 text-[11px]">
                     R$ {item.precoFinal.toFixed(2)}
                   </span>
                   <button
@@ -323,7 +323,7 @@ export const UnifiedCheckoutHub = ({
                     className="p-1 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors"
                     aria-label="Remover item"
                   >
-                    <X size={14} />
+                    <X size={12} />
                   </button>
                 </div>
               </div>
@@ -338,33 +338,33 @@ export const UnifiedCheckoutHub = ({
           <h4 className="text-xs font-black text-[#16a34a] uppercase tracking-wider flex items-center gap-1.5">
             🎁 Seus Mimos Gratuitos ({F} de {maxSlots} liberados)
           </h4>
-          <div className="space-y-1.5">
+          <div className="divide-y divide-green-100 border-t border-b border-green-100">
             {/* Render filled free slots */}
             {bonusItems.map((item) => (
               <div
                 key={item.id}
-                className="flex items-center gap-2 p-2 rounded-lg bg-white border border-green-100"
+                className="flex items-center gap-2 py-1.5 bg-white"
               >
                 {item.imagem && (
                   <img
                     src={item.imagem}
-                    className="w-8 h-8 rounded object-cover border border-gray-200 shrink-0"
+                    className="w-7 h-7 rounded object-cover border border-gray-100 shrink-0"
                     alt=""
                   />
                 )}
-                <div className="flex-1 min-w-0">
-                  <h4 className="text-xs font-bold text-gray-800 uppercase truncate leading-tight">
+                <div className="flex-1 min-w-0 flex items-center gap-1.5">
+                  <h4 className="text-[11px] font-bold text-gray-800 uppercase truncate leading-none">
                     {item.nome}
                   </h4>
-                  <span className="text-[9px] font-bold text-gray-400 uppercase">
+                  <span className="text-[8px] font-black bg-green-50 text-green-600 px-1 rounded shrink-0 leading-none py-0.5">
                     CÓD: {item.id}
                   </span>
                 </div>
                 <div className="text-right shrink-0 flex items-center gap-2">
-                  <span className="text-gray-400 line-through text-[10px] font-bold">
+                  <span className="text-gray-400 line-through text-[9px] font-bold">
                     R$ 5,00
                   </span>
-                  <span className="text-xs font-black text-[#22c55e] uppercase tracking-wider">
+                  <span className="text-[10px] font-black text-[#22c55e] uppercase tracking-wider">
                     Grátis
                   </span>
                   <button
@@ -372,7 +372,7 @@ export const UnifiedCheckoutHub = ({
                     className="p-1 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors"
                     aria-label="Remover item"
                   >
-                    <X size={14} />
+                    <X size={12} />
                   </button>
                 </div>
               </div>
@@ -382,10 +382,10 @@ export const UnifiedCheckoutHub = ({
             {Array.from({ length: maxSlots - F }).map((_, index) => (
               <div
                 key={`empty-${index}`}
-                className="flex items-center justify-center p-3 rounded-lg border-2 border-dashed border-green-200 bg-green-50/30 text-center"
+                className="flex items-center justify-center py-2 border-2 border-dashed border-green-200 bg-green-50/30 text-center rounded-lg mt-1"
               >
-                <p className="text-[10px] font-bold text-green-600 uppercase tracking-wider flex items-center gap-1">
-                  <Gift size={12} /> Aguardando sua escolha grátis...
+                <p className="text-[9px] font-bold text-green-600 uppercase tracking-wider flex items-center gap-1">
+                  <Gift size={10} /> Aguardando sua escolha grátis...
                 </p>
               </div>
             ))}
