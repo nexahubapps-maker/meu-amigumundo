@@ -149,11 +149,8 @@ export const UnifiedCheckoutHub = ({
       {/* 1. CAIXA DE CÓDIGO (TOPO DO CARD) */}
       <div className="bg-gray-50 rounded-lg p-3 border border-gray-200 mb-3">
         <div className="text-center mb-2">
-          <p className="text-sm font-extrabold text-gray-900 leading-tight">
-            Se apaixonou por alguma<br />receita do grupo?
-          </p>
-          <p className="text-xs text-gray-500 font-medium mt-1">
-            Digite abaixo o código da receita <br /> e adicione ao carrinho.
+          <p className="text-xs text-gray-500 font-bold leading-tight">
+            Digite abaixo o código da receita e adicione ao carrinho.
           </p>
         </div>
 
@@ -249,12 +246,6 @@ export const UnifiedCheckoutHub = ({
           <div className="bg-[#44FF00] text-[#171717] px-4 py-1.5 rounded-lg text-[10px] sm:text-xs font-black uppercase tracking-wider shadow-sm text-center leading-tight">
             Preços acessíveis para todas as <br /> Crocheteiras Apaixonadas
           </div>
-        </div>
-
-        <div className="mb-2 text-center">
-          <p className="text-xs sm:text-sm text-gray-700 font-black leading-snug">
-            Quanto mais receitas você adicionar ao carrinho, mais baratas elas ficam
-          </p>
         </div>
 
         {/* Tabela de Descontos */}

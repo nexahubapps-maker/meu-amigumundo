@@ -18,6 +18,7 @@ import { UnifiedCheckoutHub } from "@/components/UnifiedCheckoutHub";
 import { CartFooter } from "@/components/CartFooter";
 import { CategoryDetailView } from "@/components/CategoryDetailView";
 import { LightboxModal } from "@/components/LightboxModal";
+import { InstallGuideCard } from "@/components/InstallGuideCard";
 import { categories } from "@/data/categories";
 import { 
   getRecipes, 
@@ -555,6 +556,9 @@ export default function Index() {
 
       {/* SEÇÃO 6: MIMO GRATUITO DIÁRIO */}
       <DailyGiftSection />
+
+      {/* CARD DE INSTALAÇÃO DO APP */}
+      <InstallGuideCard />
 
       <footer className="text-center py-3 px-4 border-t border-gray-100 bg-white">
         <p className="text-[10px] text-gray-300 font-black uppercase tracking-[0.3em]">© 2024 AmiguMundo Artes</p>
