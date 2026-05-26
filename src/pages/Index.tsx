@@ -31,6 +31,7 @@ import {
 } from "@/utils/sheets";
 import { playHeartbeatSound } from "@/utils/audio";
 import { type CartItem, calculateCart } from "@/utils/pricing";
+import { showCartAdd, showSuccess } from "@/utils/toast";
 
 export default function Index() {
   const navigate = useNavigate();
@@ -156,9 +157,16 @@ export default function Index() {
   }, [routeProductId, recipesList]);
 
   const toggleFavorite = (id: string) => {
-    setFavorites((prev) => 
-      prev.includes(id) ? prev.filter((favId) => favId !== id) : [...prev, id]
-    );
+    setFavorites((prev) => {
+      const isFav = prev.includes(id);
+      if (isFav) {
+        showSuccess("Item removido dos favoritos.");
+        return prev.filter((favId) => favId !== id);
+      } else {
+        showSuccess("Item adicionado aos favoritos! ❤️");
+        return [...prev, id];
+      }
+    });
   };
 
   const addToCart = (item: CartItem | CartItem[]) => {
@@ -169,6 +177,10 @@ export default function Index() {
       const filteredNewItems = itemsToAdd.filter(
         (newItem) => !prev.some((existing) => existing.id === newItem.id)
       );
+      if (filteredNewItems.length > 0) {
+        const names = filteredNewItems.map(i => i.nome).join(", ");
+        showCartAdd(`${names} adicionado(s) ao carrinho!`);
+      }
       return [...prev, ...filteredNewItems];
     });
     if (showRecipe) setShowRecipe(null);

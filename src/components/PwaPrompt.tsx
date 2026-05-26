@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Smartphone, X, Download } from 'lucide-react';
+import { showInfo } from '@/utils/toast';
 
 export const PwaPrompt = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -51,7 +52,7 @@ export const PwaPrompt = () => {
       setIsVisible(false);
     } else {
       // Fallback for iOS / browsers that don't support beforeinstallprompt
-      alert("Para instalar no iPhone/iPad:\n1. Toque no botão de Compartilhar (ícone de seta para cima)\n2. Role para baixo e selecione 'Adicionar à Tela de Início' 📱");
+      showInfo("Para instalar no iPhone/iPad:\n1. Toque no botão de Compartilhar (ícone de seta para cima)\n2. Selecione 'Adicionar à Tela de Início' 📱");
       localStorage.setItem('pwa-prompt-dismissed', 'true');
       setIsVisible(false);
     }

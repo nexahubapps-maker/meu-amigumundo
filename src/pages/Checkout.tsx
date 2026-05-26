@@ -7,6 +7,7 @@ import { SupportButton } from "@/components/SupportButton";
 import { playHeartbeatSound } from "@/utils/audio";
 import { getRecipes, getInfoprodutos, getPacks } from "@/utils/sheets";
 import { calculateCart } from "@/utils/pricing";
+import { showSuccess } from "@/utils/toast";
 
 export default function Checkout() {
   const navigate = useNavigate();
@@ -126,7 +127,7 @@ export default function Checkout() {
 
     triggerAdminWebhook(saleData);
 
-    alert("Pagamento processado com sucesso! Suas receitas foram enviadas para o seu WhatsApp.");
+    showSuccess("Pagamento processado com sucesso! Suas receitas foram enviadas para o seu WhatsApp.");
     if (!checkoutProductId) {
       localStorage.removeItem("amigumundo-cart");
     }
