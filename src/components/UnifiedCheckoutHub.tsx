@@ -67,6 +67,10 @@ export const UnifiedCheckoutHub = ({
   const F = calculated.bonusCount;  // Filled free slots count
   const maxSlots = calculated.maxBonusSlots; // Total allowed free slots
 
+  // Split items into regular and bonus items for separate display
+  const regularItems = calculated.items.filter(item => !item.isBonus);
+  const bonusItems = calculated.items.filter(item => item.isBonus);
+
   // Neuromarketing Banner Text Logic
   let neuromarketingText = "";
   if (P >= 1 && P <= 4) {
@@ -275,10 +279,10 @@ export const UnifiedCheckoutHub = ({
       {/* 3. RESUMO DO CARRINHO */}
       <div className="mb-3">
         <h3 className="text-xs font-bold text-gray-900 uppercase tracking-tight mb-1.5 flex items-center gap-1.5">
-          🛒 Meu Carrinho ({calculated.paidRecipes.length} {calculated.paidRecipes.length === 1 ? "receita" : "receitas"})
+          🛒 Meu Carrinho ({regularItems.length} {regularItems.length === 1 ? "item" : "itens"})
         </h3>
 
-        {calculated.paidRecipes.length === 0 ? (
+        {regularItems.length === 0 ? (
           <div className="py-4 text-center bg-gray-50 rounded-lg border border-dashed border-gray-200 p-3">
             <ShoppingBag size={24} className="mx-auto text-gray-300 mb-1" />
             <p className="text-gray-600 font-bold text-xs uppercase">
@@ -290,7 +294,7 @@ export const UnifiedCheckoutHub = ({
           </div>
         ) : (
           <div className="space-y-1.5 h-auto overflow-visible pr-1">
-            {calculated.paidRecipes.map((item) => (
+            {regularItems.map((item) => (
               <div
                 key={item.id}
                 className="flex items-center gap-2 p-2 rounded-lg border transition-all bg-white border-gray-100"
@@ -307,7 +311,7 @@ export const UnifiedCheckoutHub = ({
                     {item.nome}
                   </h4>
                   <span className="text-[9px] font-bold text-gray-400 uppercase">
-                    CÓD: {item.id}
+                    {item.tipo === "recipe" ? `CÓD: ${item.id}` : item.tipo.toUpperCase()}
                   </span>
                 </div>
                 <div className="text-right shrink-0 flex items-center gap-2">
@@ -336,7 +340,7 @@ export const UnifiedCheckoutHub = ({
           </h4>
           <div className="space-y-1.5">
             {/* Render filled free slots */}
-            {calculated.freeRecipes.map((item) => (
+            {bonusItems.map((item) => (
               <div
                 key={item.id}
                 className="flex items-center gap-2 p-2 rounded-lg bg-white border border-green-100"

@@ -47,7 +47,6 @@ export default function Index() {
   const [showRecipe, setShowRecipe] = useState<SheetRecipe | null>(null);
   const [activeUpsell, setActiveUpsell] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [foundRecipes, setFoundRecipes] = useState<SheetRecipe[]>([]);
   const [isFavoritesOpen, setIsFavoritesOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [activeUpsellIndex, setActiveUpsellIndex] = useState(0);
@@ -186,10 +185,6 @@ export default function Index() {
       tipo: "recipe",
       imagem: recipe.url_foto
     });
-    setFoundRecipes((prev) => {
-      if (prev.find((r) => r.id === recipe.id)) return prev;
-      return [...prev, recipe];
-    });
   };
 
   const handlePackAdd = (packId: string) => {
@@ -214,17 +209,26 @@ export default function Index() {
     }
   };
 
+  // Fast-Pass Checkout Funnel for Infoproducts
   const handleUpsellBuy = () => {
     if (activeUpsell) {
       const upsell = infoprodutosList.find((u) => u.id === activeUpsell);
       if (upsell) {
-        addToCart({
+        const newItem: CartItem = {
           id: upsell.id,
           nome: upsell.nome,
           preco: upsell.preco,
           tipo: "upsell",
           imagem: upsell.url_foto
+        };
+        
+        // Update state and save synchronously to prevent race conditions during immediate navigation
+        setCart((prev) => {
+          const updated = prev.find((i) => i.id === newItem.id) ? prev : [...prev, newItem];
+          localStorage.setItem("amigumundo-cart", JSON.stringify(updated));
+          return updated;
         });
+
         setActiveUpsell(null);
         navigate("/checkout");
       }
@@ -372,25 +376,6 @@ export default function Index() {
               Arraste para o lado para ver todas as soluções ➔
             </p>
           </div>
-
-          {foundRecipes.length > 0 && (
-            <div className="mb-4">
-              <h2 className="section-title text-white italic">Receitas Adicionadas</h2>
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-                {foundRecipes.map((recipe) => (
-                  <RecipeCard
-                    key={recipe.id}
-                    recipe={recipe}
-                    isFavorite={favorites.includes(recipe.id)}
-                    onToggleFavorite={() => toggleFavorite(recipe.id)}
-                    onAdd={() => handleRecipeAdd(recipe)}
-                    onReject={() => {}}
-                    isInCart={isInCart(recipe.id)}
-                  />
-                ))}
-              </div>
-            </div>
-          )}
 
           {/* Horizontal Carousel with Peek Effect */}
           <div 
