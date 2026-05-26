@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { Smartphone, X, Download } from 'lucide-react';
+import { Smartphone, X, ArrowRight } from 'lucide-react';
 import { InstallGuideModal } from './InstallGuideModal';
 
 export const PwaPrompt = () => {
@@ -34,53 +34,51 @@ export const PwaPrompt = () => {
     setIsModalOpen(true);
   };
 
-  const handleDismiss = () => {
+  const handleDismiss = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Evita abrir o modal ao clicar no botão de fechar
     setIsVisible(false);
-  };
-
-  const handleModalClose = () => {
-    setIsModalOpen(false);
-    // Se fechou o modal após clicar em instalar, verifica se marcou como instalado para sumir com o banner
-    const isInstalled = localStorage.getItem('amigumundo-installed');
-    if (isInstalled) {
-      setIsVisible(false);
-    }
   };
 
   if (!isVisible) return null;
 
   return (
     <>
-      <div className="mx-4 sm:mx-0 mb-6 bg-gradient-to-r from-[#171717] to-[#262626] text-white p-4 rounded-2xl shadow-lg flex items-center justify-between gap-3 border border-white/10 animate-in slide-in-from-top duration-500">
-        <div className="flex items-center gap-3">
+      <div className="max-w-2xl mx-auto px-4 mb-6 animate-in slide-in-from-top duration-500">
+        <div
+          onClick={handleInstallClick}
+          className="w-full bg-gradient-to-r from-[#171717] to-[#262626] text-white p-4 rounded-2xl text-center shadow-lg flex items-center justify-between gap-4 hover:scale-[1.01] active:scale-[0.99] transition-transform border border-white/10 cursor-pointer relative"
+        >
+          {/* Ícone idêntico ao do rodapé */}
           <div className="bg-[#44FF00]/10 p-2.5 rounded-xl text-[#44FF00] shrink-0">
-            <Smartphone size={22} />
+            <Smartphone size={24} />
           </div>
-          <div className="text-left">
-            <h4 className="text-xs font-black uppercase tracking-wider text-[#44FF00]">Dica de Ouro! 📱</h4>
-            <p className="text-[10px] sm:text-xs text-gray-200 font-bold leading-tight mt-1">
-              Para não perder nenhuma <strong className="text-white">"Receita Gratuita e Promoções"</strong> instale o Icone do aplicativo no seu celular, é de graça!
+          
+          {/* Textos idênticos ao do rodapé */}
+          <div className="text-left flex-1">
+            <p className="text-[11px] sm:text-xs font-black uppercase tracking-wider text-[#44FF00]">
+              Dica de Ouro! 📱
+            </p>
+            <p className="text-[11px] sm:text-xs font-bold text-gray-200 leading-tight mt-0.5">
+              Para não perder nenhuma "Receita Gratuita e Promoções" instale o Icone do aplicativo no seu celular, é de graça!
             </p>
           </div>
-        </div>
-        <div className="flex items-center gap-2 shrink-0">
-          <button 
-            onClick={handleInstallClick}
-            className="bg-[#44FF00] text-[#171717] px-3.5 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider flex items-center gap-1 hover:scale-105 active:scale-95 transition-transform"
-          >
-            Instalar <Download size={12} />
-          </button>
-          <button 
-            onClick={handleDismiss}
-            className="p-1.5 text-gray-400 hover:text-white transition-colors"
-          >
-            <X size={16} />
-          </button>
+
+          {/* Ações: Seta indicativa + Botão de Fechar */}
+          <div className="flex items-center gap-2 shrink-0">
+            <ArrowRight size={16} className="text-gray-400" />
+            <button 
+              onClick={handleDismiss}
+              className="p-1.5 text-gray-400 hover:text-white hover:bg-white/10 rounded-full transition-colors"
+              aria-label="Fechar"
+            >
+              <X size={16} />
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Modal Didático Compartilhado */}
-      <InstallGuideModal isOpen={isModalOpen} onClose={handleModalClose} />
+      <InstallGuideModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </>
   );
 };
