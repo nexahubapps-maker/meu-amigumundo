@@ -126,6 +126,10 @@ export default function Checkout() {
     if (!checkoutProductId) {
       localStorage.removeItem("amigumundo-cart");
     }
+    
+    // Limpeza automática do banco de favoritos
+    localStorage.removeItem("amigumundo-favorites");
+
     navigate("/");
   };
 

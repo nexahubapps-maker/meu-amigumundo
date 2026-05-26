@@ -161,11 +161,15 @@ export default function Index() {
     );
   };
 
-  const addToCart = (item: CartItem) => {
+  const addToCart = (item: CartItem | CartItem[]) => {
     playHeartbeatSound();
     setCart((prev) => {
-      if (prev.find((i) => i.id === item.id)) return prev;
-      return [...prev, item];
+      const itemsToAdd = Array.isArray(item) ? item : [item];
+      // Filter out duplicates
+      const filteredNewItems = itemsToAdd.filter(
+        (newItem) => !prev.some((existing) => existing.id === newItem.id)
+      );
+      return [...prev, ...filteredNewItems];
     });
     if (showRecipe) setShowRecipe(null);
   };

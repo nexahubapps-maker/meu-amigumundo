@@ -39,7 +39,7 @@ export const FavoritesModal = ({
 
   return (
     <div className="fixed inset-0 z-[100] flex justify-end bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
-      <div className="bg-white w-full max-w-md h-full flex flex-col shadow-2xl animate-in slide-in-from-right duration-300">
+      <div className="bg-white w-full max-w-md h-full flex flex-col shadow-2xl animate-in slide-in-from-right duration-300 pb-[100px]">
         {/* Header */}
         <div className="p-4 border-b border-gray-100 flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -118,18 +118,19 @@ export const FavoritesModal = ({
             </div>
             <button
               onClick={() => {
-                // Add all non-added favorites to cart
-                allFavorites.forEach(item => {
-                  if (!isInCart(item.id)) {
-                    onAddToCart({
-                      id: item.id,
-                      nome: item.nome,
-                      preco: item.preco,
-                      tipo: item.tipo,
-                      imagem: item.imagem
-                    });
-                  }
-                });
+                const itemsToAdd = allFavorites
+                  .filter(item => !isInCart(item.id))
+                  .map(item => ({
+                    id: item.id,
+                    nome: item.nome,
+                    preco: item.preco,
+                    tipo: item.tipo,
+                    imagem: item.imagem
+                  }));
+                
+                if (itemsToAdd.length > 0) {
+                  onAddToCart(itemsToAdd);
+                }
                 onClose();
                 // Scroll to cart section
                 setTimeout(() => {
