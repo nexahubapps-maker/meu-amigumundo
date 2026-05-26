@@ -23,7 +23,10 @@ export const InstallGuideCard = () => {
               Dica de Ouro! 📱
             </p>
             <p className="text-[11px] sm:text-xs font-bold text-gray-200 leading-tight mt-0.5">
-              Para não perder nenhuma receita gratuita, instale o Icone do aplicativo no seu celular, é de graça
+              Não perca nenhuma <br />
+              "Receita Gratuita e Promoções" <br />
+              instale o Icone do aplicativo <br />
+              no seu celular, é de graça!
             </p>
           </div>
           <ArrowRight size={16} className="text-gray-400 shrink-0" />

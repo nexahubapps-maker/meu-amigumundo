@@ -43,7 +43,16 @@ export const PwaPrompt = () => {
 
   return (
     <>
-      <div className="max-w-2xl mx-auto px-4 mb-6 animate-in slide-in-from-top duration-500">
+      <div className="max-w-2xl mx-auto px-4 mb-6 animate-in slide-in-from-top duration-500 relative">
+        {/* Botão de Fechar absoluto bem colado no canto superior direito */}
+        <button 
+          onClick={handleDismiss}
+          className="absolute top-1.5 right-5 p-1 text-gray-400 hover:text-white hover:bg-white/10 rounded-full transition-colors z-20"
+          aria-label="Fechar"
+        >
+          <X size={14} />
+        </button>
+
         <div
           onClick={handleInstallClick}
           className="w-full bg-gradient-to-r from-[#171717] to-[#262626] text-white p-4 rounded-2xl text-center shadow-lg flex items-center justify-between gap-4 hover:scale-[1.01] active:scale-[0.99] transition-transform border border-white/10 cursor-pointer relative"
@@ -53,26 +62,22 @@ export const PwaPrompt = () => {
             <Smartphone size={24} />
           </div>
           
-          {/* Textos idênticos ao do rodapé */}
+          {/* Textos com quebras de linha exatas */}
           <div className="text-left flex-1">
             <p className="text-[11px] sm:text-xs font-black uppercase tracking-wider text-[#44FF00]">
               Dica de Ouro! 📱
             </p>
             <p className="text-[11px] sm:text-xs font-bold text-gray-200 leading-tight mt-0.5">
-              Para não perder nenhuma "Receita Gratuita e Promoções" instale o Icone do aplicativo no seu celular, é de graça!
+              Não perca nenhuma <br />
+              "Receita Gratuita e Promoções" <br />
+              instale o Icone do aplicativo <br />
+              no seu celular, é de graça!
             </p>
           </div>
 
-          {/* Ações: Seta indicativa + Botão de Fechar */}
-          <div className="flex items-center gap-2 shrink-0">
+          {/* Ações: Seta indicativa */}
+          <div className="flex items-center shrink-0 pr-2">
             <ArrowRight size={16} className="text-gray-400" />
-            <button 
-              onClick={handleDismiss}
-              className="p-1.5 text-gray-400 hover:text-white hover:bg-white/10 rounded-full transition-colors"
-              aria-label="Fechar"
-            >
-              <X size={16} />
-            </button>
           </div>
         </div>
       </div>
