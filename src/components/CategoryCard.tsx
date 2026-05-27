@@ -7,10 +7,11 @@ interface CategoryCardProps {
 
 export const CategoryCard = ({ nome, onClick }: CategoryCardProps) => {
   const categoryImages: Record<string, string> = {
-    "Animais": "https://images.unsplash.com/photo-1546182990-dffeafbe841d?q=80&w=400&auto=format&fit=crop",
-    "Bonecas": "https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?q=80&w=400&auto=format&fit=crop",
-    "Princesas": "https://images.unsplash.com/photo-1518895949257-7621c3c786d7?q=80&w=400&auto=format&fit=crop",
-    "Heróis": "https://images.unsplash.com/photo-1531259683007-016a7b628fc3?q=80&w=400&auto=format&fit=crop",
+    "Animais": "/animais.jpeg",
+    "Bonecas": "/bonecas.jpeg",
+    "Princesas": "/princesas.jpeg",
+    "Heróis": "/herois.jpeg",
+    "Naninhas": "/naninhas.png",
     "Plantas": "https://images.unsplash.com/photo-1545241047-6083a3684587?q=80&w=400&auto=format&fit=crop",
     "Dinossauros": "https://images.unsplash.com/photo-1569336415962-a4bd9f69cd83?q=80&w=400&auto=format&fit=crop",
     "Natal": "https://images.unsplash.com/photo-1544816155-12df9643f363?q=80&w=400&auto=format&fit=crop",
