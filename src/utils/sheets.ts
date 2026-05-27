@@ -118,11 +118,11 @@ export async function fetchSheetData<T>(sheetName: string, mapper: (row: string[
 // Fallback Mock Data matching the exact requested structure
 const fallbackRecipes: SheetRecipe[] = [
   { id: "387", nome: "Unicórnio Pastel", slug: "unicornio-pastel", preco: 8.90, categoria: "Princesas", url_foto: "https://picsum.photos/seed/387/400/400", ativo: true, disparar_push: false },
-  { id: "120", nome: "Coelhinho Apaixonado", slug: "coelhinho-apaixonado", preco: 6.90, categoria: "Personagens TV", url_foto: "https://picsum.photos/seed/120/400/400", ativo: true, disparar_push: false },
-  { id: "553", nome: "Gatinho Soneca", slug: "gatinho-soneca", preco: 6.50, categoria: "Super-Herois", url_foto: "https://picsum.photos/seed/553/400/400", ativo: true, disparar_push: false },
-  { id: "774", nome: "Dinossauro Baby", slug: "dinossauro-baby", preco: 7.50, categoria: "Animais da Fazenda", url_foto: "https://picsum.photos/seed/774/400/400", ativo: true, disparar_push: false },
-  { id: "229", nome: "Polvinho Reversível", slug: "polvinho-reversivel", preco: 7.90, categoria: "Animais Selvagens", url_foto: "https://picsum.photos/seed/229/400/400", ativo: true, disparar_push: false },
-  { id: "441", nome: "Mini Ursinho Pocket", slug: "mini-ursinho-pocket", preco: 5.90, categoria: "Fundo do Mar", url_foto: "https://picsum.photos/seed/441/400/400", ativo: true, disparar_push: false }
+  { id: "120", nome: "Coelhinho Apaixonado", slug: "coelhinho-apaixonado", preco: 6.90, categoria: "Animais", url_foto: "https://picsum.photos/seed/120/400/400", ativo: true, disparar_push: false },
+  { id: "553", nome: "Gatinho Soneca", slug: "gatinho-soneca", preco: 6.50, categoria: "Gatos", url_foto: "https://picsum.photos/seed/553/400/400", ativo: true, disparar_push: false },
+  { id: "774", nome: "Dinossauro Baby", slug: "dinossauro-baby", preco: 7.50, categoria: "Dinossauros", url_foto: "https://picsum.photos/seed/774/400/400", ativo: true, disparar_push: false },
+  { id: "229", nome: "Polvinho Reversível", slug: "polvinho-reversivel", preco: 7.90, categoria: "Marinhos", url_foto: "https://picsum.photos/seed/229/400/400", ativo: true, disparar_push: false },
+  { id: "441", nome: "Mini Ursinho Pocket", slug: "mini-ursinho-pocket", preco: 5.90, categoria: "Animais", url_foto: "https://picsum.photos/seed/441/400/400", ativo: true, disparar_push: false }
 ];
 
 const fallbackInfoprodutos: SheetInfoproduto[] = [
