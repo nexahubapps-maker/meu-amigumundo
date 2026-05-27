@@ -34,7 +34,7 @@ export const CategoryCard = ({ nome, onClick }: CategoryCardProps) => {
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
         />
       </div>
-      <span className="text-[#171717] text-[9px] sm:text-[10px] font-black text-center uppercase tracking-tight truncate w-full mt-1">
+      <span className="text-[#171717] text-[11px] sm:text-[13px] font-black text-center uppercase tracking-tight truncate w-full mt-1.5">
         {nome}
       </span>
     </div>
