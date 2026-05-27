@@ -14,7 +14,7 @@ export const categories: string[] = [
   "Móbiles",
   "Prendedores",
   "Bonecos",
-  "Combos",
+  "Minis",
   "Cachorros",
   "Gatos",
   "Religiosos",

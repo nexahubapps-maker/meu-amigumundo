@@ -19,6 +19,7 @@ export const CategoryCard = ({ nome, onClick }: CategoryCardProps) => {
     "Plantas": "https://ik.imagekit.io/di3huhaluc/plantas.jpeg",
     "Dinossauros": "https://ik.imagekit.io/di3huhaluc/dinossauros.jpeg",
     "Desenhos": "https://ik.imagekit.io/di3huhaluc/desenhos.jpeg",
+    "Minis": "https://images.unsplash.com/photo-1608889175123-8ec330b86f84?q=80&w=400&auto=format&fit=crop",
     "Natal": "https://images.unsplash.com/photo-1544816155-12df9643f363?q=80&w=400&auto=format&fit=crop",
     "Marinhos": "https://images.unsplash.com/photo-1582967788606-a171c1080cb0?q=80&w=400&auto=format&fit=crop",
     "Gatos": "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?q=80&w=400&auto=format&fit=crop",
