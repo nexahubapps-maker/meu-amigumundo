@@ -1,7 +1,8 @@
 "use client";
 
 import { type Pack } from "@/data/packs";
-import { Heart } from "lucide-react";
+import { Heart, Share2 } from "lucide-react";
+import { showSuccess } from "@/utils/toast";
 
 interface PackCardProps {
   pack: Pack;
@@ -15,6 +16,27 @@ interface PackCardProps {
 export const PackCard = ({ pack, inCart, isFavorite, onToggleFavorite, onAdd, onRemove }: PackCardProps) => {
   const badge = pack.id === "pack1" ? { text: "MAIS VENDIDO", bg: "bg-[#44FF00] text-[#171717]" } : 
                 pack.id === "pack2" ? { text: "NOVO", bg: "bg-blue-500 text-white" } : null;
+
+  const handleShare = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const slug = pack.nome.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "");
+    const shareUrl = `${window.location.origin}/pack/${slug}-${pack.id}`;
+    
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: `${pack.nome} - R$ ${pack.precoAtual.toFixed(2)}`,
+          text: "Toque para ver a receita completa e garantir a sua no AmiguMundo!",
+          url: shareUrl,
+        });
+      } else {
+        await navigator.clipboard.writeText(shareUrl);
+        showSuccess("Link de compartilhamento copiado para a área de transferência!");
+      }
+    } catch (err) {
+      console.warn("Erro ao compartilhar:", err);
+    }
+  };
 
   return (
     <div className={`flex flex-col rounded-2xl overflow-hidden bg-white shadow-[0_12px_24px_rgba(0,0,0,0.12)] hover:shadow-[0_18px_36px_rgba(0,0,0,0.18)] hover:-translate-y-1 transition-all duration-300 border border-gray-100/50 ${inCart ? 'animate-pulse-subtle border-[#44FF00]' : ''}`}>
@@ -40,6 +62,15 @@ export const PackCard = ({ pack, inCart, isFavorite, onToggleFavorite, onAdd, on
           className={`absolute top-2 right-2 bg-white/90 backdrop-blur-sm p-1 rounded-full shadow-md hover:scale-110 active:scale-90 transition-transform ${isFavorite ? 'text-[#44FF00]' : 'text-gray-400'}`}
         >
           <Heart size={14} fill={isFavorite ? "currentColor" : "none"} />
+        </button>
+
+        {/* Share Icon */}
+        <button 
+          onClick={handleShare}
+          className="absolute top-10 right-2 bg-white/90 backdrop-blur-sm p-1 rounded-full shadow-md hover:scale-110 active:scale-90 transition-transform text-gray-500 hover:text-gray-800"
+          title="Compartilhar"
+        >
+          <Share2 size={14} />
         </button>
 
         <div className="absolute bottom-2 left-2 bg-black/70 backdrop-blur-sm text-white text-[8px] font-bold px-2 py-0.5 rounded-md shadow-sm">

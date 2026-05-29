@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { X, Bell, Calendar } from 'lucide-react';
+import { X, Bell, Calendar, ExternalLink } from 'lucide-react';
 import { type SheetNotification } from '@/utils/sheets';
 
 interface NotificationsModalProps {
@@ -18,6 +18,12 @@ export const NotificationsModal = ({
   if (!isOpen) return null;
 
   const activeNotifications = notifications.filter(n => n.status);
+
+  const handleNotificationClick = (link: string) => {
+    if (link) {
+      window.open(link, "_blank");
+    }
+  };
 
   return (
     <div className="fixed inset-0 z-[100] flex justify-end bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
@@ -50,15 +56,36 @@ export const NotificationsModal = ({
                   : date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
 
                 return (
-                  <div key={notif.id} className="p-4 bg-gray-50 rounded-2xl border border-gray-100 space-y-2">
-                    <div className="flex items-start justify-between gap-2">
-                      <h4 className="text-xs font-black text-gray-800 uppercase leading-tight">{notif.titulo}</h4>
-                      <div className="flex items-center gap-1 text-[9px] text-gray-400 font-bold shrink-0">
-                        <Calendar size={10} />
-                        <span>{formattedDate}</span>
+                  <div 
+                    key={notif.id} 
+                    onClick={() => handleNotificationClick(notif.link)}
+                    className={`p-4 bg-gray-50 rounded-2xl border border-gray-100 space-y-3 transition-all ${notif.link ? 'cursor-pointer hover:bg-gray-100/80 active:scale-[0.99]' : ''}`}
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex-1 min-w-0">
+                        <h4 className="text-xs font-black text-gray-800 uppercase leading-tight flex items-center gap-1.5">
+                          {notif.titulo}
+                          {notif.link && <ExternalLink size={10} className="text-gray-400" />}
+                        </h4>
+                        <div className="flex items-center gap-1 text-[9px] text-gray-400 font-bold mt-1">
+                          <Calendar size={10} />
+                          <span>{formattedDate}</span>
+                        </div>
                       </div>
                     </div>
-                    <p className="text-xs text-gray-600 font-medium leading-relaxed">{notif.mensagem}</p>
+
+                    <div className="flex gap-3 items-start">
+                      {notif.url_foto && (
+                        <img 
+                          src={notif.url_foto} 
+                          alt="" 
+                          className="w-16 h-16 rounded-xl object-cover border border-gray-200 shrink-0"
+                        />
+                      )}
+                      <p className="text-xs text-gray-600 font-medium leading-relaxed flex-1">
+                        {notif.mensagem}
+                      </p>
+                    </div>
                   </div>
                 );
               })}

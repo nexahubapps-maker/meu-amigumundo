@@ -1,8 +1,9 @@
 "use client";
 
 import React from "react";
-import { ArrowLeft, Heart, Search } from "lucide-react";
+import { ArrowLeft, Heart, Search, Share2 } from "lucide-react";
 import { type SheetRecipe } from "@/utils/sheets";
+import { showSuccess } from "@/utils/toast";
 
 interface CategoryDetailViewProps {
   categoriaSlug: string;
@@ -34,6 +35,27 @@ export const CategoryDetailView = ({
     backgroundRepeat: "repeat",
     backgroundSize: "150px",
     textShadow: "1px 1px 2px rgba(0,0,0,0.5)"
+  };
+
+  const handleShare = async (recipe: SheetRecipe, e: React.MouseEvent) => {
+    e.stopPropagation();
+    const slug = recipe.nome.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "");
+    const shareUrl = `${window.location.origin}/receita/${slug}-${recipe.id}`;
+    
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: `${recipe.nome} - R$ ${recipe.preco.toFixed(2)}`,
+          text: "Toque para ver a receita completa e garantir a sua no AmiguMundo!",
+          url: shareUrl,
+        });
+      } else {
+        await navigator.clipboard.writeText(shareUrl);
+        showSuccess("Link de compartilhamento copiado para a área de transferência!");
+      }
+    } catch (err) {
+      console.warn("Erro ao compartilhar:", err);
+    }
   };
 
   return (
@@ -105,6 +127,15 @@ export const CategoryDetailView = ({
                       className={`absolute top-1.5 right-1.5 bg-white/90 backdrop-blur-sm p-1 rounded-full shadow-md hover:scale-110 active:scale-90 transition-transform z-10 ${isFavorite ? 'text-[#44FF00]' : 'text-gray-400'}`}
                     >
                       <Heart size={10} fill={isFavorite ? "currentColor" : "none"} />
+                    </button>
+
+                    {/* Share Icon */}
+                    <button 
+                      onClick={(e) => handleShare(recipe, e)}
+                      className="absolute top-7 right-1.5 bg-white/90 backdrop-blur-sm p-1 rounded-full shadow-md hover:scale-110 active:scale-90 transition-transform text-gray-500 hover:text-gray-800 z-10"
+                      title="Compartilhar"
+                    >
+                      <Share2 size={10} />
                     </button>
                   </div>
 

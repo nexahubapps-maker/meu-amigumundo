@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { Header } from "@/components/Header";
 import RecipeCard from "@/components/RecipeCard";
 import { UpsellCard } from "@/components/UpsellCard";
@@ -19,6 +19,8 @@ import { CartFooter } from "@/components/CartFooter";
 import { CategoryDetailView } from "@/components/CategoryDetailView";
 import { LightboxModal } from "@/components/LightboxModal";
 import { InstallGuideCard } from "@/components/InstallGuideCard";
+import { WelcomeBanner } from "@/components/WelcomeBanner";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { categories } from "@/data/categories";
 import { 
   getRecipes, 
@@ -32,11 +34,12 @@ import {
 } from "@/utils/sheets";
 import { playHeartbeatSound } from "@/utils/audio";
 import { type CartItem, calculateCart } from "@/utils/pricing";
-import { showCartAdd, showSuccess } from "@/utils/toast";
+import { showCartAdd, showSuccess, showInfo } from "@/utils/toast";
 
 export default function Index() {
   const navigate = useNavigate();
-  const { categoria_slug, id: routeProductId } = useParams();
+  const location = useLocation();
+  const { categoria_slug, id: routeProductId, slug_and_id } = useParams();
   
   // State for fetched data
   const [recipesList, setRecipesList] = useState<SheetRecipe[]>([]);
@@ -58,11 +61,25 @@ export default function Index() {
   // Notifications Read State
   const [hasUnreadNotifications, setHasUnreadNotifications] = useState(true);
 
+  // Direct Entry Detection
+  const [isDirectEntry, setIsDirectEntry] = useState(false);
+
   // Favorites State
   const [favorites, setFavorites] = useState<string[]>(() => {
     const saved = localStorage.getItem("amigumundo-favorites");
     return saved ? JSON.parse(saved) : [];
   });
+
+  // Extract ID from slug_and_id
+  const getTargetId = () => {
+    if (slug_and_id) {
+      const parts = slug_and_id.split("-");
+      return parts[parts.length - 1];
+    }
+    return routeProductId;
+  };
+
+  const targetId = getTargetId();
 
   // Fetch all data from Google Sheets
   useEffect(() => {
@@ -121,9 +138,101 @@ export default function Index() {
     loadAllData();
   }, []);
 
+  // Notification Listener for Date/Time
+  useEffect(() => {
+    if (notificationsList.length === 0) return;
+
+    const checkNotifications = () => {
+      const now = new Date();
+      notificationsList.forEach((notif) => {
+        if (!notif.status) return;
+        
+        const notifTime = new Date(notif.data_hora);
+        if (now >= notifTime) {
+          const hasBeenShown = localStorage.getItem(`notif-shown-${notif.id}`);
+          if (!hasBeenShown) {
+            showInfo(`🔔 ${notif.titulo}: ${notif.mensagem}`);
+            localStorage.setItem(`notif-shown-${notif.id}`, "true");
+          }
+        }
+      });
+    };
+
+    // Check immediately and then every 30 seconds
+    checkNotifications();
+    const interval = setInterval(checkNotifications, 30000);
+    return () => clearInterval(interval);
+  }, [notificationsList]);
+
+  // Detect Direct Entry and Handle Dynamic Meta Tags
+  useEffect(() => {
+    const isDynamicRoute = location.pathname.startsWith("/receita/") || 
+                           location.pathname.startsWith("/pack/") || 
+                           location.pathname.startsWith("/infoproduto/");
+    
+    if (isDynamicRoute) {
+      setIsDirectEntry(true);
+    }
+  }, [location.pathname]);
+
+  // Dynamic Meta Tags and Document Title
+  useEffect(() => {
+    if (isLoading) return;
+
+    let title = "AmiguMundo - Receitas de Amigurumi";
+    let image = "https://ik.imagekit.io/51b3srlsg/icone_amigumundo.png";
+    let description = "Toque para ver a receita completa e garantir a sua no AmiguMundo!";
+
+    if (location.pathname.startsWith("/receita/") && targetId) {
+      const recipe = recipesList.find(r => r.id === targetId);
+      if (recipe) {
+        title = `${recipe.nome} - R$ ${recipe.preco.toFixed(2)}`;
+        image = recipe.url_foto;
+      }
+    } else if (location.pathname.startsWith("/pack/") && targetId) {
+      const pack = packsList.find(p => p.id === targetId);
+      if (pack) {
+        title = `${pack.nome} - R$ ${pack.preco.toFixed(2)}`;
+        image = pack.url_foto;
+        description = pack.descricao;
+      }
+    } else if (location.pathname.startsWith("/infoproduto/") && targetId) {
+      const upsell = infoprodutosList.find(u => u.id === targetId);
+      if (upsell) {
+        title = `${upsell.nome} - R$ ${upsell.preco.toFixed(2)}`;
+        image = upsell.url_foto;
+        description = upsell.descricao;
+      }
+    }
+
+    document.title = title;
+
+    // Update Meta Tags dynamically
+    const updateMetaTag = (property: string, content: string) => {
+      let element = document.querySelector(`meta[property="${property}"]`) || 
+                    document.querySelector(`meta[name="${property}"]`);
+      if (!element) {
+        element = document.createElement("meta");
+        if (property.startsWith("og:")) {
+          element.setAttribute("property", property);
+        } else {
+          element.setAttribute("name", property);
+        }
+        document.head.appendChild(element);
+      }
+      element.setAttribute("content", content);
+    };
+
+    updateMetaTag("og:title", title);
+    updateMetaTag("og:image", image);
+    updateMetaTag("og:description", description);
+    updateMetaTag("twitter:card", "summary_large_image");
+    updateMetaTag("og:image:type", "image/jpeg");
+  }, [location.pathname, targetId, recipesList, packsList, infoprodutosList, isLoading]);
+
   // Scroll Lock Effect
   useEffect(() => {
-    const isModalOpen = !!showRecipe || !!activeUpsell || isFavoritesOpen || !!zoomImage || !!categoria_slug || !!routeProductId;
+    const isModalOpen = !!showRecipe || !!activeUpsell || isFavoritesOpen || !!zoomImage || !!categoria_slug || !!targetId;
     if (isModalOpen) {
       document.body.style.overflow = "hidden";
     } else {
@@ -132,7 +241,7 @@ export default function Index() {
     return () => {
       document.body.style.overflow = "";
     };
-  }, [showRecipe, activeUpsell, isFavoritesOpen, zoomImage, categoria_slug, routeProductId]);
+  }, [showRecipe, activeUpsell, isFavoritesOpen, zoomImage, categoria_slug, targetId]);
 
   useEffect(() => {
     const savedCart = localStorage.getItem("amigumundo-cart");
@@ -149,13 +258,13 @@ export default function Index() {
 
   // Deep Linking Handler for Product Detail
   useEffect(() => {
-    if (routeProductId && recipesList.length > 0) {
-      const recipe = recipesList.find(r => r.id === routeProductId);
+    if (targetId && recipesList.length > 0) {
+      const recipe = recipesList.find(r => r.id === targetId);
       if (recipe) {
         setShowRecipe(recipe);
       }
     }
-  }, [routeProductId, recipesList]);
+  }, [targetId, recipesList]);
 
   const toggleFavorite = (id: string) => {
     setFavorites((prev) => {
@@ -282,6 +391,9 @@ export default function Index() {
 
   return (
     <div className="min-h-screen bg-white pb-24 relative">
+      {/* Welcome Banner for Direct Entry */}
+      <WelcomeBanner isDirectEntry={isDirectEntry} />
+
       <Header cartCount={cart.length} />
 
       {/* Internal Popup for active notifications */}
@@ -450,16 +562,50 @@ export default function Index() {
       {error && <ErrorToast message={error} onClose={() => setError(null)} />}
 
       {showRecipe && (
-        <div className="modal-overlay" onClick={() => setShowRecipe(null)}>
-          <div className="modal-content p-0 overflow-hidden" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-overlay" onClick={() => {
+          setShowRecipe(null);
+          if (targetId) navigate("/");
+        }}>
+          <div className="modal-content p-6 overflow-hidden" onClick={(e) => e.stopPropagation()}>
+            {/* Breadcrumbs Navigation */}
+            <Breadcrumbs 
+              categoria={showRecipe.categoria} 
+              produtoNome={showRecipe.nome} 
+            />
+
             <RecipeCard
               recipe={showRecipe}
               isFavorite={favorites.includes(showRecipe.id)}
               onToggleFavorite={() => toggleFavorite(showRecipe.id)}
               onAdd={() => handleRecipeAdd(showRecipe)}
-              onReject={() => setShowRecipe(null)}
+              onReject={() => {
+                setShowRecipe(null);
+                if (targetId) navigate("/");
+              }}
               isInCart={isInCart(showRecipe.id)}
             />
+
+            {/* Strategic Return Button */}
+            <div className="mt-6 pt-4 border-t border-gray-100 flex flex-col gap-2">
+              <button
+                onClick={() => {
+                  setShowRecipe(null);
+                  navigate(`/categoria/${encodeURIComponent(showRecipe.categoria.toLowerCase())}`);
+                }}
+                className="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 py-3 rounded-xl font-bold text-xs uppercase tracking-wider transition-all text-center"
+              >
+                Conhecer mais receitas em {showRecipe.categoria} ➔
+              </button>
+              <button
+                onClick={() => {
+                  setShowRecipe(null);
+                  navigate("/");
+                }}
+                className="w-full bg-gray-50 hover:bg-gray-100 text-gray-500 py-2.5 rounded-xl font-bold text-[10px] uppercase tracking-wider transition-all text-center"
+              >
+                Ver o catálogo completo do AmiguMundo ➔
+              </button>
+            </div>
           </div>
         </div>
       )}

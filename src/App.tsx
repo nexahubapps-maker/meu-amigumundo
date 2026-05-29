@@ -25,6 +25,11 @@ const App = () => (
           {/* Detalhe do Produto */}
           <Route path="/produto/:id" element={<Index />} />
           
+          {/* Rotas Dinâmicas Automatizadas */}
+          <Route path="/receita/:slug_and_id" element={<Index />} />
+          <Route path="/pack/:slug_and_id" element={<Index />} />
+          <Route path="/infoproduto/:slug_and_id" element={<Index />} />
+          
           {/* Tela de Checkout */}
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/checkout/:id" element={<Checkout />} />

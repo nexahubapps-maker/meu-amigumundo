@@ -1,6 +1,7 @@
 "use client";
 
-import { Heart } from "lucide-react";
+import { Heart, Share2 } from "lucide-react";
+import { showSuccess } from "@/utils/toast";
 
 interface RecipeCardProps {
   recipe: {
@@ -21,8 +22,29 @@ const RecipeCard = ({ recipe, isFavorite, onToggleFavorite, onAdd, onReject, isI
   const badge = recipe.id === "387" ? { text: "MAIS VENDIDO", bg: "bg-[#44FF00] text-[#171717]" } : 
                 recipe.id === "120" ? { text: "NOVO", bg: "bg-blue-500 text-white" } : null;
 
+  const handleShare = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const slug = recipe.nome.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "");
+    const shareUrl = `${window.location.origin}/receita/${slug}-${recipe.id}`;
+    
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: `${recipe.nome} - R$ ${recipe.preco.toFixed(2)}`,
+          text: "Toque para ver a receita completa e garantir a sua no AmiguMundo!",
+          url: shareUrl,
+        });
+      } else {
+        await navigator.clipboard.writeText(shareUrl);
+        showSuccess("Link de compartilhamento copiado para a área de transferência!");
+      }
+    } catch (err) {
+      console.warn("Erro ao compartilhar:", err);
+    }
+  };
+
   return (
-    <div className={`overflow-hidden relative flex flex-col bg-white rounded-2xl border border-gray-100 shadow-sm transition-all duration-300 ${isInCart ? 'animate-pulse-subtle border-[#44FF00] shadow-md' : ''}`}>
+    <div className={`overflow-hidden relative flex flex-col bg-white rounded-2xl border border-gray-100 shadow-sm transition-all duration-300 ${isInCart ? 'animate-pulse-subtle border-[#44FF00]' : ''}`}>
       <div className="relative h-[120px] w-full bg-gray-50">
         <img
           src={`https://picsum.photos/seed/${recipe.id}/400/300`}
@@ -46,6 +68,15 @@ const RecipeCard = ({ recipe, isFavorite, onToggleFavorite, onAdd, onReject, isI
           className={`absolute top-2 right-2 bg-white/90 backdrop-blur-sm p-1 rounded-full shadow-md hover:scale-110 active:scale-90 transition-transform ${isFavorite ? 'text-[#44FF00]' : 'text-gray-400'}`}
         >
           <Heart size={14} fill={isFavorite ? "currentColor" : "none"} />
+        </button>
+
+        {/* Share Icon */}
+        <button 
+          onClick={handleShare}
+          className="absolute top-10 right-2 bg-white/90 backdrop-blur-sm p-1 rounded-full shadow-md hover:scale-110 active:scale-90 transition-transform text-gray-500 hover:text-gray-800"
+          title="Compartilhar"
+        >
+          <Share2 size={14} />
         </button>
 
         <div className="absolute bottom-2 left-2 bg-black/70 backdrop-blur-sm text-white text-[8px] font-bold px-2 py-0.5 rounded-md shadow-md">
