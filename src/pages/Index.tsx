@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { Header } from "@/components/Header";
 import RecipeCard from "@/components/RecipeCard";
 import { UpsellCard } from "@/components/UpsellCard";
@@ -175,106 +176,6 @@ export default function Index() {
     }
   }, [location.pathname]);
 
-  // Dynamic Meta Tags and Document Title
-  useEffect(() => {
-    if (isLoading) return;
-
-    let title = "AmiguMundo - Receitas de Amigurumi";
-    let image = "https://ik.imagekit.io/51b3srlsg/icone_amigumundo.png";
-    let description = "Toque para ver a receita completa e garantir a sua no AmiguMundo!";
-
-    if (location.pathname.startsWith("/receita/") && targetId) {
-      const recipe = recipesList.find(r => r.id === targetId);
-      if (recipe) {
-        title = `${recipe.nome} - R$ ${recipe.preco.toFixed(2)}`;
-        image = recipe.url_foto;
-      }
-    } else if (location.pathname.startsWith("/pack/") && targetId) {
-      const pack = packsList.find(p => p.id === targetId);
-      if (pack) {
-        title = `${pack.nome} - R$ ${pack.preco.toFixed(2)}`;
-        image = pack.url_foto;
-        description = pack.descricao;
-      }
-    } else if (location.pathname.startsWith("/infoproduto/") && targetId) {
-      const upsell = infoprodutosList.find(u => u.id === targetId);
-      if (upsell) {
-        title = `${upsell.nome} - R$ ${upsell.preco.toFixed(2)}`;
-        image = upsell.url_foto;
-        description = upsell.descricao;
-      }
-    } else if (categoria_slug) {
-      const decodedCat = decodeURIComponent(categoria_slug).toLowerCase();
-      const matchedCat = categories.find(c => c.toLowerCase() === decodedCat || c.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() === decodedCat);
-      
-      if (matchedCat) {
-        title = `Coleção ${matchedCat} - AmiguMundo`;
-        description = `Confira as melhores receitas de Amigurumi da categoria ${matchedCat} no AmiguMundo!`;
-        
-        const categoryImages: Record<string, string> = {
-          "Animais": "https://ik.imagekit.io/di3huhaluc/animais.jpeg",
-          "Bonecas": "https://ik.imagekit.io/di3huhaluc/bonecas.jpeg",
-          "Princesas": "https://ik.imagekit.io/di3huhaluc/princesas.jpeg",
-          "Heróis": "https://ik.imagekit.io/di3huhaluc/herois.jpeg",
-          "Naninhas": "https://ik.imagekit.io/di3huhaluc/naninhas.png",
-          "Chocalhos": "https://ik.imagekit.io/di3huhaluc/chocalhos.png",
-          "Games": "https://ik.imagekit.io/di3huhaluc/games.jpeg",
-          "Filmes": "https://ik.imagekit.io/di3huhaluc/filmes.jpeg",
-          "Animes": "https://ik.imagekit.io/di3huhaluc/animes.jpeg",
-          "Plantas": "https://ik.imagekit.io/di3huhaluc/plantas.jpeg",
-          "Dinossauros": "https://ik.imagekit.io/di3huhaluc/dinossauros.jpeg",
-          "Desenhos": "https://ik.imagekit.io/di3huhaluc/desenhos.jpeg",
-          "Bonecos": "https://ik.imagekit.io/di3huhaluc/bonecos.png",
-          "Móbiles": "https://ik.imagekit.io/di3huhaluc/mobiles.png",
-          "Minis": "https://ik.imagekit.io/di3huhaluc/minis.png",
-          "Bruxas": "https://ik.imagekit.io/di3huhaluc/bruxas.jpeg",
-          "Cachorros": "https://ik.imagekit.io/di3huhaluc/cachorros.jpeg",
-          "Marinhos": "https://ik.imagekit.io/di3huhaluc/marinho.jpeg",
-          "Comidinhas": "https://ik.imagekit.io/di3huhaluc/comidinhas.jpeg",
-          "Prendedores": "https://ik.imagekit.io/di3huhaluc/prendedores.png",
-          "Veículos": "https://ik.imagekit.io/di3huhaluc/carros.jpeg",
-          "Natal": "https://ik.imagekit.io/di3huhaluc/natal.jpeg",
-          "Profissões": "https://ik.imagekit.io/di3huhaluc/profiss%C3%B5es.jpeg",
-          "Signos": "https://ik.imagekit.io/di3huhaluc/signos.jpeg",
-          "Fadas": "https://ik.imagekit.io/di3huhaluc/fadas.jpeg",
-          "Gatos": "https://ik.imagekit.io/di3huhaluc/gatos.jpeg",
-          "Dragões": "https://ik.imagekit.io/di3huhaluc/drag%C3%B5es.jpeg",
-          "Religiosos": "https://ik.imagekit.io/di3huhaluc/religiosos.jpeg",
-          "Insetos": "https://ik.imagekit.io/di3huhaluc/insetos.jpeg",
-          "Místicos": "https://ik.imagekit.io/di3huhaluc/misticos.jpeg",
-          "Aves": "https://ik.imagekit.io/di3huhaluc/aves.jpeg",
-          "Monstrinhos": "https://ik.imagekit.io/di3huhaluc/monstrinho.jpeg",
-          "Acessórios": "https://ik.imagekit.io/di3huhaluc/acessorios.png",
-        };
-        image = categoryImages[matchedCat] || `https://picsum.photos/seed/${encodeURIComponent(matchedCat)}/400/400`;
-      }
-    }
-
-    document.title = title;
-
-    // Update Meta Tags dynamically
-    const updateMetaTag = (property: string, content: string) => {
-      let element = document.querySelector(`meta[property="${property}"]`) || 
-                    document.querySelector(`meta[name="${property}"]`);
-      if (!element) {
-        element = document.createElement("meta");
-        if (property.startsWith("og:")) {
-          element.setAttribute("property", property);
-        } else {
-          element.setAttribute("name", property);
-        }
-        document.head.appendChild(element);
-      }
-      element.setAttribute("content", content);
-    };
-
-    updateMetaTag("og:title", title);
-    updateMetaTag("og:image", image);
-    updateMetaTag("og:description", description);
-    updateMetaTag("twitter:card", "summary_large_image");
-    updateMetaTag("og:image:type", "image/jpeg");
-  }, [location.pathname, targetId, categoria_slug, recipesList, packsList, infoprodutosList, isLoading]);
-
   // Scroll Lock Effect
   useEffect(() => {
     const isModalOpen = !!showRecipe || !!activeUpsell || isFavoritesOpen || !!zoomImage || !!categoria_slug || !!targetId;
@@ -434,8 +335,87 @@ export default function Index() {
     localStorage.setItem("notifications-last-read", new Date().toISOString());
   };
 
+  // Dynamic Meta Tags Calculation
+  let metaTitle = "Amigu Mundo";
+  let metaImage = "https://ik.imagekit.io/51b3srlsg/icone_amigumundo.png";
+  let metaDescription = "Olha o que encontrei no AmiguMundo! Tudo sem ocupar espaço na memória do celular.";
+
+  if (location.pathname.startsWith("/receita/") && targetId) {
+    const recipe = recipesList.find(r => r.id === targetId);
+    if (recipe) {
+      metaTitle = `${recipe.nome} - R$ ${recipe.preco.toFixed(2)}`;
+      metaImage = recipe.url_foto;
+    }
+  } else if (location.pathname.startsWith("/pack/") && targetId) {
+    const pack = packsList.find(p => p.id === targetId);
+    if (pack) {
+      metaTitle = `${pack.nome} - R$ ${pack.preco.toFixed(2)}`;
+      metaImage = pack.url_foto;
+    }
+  } else if (location.pathname.startsWith("/infoproduto/") && targetId) {
+    const upsell = infoprodutosList.find(u => u.id === targetId);
+    if (upsell) {
+      metaTitle = `${upsell.nome} - R$ ${upsell.preco.toFixed(2)}`;
+      metaImage = upsell.url_foto;
+    }
+  } else if (categoria_slug) {
+    const decodedCat = decodeURIComponent(categoria_slug).toLowerCase();
+    const matchedCat = categories.find(c => c.toLowerCase() === decodedCat || c.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() === decodedCat);
+    
+    if (matchedCat) {
+      metaTitle = `Coleção ${matchedCat} - AmiguMundo`;
+      
+      const categoryImages: Record<string, string> = {
+        "Animais": "https://ik.imagekit.io/di3huhaluc/animais.jpeg",
+        "Bonecas": "https://ik.imagekit.io/di3huhaluc/bonecas.jpeg",
+        "Princesas": "https://ik.imagekit.io/di3huhaluc/princesas.jpeg",
+        "Heróis": "https://ik.imagekit.io/di3huhaluc/herois.jpeg",
+        "Naninhas": "https://ik.imagekit.io/di3huhaluc/naninhas.png",
+        "Chocalhos": "https://ik.imagekit.io/di3huhaluc/chocalhos.png",
+        "Games": "https://ik.imagekit.io/di3huhaluc/games.jpeg",
+        "Filmes": "https://ik.imagekit.io/di3huhaluc/filmes.jpeg",
+        "Animes": "https://ik.imagekit.io/di3huhaluc/animes.jpeg",
+        "Plantas": "https://ik.imagekit.io/di3huhaluc/plantas.jpeg",
+        "Dinossauros": "https://ik.imagekit.io/di3huhaluc/dinossauros.jpeg",
+        "Desenhos": "https://ik.imagekit.io/di3huhaluc/desenhos.jpeg",
+        "Bonecos": "https://ik.imagekit.io/di3huhaluc/bonecos.png",
+        "Móbiles": "https://ik.imagekit.io/di3huhaluc/mobiles.png",
+        "Minis": "https://ik.imagekit.io/di3huhaluc/minis.png",
+        "Bruxas": "https://ik.imagekit.io/di3huhaluc/bruxas.jpeg",
+        "Cachorros": "https://ik.imagekit.io/di3huhaluc/cachorros.jpeg",
+        "Marinhos": "https://ik.imagekit.io/di3huhaluc/marinho.jpeg",
+        "Comidinhas": "https://ik.imagekit.io/di3huhaluc/comidinhas.jpeg",
+        "Prendedores": "https://ik.imagekit.io/di3huhaluc/prendedores.png",
+        "Veículos": "https://ik.imagekit.io/di3huhaluc/carros.jpeg",
+        "Natal": "https://ik.imagekit.io/di3huhaluc/natal.jpeg",
+        "Profissões": "https://ik.imagekit.io/di3huhaluc/profiss%C3%B5es.jpeg",
+        "Signos": "https://ik.imagekit.io/di3huhaluc/signos.jpeg",
+        "Fadas": "https://ik.imagekit.io/di3huhaluc/fadas.jpeg",
+        "Gatos": "https://ik.imagekit.io/di3huhaluc/gatos.jpeg",
+        "Dragões": "https://ik.imagekit.io/di3huhaluc/drag%C3%B5es.jpeg",
+        "Religiosos": "https://ik.imagekit.io/di3huhaluc/religiosos.jpeg",
+        "Insetos": "https://ik.imagekit.io/di3huhaluc/insetos.jpeg",
+        "Místicos": "https://ik.imagekit.io/di3huhaluc/misticos.jpeg",
+        "Aves": "https://ik.imagekit.io/di3huhaluc/aves.jpeg",
+        "Monstrinhos": "https://ik.imagekit.io/di3huhaluc/monstrinho.jpeg",
+        "Acessórios": "https://ik.imagekit.io/di3huhaluc/acessorios.png",
+      };
+      metaImage = categoryImages[matchedCat] || `https://picsum.photos/seed/${encodeURIComponent(matchedCat)}/400/400`;
+    }
+  }
+
   return (
     <div className="min-h-screen bg-white pb-24 relative">
+      {/* Dynamic Meta Tags Injection */}
+      <Helmet>
+        <title>{metaTitle}</title>
+        <meta property="og:title" content={metaTitle} />
+        <meta property="og:image" content={metaImage} />
+        <meta property="og:description" content={metaDescription} />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta property="og:image:type" content="image/jpeg" />
+      </Helmet>
+
       {/* Welcome Banner for Direct Entry */}
       <WelcomeBanner isDirectEntry={isDirectEntry} />
 
@@ -692,7 +672,7 @@ export default function Index() {
             {isLoading ? (
               /* Skeleton Loaders */
               Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className="bg-gray-100 rounded-2xl aspect-square animate-pulse" />
+                <div key={i} className="bg-gray-100 rounded-xl aspect-square animate-pulse" />
               ))
             ) : (
               packsList.map((pack) => (

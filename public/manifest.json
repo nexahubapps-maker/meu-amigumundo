@@ -1,0 +1,21 @@
+{
+  "short_name": "Amigu Mundo",
+  "name": "Amigu Mundo",
+  "icons": [
+    {
+      "src": "https://ik.imagekit.io/51b3srlsg/icone_amigumundo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://ik.imagekit.io/51b3srlsg/icone_amigumundo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#FFFFFF",
+  "theme_color": "#0E5E6F",
+  "display": "standalone",
+  "orientation": "portrait"
+}
