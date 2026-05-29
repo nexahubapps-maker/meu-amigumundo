@@ -51,6 +51,13 @@ export interface SheetReceitaGratuita {
   ativo: boolean;
 }
 
+export interface SheetCategoria {
+  id: string; // ORDEM (ex: card01)
+  titulo: string;
+  imagem: string;
+  status: boolean;
+}
+
 const SPREADSHEET_ID = "1lV6mLey_Bvq01CdDztUxEUKOlmDHsH6YeiNOqQcRveQ";
 
 // Configurações do Google Drive para busca dinâmica de PDFs por código
@@ -155,6 +162,14 @@ const fallbackReceitaGratuita: SheetReceitaGratuita[] = [
   { codigo: "387", data: getTodayDateString(), nome: "Unicórnio Pastel", url_foto: "https://picsum.photos/seed/387/400/400", ativo: true }
 ];
 
+const fallbackCategorias: SheetCategoria[] = [
+  { id: "card01", titulo: "Animais", imagem: "https://ik.imagekit.io/di3huhaluc/animais.jpeg", status: true },
+  { id: "card02", titulo: "Bonecas", imagem: "https://ik.imagekit.io/di3huhaluc/bonecas.jpeg", status: true },
+  { id: "card03", titulo: "Princesas", imagem: "https://ik.imagekit.io/di3huhaluc/princesas.jpeg", status: true },
+  { id: "card04", titulo: "Heróis", imagem: "https://ik.imagekit.io/di3huhaluc/herois.jpeg", status: true },
+  { id: "card05", titulo: "Natal", imagem: "https://ik.imagekit.io/di3huhaluc/natal.jpeg", status: true }
+];
+
 // Fetchers
 export async function getRecipes(): Promise<SheetRecipe[]> {
   return fetchSheetData<SheetRecipe>(
@@ -234,6 +249,19 @@ export async function getReceitaGratuita(): Promise<SheetReceitaGratuita[]> {
       ativo: row[4]?.toLowerCase() === "true"
     }),
     fallbackReceitaGratuita
+  );
+}
+
+export async function getCategories(): Promise<SheetCategoria[]> {
+  return fetchSheetData<SheetCategoria>(
+    "categorias",
+    (row) => ({
+      id: row[0] || "",
+      titulo: row[1] || "",
+      imagem: row[2] || "",
+      status: row[3]?.toLowerCase() === "ativo"
+    }),
+    fallbackCategorias
   );
 }
 

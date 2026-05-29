@@ -5,48 +5,11 @@ import { showSuccess } from "@/utils/toast";
 
 interface CategoryCardProps {
   nome: string;
+  imagem: string;
   onClick?: () => void;
 }
 
-export const CategoryCard = ({ nome, onClick }: CategoryCardProps) => {
-  const categoryImages: Record<string, string> = {
-    "Animais": "https://ik.imagekit.io/di3huhaluc/animais.jpeg",
-    "Bonecas": "https://ik.imagekit.io/di3huhaluc/bonecas.jpeg",
-    "Princesas": "https://ik.imagekit.io/di3huhaluc/princesas.jpeg",
-    "Heróis": "https://ik.imagekit.io/di3huhaluc/herois.jpeg",
-    "Naninhas": "https://ik.imagekit.io/di3huhaluc/naninhas.png",
-    "Chocalhos": "https://ik.imagekit.io/di3huhaluc/chocalhos.png",
-    "Games": "https://ik.imagekit.io/di3huhaluc/games.jpeg",
-    "Filmes": "https://ik.imagekit.io/di3huhaluc/filmes.jpeg",
-    "Animes": "https://ik.imagekit.io/di3huhaluc/animes.jpeg",
-    "Plantas": "https://ik.imagekit.io/di3huhaluc/plantas.jpeg",
-    "Dinossauros": "https://ik.imagekit.io/di3huhaluc/dinossauros.jpeg",
-    "Desenhos": "https://ik.imagekit.io/di3huhaluc/desenhos.jpeg",
-    "Bonecos": "https://ik.imagekit.io/di3huhaluc/bonecos.png",
-    "Móbiles": "https://ik.imagekit.io/di3huhaluc/mobiles.png",
-    "Minis": "https://ik.imagekit.io/di3huhaluc/minis.png",
-    "Bruxas": "https://ik.imagekit.io/di3huhaluc/bruxas.jpeg",
-    "Cachorros": "https://ik.imagekit.io/di3huhaluc/cachorros.jpeg",
-    "Marinhos": "https://ik.imagekit.io/di3huhaluc/marinho.jpeg",
-    "Comidinhas": "https://ik.imagekit.io/di3huhaluc/comidinhas.jpeg",
-    "Prendedores": "https://ik.imagekit.io/di3huhaluc/prendedores.png",
-    "Veículos": "https://ik.imagekit.io/di3huhaluc/carros.jpeg",
-    "Natal": "https://ik.imagekit.io/di3huhaluc/natal.jpeg",
-    "Profissões": "https://ik.imagekit.io/di3huhaluc/profiss%C3%B5es.jpeg",
-    "Signos": "https://ik.imagekit.io/di3huhaluc/signos.jpeg",
-    "Fadas": "https://ik.imagekit.io/di3huhaluc/fadas.jpeg",
-    "Gatos": "https://ik.imagekit.io/di3huhaluc/gatos.jpeg",
-    "Dragões": "https://ik.imagekit.io/di3huhaluc/drag%C3%B5es.jpeg",
-    "Religiosos": "https://ik.imagekit.io/di3huhaluc/religiosos.jpeg",
-    "Insetos": "https://ik.imagekit.io/di3huhaluc/insetos.jpeg",
-    "Místicos": "https://ik.imagekit.io/di3huhaluc/misticos.jpeg",
-    "Aves": "https://ik.imagekit.io/di3huhaluc/aves.jpeg",
-    "Monstrinhos": "https://ik.imagekit.io/di3huhaluc/monstrinho.jpeg",
-    "Acessórios": "https://ik.imagekit.io/di3huhaluc/acessorios.png",
-  };
-
-  const imageUrl = categoryImages[nome] || `https://picsum.photos/seed/${encodeURIComponent(nome)}/400/400`;
-
+export const CategoryCard = ({ nome, imagem, onClick }: CategoryCardProps) => {
   const handleShare = async (e: React.MouseEvent) => {
     e.stopPropagation();
     const slug = nome.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "");
@@ -81,7 +44,7 @@ export const CategoryCard = ({ nome, onClick }: CategoryCardProps) => {
     >
       <div className="w-full aspect-square rounded-2xl overflow-hidden bg-gray-50 shadow-sm border border-gray-100 relative">
         <img 
-          src={imageUrl} 
+          src={imagem || `https://picsum.photos/seed/${encodeURIComponent(nome)}/400/400`} 
           alt={nome} 
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
         />

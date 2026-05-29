@@ -22,20 +22,31 @@ import { LightboxModal } from "@/components/LightboxModal";
 import { InstallGuideCard } from "@/components/InstallGuideCard";
 import { WelcomeBanner } from "@/components/WelcomeBanner";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { categories } from "@/data/categories";
 import { 
   getRecipes, 
   getInfoprodutos, 
   getPacks, 
   getNotifications,
+  getCategories,
   type SheetRecipe,
   type SheetInfoproduto,
   type SheetPack,
-  type SheetNotification
+  type SheetNotification,
+  type SheetCategoria
 } from "@/utils/sheets";
 import { playHeartbeatSound } from "@/utils/audio";
 import { type CartItem, calculateCart } from "@/utils/pricing";
 import { showCartAdd, showSuccess, showInfo } from "@/utils/toast";
+
+// Algoritmo Fisher-Yates Shuffle para embaralhar receitas
+function shuffleArray<T>(array: T[]): T[] {
+  const arr = [...array];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
 
 export default function Index() {
   const navigate = useNavigate();
@@ -47,6 +58,8 @@ export default function Index() {
   const [infoprodutosList, setInfoprodutosList] = useState<SheetInfoproduto[]>([]);
   const [packsList, setPacksList] = useState<SheetPack[]>([]);
   const [notificationsList, setNotificationsList] = useState<SheetNotification[]>([]);
+  const [categoriesList, setCategoriesList] = useState<SheetCategoria[]>([]);
+  const [shuffledRecipes, setShuffledRecipes] = useState<SheetRecipe[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -87,17 +100,24 @@ export default function Index() {
     const loadAllData = async () => {
       setIsLoading(true);
       try {
-        const [recipesData, infoprodutosData, packsData, notificationsData] = await Promise.all([
+        const [recipesData, infoprodutosData, packsData, notificationsData, categoriesData] = await Promise.all([
           getRecipes(),
           getInfoprodutos(),
           getPacks(),
-          getNotifications()
+          getNotifications(),
+          getCategories()
         ]);
 
         setRecipesList(recipesData);
         setInfoprodutosList(infoprodutosData);
         setPacksList(packsData);
         setNotificationsList(notificationsData);
+
+        // Filtrar categorias ativas e ordenar sequencialmente pela coluna ORDEM (id)
+        const activeCategories = categoriesData
+          .filter(c => c.status)
+          .sort((a, b) => a.id.localeCompare(b.id, undefined, { numeric: true, sensitivity: 'base' }));
+        setCategoriesList(activeCategories);
 
         // Check if there are new notifications since last read
         const lastRead = localStorage.getItem("notifications-last-read");
@@ -138,6 +158,35 @@ export default function Index() {
 
     loadAllData();
   }, []);
+
+  // Embaralhar receitas e validar status da categoria a cada acesso
+  useEffect(() => {
+    if (categoria_slug && recipesList.length > 0 && categoriesList.length > 0) {
+      const decodedCat = decodeURIComponent(categoria_slug).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      
+      // Verificar se a categoria existe e está ativa
+      const matchedCat = categoriesList.find(c => {
+        const titleNormalized = c.titulo.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        return titleNormalized === decodedCat;
+      });
+
+      if (!matchedCat) {
+        // Categoria inativa ou inexistente, redireciona para a Home
+        navigate("/");
+        return;
+      }
+
+      const filtered = recipesList.filter(r => {
+        const catName = r.categoria.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        return catName === decodedCat;
+      });
+
+      // Aplicar Fisher-Yates Shuffle para embaralhar a lista de receitas
+      setShuffledRecipes(shuffleArray(filtered));
+    } else {
+      setShuffledRecipes([]);
+    }
+  }, [categoria_slug, recipesList, categoriesList, navigate]);
 
   // Notification Listener for Date/Time
   useEffect(() => {
@@ -324,11 +373,6 @@ export default function Index() {
     textShadow: "1px 1px 2px rgba(0,0,0,0.5)"
   };
 
-  // Filter recipes for the selected category
-  const selectedCategoryRecipes = categoria_slug 
-    ? recipesList.filter(r => r.categoria.toLowerCase() === categoria_slug.toLowerCase() || r.categoria.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() === categoria_slug.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase())
-    : [];
-
   const handleOpenNotifications = () => {
     setIsNotificationsOpen(true);
     setHasUnreadNotifications(false);
@@ -359,48 +403,15 @@ export default function Index() {
       metaImage = upsell.url_foto;
     }
   } else if (categoria_slug) {
-    const decodedCat = decodeURIComponent(categoria_slug).toLowerCase();
-    const matchedCat = categories.find(c => c.toLowerCase() === decodedCat || c.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() === decodedCat);
+    const decodedCat = decodeURIComponent(categoria_slug).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    const matchedCat = categoriesList.find(c => {
+      const titleNormalized = c.titulo.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      return titleNormalized === decodedCat;
+    });
     
     if (matchedCat) {
-      metaTitle = `Coleção ${matchedCat} - AmiguMundo`;
-      
-      const categoryImages: Record<string, string> = {
-        "Animais": "https://ik.imagekit.io/di3huhaluc/animais.jpeg",
-        "Bonecas": "https://ik.imagekit.io/di3huhaluc/bonecas.jpeg",
-        "Princesas": "https://ik.imagekit.io/di3huhaluc/princesas.jpeg",
-        "Heróis": "https://ik.imagekit.io/di3huhaluc/herois.jpeg",
-        "Naninhas": "https://ik.imagekit.io/di3huhaluc/naninhas.png",
-        "Chocalhos": "https://ik.imagekit.io/di3huhaluc/chocalhos.png",
-        "Games": "https://ik.imagekit.io/di3huhaluc/games.jpeg",
-        "Filmes": "https://ik.imagekit.io/di3huhaluc/filmes.jpeg",
-        "Animes": "https://ik.imagekit.io/di3huhaluc/animes.jpeg",
-        "Plantas": "https://ik.imagekit.io/di3huhaluc/plantas.jpeg",
-        "Dinossauros": "https://ik.imagekit.io/di3huhaluc/dinossauros.jpeg",
-        "Desenhos": "https://ik.imagekit.io/di3huhaluc/desenhos.jpeg",
-        "Bonecos": "https://ik.imagekit.io/di3huhaluc/bonecos.png",
-        "Móbiles": "https://ik.imagekit.io/di3huhaluc/mobiles.png",
-        "Minis": "https://ik.imagekit.io/di3huhaluc/minis.png",
-        "Bruxas": "https://ik.imagekit.io/di3huhaluc/bruxas.jpeg",
-        "Cachorros": "https://ik.imagekit.io/di3huhaluc/cachorros.jpeg",
-        "Marinhos": "https://ik.imagekit.io/di3huhaluc/marinho.jpeg",
-        "Comidinhas": "https://ik.imagekit.io/di3huhaluc/comidinhas.jpeg",
-        "Prendedores": "https://ik.imagekit.io/di3huhaluc/prendedores.png",
-        "Veículos": "https://ik.imagekit.io/di3huhaluc/carros.jpeg",
-        "Natal": "https://ik.imagekit.io/di3huhaluc/natal.jpeg",
-        "Profissões": "https://ik.imagekit.io/di3huhaluc/profiss%C3%B5es.jpeg",
-        "Signos": "https://ik.imagekit.io/di3huhaluc/signos.jpeg",
-        "Fadas": "https://ik.imagekit.io/di3huhaluc/fadas.jpeg",
-        "Gatos": "https://ik.imagekit.io/di3huhaluc/gatos.jpeg",
-        "Dragões": "https://ik.imagekit.io/di3huhaluc/drag%C3%B5es.jpeg",
-        "Religiosos": "https://ik.imagekit.io/di3huhaluc/religiosos.jpeg",
-        "Insetos": "https://ik.imagekit.io/di3huhaluc/insetos.jpeg",
-        "Místicos": "https://ik.imagekit.io/di3huhaluc/misticos.jpeg",
-        "Aves": "https://ik.imagekit.io/di3huhaluc/aves.jpeg",
-        "Monstrinhos": "https://ik.imagekit.io/di3huhaluc/monstrinho.jpeg",
-        "Acessórios": "https://ik.imagekit.io/di3huhaluc/acessorios.png",
-      };
-      metaImage = categoryImages[matchedCat] || `https://picsum.photos/seed/${encodeURIComponent(matchedCat)}/400/400`;
+      metaTitle = `Coleção ${matchedCat.titulo} - AmiguMundo`;
+      metaImage = matchedCat.imagem;
     }
   }
 
@@ -492,13 +503,14 @@ export default function Index() {
             
             {/* 4. GRID DE CATEGORIAS (3 em 3 colunas, espaçamento mínimo lateral e vertical) */}
             <div className="grid grid-cols-3 gap-x-1 gap-y-1.5 px-0.5">
-              {categories.map((cat) => (
+              {categoriesList.map((cat) => (
                 <CategoryCard 
-                  key={cat} 
-                  nome={cat} 
+                  key={cat.id} 
+                  nome={cat.titulo} 
+                  imagem={cat.imagem}
                   onClick={() => {
                     playHeartbeatSound();
-                    navigate(`/categoria/${encodeURIComponent(cat.toLowerCase())}`);
+                    navigate(`/categoria/${encodeURIComponent(cat.titulo.toLowerCase())}`);
                   }} 
                 />
               ))}
@@ -774,7 +786,7 @@ export default function Index() {
       {categoria_slug && (
         <CategoryDetailView
           categoriaSlug={categoria_slug}
-          recipes={selectedCategoryRecipes}
+          recipes={shuffledRecipes}
           isLoading={isLoading}
           isInCart={isInCart}
           onBack={() => navigate("/")}
