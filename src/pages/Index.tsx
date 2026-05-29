@@ -416,7 +416,7 @@ export default function Index() {
   }
 
   return (
-    <div className="min-h-screen bg-white pb-24 relative">
+    <div className="min-h-screen bg-white pb-24 relative lg:max-w-6xl lg:mx-auto lg:shadow-2xl">
       {/* Dynamic Meta Tags Injection */}
       <Helmet>
         <title>{metaTitle}</title>
@@ -502,7 +502,7 @@ export default function Index() {
             </p>
             
             {/* 4. GRID DE CATEGORIAS (3 em 3 colunas, espaçamento mínimo lateral e vertical) */}
-            <div className="grid grid-cols-3 gap-x-1 gap-y-1.5 px-0.5">
+            <div className="grid grid-cols-3 lg:grid-cols-6 gap-x-1 gap-y-1.5 lg:gap-4 px-0.5">
               {categoriesList.map((cat) => (
                 <CategoryCard 
                   key={cat.id} 
@@ -680,7 +680,7 @@ export default function Index() {
             Suas coleções favoritas reunidas em pacotes completos com descontos imperdíveis.
           </p>
 
-          <div className="grid grid-cols-2 gap-3 sm:gap-4">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             {isLoading ? (
               /* Skeleton Loaders */
               Array.from({ length: 4 }).map((_, i) => (

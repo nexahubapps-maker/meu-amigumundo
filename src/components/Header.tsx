@@ -29,7 +29,7 @@ export const Header = ({ cartCount = 0 }: HeaderProps) => {
   };
 
   return (
-    <div className="relative mx-4 my-2 bg-white h-[92px] flex items-center px-4 shadow-[0_8px_30px_rgb(0,0,0,0.08)] rounded-2xl border border-gray-100/80">
+    <div className="relative mx-4 my-2 lg:mx-auto lg:max-w-6xl bg-white h-[92px] flex items-center px-4 shadow-[0_8px_30px_rgb(0,0,0,0.08)] rounded-2xl border border-gray-100/80">
       <div className="w-full flex items-center justify-between">
         <div 
           className="flex flex-col items-start cursor-pointer"

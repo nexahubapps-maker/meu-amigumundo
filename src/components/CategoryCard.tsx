@@ -42,7 +42,7 @@ export const CategoryCard = ({ nome, imagem, onClick }: CategoryCardProps) => {
       onClick={onClick}
       className="flex flex-col items-center cursor-pointer group w-full relative"
     >
-      <div className="w-full aspect-square rounded-2xl overflow-hidden bg-gray-50 shadow-sm border border-gray-100 relative">
+      <div className="w-full aspect-square rounded-2xl overflow-hidden bg-gray-50 shadow-sm border border-gray-100 relative lg:max-w-[140px] lg:mx-auto">
         <img 
           src={imagem || `https://picsum.photos/seed/${encodeURIComponent(nome)}/400/400`} 
           alt={nome} 
@@ -58,7 +58,7 @@ export const CategoryCard = ({ nome, imagem, onClick }: CategoryCardProps) => {
           <Share2 size={12} />
         </button>
       </div>
-      <span className="text-[#171717] text-[11px] sm:text-[13px] font-black text-center uppercase tracking-tight truncate w-full mt-1.5">
+      <span className="text-[#171717] text-[11px] sm:text-[13px] lg:text-xs font-black text-center uppercase tracking-tight truncate w-full mt-1.5">
         {nome}
       </span>
     </div>

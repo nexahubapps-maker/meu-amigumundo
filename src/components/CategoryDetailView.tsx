@@ -88,22 +88,22 @@ export const CategoryDetailView = ({
 
         {isLoading ? (
           /* Skeleton Loaders */
-          <div className="grid grid-cols-3 gap-1 sm:gap-2">
+          <div className="grid grid-cols-3 lg:grid-cols-5 gap-1 sm:gap-2 lg:gap-4">
             {Array.from({ length: 6 }).map((_, i) => (
               <div key={i} className="bg-gray-100 rounded-xl aspect-square animate-pulse" />
             ))}
           </div>
         ) : recipes.length === 0 ? (
           /* Ghost Card Placeholder */
-          <div className="grid grid-cols-3 gap-1 sm:gap-2">
+          <div className="grid grid-cols-3 lg:grid-cols-5 gap-1 sm:gap-2 lg:gap-4">
             <div className="bg-gray-100 border border-dashed border-gray-200 rounded-xl aspect-square flex flex-col items-center justify-center p-2 animate-pulse">
               <div className="w-8 h-8 bg-gray-200 rounded-full mb-2"></div>
               <div className="w-12 h-2 bg-gray-200 rounded"></div>
             </div>
           </div>
         ) : (
-          /* Real Recipe Cards - Grade 3x3 Ultra-Compacta */
-          <div className="grid grid-cols-3 gap-1 sm:gap-2">
+          /* Real Recipe Cards - Grade 3x3 Ultra-Compacta no Mobile e 5x5 no Desktop */
+          <div className="grid grid-cols-3 lg:grid-cols-5 gap-1 sm:gap-2 lg:gap-4">
             {recipes.map((recipe) => {
               const added = isInCart(recipe.id);
               const isFavorite = favorites.includes(recipe.id);
@@ -148,10 +148,10 @@ export const CategoryDetailView = ({
                   {/* Info & Buy Button - Bloco de Dados Ultra-Compacto */}
                   <div className="pt-1.5 flex flex-col justify-between flex-1">
                     <div>
-                      <h4 className="text-[9px] font-black text-gray-800 uppercase tracking-tight line-clamp-1 leading-none mb-1">
+                      <h4 className="text-[9px] lg:text-xs font-black text-gray-800 uppercase tracking-tight line-clamp-1 leading-none mb-1">
                         {recipe.nome}
                       </h4>
-                      <div className="flex items-center justify-between text-[8px] text-gray-400 font-bold mb-1.5">
+                      <div className="flex items-center justify-between text-[8px] lg:text-[10px] text-gray-400 font-bold mb-1.5">
                         <span>({recipe.id})</span>
                         <span className="text-gray-900 font-black">R$ {recipe.preco.toFixed(2)}</span>
                       </div>
@@ -161,7 +161,7 @@ export const CategoryDetailView = ({
                       <button
                         onClick={() => onRecipeAdd(recipe)}
                         disabled={added}
-                        className={`flex-1 py-1 rounded-lg font-black text-[8px] uppercase tracking-wider transition-all ${
+                        className={`flex-1 py-1 rounded-lg font-black text-[8px] lg:text-[10px] uppercase tracking-wider transition-all ${
                           added 
                             ? 'bg-gray-100 text-gray-400' 
                             : 'bg-[#44FF00] text-[#171717] hover:scale-105 active:scale-95'
