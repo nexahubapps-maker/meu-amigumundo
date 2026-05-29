@@ -55,16 +55,22 @@ export const CategoryCard = ({ nome, onClick }: CategoryCardProps) => {
     try {
       if (navigator.share) {
         await navigator.share({
-          title: `Coleção ${nome} - AmiguMundo`,
-          text: `Confira as melhores receitas de Amigurumi da categoria ${nome} no AmiguMundo!`,
+          title: 'AmiguMundo - ' + nome,
+          text: 'Olha o que encontrei no AmiguMundo! Tudo sem ocupar espaço na memória do celular.',
           url: shareUrl,
         });
       } else {
         await navigator.clipboard.writeText(shareUrl);
-        showSuccess(`Link da categoria ${nome} copiado para a área de transferência!`);
+        showSuccess("Link copiado com sucesso!");
       }
     } catch (err) {
       console.warn("Erro ao compartilhar:", err);
+      try {
+        await navigator.clipboard.writeText(shareUrl);
+        showSuccess("Link copiado com sucesso!");
+      } catch (clipErr) {
+        console.error(clipErr);
+      }
     }
   };
 

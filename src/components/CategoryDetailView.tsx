@@ -45,16 +45,22 @@ export const CategoryDetailView = ({
     try {
       if (navigator.share) {
         await navigator.share({
-          title: `${recipe.nome} - R$ ${recipe.preco.toFixed(2)}`,
-          text: "Toque para ver a receita completa e garantir a sua no AmiguMundo!",
+          title: 'AmiguMundo - ' + recipe.nome,
+          text: 'Olha o que encontrei no AmiguMundo! Tudo sem ocupar espaço na memória do celular.',
           url: shareUrl,
         });
       } else {
         await navigator.clipboard.writeText(shareUrl);
-        showSuccess("Link de compartilhamento copiado para a área de transferência!");
+        showSuccess("Link copiado com sucesso!");
       }
     } catch (err) {
       console.warn("Erro ao compartilhar:", err);
+      try {
+        await navigator.clipboard.writeText(shareUrl);
+        showSuccess("Link copiado com sucesso!");
+      } catch (clipErr) {
+        console.error(clipErr);
+      }
     }
   };
 
