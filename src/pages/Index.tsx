@@ -203,6 +203,51 @@ export default function Index() {
         image = upsell.url_foto;
         description = upsell.descricao;
       }
+    } else if (categoria_slug) {
+      const decodedCat = decodeURIComponent(categoria_slug).toLowerCase();
+      const matchedCat = categories.find(c => c.toLowerCase() === decodedCat || c.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() === decodedCat);
+      
+      if (matchedCat) {
+        title = `Coleção ${matchedCat} - AmiguMundo`;
+        description = `Confira as melhores receitas de Amigurumi da categoria ${matchedCat} no AmiguMundo!`;
+        
+        const categoryImages: Record<string, string> = {
+          "Animais": "https://ik.imagekit.io/di3huhaluc/animais.jpeg",
+          "Bonecas": "https://ik.imagekit.io/di3huhaluc/bonecas.jpeg",
+          "Princesas": "https://ik.imagekit.io/di3huhaluc/princesas.jpeg",
+          "Heróis": "https://ik.imagekit.io/di3huhaluc/herois.jpeg",
+          "Naninhas": "https://ik.imagekit.io/di3huhaluc/naninhas.png",
+          "Chocalhos": "https://ik.imagekit.io/di3huhaluc/chocalhos.png",
+          "Games": "https://ik.imagekit.io/di3huhaluc/games.jpeg",
+          "Filmes": "https://ik.imagekit.io/di3huhaluc/filmes.jpeg",
+          "Animes": "https://ik.imagekit.io/di3huhaluc/animes.jpeg",
+          "Plantas": "https://ik.imagekit.io/di3huhaluc/plantas.jpeg",
+          "Dinossauros": "https://ik.imagekit.io/di3huhaluc/dinossauros.jpeg",
+          "Desenhos": "https://ik.imagekit.io/di3huhaluc/desenhos.jpeg",
+          "Bonecos": "https://ik.imagekit.io/di3huhaluc/bonecos.png",
+          "Móbiles": "https://ik.imagekit.io/di3huhaluc/mobiles.png",
+          "Minis": "https://ik.imagekit.io/di3huhaluc/minis.png",
+          "Bruxas": "https://ik.imagekit.io/di3huhaluc/bruxas.jpeg",
+          "Cachorros": "https://ik.imagekit.io/di3huhaluc/cachorros.jpeg",
+          "Marinhos": "https://ik.imagekit.io/di3huhaluc/marinho.jpeg",
+          "Comidinhas": "https://ik.imagekit.io/di3huhaluc/comidinhas.jpeg",
+          "Prendedores": "https://ik.imagekit.io/di3huhaluc/prendedores.png",
+          "Veículos": "https://ik.imagekit.io/di3huhaluc/carros.jpeg",
+          "Natal": "https://ik.imagekit.io/di3huhaluc/natal.jpeg",
+          "Profissões": "https://ik.imagekit.io/di3huhaluc/profiss%C3%B5es.jpeg",
+          "Signos": "https://ik.imagekit.io/di3huhaluc/signos.jpeg",
+          "Fadas": "https://ik.imagekit.io/di3huhaluc/fadas.jpeg",
+          "Gatos": "https://ik.imagekit.io/di3huhaluc/gatos.jpeg",
+          "Dragões": "https://ik.imagekit.io/di3huhaluc/drag%C3%B5es.jpeg",
+          "Religiosos": "https://ik.imagekit.io/di3huhaluc/religiosos.jpeg",
+          "Insetos": "https://ik.imagekit.io/di3huhaluc/insetos.jpeg",
+          "Místicos": "https://ik.imagekit.io/di3huhaluc/misticos.jpeg",
+          "Aves": "https://ik.imagekit.io/di3huhaluc/aves.jpeg",
+          "Monstrinhos": "https://ik.imagekit.io/di3huhaluc/monstrinho.jpeg",
+          "Acessórios": "https://ik.imagekit.io/di3huhaluc/acessorios.png",
+        };
+        image = categoryImages[matchedCat] || `https://picsum.photos/seed/${encodeURIComponent(matchedCat)}/400/400`;
+      }
     }
 
     document.title = title;
@@ -228,7 +273,7 @@ export default function Index() {
     updateMetaTag("og:description", description);
     updateMetaTag("twitter:card", "summary_large_image");
     updateMetaTag("og:image:type", "image/jpeg");
-  }, [location.pathname, targetId, recipesList, packsList, infoprodutosList, isLoading]);
+  }, [location.pathname, targetId, categoria_slug, recipesList, packsList, infoprodutosList, isLoading]);
 
   // Scroll Lock Effect
   useEffect(() => {
