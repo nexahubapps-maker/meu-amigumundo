@@ -58,7 +58,8 @@ export interface SheetCategoria {
   status: boolean;
 }
 
-const SPREADSHEET_ID = "1lV6mLey_Bvq01CdDztUxEUKOlmDHsH6YeiNOqQcRveQ";
+// Nova Planilha Mestre Oficial "AMIGUMUNDO APP"
+const SPREADSHEET_ID = "1sIoPIN054AGjiGWtWu6l6twvd7SwWPGg";
 
 // Configurações do Google Drive para busca dinâmica de PDFs por código
 export const GOOGLE_DRIVE_FOLDER_ID = "YOUR_GOOGLE_DRIVE_FOLDER_ID";
