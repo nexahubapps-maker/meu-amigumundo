@@ -26,12 +26,10 @@ export default function Checkout() {
   const [cardCvv, setCardCvv] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
 
-  // Fix scroll bug: Ensure page starts at the absolute top on mount
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
-  // Load cart or direct product
   useEffect(() => {
     const loadCheckoutData = async () => {
       const [recipesData, infoprodutosList, packsList] = await Promise.all([
@@ -58,7 +56,6 @@ export default function Checkout() {
         }
       }
 
-      // Fallback to general cart
       const savedCart = localStorage.getItem("amigumundo-cart");
       if (savedCart) {
         setCart(JSON.parse(savedCart));
@@ -125,7 +122,6 @@ export default function Checkout() {
 
   const isFormValid = isWhatsappValid && isEmailValid && (paymentMethod === "pix" || isCardValid) && !isProcessing;
 
-  // Calculate cart values using the centralized pricing utility to sync discounts
   const calculated = calculateCart(cart, recipesList);
   const total = calculated.total;
 
@@ -178,52 +174,38 @@ export default function Checkout() {
       try {
         cardToken = await generateCardToken();
       } catch (err: any) {
-        showError(err.message || "Erro ao validar os dados do cartão. Verifique os campos.");
+        showError(err.message || "Erro ao validar os dados do cartão.");
         setIsProcessing(false);
         return;
       }
     }
 
-    // Sanitize WhatsApp to only digits with DDI 55
     const sanitizedWhatsapp = rawWhatsappDigits.startsWith("55") ? rawWhatsappDigits : "55" + rawWhatsappDigits;
-    
-    // Gather recipe codes
     const codigosReceitas = calculated.items.map(item => item.id).join(",");
 
-    // Fixed test transaction ID for Mercado Pago Sandbox integration
-    const simulatedId = "1318353244";
-
-    const payload = {
-      action: "payment.created",
-      data: {
-        id: simulatedId
-      },
-      payer: {
-        email: email
-      },
-      metadata: {
-        whatsapp: sanitizedWhatsapp,
-        codigos_receitas: codigosReceitas,
-        payment_method: paymentMethod,
-        card_token: cardToken || undefined
-      }
-    };
-
     try {
-      // Send POST request directly to Google Apps Script Webhook
-      await fetch(
-        "https://script.google.com/macros/s/AKfycbwPW3Qj7VAmCX6B8BdzMFDd9OBHih26uQo1lHipIm9dRikC1nkcN53WONbqXdTVevvWwg/exec",
+      // 1. CRIAR O PAGAMENTO DE VERDADE NO MERCADO PAGO
+      // Enviamos para o Google Apps Script processar a cobrança de forma segura usando o ACCESS_TOKEN oculto
+      const response = await fetch(
+        "https://script.google.com/macros/s/AKfycbwPW3Qj7VAmCX6B8BdzMFDd9OBHih26uQo1lHipIm9dRikC1nkcN53WONbqXdTVevvWwg/exec?action=create_payment",
         {
           method: "POST",
-          mode: "no-cors", // Safe mode for Google Apps Script redirects
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "text/plain", // Evita problemas de CORS pré-flight com Apps Script
           },
-          body: JSON.stringify(payload),
+          body: JSON.stringify({
+            payment_method: paymentMethod,
+            token: cardToken,
+            amount: total,
+            email: email,
+            whatsapp: sanitizedWhatsapp,
+            recipes: codigosReceitas
+          }),
         }
       );
 
-      showSuccess("Pagamento processado com sucesso! Suas receitas foram enviadas para o seu WhatsApp.");
+      // 2. EXIBIR SUCESSO AO CLIENTE
+      showSuccess("Pedido recebido! Assim que o pagamento for confirmado, as receitas serão enviadas no seu WhatsApp.");
       
       if (!checkoutProductId) {
         localStorage.removeItem("amigumundo-cart");
@@ -232,8 +214,8 @@ export default function Checkout() {
 
       navigate("/");
     } catch (e) {
-      console.error("Webhook error:", e);
-      showError("Ocorreu um erro ao processar o pagamento. Tente novamente.");
+      console.error("Payment submission error:", e);
+      showError("Ocorreu um erro ao processar seu pedido. Tente novamente.");
     } finally {
       setIsProcessing(false);
     }
@@ -241,13 +223,10 @@ export default function Checkout() {
 
   return (
     <div className="min-h-screen w-full overflow-y-auto overflow-x-hidden bg-[#F4F7F9] font-sans">
-      {/* Container de Scroll com aceleração de GPU isolada */}
       <div 
         className="max-w-2xl mx-auto px-4 pt-3 pb-[140px]" 
         style={{ transform: "translateZ(0)", WebkitTransform: "translateZ(0)" }}
       >
-        
-        {/* Botão Voltar */}
         <button 
           onClick={() => navigate("/")}
           className="flex items-center gap-2 text-gray-500 hover:text-gray-800 font-bold mb-3 transition-colors text-sm"
@@ -255,11 +234,8 @@ export default function Checkout() {
           <ChevronLeft size={16} /> Voltar para a loja
         </button>
 
-        {/* Mensagem de Boas-vindas no Topo */}
         <div className="text-center mb-3">
           <h1 className="text-xl font-black text-gray-900 mb-1.5 tracking-tight">QUASE LÁ!</h1>
-          
-          {/* Elegant Instructions Card with Teal Background and White Text */}
           <div className="bg-[#0E5E6F] text-white border border-white/10 rounded-xl p-3 text-center max-w-md mx-auto shadow-sm">
             <p className="font-semibold text-xs leading-relaxed">
               Para enviarmos suas receitas, preencha <br />
@@ -269,7 +245,6 @@ export default function Checkout() {
           </div>
         </div>
 
-        {/* Dados Pessoais (Dados para Entrega) */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-3">
           <div className="flex items-center gap-2 mb-3 text-gray-800">
             <ShieldCheck size={18} className="text-blue-500" />
@@ -308,7 +283,6 @@ export default function Checkout() {
           </div>
         </div>
 
-        {/* Resumo do Pedido (Posicionado abaixo de Dados para Entrega) */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-3">
           <div className="flex items-center mb-2 text-gray-800">
             <h2 className="font-bold uppercase tracking-tight text-xs">Resumo do Pedido</h2>
@@ -331,7 +305,6 @@ export default function Checkout() {
           </div>
         </div>
 
-        {/* Pagamento */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-4">
           <div className="flex items-center gap-2 mb-3 text-gray-800">
             <CreditCard size={18} className="text-blue-500" />
@@ -366,7 +339,7 @@ export default function Checkout() {
           {paymentMethod === "card" && (
             <div className="space-y-3 mb-3 p-3 bg-gray-50 rounded-xl border border-gray-200">
               <p className="text-gray-700 text-[10px] font-bold uppercase tracking-wider mb-1">
-                Dados do Cartão de Crédito
+                Dados do Cartão de Crédito (Modo Sandbox)
               </p>
               <div>
                 <label className="block text-[9px] font-bold text-gray-400 uppercase mb-0.5 ml-1">Número do Cartão</label>
@@ -416,7 +389,6 @@ export default function Checkout() {
             </div>
           )}
 
-          {/* Vibrant Green Checkout Button */}
           <button 
             onClick={handlePaymentSubmit}
             disabled={!isFormValid}
@@ -426,7 +398,6 @@ export default function Checkout() {
           </button>
         </div>
 
-        {/* Premium Security Badges Footer */}
         <div className="w-full overflow-visible mb-6">
           <div className="relative grid grid-cols-2 gap-3 w-full bg-[#0f172a] border border-[#22c55e] rounded-2xl p-4 shadow-xl">
             <div className="flex flex-col items-center gap-1.5 text-center p-2.5 bg-[#1e293b] rounded-xl border border-white/10">
@@ -460,13 +431,11 @@ export default function Checkout() {
           </div>
         </div>
 
-        {/* Footer */}
         <footer className="text-center pb-4">
           <p className="text-[9px] text-gray-400 font-bold uppercase tracking-[0.2em]">AmiguMundo Artes 2016</p>
         </footer>
       </div>
 
-      {/* Botão de Suporte posicionado fora do container transformado para manter o position: fixed perfeito */}
       <SupportButton />
     </div>
   );
