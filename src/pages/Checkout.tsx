@@ -190,8 +190,8 @@ export default function Checkout() {
     // Gather recipe codes
     const codigosReceitas = calculated.items.map(item => item.id).join(",");
 
-    // Simulate a payment ID
-    const simulatedId = `pay_${Math.random().toString(36).substring(2, 15)}`;
+    // Fixed test transaction ID for Mercado Pago Sandbox integration
+    const simulatedId = "1318353244";
 
     const payload = {
       action: "payment.created",
