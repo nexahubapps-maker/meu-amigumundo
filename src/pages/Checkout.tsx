@@ -7,7 +7,7 @@ import { SupportButton } from "@/components/SupportButton";
 import { playHeartbeatSound } from "@/utils/audio";
 import { getRecipes, getInfoprodutos, getPacks } from "@/utils/sheets";
 import { calculateCart } from "@/utils/pricing";
-import { showSuccess } from "@/utils/toast";
+import { showSuccess, showError } from "@/utils/toast";
 
 export default function Checkout() {
   const navigate = useNavigate();
@@ -18,6 +18,13 @@ export default function Checkout() {
   
   const [email, setEmail] = useState(() => localStorage.getItem("amigumundo-email") || "");
   const [whatsapp, setWhatsapp] = useState(() => localStorage.getItem("amigumundo-whatsapp") || "");
+
+  // Card States
+  const [cardNumber, setCardNumber] = useState("");
+  const [cardName, setCardName] = useState("");
+  const [cardExpiry, setCardExpiry] = useState("");
+  const [cardCvv, setCardCvv] = useState("");
+  const [isProcessing, setIsProcessing] = useState(false);
 
   // Fix scroll bug: Ensure page starts at the absolute top on mount
   useEffect(() => {
@@ -86,56 +93,150 @@ export default function Checkout() {
     setWhatsapp(formattedValue);
   };
 
+  const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/\D/g, "").substring(0, 16);
+    const formatted = value.replace(/(\d{4})(?=\d)/g, "$1 ");
+    setCardNumber(formatted);
+  };
+
+  const handleCardExpiryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/\D/g, "").substring(0, 4);
+    let formatted = value;
+    if (value.length > 2) {
+      formatted = `${value.substring(0, 2)}/${value.substring(2)}`;
+    }
+    setCardExpiry(formatted);
+  };
+
+  const handleCardCvvChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/\D/g, "").substring(0, 4);
+    setCardCvv(value);
+  };
+
   const rawWhatsappDigits = whatsapp.replace(/\D/g, "");
   const isWhatsappValid = rawWhatsappDigits.length === 11;
   const isEmailValid = email.includes("@") && email.includes(".");
-  const isFormValid = isWhatsappValid && isEmailValid;
+  
+  const isCardValid = 
+    cardNumber.replace(/\s/g, "").length >= 15 &&
+    cardName.trim().length > 3 &&
+    cardExpiry.length === 5 &&
+    cardCvv.length >= 3;
+
+  const isFormValid = isWhatsappValid && isEmailValid && (paymentMethod === "pix" || isCardValid) && !isProcessing;
 
   // Calculate cart values using the centralized pricing utility to sync discounts
   const calculated = calculateCart(cart, recipesList);
   const total = calculated.total;
 
-  const triggerAdminWebhook = async (saleData: any) => {
+  const generateCardToken = async () => {
+    const cleanCardNumber = cardNumber.replace(/\s/g, "");
+    const [expiryMonth, expiryYear] = cardExpiry.split("/");
+    const fullYear = expiryYear ? `20${expiryYear}` : "";
+
     try {
-      const webhookUrl = "https://api.amigumundo.com/v1/webhooks/sales";
-      await fetch(webhookUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...saleData,
-          timestamp: new Date().toISOString(),
-          triggerNotificationSound: "tom-tom"
-        })
-      });
-    } catch (e) {
-      console.log("Webhook disparado em segundo plano (simulado):", saleData);
+      const response = await fetch(
+        `https://api.mercadopago.com/v1/card_tokens?public_key=APP_USR-cb091ede-b395-4bf8-b8f0-555846ae0acc`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            card_number: cleanCardNumber,
+            expiration_month: parseInt(expiryMonth, 10),
+            expiration_year: parseInt(fullYear, 10),
+            security_code: cardCvv,
+            cardholder: {
+              name: cardName,
+            },
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        const errData = await response.json();
+        throw new Error(errData.message || "Erro ao gerar token do cartão");
+      }
+
+      const data = await response.json();
+      return data.id;
+    } catch (error) {
+      console.error("Failed to generate card token:", error);
+      throw error;
     }
   };
 
-  const handlePaymentSubmit = () => {
+  const handlePaymentSubmit = async () => {
     if (!isFormValid) return;
 
+    setIsProcessing(true);
     playHeartbeatSound();
 
-    const saleData = {
-      email,
-      whatsapp: rawWhatsappDigits,
-      items: calculated.items,
-      total,
-      paymentMethod
+    let cardToken = "";
+    if (paymentMethod === "card") {
+      try {
+        cardToken = await generateCardToken();
+      } catch (err: any) {
+        showError(err.message || "Erro ao validar os dados do cartão. Verifique os campos.");
+        setIsProcessing(false);
+        return;
+      }
+    }
+
+    // Sanitize WhatsApp to only digits with DDI 55
+    const sanitizedWhatsapp = rawWhatsappDigits.startsWith("55") ? rawWhatsappDigits : "55" + rawWhatsappDigits;
+    
+    // Gather recipe codes
+    const codigosReceitas = calculated.items.map(item => item.id).join(",");
+
+    // Simulate a payment ID
+    const simulatedId = `pay_${Math.random().toString(36).substring(2, 15)}`;
+
+    const payload = {
+      action: "payment.created",
+      data: {
+        id: simulatedId
+      },
+      payer: {
+        email: email
+      },
+      metadata: {
+        whatsapp: sanitizedWhatsapp,
+        codigos_receitas: codigosReceitas,
+        payment_method: paymentMethod,
+        card_token: cardToken || undefined
+      }
     };
 
-    triggerAdminWebhook(saleData);
+    try {
+      // Send POST request directly to Google Apps Script Webhook
+      await fetch(
+        "https://script.google.com/macros/s/AKfycbwPW3Qj7VAmCX6B8BdzMFDd9OBHih26uQo1lHipIm9dRikC1nkcN53WONbqXdTVevvWwg/exec",
+        {
+          method: "POST",
+          mode: "no-cors", // Safe mode for Google Apps Script redirects
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        }
+      );
 
-    showSuccess("Pagamento processado com sucesso! Suas receitas foram enviadas para o seu WhatsApp.");
-    if (!checkoutProductId) {
-      localStorage.removeItem("amigumundo-cart");
+      showSuccess("Pagamento processado com sucesso! Suas receitas foram enviadas para o seu WhatsApp.");
+      
+      if (!checkoutProductId) {
+        localStorage.removeItem("amigumundo-cart");
+      }
+      localStorage.removeItem("amigumundo-favorites");
+
+      navigate("/");
+    } catch (e) {
+      console.error("Webhook error:", e);
+      showError("Ocorreu um erro ao processar o pagamento. Tente novamente.");
+    } finally {
+      setIsProcessing(false);
     }
-    
-    // Limpeza automática do banco de favoritos
-    localStorage.removeItem("amigumundo-favorites");
-
-    navigate("/");
   };
 
   return (
@@ -262,13 +363,66 @@ export default function Checkout() {
             </div>
           )}
 
+          {paymentMethod === "card" && (
+            <div className="space-y-3 mb-3 p-3 bg-gray-50 rounded-xl border border-gray-200">
+              <p className="text-gray-700 text-[10px] font-bold uppercase tracking-wider mb-1">
+                Dados do Cartão de Crédito
+              </p>
+              <div>
+                <label className="block text-[9px] font-bold text-gray-400 uppercase mb-0.5 ml-1">Número do Cartão</label>
+                <input
+                  type="text"
+                  value={cardNumber}
+                  onChange={handleCardNumberChange}
+                  placeholder="0000 0000 0000 0000"
+                  maxLength={19}
+                  className="w-full px-3 py-2 bg-white border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-gray-700 font-medium text-sm"
+                />
+              </div>
+              <div>
+                <label className="block text-[9px] font-bold text-gray-400 uppercase mb-0.5 ml-1">Nome Impresso no Cartão</label>
+                <input
+                  type="text"
+                  value={cardName}
+                  onChange={(e) => setCardName(e.target.value.toUpperCase())}
+                  placeholder="NOME COMO ESTÁ NO CARTÃO"
+                  className="w-full px-3 py-2 bg-white border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-gray-700 font-medium text-sm uppercase"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-[9px] font-bold text-gray-400 uppercase mb-0.5 ml-1">Validade (MM/AA)</label>
+                  <input
+                    type="text"
+                    value={cardExpiry}
+                    onChange={handleCardExpiryChange}
+                    placeholder="MM/AA"
+                    maxLength={5}
+                    className="w-full px-3 py-2 bg-white border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-gray-700 font-medium text-sm text-center"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[9px] font-bold text-gray-400 uppercase mb-0.5 ml-1">Código (CVV)</label>
+                  <input
+                    type="text"
+                    value={cardCvv}
+                    onChange={handleCardCvvChange}
+                    placeholder="123"
+                    maxLength={4}
+                    className="w-full px-3 py-2 bg-white border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-gray-700 font-medium text-sm text-center"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Vibrant Green Checkout Button */}
           <button 
             onClick={handlePaymentSubmit}
             disabled={!isFormValid}
             className={`w-full py-3.5 rounded-xl font-black text-base shadow-md transition-all uppercase tracking-widest flex items-center justify-center gap-2 ${isFormValid ? 'bg-[#22C55E] hover:bg-[#16a34a] text-white active:scale-[0.98]' : 'bg-gray-200 text-gray-400 cursor-not-allowed shadow-none'}`}
           >
-            <Lock size={18} /> Finalizar Pagamento
+            <Lock size={18} /> {isProcessing ? "Processando..." : "Finalizar Pagamento"}
           </button>
         </div>
 
