@@ -18,7 +18,6 @@ interface RecipeCardProps {
 }
 
 const RecipeCard = ({ recipe, isFavorite, onToggleFavorite, onAdd, onReject, isInCart }: RecipeCardProps) => {
-  // Determine a badge based on recipe ID
   const badge = recipe.id === "387" ? { text: "MAIS VENDIDO", bg: "bg-[#44FF00] text-[#171717]" } : 
                 recipe.id === "120" ? { text: "NOVO", bg: "bg-blue-500 text-white" } : null;
 
@@ -58,14 +57,12 @@ const RecipeCard = ({ recipe, isFavorite, onToggleFavorite, onAdd, onReject, isI
           className="w-full h-full object-cover"
         />
         
-        {/* Micro-badges */}
         {badge && (
           <div className={`absolute top-2 left-2 ${badge.bg} text-[7px] font-black px-2 py-0.5 rounded-full shadow-sm uppercase tracking-wider`}>
             {badge.text}
           </div>
         )}
 
-        {/* Favorite Heart Icon */}
         <button 
           onClick={(e) => {
             e.stopPropagation();
@@ -76,7 +73,6 @@ const RecipeCard = ({ recipe, isFavorite, onToggleFavorite, onAdd, onReject, isI
           <Heart size={14} fill={isFavorite ? "currentColor" : "none"} />
         </button>
 
-        {/* Share Icon */}
         <button 
           onClick={handleShare}
           className="absolute top-10 right-2 bg-white/90 backdrop-blur-sm p-1 rounded-full shadow-md hover:scale-110 active:scale-90 transition-transform text-gray-500 hover:text-gray-800"
@@ -85,7 +81,7 @@ const RecipeCard = ({ recipe, isFavorite, onToggleFavorite, onAdd, onReject, isI
           <Share2 size={14} />
         </button>
 
-        <div className="absolute bottom-2 left-2 bg-black/70 backdrop-blur-sm text-white text-[8px] font-bold px-2 py-0.5 rounded-md shadow-md">
+        <div className="absolute bottom-2 left-2 bg-black/70 backdrop-blur-sm text-white text-[8px] font-bold px-2 py-0.5 rounded-md shadow-sm">
           ({recipe.id})
         </div>
       </div>

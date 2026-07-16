@@ -46,7 +46,6 @@ export const PackCard = ({ pack, inCart, isFavorite, onToggleFavorite, onAdd, on
 
   return (
     <div className={`flex flex-col rounded-2xl overflow-hidden bg-white shadow-[0_12px_24px_rgba(0,0,0,0.12)] hover:shadow-[0_18px_36px_rgba(0,0,0,0.18)] hover:-translate-y-1 transition-all duration-300 border border-gray-100/50 ${inCart ? 'animate-pulse-subtle border-[#44FF00]' : ''}`}>
-      {/* Imagem Quadrada 1x1 */}
       <div className="relative aspect-square w-full bg-gray-50">
         <img
           src={`https://picsum.photos/seed/${pack.id}/400/400`}
@@ -70,7 +69,6 @@ export const PackCard = ({ pack, inCart, isFavorite, onToggleFavorite, onAdd, on
           <Heart size={14} fill={isFavorite ? "currentColor" : "none"} />
         </button>
 
-        {/* Share Icon */}
         <button 
           onClick={handleShare}
           className="absolute top-10 right-2 bg-white/90 backdrop-blur-sm p-1 rounded-full shadow-md hover:scale-110 active:scale-90 transition-transform text-gray-500 hover:text-gray-800"
@@ -84,7 +82,6 @@ export const PackCard = ({ pack, inCart, isFavorite, onToggleFavorite, onAdd, on
         </div>
       </div>
 
-      {/* Mini Card Branco Colado */}
       <div className="p-2.5 flex flex-col justify-between flex-1 bg-white">
         <div>
           <h3 className="text-[10px] sm:text-xs font-black leading-tight text-[#171717] uppercase tracking-tight line-clamp-2">

@@ -15,11 +15,9 @@ export const InternalPopup = ({ notifications }: InternalPopupProps) => {
     const active = notifications.find(n => {
       if (!n.status) return false;
       
-      // Check if already dismissed in localStorage
       const isDismissed = localStorage.getItem(`popup-dismissed-${n.id}`);
       if (isDismissed) return false;
 
-      // Check if created within the last 24 hours
       const createdTime = new Date(n.data_hora).getTime();
       const now = Date.now();
       const diffHours = (now - createdTime) / (1000 * 60 * 60);

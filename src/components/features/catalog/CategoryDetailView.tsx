@@ -66,7 +66,6 @@ export const CategoryDetailView = ({
 
   return (
     <div className="fixed inset-0 z-[90] bg-[#F5F5F7] overflow-y-auto animate-in slide-in-from-bottom duration-300">
-      {/* Header with Orange Texture */}
       <div style={textureLaranjaStyle} className="sticky top-0 z-10 py-4 px-4 flex items-center justify-between shadow-md">
         <button 
           onClick={onBack}
@@ -77,24 +76,21 @@ export const CategoryDetailView = ({
         <h2 className="text-white font-black text-sm uppercase tracking-widest m-0">
           {decodeURIComponent(categoriaSlug)}
         </h2>
-        <div className="w-12"></div> {/* Spacer for centering */}
+        <div className="w-12"></div>
       </div>
 
       <div className="max-w-6xl mx-auto px-2 py-4">
-        {/* Texto de Aviso de Zoom no Topo */}
         <div className="bg-blue-50 text-blue-700 text-[10px] font-bold py-1.5 px-3 rounded-lg text-center mb-3 uppercase tracking-wider">
           🔍 Clique nas imagens para ampliá-las
         </div>
 
         {isLoading ? (
-          /* Skeleton Loaders */
           <div className="grid grid-cols-3 lg:grid-cols-5 gap-1 sm:gap-2 lg:gap-4">
             {Array.from({ length: 6 }).map((_, i) => (
               <div key={i} className="bg-gray-100 rounded-xl aspect-square animate-pulse" />
             ))}
           </div>
         ) : recipes.length === 0 ? (
-          /* Ghost Card Placeholder */
           <div className="grid grid-cols-3 lg:grid-cols-5 gap-1 sm:gap-2 lg:gap-4">
             <div className="bg-gray-100 border border-dashed border-gray-200 rounded-xl aspect-square flex flex-col items-center justify-center p-2 animate-pulse">
               <div className="w-8 h-8 bg-gray-200 rounded-full mb-2"></div>
@@ -102,15 +98,12 @@ export const CategoryDetailView = ({
             </div>
           </div>
         ) : (
-          /* Real Recipe Cards - Grade 3x3 Ultra-Compacta no Mobile e 5x5 no Desktop */
           <div className="grid grid-cols-3 lg:grid-cols-5 gap-1 sm:gap-2 lg:gap-4">
             {recipes.map((recipe) => {
               const added = isInCart(recipe.id);
               const isFavorite = favorites.includes(recipe.id);
               return (
                 <div key={recipe.id} className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden flex flex-col justify-between p-1">
-                  
-                  {/* Image with Lightbox Zoom on Click & Favorite Heart */}
                   <div className="relative aspect-square bg-gray-50 overflow-hidden rounded-lg group">
                     <img 
                       src={recipe.url_foto} 
@@ -119,12 +112,10 @@ export const CategoryDetailView = ({
                       onClick={() => onZoomImage(recipe.url_foto)}
                     />
                     
-                    {/* Ícone de Lupa no Canto Superior Esquerdo */}
                     <div className="absolute top-1.5 left-1.5 bg-black/50 text-white p-1 rounded-full pointer-events-none">
                       <Search size={10} />
                     </div>
 
-                    {/* Favorite Heart Icon */}
                     <button 
                       onClick={(e) => {
                         e.stopPropagation();
@@ -135,7 +126,6 @@ export const CategoryDetailView = ({
                       <Heart size={10} fill={isFavorite ? "currentColor" : "none"} />
                     </button>
 
-                    {/* Share Icon */}
                     <button 
                       onClick={(e) => handleShare(recipe, e)}
                       className="absolute top-7 right-1.5 bg-white/90 backdrop-blur-sm p-1 rounded-full shadow-md hover:scale-110 active:scale-90 transition-transform text-gray-500 hover:text-gray-800 z-10"
@@ -145,7 +135,6 @@ export const CategoryDetailView = ({
                     </button>
                   </div>
 
-                  {/* Info & Buy Button - Bloco de Dados Ultra-Compacto */}
                   <div className="pt-1.5 flex flex-col justify-between flex-1">
                     <div>
                       <h4 className="text-[9px] lg:text-xs font-black text-gray-800 uppercase tracking-tight line-clamp-1 leading-none mb-1">

@@ -22,7 +22,6 @@ export const InstallGuideModal = ({ isOpen, onClose }: InstallGuideModalProps) =
     <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-300">
       <div className="bg-white rounded-[28px] w-full max-w-md p-6 shadow-2xl border border-gray-100 relative animate-in zoom-in-95 duration-300 max-h-[90vh] overflow-y-auto">
         
-        {/* Botão Fechar */}
         <button 
           onClick={onClose}
           className="absolute top-4 right-4 p-1.5 hover:bg-gray-50 rounded-full text-gray-400 hover:text-gray-600 transition-colors"
@@ -30,7 +29,6 @@ export const InstallGuideModal = ({ isOpen, onClose }: InstallGuideModalProps) =
           <X size={20} />
         </button>
 
-        {/* Cabeçalho */}
         <div className="text-center space-y-1.5 mb-5 mt-2">
           <div className="w-12 h-12 bg-[#44FF00]/10 rounded-full flex items-center justify-center text-[#44FF00] mx-auto">
             <Smartphone size={24} />
@@ -43,7 +41,6 @@ export const InstallGuideModal = ({ isOpen, onClose }: InstallGuideModalProps) =
           </p>
         </div>
 
-        {/* Abas de Seleção de Sistema */}
         <div className="grid grid-cols-2 gap-2 mb-5 bg-gray-100 p-1 rounded-xl">
           <button
             onClick={() => setActiveTab("android")}
@@ -67,7 +64,6 @@ export const InstallGuideModal = ({ isOpen, onClose }: InstallGuideModalProps) =
           </button>
         </div>
 
-        {/* Conteúdo Didático Simplificado */}
         {activeTab === "android" ? (
           <div className="space-y-4 animate-in fade-in duration-200">
             <p className="text-xs font-black text-gray-800 uppercase tracking-wider">
@@ -106,7 +102,6 @@ export const InstallGuideModal = ({ isOpen, onClose }: InstallGuideModalProps) =
           </div>
         )}
 
-        {/* Botão de Fechar/Entendido */}
         <button
           onClick={handleConfirmInstall}
           className="w-full bg-[#44FF00] text-[#171717] py-3.5 rounded-xl font-black text-xs uppercase tracking-widest shadow-sm hover:scale-[1.02] active:scale-95 transition-transform mt-6"

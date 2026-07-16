@@ -46,13 +46,11 @@ export const Header = ({ cartCount = 0 }: HeaderProps) => {
         </div>
         
         <div className="flex flex-col items-center justify-center h-full gap-2 shrink-0">
-          {/* Badge positioned above the cart icon */}
           <div className="bg-[#44FF00] text-[#171717] px-2 py-0.5 rounded-md flex flex-col items-center leading-none text-[7px] font-black uppercase border border-black/5">
             <span className="text-[5px] text-[#171717]/60 font-bold">um produto</span>
             <span className="tracking-tight">AMIGUMUNDO ARTES</span>
           </div>
           
-          {/* Cart button positioned below the badge with more space and centered */}
           <button 
             onClick={scrollToCart}
             className="relative p-1.5 text-[#171717] hover:text-[#44FF00] transition-colors bg-gray-50 rounded-full flex items-center justify-center"

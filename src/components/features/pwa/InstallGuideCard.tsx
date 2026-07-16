@@ -9,7 +9,6 @@ export const InstallGuideCard = () => {
 
   return (
     <>
-      {/* Card de Chamada */}
       <div className="max-w-2xl mx-auto px-4 my-4">
         <button
           onClick={() => setIsOpen(true)}
@@ -33,7 +32,6 @@ export const InstallGuideCard = () => {
         </button>
       </div>
 
-      {/* Modal Didático Compartilhado */}
       <InstallGuideModal isOpen={isOpen} onClose={() => setIsOpen(false)} />
     </>
   );

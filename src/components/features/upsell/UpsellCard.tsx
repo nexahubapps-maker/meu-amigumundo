@@ -41,7 +41,6 @@ export const UpsellCard = ({ upsell, isFavorite, onToggleFavorite, onOpen }: Ups
 
   return (
     <div className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-md flex flex-col transition-all duration-300 hover:shadow-lg h-full">
-      {/* Top: Horizontal Rectangle Image to save vertical space */}
       <div className="relative aspect-[16/10] w-full bg-gray-50 cursor-pointer" onClick={onOpen}>
         <img 
           src={`https://picsum.photos/seed/${upsell.id}/600/375`} 
@@ -49,7 +48,6 @@ export const UpsellCard = ({ upsell, isFavorite, onToggleFavorite, onOpen }: Ups
           className="w-full h-full object-cover"
         />
         
-        {/* Favorite Heart Icon */}
         <button 
           onClick={(e) => {
             e.stopPropagation();
@@ -60,7 +58,6 @@ export const UpsellCard = ({ upsell, isFavorite, onToggleFavorite, onOpen }: Ups
           <Heart size={14} fill={isFavorite ? "currentColor" : "none"} />
         </button>
 
-        {/* Share Icon */}
         <button 
           onClick={handleShare}
           className="absolute top-10 right-2.5 bg-white/90 backdrop-blur-sm p-1 rounded-full shadow-md hover:scale-110 active:scale-90 transition-transform text-gray-500 hover:text-gray-800 z-10"
@@ -70,7 +67,6 @@ export const UpsellCard = ({ upsell, isFavorite, onToggleFavorite, onOpen }: Ups
         </button>
       </div>
 
-      {/* Base: Text Area with white background and reduced padding */}
       <div className="p-3.5 flex flex-col flex-1 justify-between bg-white">
         <div>
           <h3 className="text-sm font-black text-gray-900 leading-tight mb-1 uppercase tracking-tight line-clamp-2">
@@ -81,7 +77,6 @@ export const UpsellCard = ({ upsell, isFavorite, onToggleFavorite, onOpen }: Ups
           </p>
         </div>
 
-        {/* Button: Saiba Mais */}
         <button
           onClick={onOpen}
           className="w-full bg-gray-50 hover:bg-gray-100 text-gray-800 py-2 rounded-lg font-bold text-xs transition-all active:scale-95 border border-gray-200 flex items-center justify-center gap-1"

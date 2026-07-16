@@ -13,8 +13,6 @@ export const DailyGiftSection = () => {
   const [statusMessage, setStatusMessage] = useState<string>("");
   const [isSending, setIsSending] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
-  
-  // Gamification States
   const [isOpened, setIsOpened] = useState(false);
 
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -30,10 +28,8 @@ export const DailyGiftSection = () => {
         const year = today.getFullYear();
         const todayStr = `${day}/${month}/${year}`;
 
-        // Tenta encontrar o presente de hoje
         let targetGift = receitasGratuitas.find(g => g.data === todayStr && g.ativo);
         
-        // Fallback: Se a data de hoje não estiver na planilha, usa o primeiro presente disponível ativo
         if (!targetGift && receitasGratuitas.length > 0) {
           targetGift = receitasGratuitas.find(g => g.ativo) || receitasGratuitas[0];
         }
@@ -54,7 +50,6 @@ export const DailyGiftSection = () => {
     fetchDailyGift();
   }, []);
 
-  // Acelera o vídeo para 3x assim que ele carregar e quando der play
   useEffect(() => {
     const video = videoRef.current;
     if (video) {
@@ -94,7 +89,6 @@ export const DailyGiftSection = () => {
     playHeartbeatSound();
     setIsOpened(true);
     
-    // Trigger a small burst of confetti when clicked
     confetti({
       particleCount: 50,
       spread: 70,
@@ -117,15 +111,12 @@ export const DailyGiftSection = () => {
     playHeartbeatSound();
 
     try {
-      // Trigger direct WhatsApp redirection with pre-defined security message
       const messageText = `Quero minha receita grátis: ${dailyRecipe.nome} (${dailyRecipe.codigo})`;
       const waUrl = `https://wa.me/5544999999999?text=${encodeURIComponent(messageText)}`;
 
-      // Success feedback
       setStatusMessage("🎉 Redirecionando para o WhatsApp para liberar seu PDF instantaneamente...");
       setWhatsapp("");
       
-      // Dispara confetes comemorativos
       const duration = 3 * 1000;
       const animationEnd = Date.now() + duration;
       const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 999 };
@@ -168,11 +159,9 @@ export const DailyGiftSection = () => {
           Volte todos os dias para retirar sua receita grátis e garantir seu presente diário!
         </p>
 
-        {/* Card Branco com Espaçamento Premium e Confortável */}
         <div className="bg-white rounded-[32px] p-8 sm:p-10 shadow-2xl border border-white/50 flex flex-col items-center justify-center relative overflow-hidden min-h-[460px]">
           
           {!isOpened ? (
-            /* ================= FASE 1: JOGO / LOOPING ================= */
             <div className="flex flex-col items-center gap-4 w-full animate-in fade-in duration-300">
               <div className="text-center space-y-2">
                 <span className="text-2xl font-black uppercase tracking-widest block" style={{ color: '#9241B1' }}>
@@ -186,7 +175,6 @@ export const DailyGiftSection = () => {
                 </p>
               </div>
 
-              {/* Container do Vídeo da Caixinha Roxa */}
               <div 
                 onClick={handleOpenPresent}
                 className="relative w-48 h-48 flex items-center justify-center cursor-pointer transition-all duration-500 hover:scale-105 active:scale-95 shrink-0"
@@ -205,7 +193,6 @@ export const DailyGiftSection = () => {
                 />
               </div>
 
-              {/* Botão de Ação de Toque */}
               <button
                 onClick={handleOpenPresent}
                 className="bg-[#44FF00] text-[#171717] py-4 px-8 rounded-2xl font-black text-sm uppercase tracking-widest shadow-lg hover:scale-105 active:scale-95 transition-transform"
@@ -214,10 +201,7 @@ export const DailyGiftSection = () => {
               </button>
             </div>
           ) : (
-            /* ================= FASE 2: RESULTADO / REVELADO ================= */
             <div className="flex flex-col items-center gap-5 w-full animate-in fade-in zoom-in-95 duration-500">
-              
-              {/* Foto do Amigurumi Sorteado */}
               <div className="relative w-40 h-40 rounded-full bg-gradient-to-b from-green-50 to-green-100/50 border-2 border-[#44FF00]/30 p-2 flex items-center justify-center shrink-0">
                 <img 
                   src={dailyRecipe.url_foto} 
@@ -229,7 +213,6 @@ export const DailyGiftSection = () => {
                 </div>
               </div>
               
-              {/* Identificação do Produto e Código */}
               <div className="space-y-1 text-center">
                 <p className="text-xs font-bold uppercase tracking-wider leading-tight" style={{ color: '#9241B1' }}>
                   Parabéns!<br />Você ganhou a receita do:
@@ -242,7 +225,6 @@ export const DailyGiftSection = () => {
                 </p>
               </div>
 
-              {/* Formulário de Captura de Lead */}
               <form onSubmit={handleSendGift} className="w-full space-y-3 max-w-md">
                 <div className="relative">
                   <input

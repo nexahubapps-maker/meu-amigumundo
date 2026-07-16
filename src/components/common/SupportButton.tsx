@@ -10,7 +10,6 @@ export const SupportButton = ({ className }: SupportButtonProps) => {
   const [isCheckout, setIsCheckout] = useState(false);
 
   useEffect(() => {
-    // Detecta se o usuário está na página de checkout
     setIsCheckout(window.location.pathname.includes("/checkout"));
   }, []);
 

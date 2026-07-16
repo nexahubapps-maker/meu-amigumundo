@@ -14,7 +14,6 @@ export const SuccessModal = ({ isOpen, onClose }: SuccessModalProps) => {
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-300">
       <div className="relative bg-[#171717] rounded-[32px] w-full max-w-[340px] p-8 text-center shadow-2xl border border-white/10">
-        {/* Decorative Stars */}
         <div className="absolute -top-2 -left-2 text-[#44FF00] animate-bounce">
           <Star size={24} fill="currentColor" />
         </div>
@@ -22,12 +21,10 @@ export const SuccessModal = ({ isOpen, onClose }: SuccessModalProps) => {
           <Star size={24} fill="currentColor" />
         </div>
 
-        {/* Icon */}
         <div className="mx-auto w-16 h-16 bg-[#44FF00]/10 rounded-full flex items-center justify-center mb-6">
           <PartyPopper size={32} className="text-[#44FF00]" />
         </div>
 
-        {/* Content */}
         <h2 className="text-2xl font-black text-white mb-4 tracking-tight">
           🎉 PARABÉNS! 🥳
         </h2>
@@ -44,7 +41,6 @@ export const SuccessModal = ({ isOpen, onClose }: SuccessModalProps) => {
           </p>
         </div>
 
-        {/* Button */}
         <button
           onClick={onClose}
           className="w-full bg-[#44FF00] text-[#171717] py-4 rounded-2xl font-black text-sm uppercase tracking-widest shadow-[0_8px_20px_rgba(68,255,0,0.3)] active:scale-95 transition-transform"

@@ -27,12 +27,10 @@ export const UnifiedCheckoutHub = ({
   const [foundRecipe, setFoundRecipe] = useState<SheetRecipe | null>(null);
   const [searchError, setSearchError] = useState(false);
 
-  // Calculate cart values using the centralized pricing utility
   const calculated = calculateCart(cart, allRecipes);
 
-  // Handle code input change with automatic search strictly on 4 digits (MOTOR A)
   const handleCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/\D/g, ""); // Only digits
+    const value = e.target.value.replace(/\D/g, "");
     setCode(value);
 
     if (value.length === 4) {
@@ -65,15 +63,13 @@ export const UnifiedCheckoutHub = ({
     }
   };
 
-  const P = calculated.recipeCount; // Paid recipes count
-  const F = calculated.bonusCount;  // Filled free slots count
-  const maxSlots = calculated.maxBonusSlots; // Total allowed free slots
+  const P = calculated.recipeCount;
+  const F = calculated.bonusCount;
+  const maxSlots = calculated.maxBonusSlots;
 
-  // Split items into regular and bonus items for separate display
   const regularItems = calculated.items.filter(item => !item.isBonus);
   const bonusItems = calculated.items.filter(item => item.isBonus);
 
-  // Neuromarketing Banner Text Logic
   let neuromarketingText = "";
   if (P >= 1 && P <= 4) {
     neuromarketingText = `✨ Adicione mais ${5 - P} receitas e o preço de todas cairá para R$ 4,00 cada! Aproveite!`;
@@ -99,7 +95,6 @@ export const UnifiedCheckoutHub = ({
     }
   }
 
-  // Define the table rows with active state logic matching the pricing tiers
   const tableRows = [
     {
       range: "Todas as receitas AmiguMundo",
@@ -145,8 +140,6 @@ export const UnifiedCheckoutHub = ({
 
   return (
     <div id="cart-section" className="max-w-xl mx-auto my-2 bg-white rounded-xl p-3 shadow-md border-2 border-[#44FF00] text-left w-full">
-      
-      {/* 1. CAIXA DE CÓDIGO (TOPO DO CARD) */}
       <div className="bg-gray-50 rounded-lg p-3 border border-gray-200 mb-3">
         <div className="text-center mb-2">
           <p className="text-xs text-gray-500 font-bold leading-tight">
@@ -167,7 +160,6 @@ export const UnifiedCheckoutHub = ({
           />
         </div>
 
-        {/* Search Error Feedback */}
         {searchError && (
           <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded-lg text-center">
             <p className="text-red-600 font-bold text-xs uppercase">
@@ -176,7 +168,6 @@ export const UnifiedCheckoutHub = ({
           </div>
         )}
 
-        {/* Found Recipe Mini-Card */}
         {foundRecipe && (
           <div className="mt-3 p-2.5 bg-green-50 border-2 border-[#44FF00] rounded-lg flex items-center gap-3 animate-in zoom-in-95 duration-200">
             <div 
@@ -188,29 +179,23 @@ export const UnifiedCheckoutHub = ({
                 alt={foundRecipe.nome}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
               />
-              {/* Ícone de Lupa no Canto Superior Direito */}
               <div className="absolute top-1 right-1 bg-black/50 text-white p-0.5 rounded-full pointer-events-none">
                 <Search size={8} />
               </div>
             </div>
             
-            {/* Info Block with strict layout hierarchy */}
             <div className="flex-1 flex flex-col justify-between h-16 min-w-0">
-              {/* Nome da Receita (No Topo) */}
               <div className="w-full">
                 <h4 className="text-xs font-bold text-gray-900 uppercase leading-tight break-words">
                   {foundRecipe.nome}
                 </h4>
               </div>
 
-              {/* Código (Esquerda) e Preço + Botão (Direita) */}
               <div className="flex items-end justify-between w-full">
-                {/* Código puro entre parênteses */}
                 <span className="text-[10px] font-black text-gray-500">
                   ({foundRecipe.id})
                 </span>
 
-                {/* Preço acima do botão */}
                 <div className="flex flex-col items-end gap-1">
                   <span className="text-[10px] text-gray-900 font-black leading-none">
                     R$ {foundRecipe.preco.toFixed(2)}
@@ -239,16 +224,13 @@ export const UnifiedCheckoutHub = ({
         )}
       </div>
 
-      {/* 2. SEÇÃO DE DESCONTOS PROGRESSIVOS (TABELA MINIMALISTA) */}
       <div className="mb-3">
-        {/* Mini Card Verde de Preços Acessíveis */}
         <div className="mb-2 flex justify-center">
           <div className="bg-[#44FF00] text-[#171717] px-4 py-1.5 rounded-lg text-[10px] sm:text-xs font-black uppercase tracking-wider shadow-sm text-center leading-tight">
             Preços acessíveis para todas as <br /> Crocheteiras Apaixonadas
           </div>
         </div>
 
-        {/* Tabela de Descontos */}
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
           <table className="w-full text-left border-collapse">
             <tbody>
@@ -283,7 +265,6 @@ export const UnifiedCheckoutHub = ({
         </div>
       </div>
 
-      {/* NEUROMARKETING BANNER */}
       {neuromarketingText && (
         <div className="mb-3 p-3 bg-yellow-50 border border-yellow-200 rounded-xl text-center animate-pulse-subtle">
           <p className="text-xs font-bold text-yellow-800 leading-relaxed">
@@ -292,7 +273,6 @@ export const UnifiedCheckoutHub = ({
         </div>
       )}
 
-      {/* 3. RESUMO DO CARRINHO (COMPACTAÇÃO RADICAL - FIM DOS MINI-CARDS) */}
       <div className="mb-3">
         <h3 className="text-xs font-bold text-gray-900 uppercase tracking-tight mb-1.5 flex items-center gap-1.5">
           🛒 Meu Carrinho ({regularItems.length} {regularItems.length === 1 ? "item" : "itens"})
@@ -348,14 +328,12 @@ export const UnifiedCheckoutHub = ({
         )}
       </div>
 
-      {/* 3.1 SEÇÃO DE MIMOS GRATUITOS (RODAPÉ DE MIMOS) */}
       {maxSlots > 0 && (
         <div className="mb-3 p-3 bg-[#f0fdf4] border border-[#22c55e] rounded-xl space-y-2">
           <h4 className="text-xs font-black text-[#16a34a] uppercase tracking-wider flex items-center gap-1.5">
             🎁 Seus Mimos Gratuitos ({F} de {maxSlots} liberados)
           </h4>
           <div className="divide-y divide-green-100 border-t border-b border-green-100">
-            {/* Render filled free slots */}
             {bonusItems.map((item) => (
               <div
                 key={item.id}
@@ -394,7 +372,6 @@ export const UnifiedCheckoutHub = ({
               </div>
             ))}
 
-            {/* Render empty free slots */}
             {Array.from({ length: maxSlots - F }).map((_, index) => (
               <div
                 key={`empty-${index}`}
@@ -409,7 +386,6 @@ export const UnifiedCheckoutHub = ({
         </div>
       )}
 
-      {/* 4. BOTÃO DE CHAMADA PARA AÇÃO */}
       {calculated.items.length > 0 && (
         <div className="pt-2.5 border-t border-gray-100">
           <div className="flex flex-col items-end mb-2.5 w-full">

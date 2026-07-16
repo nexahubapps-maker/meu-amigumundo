@@ -9,16 +9,13 @@ export const PwaPrompt = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
-    // Verifica se o usuário já marcou como instalado
     const isInstalled = localStorage.getItem('amigumundo-installed');
     
     if (!isInstalled) {
-      // Surge após 3 segundos
       const showTimer = setTimeout(() => {
         setIsVisible(true);
       }, 3000);
 
-      // Some automaticamente após 10 segundos adicionais (total 13s)
       const hideTimer = setTimeout(() => {
         setIsVisible(false);
       }, 13000);
@@ -35,7 +32,7 @@ export const PwaPrompt = () => {
   };
 
   const handleDismiss = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Evita abrir o modal ao clicar no botão de fechar
+    e.stopPropagation();
     setIsVisible(false);
   };
 
@@ -44,7 +41,6 @@ export const PwaPrompt = () => {
   return (
     <>
       <div className="max-w-2xl mx-auto px-4 mb-6 animate-in slide-in-from-top duration-500 relative">
-        {/* Botão de Fechar absoluto bem colado no canto superior direito */}
         <button 
           onClick={handleDismiss}
           className="absolute top-1.5 right-5 p-1 text-gray-400 hover:text-white hover:bg-white/10 rounded-full transition-colors z-20"
@@ -57,12 +53,10 @@ export const PwaPrompt = () => {
           onClick={handleInstallClick}
           className="w-full bg-gradient-to-r from-[#171717] to-[#262626] text-white p-4 rounded-2xl text-center shadow-lg flex items-center justify-between gap-4 hover:scale-[1.01] active:scale-[0.99] transition-transform border border-white/10 cursor-pointer relative"
         >
-          {/* Ícone idêntico ao do rodapé */}
           <div className="bg-[#44FF00]/10 p-2.5 rounded-xl text-[#44FF00] shrink-0">
             <Smartphone size={24} />
           </div>
           
-          {/* Textos com quebras de linha exatas e sem quebra na frase chave */}
           <div className="text-left flex-1">
             <p className="text-[11px] sm:text-xs font-black uppercase tracking-wider text-[#44FF00]">
               Dica de Ouro! 📱
@@ -75,14 +69,12 @@ export const PwaPrompt = () => {
             </p>
           </div>
 
-          {/* Ações: Seta indicativa */}
           <div className="flex items-center shrink-0 pr-2">
             <ArrowRight size={16} className="text-gray-400" />
           </div>
         </div>
       </div>
 
-      {/* Modal Didático Compartilhado */}
       <InstallGuideModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </>
   );

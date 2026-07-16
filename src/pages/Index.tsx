@@ -2,26 +2,26 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import { Header } from "@/components/Header";
-import RecipeCard from "@/components/RecipeCard";
-import { UpsellCard } from "@/components/UpsellCard";
-import { UpsellModal } from "@/components/UpsellModal";
-import { CategoryCard } from "@/components/CategoryCard";
-import { PackCard } from "@/components/PackCard";
-import { ErrorToast } from "@/components/ErrorToast";
-import { DailyGiftSection } from "@/components/DailyGiftSection";
-import { PwaPrompt } from "@/components/PwaPrompt";
+import { Header } from "@/components/common/Header";
+import RecipeCard from "@/components/features/catalog/RecipeCard";
+import { UpsellCard } from "@/components/features/upsell/UpsellCard";
+import { UpsellModal } from "@/components/features/upsell/UpsellModal";
+import { CategoryCard } from "@/components/features/catalog/CategoryCard";
+import { PackCard } from "@/components/features/catalog/PackCard";
+import { ErrorToast } from "@/components/common/ErrorToast";
+import { DailyGiftSection } from "@/components/features/gamification/DailyGiftSection";
+import { PwaPrompt } from "@/components/features/pwa/PwaPrompt";
 import { FavoritesModal } from "@/components/FavoritesModal";
-import { FooterNavigation } from "@/components/FooterNavigation";
+import { FooterNavigation } from "@/components/common/FooterNavigation";
 import { NotificationsModal } from "@/components/NotificationsModal";
-import { InternalPopup } from "@/components/InternalPopup";
-import { UnifiedCheckoutHub } from "@/components/UnifiedCheckoutHub";
-import { CartFooter } from "@/components/CartFooter";
-import { CategoryDetailView } from "@/components/CategoryDetailView";
-import { LightboxModal } from "@/components/LightboxModal";
-import { InstallGuideCard } from "@/components/InstallGuideCard";
+import { InternalPopup } from "@/components/common/InternalPopup";
+import { UnifiedCheckoutHub } from "@/components/features/checkout/UnifiedCheckoutHub";
+import { CartFooter } from "@/components/features/checkout/CartFooter";
+import { CategoryDetailView } from "@/components/features/catalog/CategoryDetailView";
+import { LightboxModal } from "@/components/features/catalog/LightboxModal";
+import { InstallGuideCard } from "@/components/features/pwa/InstallGuideCard";
 import { WelcomeBanner } from "@/components/WelcomeBanner";
-import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { Breadcrumbs } from "@/components/common/Breadcrumbs";
 import { 
   getRecipes, 
   getInfoprodutos, 
@@ -38,7 +38,6 @@ import { playHeartbeatSound } from "@/utils/audio";
 import { type CartItem, calculateCart } from "@/utils/pricing";
 import { showCartAdd, showSuccess, showInfo } from "@/utils/toast";
 
-// Algoritmo Fisher-Yates Shuffle para embaralhar receitas
 function shuffleArray<T>(array: T[]): T[] {
   const arr = [...array];
   for (let i = arr.length - 1; i > 0; i--) {
@@ -53,7 +52,6 @@ export default function Index() {
   const location = useLocation();
   const { categoria_slug, id: routeProductId, slug_and_id } = useParams();
   
-  // State for fetched data
   const [recipesList, setRecipesList] = useState<SheetRecipe[]>([]);
   const [infoprodutosList, setInfoprodutosList] = useState<SheetInfoproduto[]>([]);
   const [packsList, setPacksList] = useState<SheetPack[]>([]);
@@ -72,19 +70,14 @@ export default function Index() {
   const [zoomImage, setZoomImage] = useState<string | null>(null);
   const carouselRef = useRef<HTMLDivElement>(null);
   
-  // Notifications Read State
   const [hasUnreadNotifications, setHasUnreadNotifications] = useState(true);
-
-  // Direct Entry Detection
   const [isDirectEntry, setIsDirectEntry] = useState(false);
 
-  // Favorites State
   const [favorites, setFavorites] = useState<string[]>(() => {
     const saved = localStorage.getItem("amigumundo-favorites");
     return saved ? JSON.parse(saved) : [];
   });
 
-  // Extract ID from slug_and_id
   const getTargetId = () => {
     if (slug_and_id) {
       const parts = slug_and_id.split("-");
@@ -95,7 +88,6 @@ export default function Index() {
 
   const targetId = getTargetId();
 
-  // Fetch all data from Google Sheets
   useEffect(() => {
     const loadAllData = async () => {
       setIsLoading(true);
@@ -113,13 +105,11 @@ export default function Index() {
         setPacksList(packsData);
         setNotificationsList(notificationsData);
 
-        // Filtrar categorias ativas e ordenar sequencialmente pela coluna ORDEM (id)
         const activeCategories = categoriesData
           .filter(c => c.status)
           .sort((a, b) => a.id.localeCompare(b.id, undefined, { numeric: true, sensitivity: 'base' }));
         setCategoriesList(activeCategories);
 
-        // Check if there are new notifications since last read
         const lastRead = localStorage.getItem("notifications-last-read");
         if (lastRead) {
           const activeNotifs = notificationsData.filter(n => n.status);
@@ -129,7 +119,6 @@ export default function Index() {
           setHasUnreadNotifications(notificationsData.filter(n => n.status).length > 0);
         }
 
-        // Push Notification Listener (Client-side simulation)
         const pushItem = [...recipesData, ...infoprodutosData, ...packsData].find(item => item.disparar_push);
         if (pushItem) {
           if (Notification.permission === "granted") {
@@ -146,7 +135,6 @@ export default function Index() {
               }
             });
           }
-          console.log(`[Push Notification Triggered] ${pushItem.nome}: ${pushItem.descricao}`);
         }
 
       } catch (e) {
@@ -159,19 +147,16 @@ export default function Index() {
     loadAllData();
   }, []);
 
-  // Embaralhar receitas e validar status da categoria a cada acesso
   useEffect(() => {
     if (categoria_slug && recipesList.length > 0 && categoriesList.length > 0) {
       const decodedCat = decodeURIComponent(categoria_slug).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
       
-      // Verificar se a categoria existe e está ativa
       const matchedCat = categoriesList.find(c => {
         const titleNormalized = c.titulo.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
         return titleNormalized === decodedCat;
       });
 
       if (!matchedCat) {
-        // Categoria inativa ou inexistente, redireciona para a Home
         navigate("/");
         return;
       }
@@ -181,14 +166,12 @@ export default function Index() {
         return catName === decodedCat;
       });
 
-      // Aplicar Fisher-Yates Shuffle para embaralhar a lista de receitas
       setShuffledRecipes(shuffleArray(filtered));
     } else {
       setShuffledRecipes([]);
     }
   }, [categoria_slug, recipesList, categoriesList, navigate]);
 
-  // Notification Listener for Date/Time
   useEffect(() => {
     if (notificationsList.length === 0) return;
 
@@ -208,13 +191,11 @@ export default function Index() {
       });
     };
 
-    // Check immediately and then every 30 seconds
     checkNotifications();
     const interval = setInterval(checkNotifications, 30000);
     return () => clearInterval(interval);
   }, [notificationsList]);
 
-  // Detect Direct Entry and Handle Dynamic Meta Tags
   useEffect(() => {
     const isDynamicRoute = location.pathname.startsWith("/receita/") || 
                            location.pathname.startsWith("/pack/") || 
@@ -225,7 +206,6 @@ export default function Index() {
     }
   }, [location.pathname]);
 
-  // Scroll Lock Effect
   useEffect(() => {
     const isModalOpen = !!showRecipe || !!activeUpsell || isFavoritesOpen || !!zoomImage || !!categoria_slug || !!targetId;
     if (isModalOpen) {
@@ -251,7 +231,6 @@ export default function Index() {
     localStorage.setItem("amigumundo-favorites", JSON.stringify(favorites));
   }, [favorites]);
 
-  // Deep Linking Handler for Product Detail
   useEffect(() => {
     if (targetId && recipesList.length > 0) {
       const recipe = recipesList.find(r => r.id === targetId);
@@ -278,7 +257,6 @@ export default function Index() {
     playHeartbeatSound();
     setCart((prev) => {
       const itemsToAdd = Array.isArray(item) ? item : [item];
-      // Filter out duplicates
       const filteredNewItems = itemsToAdd.filter(
         (newItem) => !prev.some((existing) => existing.id === newItem.id)
       );
@@ -295,7 +273,6 @@ export default function Index() {
     setCart((prev) => prev.filter((i) => i.id !== id));
   };
 
-  // Calculate cart values using the centralized pricing utility
   const calculatedCart = calculateCart(cart, recipesList);
 
   const handleRecipeAdd = (recipe: SheetRecipe) => {
@@ -330,7 +307,6 @@ export default function Index() {
     }
   };
 
-  // Fast-Pass Checkout Funnel for Infoproducts
   const handleUpsellBuy = () => {
     if (activeUpsell) {
       const upsell = infoprodutosList.find((u) => u.id === activeUpsell);
@@ -343,7 +319,6 @@ export default function Index() {
           imagem: upsell.url_foto
         };
         
-        // Update state and save synchronously to prevent race conditions during immediate navigation
         setCart((prev) => {
           const updated = prev.find((i) => i.id === newItem.id) ? prev : [...prev, newItem];
           localStorage.setItem("amigumundo-cart", JSON.stringify(updated));
@@ -358,7 +333,6 @@ export default function Index() {
 
   const isInCart = (id: string) => cart.some((item) => item.id === id);
 
-  // Textures Styles (Fixed zoom to 150px repeat)
   const textureLaranjaStyle = {
     backgroundImage: "url('https://ik.imagekit.io/51b3srlsg/textura_laranja.jpeg')",
     backgroundRepeat: "repeat",
@@ -379,7 +353,6 @@ export default function Index() {
     localStorage.setItem("notifications-last-read", new Date().toISOString());
   };
 
-  // Dynamic Meta Tags Calculation
   let metaTitle = "Amigu Mundo";
   let metaImage = "https://ik.imagekit.io/51b3srlsg/icone_amigumundo.png";
   let metaDescription = "Olha o que encontrei no AmiguMundo! Tudo sem ocupar espaço na memória do celular.";
@@ -417,7 +390,6 @@ export default function Index() {
 
   return (
     <div className="min-h-screen bg-white pb-24 relative lg:max-w-6xl lg:mx-auto lg:shadow-2xl">
-      {/* Dynamic Meta Tags Injection */}
       <Helmet>
         <title>{metaTitle}</title>
         <meta property="og:title" content={metaTitle} />
@@ -427,15 +399,12 @@ export default function Index() {
         <meta property="og:image:type" content="image/jpeg" />
       </Helmet>
 
-      {/* Welcome Banner for Direct Entry */}
       <WelcomeBanner isDirectEntry={isDirectEntry} />
 
       <Header cartCount={cart.length} />
 
-      {/* Internal Popup for active notifications */}
       <InternalPopup notifications={notificationsList} />
 
-      {/* DAILY GIFT ANNOUNCEMENT BOX (Shrunk with Olive Green Texture) */}
       <div className="max-w-6xl mx-auto px-4 mt-1 flex flex-col gap-1">
         <div 
           style={textureVerdeOlivaStyle}
@@ -445,17 +414,11 @@ export default function Index() {
         </div>
       </div>
 
-      {/* SESSÃO UNIFICADA COM FUNDO #e6dcd3 */}
       <div className="bg-[#e6dcd3] mt-1 pt-1 pb-2">
-        
-        {/* SEÇÃO 1: CHECKOUT (Topo) */}
         <section className="pb-1">
           <div className="max-w-6xl mx-auto px-4">
-            
-            {/* PWA Install Prompt */}
             <PwaPrompt />
 
-            {/* Unified Checkout Hub Component */}
             <UnifiedCheckoutHub
               cart={cart}
               allRecipes={recipesList}
@@ -464,15 +427,11 @@ export default function Index() {
               onCheckout={() => navigate("/checkout")}
               onZoomImage={setZoomImage}
             />
-
           </div>
         </section>
-
       </div>
 
-      {/* SEÇÃO 3: CATEGORIAS UNIFICADA COM O BANNER DA LOJA */}
       <section className="bg-[#F5F5F7] pt-0 pb-6">
-        {/* 1. BANNER DA LOJA (Colado nas laterais absolutas da tela, sem espaçamento lateral) */}
         <div className="w-full overflow-hidden">
           <img 
             src="https://ik.imagekit.io/51b3srlsg/Loja_AmiguMundo_amigurumis.jpeg" 
@@ -482,11 +441,7 @@ export default function Index() {
         </div>
 
         <div className="max-w-6xl mx-auto px-2 sm:px-4 mt-3">
-          
-          {/* CARD ÚNICO UNIFICADO (TÍTULO + CATEGORIAS) */}
           <div className="bg-white rounded-3xl p-2 sm:p-3 shadow-lg border border-gray-100/80 flex flex-col gap-2">
-
-            {/* 2. CARD DE TÍTULO (Textura Laranja) - Bem colado ao banner */}
             <div 
               style={textureLaranjaStyle}
               className="w-full py-1.5 px-3 shadow-sm rounded-xl text-center border border-gray-100"
@@ -496,12 +451,10 @@ export default function Index() {
               </h2>
             </div>
             
-            {/* 3. SUBTÍTULO - Espaçamento mínimo */}
             <p className="text-gray-600 text-[10px] sm:text-xs font-bold text-center uppercase tracking-tight -mt-1 mb-1">
               Novas receitas adicionadas todos os dias
             </p>
             
-            {/* 4. GRID DE CATEGORIAS (3 em 3 colunas, espaçamento mínimo lateral e vertical) */}
             <div className="grid grid-cols-3 lg:grid-cols-6 gap-x-1 gap-y-1.5 lg:gap-4 px-0.5">
               {categoriesList.map((cat) => (
                 <CategoryCard 
@@ -515,16 +468,12 @@ export default function Index() {
                 />
               ))}
             </div>
-
           </div>
-
         </div>
       </section>
 
-      {/* SEÇÃO 2: UPSELLS (TRANSFORME SUAS PEÇAS EM UM ATELIÊ LUCRATIVO) - DESCEU */}
       <section className="py-8 bg-[#2A2A2A] overflow-hidden rounded-3xl mx-4 sm:mx-auto max-w-3xl shadow-xl border border-white/5 my-6">
         <div className="px-4">
-          {/* Card de Título de Largura Total e Altura Mínima with Orange Texture */}
           <div 
             style={textureLaranjaStyle}
             className="w-full py-2 px-4 mb-3 shadow-sm rounded-xl text-center border border-white/10"
@@ -538,13 +487,11 @@ export default function Index() {
             <p className="text-xs sm:text-sm text-gray-300 font-medium mt-1 max-w-2xl mx-auto leading-relaxed">
               Descubra as soluções exclusivas para atrair clientes pagantes, valorizar o seu trabalho e profissionalizar suas vendas.
             </p>
-            {/* Helper text for horizontal scroll */}
             <p className="text-xs text-[#44FF00] font-bold mt-2 animate-pulse">
               Arraste para o lado para ver todas as soluções ➔
             </p>
           </div>
 
-          {/* Horizontal Carousel with Peek Effect */}
           <div 
             ref={carouselRef}
             onScroll={handleCarouselScroll}
@@ -552,7 +499,6 @@ export default function Index() {
             style={{ scrollbarWidth: 'none' }}
           >
             {isLoading ? (
-              /* Skeleton Loaders */
               Array.from({ length: 3 }).map((_, i) => (
                 <div key={i} className="snap-center shrink-0 w-[85vw] max-w-[320px] bg-gray-800 rounded-2xl aspect-[16/10] animate-pulse" />
               ))
@@ -584,7 +530,6 @@ export default function Index() {
             )}
           </div>
 
-          {/* Pagination Dots */}
           <div className="flex justify-center gap-1.5 mt-2">
             {infoprodutosList.map((_, i) => (
               <div 
@@ -604,7 +549,6 @@ export default function Index() {
           if (targetId) navigate("/");
         }}>
           <div className="modal-content p-6 overflow-hidden" onClick={(e) => e.stopPropagation()}>
-            {/* Breadcrumbs Navigation */}
             <Breadcrumbs 
               categoria={showRecipe.categoria} 
               produtoNome={showRecipe.nome} 
@@ -622,7 +566,6 @@ export default function Index() {
               isInCart={isInCart(showRecipe.id)}
             />
 
-            {/* Strategic Return Button */}
             <div className="mt-6 pt-4 border-t border-gray-100 flex flex-col gap-2">
               <button
                 onClick={() => {
@@ -664,10 +607,8 @@ export default function Index() {
         />
       )}
 
-      {/* SEÇÃO 4: PACKS (Fundo #e6dcd3 with Orange Texture) */}
       <section className="bg-[#e6dcd3] py-6">
         <div className="max-w-6xl mx-auto px-4">
-          {/* Card de Título de Largura Total e Altura Mínima with Orange Texture */}
           <div 
             style={textureLaranjaStyle}
             className="w-full py-2 px-4 mb-4 shadow-sm rounded-xl text-center border border-gray-100"
@@ -682,7 +623,6 @@ export default function Index() {
 
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             {isLoading ? (
-              /* Skeleton Loaders */
               Array.from({ length: 4 }).map((_, i) => (
                 <div key={i} className="bg-gray-100 rounded-xl aspect-square animate-pulse" />
               ))
@@ -711,7 +651,6 @@ export default function Index() {
         </div>
       </section>
 
-      {/* WhatsApp Group Card (With Teal/Blue-Petrol Background and Unified Crochet Cube Asset) */}
       <div className="max-w-2xl mx-auto px-4 my-6">
         <a 
           href="https://wa.me/5544999999999" 
@@ -737,24 +676,20 @@ export default function Index() {
         </a>
       </div>
 
-      {/* SEÇÃO 6: MIMO GRATUITO DIÁRIO */}
       <DailyGiftSection />
 
-      {/* CARD DE INSTALAÇÃO DO APP */}
       <InstallGuideCard />
 
       <footer className="text-center py-3 px-4 border-t border-gray-100 bg-white">
         <p className="text-[10px] text-gray-300 font-black uppercase tracking-[0.3em]">© 2024 AmiguMundo Artes</p>
       </footer>
 
-      {/* CART FOOTER PREVIEW */}
       <CartFooter
         count={cart.length}
         total={calculatedCart.total}
         onCheckout={() => navigate("/checkout")}
       />
 
-      {/* FOOTER NAVIGATION BAR */}
       <FooterNavigation
         onOpenFavorites={() => setIsFavoritesOpen(true)}
         onOpenNotifications={handleOpenNotifications}
@@ -762,7 +697,6 @@ export default function Index() {
         notificationsCount={hasUnreadNotifications ? notificationsList.filter(n => n.status).length : 0}
       />
 
-      {/* FAVORITES MODAL */}
       <FavoritesModal
         isOpen={isFavoritesOpen}
         onClose={() => setIsFavoritesOpen(false)}
@@ -775,14 +709,12 @@ export default function Index() {
         infoprodutos={infoprodutosList}
       />
 
-      {/* NOTIFICATIONS MODAL */}
       <NotificationsModal
         isOpen={isNotificationsOpen}
         onClose={() => setIsNotificationsOpen(false)}
         notifications={notificationsList}
       />
 
-      {/* DYNAMIC CATEGORY DETAIL VIEW (Full-screen Overlay) */}
       {categoria_slug && (
         <CategoryDetailView
           categoriaSlug={categoria_slug}
@@ -798,7 +730,6 @@ export default function Index() {
         />
       )}
 
-      {/* Lightbox Zoom Modal */}
       {zoomImage && (
         <LightboxModal
           imageUrl={zoomImage}

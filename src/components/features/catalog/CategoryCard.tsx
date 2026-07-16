@@ -49,7 +49,6 @@ export const CategoryCard = ({ nome, imagem, onClick }: CategoryCardProps) => {
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
         />
         
-        {/* Botão de Compartilhamento no Canto Superior Direito */}
         <button 
           onClick={handleShare}
           className="absolute top-1.5 right-1.5 bg-white/90 backdrop-blur-sm p-1 rounded-full shadow-md hover:scale-110 active:scale-90 transition-transform text-gray-500 hover:text-gray-800 z-10"

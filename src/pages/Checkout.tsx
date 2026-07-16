@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ChevronLeft, ShieldCheck, Zap, CreditCard, Mail, Phone, Lock } from "lucide-react";
-import { SupportButton } from "@/components/SupportButton";
+import { SupportButton } from "@/components/common/SupportButton";
 import { playHeartbeatSound } from "@/utils/audio";
 import { getRecipes, getInfoprodutos, getPacks } from "@/utils/sheets";
 import { calculateCart } from "@/utils/pricing";
@@ -19,7 +19,6 @@ export default function Checkout() {
   const [email, setEmail] = useState(() => localStorage.getItem("amigumundo-email") || "");
   const [whatsapp, setWhatsapp] = useState(() => localStorage.getItem("amigumundo-whatsapp") || "");
 
-  // Card States
   const [cardNumber, setCardNumber] = useState("");
   const [cardName, setCardName] = useState("");
   const [cardExpiry, setCardExpiry] = useState("");
@@ -184,14 +183,12 @@ export default function Checkout() {
     const codigosReceitas = calculated.items.map(item => item.id).join(",");
 
     try {
-      // 1. CRIAR O PAGAMENTO DE VERDADE NO MERCADO PAGO
-      // Enviamos para o Google Apps Script processar a cobrança de forma segura usando o ACCESS_TOKEN oculto
       const response = await fetch(
         "https://script.google.com/macros/s/AKfycbwPW3Qj7VAmCX6B8BdzMFDd9OBHih26uQo1lHipIm9dRikC1nkcN53WONbqXdTVevvWwg/exec?action=create_payment",
         {
           method: "POST",
           headers: {
-            "Content-Type": "text/plain", // Evita problemas de CORS pré-flight com Apps Script
+            "Content-Type": "text/plain",
           },
           body: JSON.stringify({
             payment_method: paymentMethod,
@@ -204,7 +201,6 @@ export default function Checkout() {
         }
       );
 
-      // 2. EXIBIR SUCESSO AO CLIENTE
       showSuccess("Pedido recebido! Assim que o pagamento for confirmado, as receitas serão enviadas no seu WhatsApp.");
       
       if (!checkoutProductId) {
