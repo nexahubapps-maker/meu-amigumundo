@@ -17,97 +17,41 @@ export interface SyncResult {
   error?: string;
 }
 
-/**
- * Helper to safely upsert data to Supabase, trying alternative table names and column mappings
- * if the primary attempt fails (e.g., due to English vs Portuguese naming).
- */
-async function safeUpsert(
-  primaryTable: string,
-  alternativeTable: string,
-  dataPortuguese: any[],
-  dataEnglish: any[],
-  conflictColumn: string = "id"
-): Promise<{ success: boolean; count: number; error?: string; usedTable: string }> {
-  // Try Portuguese table first
-  try {
-    const { data, error } = await supabase
-      .from(primaryTable)
-      .upsert(dataPortuguese, { onConflict: conflictColumn });
-
-    if (!error) {
-      return { success: true, count: dataPortuguese.length, usedTable: primaryTable };
-    }
-    
-    console.warn(`Failed upsert to ${primaryTable}, trying alternative...`, error);
-  } catch (e) {
-    console.warn(`Exception during upsert to ${primaryTable}:`, e);
-  }
-
-  // Try English table/columns alternative
-  try {
-    const { data, error } = await supabase
-      .from(alternativeTable)
-      .upsert(dataEnglish, { onConflict: conflictColumn });
-
-    if (!error) {
-      return { success: true, count: dataEnglish.length, usedTable: alternativeTable };
-    }
-    
-    return { 
-      success: false, 
-      count: 0, 
-      error: error.message || JSON.stringify(error), 
-      usedTable: alternativeTable 
-    };
-  } catch (e: any) {
-    return { 
-      success: false, 
-      count: 0, 
-      error: e.message || String(e), 
-      usedTable: alternativeTable 
-    };
-  }
-}
-
 export async function syncGoogleSheetsToSupabase(): Promise<SyncResult[]> {
   const results: SyncResult[] = [];
 
-  // 1. Sync Categories
+  // 1. Sincronizar Categorias
   try {
     const categories = await getCategories();
     const validCategories = categories.filter(c => c.id && c.titulo);
     
-    const ptData = validCategories.map(c => ({
+    const data = validCategories.map(c => ({
       id: c.id,
       titulo: c.titulo,
       imagem: c.imagem,
       status: c.status ? "ativo" : "inativo"
     }));
 
-    const enData = validCategories.map(c => ({
-      id: c.id,
-      title: c.titulo,
-      image: c.imagem,
-      status: c.status ? "active" : "inactive"
-    }));
+    const { error } = await supabase
+      .from("categorias")
+      .upsert(data, { onConflict: "id" });
 
-    const res = await safeUpsert("categorias", "categories", ptData, enData);
     results.push({
-      table: `Categorias (${res.usedTable})`,
-      success: res.success,
-      count: res.count,
-      error: res.error
+      table: "categorias",
+      success: !error,
+      count: data.length,
+      error: error ? error.message : undefined
     });
   } catch (e: any) {
-    results.push({ table: "Categorias", success: false, count: 0, error: e.message || String(e) });
+    results.push({ table: "categorias", success: false, count: 0, error: e.message || String(e) });
   }
 
-  // 2. Sync Recipes
+  // 2. Sincronizar Receitas
   try {
     const recipes = await getRecipes();
     const validRecipes = recipes.filter(r => r.id && r.nome);
 
-    const ptData = validRecipes.map(r => ({
+    const data = validRecipes.map(r => ({
       id: r.id,
       nome: r.nome,
       slug: r.slug,
@@ -118,34 +62,26 @@ export async function syncGoogleSheetsToSupabase(): Promise<SyncResult[]> {
       disparar_push: r.disparar_push
     }));
 
-    const enData = validRecipes.map(r => ({
-      id: r.id,
-      name: r.nome,
-      slug: r.slug,
-      price: r.preco,
-      image_url: r.url_foto,
-      category: r.categoria,
-      active: r.ativo,
-      trigger_push: r.disparar_push
-    }));
+    const { error } = await supabase
+      .from("receitas")
+      .upsert(data, { onConflict: "id" });
 
-    const res = await safeUpsert("receitas", "recipes", ptData, enData);
     results.push({
-      table: `Receitas (${res.usedTable})`,
-      success: res.success,
-      count: res.count,
-      error: res.error
+      table: "receitas",
+      success: !error,
+      count: data.length,
+      error: error ? error.message : undefined
     });
   } catch (e: any) {
-    results.push({ table: "Receitas", success: false, count: 0, error: e.message || String(e) });
+    results.push({ table: "receitas", success: false, count: 0, error: e.message || String(e) });
   }
 
-  // 3. Sync Packs
+  // 3. Sincronizar Packs
   try {
     const packs = await getPacks();
     const validPacks = packs.filter(p => p.id && p.nome);
 
-    const ptData = validPacks.map(p => ({
+    const data = validPacks.map(p => ({
       id: p.id,
       nome: p.nome,
       slug: p.slug,
@@ -156,34 +92,26 @@ export async function syncGoogleSheetsToSupabase(): Promise<SyncResult[]> {
       disparar_push: p.disparar_push
     }));
 
-    const enData = validPacks.map(p => ({
-      id: p.id,
-      name: p.nome,
-      slug: p.slug,
-      price: p.preco,
-      image_url: p.url_foto,
-      description: p.descricao,
-      active: p.ativo,
-      trigger_push: p.disparar_push
-    }));
+    const { error } = await supabase
+      .from("packs")
+      .upsert(data, { onConflict: "id" });
 
-    const res = await safeUpsert("packs", "packs", ptData, enData);
     results.push({
-      table: `Packs (${res.usedTable})`,
-      success: res.success,
-      count: res.count,
-      error: res.error
+      table: "packs",
+      success: !error,
+      count: data.length,
+      error: error ? error.message : undefined
     });
   } catch (e: any) {
-    results.push({ table: "Packs", success: false, count: 0, error: e.message || String(e) });
+    results.push({ table: "packs", success: false, count: 0, error: e.message || String(e) });
   }
 
-  // 4. Sync Infoproducts
+  // 4. Sincronizar Infoprodutos
   try {
     const infoproducts = await getInfoprodutos();
     const validInfos = infoproducts.filter(i => i.id && i.nome);
 
-    const ptData = validInfos.map(i => ({
+    const data = validInfos.map(i => ({
       id: i.id,
       nome: i.nome,
       slug: i.slug,
@@ -194,34 +122,26 @@ export async function syncGoogleSheetsToSupabase(): Promise<SyncResult[]> {
       disparar_push: i.disparar_push
     }));
 
-    const enData = validInfos.map(i => ({
-      id: i.id,
-      name: i.nome,
-      slug: i.slug,
-      price: i.preco,
-      image_url: i.url_foto,
-      description: i.descricao,
-      active: i.ativo,
-      trigger_push: i.disparar_push
-    }));
+    const { error } = await supabase
+      .from("infoprodutos")
+      .upsert(data, { onConflict: "id" });
 
-    const res = await safeUpsert("infoprodutos", "infoproducts", ptData, enData);
     results.push({
-      table: `Infoprodutos (${res.usedTable})`,
-      success: res.success,
-      count: res.count,
-      error: res.error
+      table: "infoprodutos",
+      success: !error,
+      count: data.length,
+      error: error ? error.message : undefined
     });
   } catch (e: any) {
-    results.push({ table: "Infoprodutos", success: false, count: 0, error: e.message || String(e) });
+    results.push({ table: "infoprodutos", success: false, count: 0, error: e.message || String(e) });
   }
 
-  // 5. Sync Notifications
+  // 5. Sincronizar Notificações Internas
   try {
     const notifications = await getNotifications();
     const validNotifications = notifications.filter(n => n.id && n.titulo);
 
-    const ptData = validNotifications.map(n => ({
+    const data = validNotifications.map(n => ({
       id: n.id,
       status: n.status,
       data_hora: n.data_hora,
@@ -231,33 +151,26 @@ export async function syncGoogleSheetsToSupabase(): Promise<SyncResult[]> {
       link: n.link
     }));
 
-    const enData = validNotifications.map(n => ({
-      id: n.id,
-      status: n.status,
-      date_time: n.data_hora,
-      title: n.titulo,
-      message: n.mensagem,
-      image_url: n.url_foto,
-      link: n.link
-    }));
+    const { error } = await supabase
+      .from("notificacoes_internas")
+      .upsert(data, { onConflict: "id" });
 
-    const res = await safeUpsert("notificacoes_internas", "internal_notifications", ptData, enData);
     results.push({
-      table: `Notificações (${res.usedTable})`,
-      success: res.success,
-      count: res.count,
-      error: res.error
+      table: "notificacoes_internas",
+      success: !error,
+      count: data.length,
+      error: error ? error.message : undefined
     });
   } catch (e: any) {
-    results.push({ table: "Notificações", success: false, count: 0, error: e.message || String(e) });
+    results.push({ table: "notificacoes_internas", success: false, count: 0, error: e.message || String(e) });
   }
 
-  // 6. Sync Free Recipes
+  // 6. Sincronizar Receitas Gratuitas
   try {
     const freeRecipes = await getReceitaGratuita();
     const validFreeRecipes = freeRecipes.filter(f => f.codigo && f.nome);
 
-    const ptData = validFreeRecipes.map(f => ({
+    const data = validFreeRecipes.map(f => ({
       codigo: f.codigo,
       data: f.data,
       nome: f.nome,
@@ -265,23 +178,18 @@ export async function syncGoogleSheetsToSupabase(): Promise<SyncResult[]> {
       ativo: f.ativo
     }));
 
-    const enData = validFreeRecipes.map(f => ({
-      code: f.codigo,
-      date: f.data,
-      name: f.nome,
-      image_url: f.url_foto,
-      active: f.ativo
-    }));
+    const { error } = await supabase
+      .from("receitas_gratuitas")
+      .upsert(data, { onConflict: "codigo" });
 
-    const res = await safeUpsert("receitas_gratuitas", "free_recipes", ptData, enData, "codigo");
     results.push({
-      table: `Receitas Gratuitas (${res.usedTable})`,
-      success: res.success,
-      count: res.count,
-      error: res.error
+      table: "receitas_gratuitas",
+      success: !error,
+      count: data.length,
+      error: error ? error.message : undefined
     });
   } catch (e: any) {
-    results.push({ table: "Receitas Gratuitas", success: false, count: 0, error: e.message || String(e) });
+    results.push({ table: "receitas_gratuitas", success: false, count: 0, error: e.message || String(e) });
   }
 
   return results;
