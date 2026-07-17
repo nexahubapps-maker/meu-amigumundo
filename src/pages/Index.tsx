@@ -22,6 +22,7 @@ import { LightboxModal } from "@/components/features/catalog/LightboxModal";
 import { InstallGuideCard } from "@/components/features/pwa/InstallGuideCard";
 import { WelcomeBanner } from "@/components/WelcomeBanner";
 import { Breadcrumbs } from "@/components/common/Breadcrumbs";
+import { AdminSyncButton } from "@/components/features/admin/AdminSyncButton";
 import { 
   getRecipes, 
   getInfoprodutos, 
@@ -736,6 +737,8 @@ export default function Index() {
           onClose={() => setZoomImage(null)}
         />
       )}
+
+      <AdminSyncButton />
     </div>
   );
 }
