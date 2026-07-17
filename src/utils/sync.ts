@@ -28,8 +28,8 @@ export async function syncGoogleSheetsToSupabase(): Promise<SyncResult[]> {
     const data = validCategories.map(c => ({
       id: c.id,
       titulo: c.titulo,
-      imagem: c.imagem,
-      status: c.status ? "ativo" : "inativo"
+      imagem: c.imagem, // Se no banco for imagem_url, mude para imagem_url: c.imagem
+      status: c.status // Enviando como boolean puro (true/false)
     }));
 
     const { error } = await supabase
@@ -56,7 +56,7 @@ export async function syncGoogleSheetsToSupabase(): Promise<SyncResult[]> {
       nome: r.nome,
       slug: r.slug,
       preco: r.preco,
-      url_foto: r.url_foto,
+      imagem_url: r.url_foto, // Corrigido para imagem_url conforme solicitado
       categoria: r.categoria,
       ativo: r.ativo,
       disparar_push: r.disparar_push
