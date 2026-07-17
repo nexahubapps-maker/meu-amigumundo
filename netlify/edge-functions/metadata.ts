@@ -1,7 +1,7 @@
 import { Context } from "https://edge.netlify.com";
 
 // Nova Planilha Mestre Oficial "AMIGUMUNDO APP"
-const SPREADSHEET_ID = "1sIoPIN054AGjiGWtWu6l6twvd7SwWPGg";
+const SPREADSHEET_ID = "1RUrFeuyLIqxf7vK9Vypo7XzcigV6v4koHg1v0fmjR8k";
 const DEFAULT_LOGO = "https://ik.imagekit.io/51b3srlsg/icone_amigumundo.png";
 
 // Helper to parse CSV rows safely

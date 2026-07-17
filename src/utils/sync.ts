@@ -1,7 +1,14 @@
 "use client";
 
 import { supabase } from "@/lib/supabase";
-import { getRecipes, getCategories, getPacks, getInfoprodutos } from "./sheets";
+import { 
+  getRecipes, 
+  getCategories, 
+  getPacks, 
+  getInfoprodutos, 
+  getNotifications, 
+  getReceitaGratuita 
+} from "./sheets";
 
 export interface SyncResult {
   table: string;
@@ -18,19 +25,19 @@ async function safeUpsert(
   primaryTable: string,
   alternativeTable: string,
   dataPortuguese: any[],
-  dataEnglish: any[]
+  dataEnglish: any[],
+  conflictColumn: string = "id"
 ): Promise<{ success: boolean; count: number; error?: string; usedTable: string }> {
   // Try Portuguese table first
   try {
     const { data, error } = await supabase
       .from(primaryTable)
-      .upsert(dataPortuguese, { onConflict: "id" });
+      .upsert(dataPortuguese, { onConflict: conflictColumn });
 
     if (!error) {
       return { success: true, count: dataPortuguese.length, usedTable: primaryTable };
     }
     
-    // If error is not about table/column missing, log it
     console.warn(`Failed upsert to ${primaryTable}, trying alternative...`, error);
   } catch (e) {
     console.warn(`Exception during upsert to ${primaryTable}:`, e);
@@ -40,7 +47,7 @@ async function safeUpsert(
   try {
     const { data, error } = await supabase
       .from(alternativeTable)
-      .upsert(dataEnglish, { onConflict: "id" });
+      .upsert(dataEnglish, { onConflict: conflictColumn });
 
     if (!error) {
       return { success: true, count: dataEnglish.length, usedTable: alternativeTable };
@@ -207,6 +214,74 @@ export async function syncGoogleSheetsToSupabase(): Promise<SyncResult[]> {
     });
   } catch (e: any) {
     results.push({ table: "Infoprodutos", success: false, count: 0, error: e.message || String(e) });
+  }
+
+  // 5. Sync Notifications
+  try {
+    const notifications = await getNotifications();
+    const validNotifications = notifications.filter(n => n.id && n.titulo);
+
+    const ptData = validNotifications.map(n => ({
+      id: n.id,
+      status: n.status,
+      data_hora: n.data_hora,
+      titulo: n.titulo,
+      mensagem: n.mensagem,
+      url_foto: n.url_foto,
+      link: n.link
+    }));
+
+    const enData = validNotifications.map(n => ({
+      id: n.id,
+      status: n.status,
+      date_time: n.data_hora,
+      title: n.titulo,
+      message: n.mensagem,
+      image_url: n.url_foto,
+      link: n.link
+    }));
+
+    const res = await safeUpsert("notificacoes_internas", "internal_notifications", ptData, enData);
+    results.push({
+      table: `Notificações (${res.usedTable})`,
+      success: res.success,
+      count: res.count,
+      error: res.error
+    });
+  } catch (e: any) {
+    results.push({ table: "Notificações", success: false, count: 0, error: e.message || String(e) });
+  }
+
+  // 6. Sync Free Recipes
+  try {
+    const freeRecipes = await getReceitaGratuita();
+    const validFreeRecipes = freeRecipes.filter(f => f.codigo && f.nome);
+
+    const ptData = validFreeRecipes.map(f => ({
+      codigo: f.codigo,
+      data: f.data,
+      nome: f.nome,
+      url_foto: f.url_foto,
+      ativo: f.ativo
+    }));
+
+    const enData = validFreeRecipes.map(f => ({
+      code: f.codigo,
+      date: f.data,
+      name: f.nome,
+      image_url: f.url_foto,
+      active: f.ativo
+    }));
+
+    const res = await safeUpsert("receitas_gratuitas", "free_recipes", ptData, enData, "codigo");
+    results.push({
+      table: `Receitas Gratuitas (${res.usedTable})`,
+      success: res.success,
+      count: res.count,
+      error: res.error
+    });
+  } catch (e: any) {
+    results.push({ table: "Receitas Gratuitas", success: false, count: 0, error: e.message || String(e) });
   }
 
   return results;
