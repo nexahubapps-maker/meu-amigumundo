@@ -13,7 +13,7 @@ export const InternalPopup = ({ notifications }: InternalPopupProps) => {
 
   useEffect(() => {
     const active = notifications.find(n => {
-      if (!n.status) return false;
+      if (!n.ativo) return false;
       
       const isDismissed = localStorage.getItem(`popup-dismissed-${n.id}`);
       if (isDismissed) return false;

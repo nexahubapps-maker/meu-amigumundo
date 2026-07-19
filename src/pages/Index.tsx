@@ -107,17 +107,17 @@ export default function Index() {
         setNotificationsList(notificationsData);
 
         const activeCategories = categoriesData
-          .filter(c => c.status)
+          .filter(c => c.ativo)
           .sort((a, b) => a.id.localeCompare(b.id, undefined, { numeric: true, sensitivity: 'base' }));
         setCategoriesList(activeCategories);
 
         const lastRead = localStorage.getItem("notifications-last-read");
         if (lastRead) {
-          const activeNotifs = notificationsData.filter(n => n.status);
+          const activeNotifs = notificationsData.filter(n => n.ativo);
           const hasNew = activeNotifs.some(n => new Date(n.data_hora) > new Date(lastRead));
           setHasUnreadNotifications(hasNew);
         } else {
-          setHasUnreadNotifications(notificationsData.filter(n => n.status).length > 0);
+          setHasUnreadNotifications(notificationsData.filter(n => n.ativo).length > 0);
         }
 
         const pushItem = [...recipesData, ...infoprodutosData, ...packsData].find(item => item.disparar_push);
@@ -179,7 +179,7 @@ export default function Index() {
     const checkNotifications = () => {
       const now = new Date();
       notificationsList.forEach((notif) => {
-        if (!notif.status) return;
+        if (!notif.ativo) return;
         
         const notifTime = new Date(notif.data_hora);
         if (now >= notifTime) {
@@ -282,7 +282,7 @@ export default function Index() {
       nome: recipe.nome, 
       preco: recipe.preco, 
       tipo: "recipe",
-      imagem: recipe.url_foto
+      imagem: recipe.imagem_url
     });
   };
 
@@ -293,7 +293,7 @@ export default function Index() {
       nome: pack.nome, 
       preco: pack.preco, 
       tipo: "pack",
-      imagem: pack.url_foto
+      imagem: pack.imagem_url
     });
   };
 
@@ -317,7 +317,7 @@ export default function Index() {
           nome: upsell.nome,
           preco: upsell.preco,
           tipo: "upsell",
-          imagem: upsell.url_foto
+          imagem: upsell.imagem_url
         };
         
         setCart((prev) => {
@@ -362,19 +362,19 @@ export default function Index() {
     const recipe = recipesList.find(r => r.id === targetId);
     if (recipe) {
       metaTitle = `${recipe.nome} - R$ ${recipe.preco.toFixed(2)}`;
-      metaImage = recipe.url_foto;
+      metaImage = recipe.imagem_url;
     }
   } else if (location.pathname.startsWith("/pack/") && targetId) {
     const pack = packsList.find(p => p.id === targetId);
     if (pack) {
       metaTitle = `${pack.nome} - R$ ${pack.preco.toFixed(2)}`;
-      metaImage = pack.url_foto;
+      metaImage = pack.imagem_url;
     }
   } else if (location.pathname.startsWith("/infoproduto/") && targetId) {
     const upsell = infoprodutosList.find(u => u.id === targetId);
     if (upsell) {
       metaTitle = `${upsell.nome} - R$ ${upsell.preco.toFixed(2)}`;
-      metaImage = upsell.url_foto;
+      metaImage = upsell.imagem_url;
     }
   } else if (categoria_slug) {
     const decodedCat = decodeURIComponent(categoria_slug).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
@@ -385,7 +385,7 @@ export default function Index() {
     
     if (matchedCat) {
       metaTitle = `Coleção ${matchedCat.titulo} - AmiguMundo`;
-      metaImage = matchedCat.imagem;
+      metaImage = matchedCat.imagem_url;
     }
   }
 
@@ -461,7 +461,7 @@ export default function Index() {
                 <CategoryCard 
                   key={cat.id} 
                   nome={cat.titulo} 
-                  imagem={cat.imagem}
+                  imagem={cat.imagem_url}
                   onClick={() => {
                     playHeartbeatSound();
                     navigate(`/categoria/${encodeURIComponent(cat.titulo.toLowerCase())}`);
@@ -679,6 +679,8 @@ export default function Index() {
 
       <DailyGiftSection />
 
+      <DailyGiftSection />
+
       <InstallGuideCard />
 
       <footer className="text-center py-3 px-4 border-t border-gray-100 bg-white">
@@ -695,7 +697,7 @@ export default function Index() {
         onOpenFavorites={() => setIsFavoritesOpen(true)}
         onOpenNotifications={handleOpenNotifications}
         favoritesCount={favorites.length}
-        notificationsCount={hasUnreadNotifications ? notificationsList.filter(n => n.status).length : 0}
+        notificationsCount={hasUnreadNotifications ? notificationsList.filter(n => n.ativo).length : 0}
       />
 
       <FavoritesModal

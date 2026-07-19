@@ -204,7 +204,7 @@ export const DailyGiftSection = () => {
             <div className="flex flex-col items-center gap-5 w-full animate-in fade-in zoom-in-95 duration-500">
               <div className="relative w-40 h-40 rounded-full bg-gradient-to-b from-green-50 to-green-100/50 border-2 border-[#44FF00]/30 p-2 flex items-center justify-center shrink-0">
                 <img 
-                  src={dailyRecipe.url_foto} 
+                  src={dailyRecipe.imagem_url} 
                   alt={dailyRecipe.nome} 
                   className="w-32 h-32 object-cover rounded-full shadow-lg border-2 border-white animate-pulse-subtle"
                 />

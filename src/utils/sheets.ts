@@ -16,7 +16,7 @@ export interface SheetInfoproduto {
   nome: string;
   slug: string;
   preco: number;
-  url_foto: string;
+  imagem_url: string;
   descricao: string;
   ativo: boolean;
   disparar_push: boolean;
@@ -27,7 +27,7 @@ export interface SheetPack {
   nome: string;
   slug: string;
   preco: number;
-  url_foto: string;
+  imagem_url: string;
   descricao: string;
   ativo: boolean;
   disparar_push: boolean;
@@ -35,37 +35,35 @@ export interface SheetPack {
 
 export interface SheetNotification {
   id: string;
-  status: boolean;
+  ativo: boolean;
   data_hora: string;
   titulo: string;
   mensagem: string;
-  url_foto: string;
+  imagem_url: string;
   link: string;
+  disparar_push: boolean;
 }
 
 export interface SheetReceitaGratuita {
   codigo: string;
   data: string;
   nome: string;
-  url_foto: string;
+  imagem_url: string;
   ativo: boolean;
 }
 
 export interface SheetCategoria {
   id: string;
   titulo: string;
-  imagem: string;
-  status: boolean;
+  imagem_url: string;
+  ativo: boolean;
 }
 
-// Nova Planilha Mestre Oficial "AMIGUMUNDO APP"
 const SPREADSHEET_ID = "1RUrFeuyLIqxf7vK9Vypo7XzcigV6v4koHg1v0fmjR8k";
 
-// Configurações do Google Drive para busca dinâmica de PDFs por código
 export const GOOGLE_DRIVE_FOLDER_ID = "YOUR_GOOGLE_DRIVE_FOLDER_ID";
-export const GOOGLE_DRIVE_API_KEY = "YOUR_GOOGLE_DRIVE_API_KEY"; // Opcional
+export const GOOGLE_DRIVE_API_KEY = "YOUR_GOOGLE_DRIVE_API_KEY";
 
-// Helper to parse CSV rows safely
 function parseCSV(text: string): string[][] {
   const lines: string[][] = [];
   let row: string[] = [];
@@ -112,10 +110,9 @@ export async function fetchSheetData<T>(sheetName: string, mapper: (row: string[
     if (!response.ok) throw new Error(`Failed to fetch sheet ${sheetName}`);
     const csvText = await response.text();
     const rows = parseCSV(csvText);
-    
-    if (rows.length <= 1) return fallbackData; // Only header or empty
-    
-    // Skip header row
+
+    if (rows.length <= 1) return fallbackData;
+
     return rows.slice(1).map(mapper).filter(Boolean) as T[];
   } catch (error) {
     console.warn(`Error fetching sheet ${sheetName}, using fallback data:`, error);
@@ -123,7 +120,6 @@ export async function fetchSheetData<T>(sheetName: string, mapper: (row: string[
   }
 }
 
-// Fallback Mock Data matching the exact requested structure (empty arrays as requested)
 const fallbackRecipes: SheetRecipe[] = [];
 const fallbackInfoprodutos: SheetInfoproduto[] = [];
 const fallbackPacks: SheetPack[] = [];
@@ -131,7 +127,6 @@ const fallbackNotifications: SheetNotification[] = [];
 const fallbackReceitaGratuita: SheetReceitaGratuita[] = [];
 const fallbackCategorias: SheetCategoria[] = [];
 
-// Fetchers
 export async function getRecipes(): Promise<SheetRecipe[]> {
   return fetchSheetData<SheetRecipe>(
     "receitas",
@@ -157,7 +152,7 @@ export async function getInfoprodutos(): Promise<SheetInfoproduto[]> {
       nome: row[1] || "",
       slug: row[2] || "",
       preco: parseFloat(row[3]) || 0,
-      url_foto: row[4] || "",
+      imagem_url: row[4] || "",
       descricao: row[5] || "",
       ativo: row[6]?.toLowerCase() === "true",
       disparar_push: row[7]?.toLowerCase() === "true"
@@ -174,7 +169,7 @@ export async function getPacks(): Promise<SheetPack[]> {
       nome: row[1] || "",
       slug: row[2] || "",
       preco: parseFloat(row[3]) || 0,
-      url_foto: row[4] || "",
+      imagem_url: row[4] || "",
       descricao: row[5] || "",
       ativo: row[6]?.toLowerCase() === "true",
       disparar_push: row[7]?.toLowerCase() === "true"
@@ -188,12 +183,13 @@ export async function getNotifications(): Promise<SheetNotification[]> {
     "notificacoes_internas",
     (row) => ({
       id: row[0] || "",
-      status: row[1]?.toLowerCase() === "true",
+      ativo: row[1]?.toLowerCase() === "true",
       data_hora: row[2] || new Date().toISOString(),
       titulo: row[3] || "",
       mensagem: row[4] || "",
-      url_foto: row[5] || "",
-      link: row[6] || ""
+      imagem_url: row[5] || "",
+      link: row[6] || "",
+      disparar_push: row[7]?.toLowerCase() === "true"
     }),
     fallbackNotifications
   );
@@ -206,7 +202,7 @@ export async function getReceitaGratuita(): Promise<SheetReceitaGratuita[]> {
       codigo: row[0] || "",
       data: row[1] || "",
       nome: row[2] || "",
-      url_foto: row[3] || "",
+      imagem_url: row[3] || "",
       ativo: row[4]?.toLowerCase() === "true"
     }),
     fallbackReceitaGratuita
@@ -219,18 +215,13 @@ export async function getCategories(): Promise<SheetCategoria[]> {
     (row) => ({
       id: row[0] || "",
       titulo: row[1] || "",
-      imagem: row[2] || "",
-      status: row[3]?.toLowerCase() === "ativo"
+      imagem_url: row[2] || "",
+      ativo: row[3]?.toLowerCase() === "true"
     }),
     fallbackCategorias
   );
 }
 
-/**
- * Busca dinamicamente o arquivo PDF correspondente ao código no Google Drive.
- * Se o GOOGLE_DRIVE_FOLDER_ID estiver configurado, consulta a API do Google Drive.
- * Caso contrário, retorna um link de download direto estruturado.
- */
 export async function getDriveFileUrl(codigo: string): Promise<string> {
   try {
     if (GOOGLE_DRIVE_FOLDER_ID && GOOGLE_DRIVE_FOLDER_ID !== "YOUR_GOOGLE_DRIVE_FOLDER_ID") {
@@ -246,6 +237,5 @@ export async function getDriveFileUrl(codigo: string): Promise<string> {
   } catch (e) {
     console.warn("Erro ao buscar arquivo no Google Drive:", e);
   }
-  // Fallback estruturado para download direto
   return `https://drive.google.com/uc?export=download&id=FILE_ID_FOR_${codigo}`;
 }

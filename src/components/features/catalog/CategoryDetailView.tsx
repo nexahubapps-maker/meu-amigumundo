@@ -106,10 +106,10 @@ export const CategoryDetailView = ({
                 <div key={recipe.id} className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden flex flex-col justify-between p-1">
                   <div className="relative aspect-square bg-gray-50 overflow-hidden rounded-lg group">
                     <img 
-                      src={recipe.url_foto} 
+                      src={recipe.imagem_url} 
                       alt={recipe.nome} 
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 cursor-zoom-in"
-                      onClick={() => onZoomImage(recipe.url_foto)}
+                      onClick={() => onZoomImage(recipe.imagem_url)}
                     />
                     
                     <div className="absolute top-1.5 left-1.5 bg-black/50 text-white p-1 rounded-full pointer-events-none">

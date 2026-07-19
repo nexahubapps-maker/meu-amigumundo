@@ -28,8 +28,8 @@ export async function syncGoogleSheetsToSupabase(): Promise<SyncResult[]> {
     const data = validCategories.map(c => ({
       id: c.id,
       titulo: c.titulo,
-      imagem: c.imagem, // Se no banco for imagem_url, mude para imagem_url: c.imagem
-      status: c.status // Enviando como boolean puro (true/false)
+      imagem: c.imagem_url,
+      status: c.ativo
     }));
 
     const { error } = await supabase
@@ -56,7 +56,7 @@ export async function syncGoogleSheetsToSupabase(): Promise<SyncResult[]> {
       nome: r.nome,
       slug: r.slug,
       preco: r.preco,
-      imagem_url: r.url_foto, // Corrigido para imagem_url conforme solicitado
+      imagem_url: r.imagem_url,
       categoria: r.categoria,
       ativo: r.ativo,
       disparar_push: r.disparar_push
@@ -86,7 +86,7 @@ export async function syncGoogleSheetsToSupabase(): Promise<SyncResult[]> {
       nome: p.nome,
       slug: p.slug,
       preco: p.preco,
-      url_foto: p.url_foto,
+      url_foto: p.imagem_url,
       descricao: p.descricao,
       ativo: p.ativo,
       disparar_push: p.disparar_push
@@ -116,7 +116,7 @@ export async function syncGoogleSheetsToSupabase(): Promise<SyncResult[]> {
       nome: i.nome,
       slug: i.slug,
       preco: i.preco,
-      url_foto: i.url_foto,
+      url_foto: i.imagem_url,
       descricao: i.descricao,
       ativo: i.ativo,
       disparar_push: i.disparar_push
@@ -143,11 +143,11 @@ export async function syncGoogleSheetsToSupabase(): Promise<SyncResult[]> {
 
     const data = validNotifications.map(n => ({
       id: n.id,
-      status: n.status,
+      status: n.ativo,
       data_hora: n.data_hora,
       titulo: n.titulo,
       mensagem: n.mensagem,
-      url_foto: n.url_foto,
+      url_foto: n.imagem_url,
       link: n.link
     }));
 
@@ -174,7 +174,7 @@ export async function syncGoogleSheetsToSupabase(): Promise<SyncResult[]> {
       codigo: f.codigo,
       data: f.data,
       nome: f.nome,
-      url_foto: f.url_foto,
+      url_foto: f.imagem_url,
       ativo: f.ativo
     }));
 

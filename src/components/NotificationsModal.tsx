@@ -17,7 +17,7 @@ export const NotificationsModal = ({
 }: NotificationsModalProps) => {
   if (!isOpen) return null;
 
-  const activeNotifications = notifications.filter(n => n.status);
+  const activeNotifications = notifications.filter(n => n.ativo);
 
   const handleNotificationClick = (link: string) => {
     if (link) {
@@ -75,9 +75,9 @@ export const NotificationsModal = ({
                     </div>
 
                     <div className="flex gap-3 items-start">
-                      {notif.url_foto && (
+                      {notif.imagem_url && (
                         <img 
-                          src={notif.url_foto} 
+                          src={notif.imagem_url} 
                           alt="" 
                           className="w-16 h-16 rounded-xl object-cover border border-gray-200 shrink-0"
                         />

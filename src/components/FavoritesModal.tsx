@@ -30,9 +30,9 @@ export const FavoritesModal = ({
   if (!isOpen) return null;
 
   // Gather all favorited items from dynamic lists
-  const favoritedRecipes = recipes.filter(r => favoriteIds.includes(r.id)).map(r => ({ ...r, tipo: 'recipe' as const, preco: r.preco, imagem: r.url_foto }));
-  const favoritedPacks = packs.filter(p => favoriteIds.includes(p.id)).map(p => ({ ...p, tipo: 'pack' as const, preco: p.preco, imagem: p.url_foto }));
-  const favoritedUpsells = infoprodutos.filter(u => favoriteIds.includes(u.id)).map(u => ({ ...u, tipo: 'upsell' as const, preco: u.preco, imagem: u.url_foto }));
+  const favoritedRecipes = recipes.filter(r => favoriteIds.includes(r.id)).map(r => ({ ...r, tipo: 'recipe' as const, preco: r.preco, imagem: r.imagem_url }));
+  const favoritedPacks = packs.filter(p => favoriteIds.includes(p.id)).map(p => ({ ...p, tipo: 'pack' as const, preco: p.preco, imagem: p.imagem_url }));
+  const favoritedUpsells = infoprodutos.filter(u => favoriteIds.includes(u.id)).map(u => ({ ...u, tipo: 'upsell' as const, preco: u.preco, imagem: u.imagem_url }));
 
   const allFavorites = [...favoritedRecipes, ...favoritedPacks, ...favoritedUpsells];
   const totalValue = allFavorites.reduce((sum, item) => sum + item.preco, 0);
