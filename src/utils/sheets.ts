@@ -5,7 +5,7 @@ export interface SheetRecipe {
   nome: string;
   slug: string;
   preco: number;
-  url_foto: string;
+  imagem_url: string;
   categoria: string;
   ativo: boolean;
   disparar_push: boolean;
@@ -52,7 +52,7 @@ export interface SheetReceitaGratuita {
 }
 
 export interface SheetCategoria {
-  id: string; // ORDEM (ex: card01)
+  id: string;
   titulo: string;
   imagem: string;
   status: boolean;
@@ -123,53 +123,13 @@ export async function fetchSheetData<T>(sheetName: string, mapper: (row: string[
   }
 }
 
-// Fallback Mock Data matching the exact requested structure
-const fallbackRecipes: SheetRecipe[] = [
-  { id: "387", nome: "Unicórnio Pastel", slug: "unicornio-pastel", preco: 8.90, categoria: "Princesas", url_foto: "https://picsum.photos/seed/387/400/400", ativo: true, disparar_push: false },
-  { id: "120", nome: "Coelhinho Apaixonado", slug: "coelhinho-apaixonado", preco: 6.90, categoria: "Animais", url_foto: "https://picsum.photos/seed/120/400/400", ativo: true, disparar_push: false },
-  { id: "553", nome: "Gatinho Soneca", slug: "gatinho-soneca", preco: 6.50, categoria: "Gatos", url_foto: "https://picsum.photos/seed/553/400/400", ativo: true, disparar_push: false },
-  { id: "774", nome: "Dinossauro Baby", slug: "dinossauro-baby", preco: 7.50, categoria: "Dinossauros", url_foto: "https://picsum.photos/seed/774/400/400", ativo: true, disparar_push: false },
-  { id: "229", nome: "Polvinho Reversível", slug: "polvinho-reversivel", preco: 7.90, categoria: "Marinhos", url_foto: "https://picsum.photos/seed/229/400/400", ativo: true, disparar_push: false },
-  { id: "441", nome: "Mini Ursinho Pocket", slug: "mini-ursinho-pocket", preco: 5.90, categoria: "Animais", url_foto: "https://picsum.photos/seed/441/400/400", ativo: true, disparar_push: false }
-];
-
-const fallbackInfoprodutos: SheetInfoproduto[] = [
-  { id: "info1", nome: "Instagram Profissional para Artesãs", slug: "instagram-artesas", preco: 47.00, url_foto: "https://picsum.photos/seed/info1/600/375", descricao: "O segredo prático para atrair seguidores qualificados e transformá-los em clientes que pagam o valor justo.", ativo: true, disparar_push: false },
-  { id: "info2", nome: "Guia de Precificação sem Erros", slug: "guia-precificacao", preco: 27.00, url_foto: "https://picsum.photos/seed/info2/600/375", descricao: "Descubra de forma simples e exata o valor real da sua hora de trabalho. Pare de pagar para trabalhar.", ativo: true, disparar_push: false },
-  { id: "info3", nome: "Pacote de Moldes de Amigurumi Premium", slug: "moldes-premium", preco: 19.00, url_foto: "https://picsum.photos/seed/info3/600/375", descricao: "Tenha acesso a uma selection exclusiva de moldes altamente desejados no mercado.", ativo: true, disparar_push: false }
-];
-
-const fallbackPacks: SheetPack[] = [
-  { id: "pack1", nome: "Pack Safari Completo", slug: "pack-safari", preco: 19.90, url_foto: "https://picsum.photos/seed/pack1/400/400", descricao: "20 receitas de animais selvagens", ativo: true, disparar_push: false },
-  { id: "pack2", nome: "Pack Princesas Encantadas", slug: "pack-princesas", preco: 19.90, url_foto: "https://picsum.photos/seed/pack2/400/400", descricao: "20 receitas de princesas", ativo: true, disparar_push: false },
-  { id: "pack3", nome: "Pack Super-Herois", slug: "pack-super-herois", preco: 19.90, url_foto: "https://picsum.photos/seed/pack3/400/400", descricao: "20 receitas de heroi e viloes", ativo: true, disparar_push: false }
-];
-
-const fallbackNotifications: SheetNotification[] = [
-  { id: "notif1", status: true, data_hora: new Date().toISOString(), titulo: "Nova Receita de Páscoa Liberada!", mensagem: "Corra para a categoria Páscoa e confira o novo coelhinho fofo.", url_foto: "", link: "" },
-  { id: "notif2", status: true, data_hora: new Date(Date.now() - 3600000).toISOString(), titulo: "Super Desconto no Pack Safari", mensagem: "Apenas hoje, garanta 20 receitas por apenas R$ 19,90.", url_foto: "", link: "" }
-];
-
-// Generate dynamic today date for fallback gift
-const getTodayDateString = () => {
-  const today = new Date();
-  const day = String(today.getDate()).padStart(2, '0');
-  const month = String(today.getMonth() + 1).padStart(2, '0');
-  const year = today.getFullYear();
-  return `${day}/${month}/${year}`;
-};
-
-const fallbackReceitaGratuita: SheetReceitaGratuita[] = [
-  { codigo: "387", data: getTodayDateString(), nome: "Unicórnio Pastel", url_foto: "https://picsum.photos/seed/387/400/400", ativo: true }
-];
-
-const fallbackCategorias: SheetCategoria[] = [
-  { id: "card01", titulo: "Animais", imagem: "https://ik.imagekit.io/di3huhaluc/animais.jpeg", status: true },
-  { id: "card02", titulo: "Bonecas", imagem: "https://ik.imagekit.io/di3huhaluc/bonecas.jpeg", status: true },
-  { id: "card03", titulo: "Princesas", imagem: "https://ik.imagekit.io/di3huhaluc/princesas.jpeg", status: true },
-  { id: "card04", titulo: "Heróis", imagem: "https://ik.imagekit.io/di3huhaluc/herois.jpeg", status: true },
-  { id: "card05", titulo: "Natal", imagem: "https://ik.imagekit.io/di3huhaluc/natal.jpeg", status: true }
-];
+// Fallback Mock Data matching the exact requested structure (empty arrays as requested)
+const fallbackRecipes: SheetRecipe[] = [];
+const fallbackInfoprodutos: SheetInfoproduto[] = [];
+const fallbackPacks: SheetPack[] = [];
+const fallbackNotifications: SheetNotification[] = [];
+const fallbackReceitaGratuita: SheetReceitaGratuita[] = [];
+const fallbackCategorias: SheetCategoria[] = [];
 
 // Fetchers
 export async function getRecipes(): Promise<SheetRecipe[]> {
@@ -180,7 +140,7 @@ export async function getRecipes(): Promise<SheetRecipe[]> {
       nome: row[1] || "",
       slug: row[2] || "",
       preco: parseFloat(row[3]) || 0,
-      url_foto: row[4] || `https://picsum.photos/seed/${row[0]}/400/400`,
+      imagem_url: row[4] || "",
       categoria: row[5] || "",
       ativo: row[6]?.toLowerCase() === "true",
       disparar_push: row[7]?.toLowerCase() === "true"
@@ -197,7 +157,7 @@ export async function getInfoprodutos(): Promise<SheetInfoproduto[]> {
       nome: row[1] || "",
       slug: row[2] || "",
       preco: parseFloat(row[3]) || 0,
-      url_foto: row[4] || `https://picsum.photos/seed/${row[0]}/600/375`,
+      url_foto: row[4] || "",
       descricao: row[5] || "",
       ativo: row[6]?.toLowerCase() === "true",
       disparar_push: row[7]?.toLowerCase() === "true"
@@ -214,7 +174,7 @@ export async function getPacks(): Promise<SheetPack[]> {
       nome: row[1] || "",
       slug: row[2] || "",
       preco: parseFloat(row[3]) || 0,
-      url_foto: row[4] || `https://picsum.photos/seed/${row[0]}/400/400`,
+      url_foto: row[4] || "",
       descricao: row[5] || "",
       ativo: row[6]?.toLowerCase() === "true",
       disparar_push: row[7]?.toLowerCase() === "true"
@@ -246,7 +206,7 @@ export async function getReceitaGratuita(): Promise<SheetReceitaGratuita[]> {
       codigo: row[0] || "",
       data: row[1] || "",
       nome: row[2] || "",
-      url_foto: row[3] || `https://picsum.photos/seed/${row[0]}/400/400`,
+      url_foto: row[3] || "",
       ativo: row[4]?.toLowerCase() === "true"
     }),
     fallbackReceitaGratuita
