@@ -163,8 +163,7 @@ export default function Index() {
       }
 
       const filtered = recipesList.filter(r => {
-        const catName = r.categoria.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-        return catName === decodedCat;
+        return r.categoria === matchedCat.id;
       });
 
       setShuffledRecipes(shuffleArray(filtered));
@@ -571,11 +570,13 @@ export default function Index() {
               <button
                 onClick={() => {
                   setShowRecipe(null);
-                  navigate(`/categoria/${encodeURIComponent(showRecipe.categoria.toLowerCase())}`);
+                  navigate(`/categoria/${encodeURIComponent(
+                    (categoriesList.find(c => c.id === showRecipe.categoria)?.titulo || showRecipe.categoria).toLowerCase()
+                  )}`);
                 }}
                 className="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 py-3 rounded-xl font-bold text-xs uppercase tracking-wider transition-all text-center"
               >
-                Conhecer mais receitas em {showRecipe.categoria} ➔
+                Conhecer mais receitas em {categoriesList.find(c => c.id === showRecipe.categoria)?.titulo || showRecipe.categoria} ➔
               </button>
               <button
                 onClick={() => {
