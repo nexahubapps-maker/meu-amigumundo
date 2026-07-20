@@ -5,7 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { ChevronLeft, ShieldCheck, Zap, CreditCard, Mail, Phone, Lock } from "lucide-react";
 import { SupportButton } from "@/components/common/SupportButton";
 import { playHeartbeatSound } from "@/utils/audio";
-import { getRecipes, getInfoprodutos, getPacks } from "@/utils/sheets";
+import { getRecipesByIds, getInfoprodutos, getPacks } from "@/utils/sheets";
 import { calculateCart } from "@/utils/pricing";
 import { showSuccess, showError } from "@/utils/toast";
 
@@ -13,7 +13,6 @@ export default function Checkout() {
   const navigate = useNavigate();
   const { id: checkoutProductId } = useParams();
   const [cart, setCart] = useState<any[]>([]);
-  const [recipesList, setRecipesList] = useState<any[]>([]);
   const [paymentMethod, setPaymentMethod] = useState<"pix" | "card">("pix");
   
   const [email, setEmail] = useState(() => localStorage.getItem("amigumundo-email") || "");
@@ -31,14 +30,13 @@ export default function Checkout() {
 
   useEffect(() => {
     const loadCheckoutData = async () => {
-      const [recipesData, infoprodutosList, packsList] = await Promise.all([
-        getRecipes(),
-        getInfoprodutos(),
-        getPacks()
-      ]);
-      setRecipesList(recipesData);
-
       if (checkoutProductId) {
+        const [recipesData, infoprodutosList, packsList] = await Promise.all([
+          getRecipesByIds([checkoutProductId]),
+          getInfoprodutos(),
+          getPacks()
+        ]);
+
         const foundProduct = 
           recipesData.find(r => r.id === checkoutProductId) ||
           infoprodutosList.find(i => i.id === checkoutProductId) ||
@@ -121,7 +119,7 @@ export default function Checkout() {
 
   const isFormValid = isWhatsappValid && isEmailValid && (paymentMethod === "pix" || isCardValid) && !isProcessing;
 
-  const calculated = calculateCart(cart, recipesList);
+  const calculated = calculateCart(cart);
   const total = calculated.total;
 
   const generateCardToken = async () => {
