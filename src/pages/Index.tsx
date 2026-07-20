@@ -550,7 +550,7 @@ export default function Index() {
         }}>
           <div className="modal-content p-6 overflow-hidden" onClick={(e) => e.stopPropagation()}>
             <Breadcrumbs 
-              categoria={showRecipe.categoria} 
+              categoria={categoriesList.find(c => c.id === showRecipe.categoria)?.titulo || showRecipe.categoria} 
               produtoNome={showRecipe.nome} 
             />
 
