@@ -206,3 +206,169 @@ export async function getDriveFileUrl(codigo: string): Promise<string> {
   }
   return `https://drive.google.com/uc?export=download&id=FILE_ID_FOR_${codigo}`;
 }
+
+export async function getRecipesByCategoria(categoriaId: string): Promise<SheetRecipe[]> {
+  const { data, error } = await supabase
+    .from("receitas")
+    .select("codigo, nome, slug, preco, imagem_url, categoria, ativo, disparar_push")
+    .eq("categoria", categoriaId)
+    .eq("ativo", true);
+
+  if (error) {
+    console.warn("Erro ao buscar receitas por categoria no Supabase:", error);
+    return [];
+  }
+
+  return (data || []).map((row) => ({
+    id: row.codigo,
+    nome: row.nome || "",
+    slug: row.slug || "",
+    preco: Number(row.preco) || 0,
+    imagem_url: row.imagem_url || "",
+    categoria: row.categoria || "",
+    ativo: !!row.ativo,
+    disparar_push: !!row.disparar_push
+  }));
+}
+
+export async function getRecipesByIds(ids: string[]): Promise<SheetRecipe[]> {
+  if (ids.length === 0) return [];
+  const { data, error } = await supabase
+    .from("receitas")
+    .select("codigo, nome, slug, preco, imagem_url, categoria, ativo, disparar_push")
+    .in("codigo", ids);
+
+  if (error) {
+    console.warn("Erro ao buscar receitas por IDs no Supabase:", error);
+    return [];
+  }
+
+  return (data || []).map((row) => ({
+    id: row.codigo,
+    nome: row.nome || "",
+    slug: row.slug || "",
+    preco: Number(row.preco) || 0,
+    imagem_url: row.imagem_url || "",
+    categoria: row.categoria || "",
+    ativo: !!row.ativo,
+    disparar_push: !!row.disparar_push
+  }));
+}
+
+export async function getPacksByIds(ids: string[]): Promise<SheetPack[]> {
+  if (ids.length === 0) return [];
+  const { data, error } = await supabase
+    .from("packs")
+    .select("codigo, nome, slug, preco, imagem_url, descricao, ativo, disparar_push")
+    .in("codigo", ids);
+
+  if (error) {
+    console.warn("Erro ao buscar packs por IDs no Supabase:", error);
+    return [];
+  }
+
+  return (data || []).map((row) => ({
+    id: row.codigo,
+    nome: row.nome || "",
+    slug: row.slug || "",
+    preco: Number(row.preco) || 0,
+    imagem_url: row.imagem_url || "",
+    descricao: row.descricao || "",
+    ativo: !!row.ativo,
+    disparar_push: !!row.disparar_push
+  }));
+}
+
+export async function getInfoprodutosByIds(ids: string[]): Promise<SheetInfoproduto[]> {
+  if (ids.length === 0) return [];
+  const { data, error } = await supabase
+    .from("infoprodutos")
+    .select("codigo, nome, slug, preco, imagem_url, descricao, ativo, disparar_push")
+    .in("codigo", ids);
+
+  if (error) {
+    console.warn("Erro ao buscar infoprodutos por IDs no Supabase:", error);
+    return [];
+  }
+
+  return (data || []).map((row) => ({
+    id: row.codigo,
+    nome: row.nome || "",
+    slug: row.slug || "",
+    preco: Number(row.preco) || 0,
+    imagem_url: row.imagem_url || "",
+    descricao: row.descricao || "",
+    ativo: !!row.ativo,
+    disparar_push: !!row.disparar_push
+  }));
+}
+
+export async function getPushEnabledItems(): Promise<Array<{ id: string; nome: string; descricao: string; tipo: "receita" | "pack" | "infoproduto" }>> {
+  const fetchRecipes = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("receitas")
+        .select("codigo, nome, ativo, disparar_push")
+        .eq("disparar_push", true)
+        .eq("ativo", true);
+      if (error) throw error;
+      return (data || []).map(row => ({
+        id: row.codigo,
+        nome: row.nome || "",
+        descricao: "",
+        tipo: "receita" as const
+      }));
+    } catch (e) {
+      console.warn("Erro ao buscar receitas com push habilitado:", e);
+      return [];
+    }
+  };
+
+  const fetchPacks = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("packs")
+        .select("codigo, nome, descricao, ativo, disparar_push")
+        .eq("disparar_push", true)
+        .eq("ativo", true);
+      if (error) throw error;
+      return (data || []).map(row => ({
+        id: row.codigo,
+        nome: row.nome || "",
+        descricao: row.descricao || "",
+        tipo: "pack" as const
+      }));
+    } catch (e) {
+      console.warn("Erro ao buscar packs com push habilitado:", e);
+      return [];
+    }
+  };
+
+  const fetchInfoprodutos = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("infoprodutos")
+        .select("codigo, nome, descricao, ativo, disparar_push")
+        .eq("disparar_push", true)
+        .eq("ativo", true);
+      if (error) throw error;
+      return (data || []).map(row => ({
+        id: row.codigo,
+        nome: row.nome || "",
+        descricao: row.descricao || "",
+        tipo: "infoproduto" as const
+      }));
+    } catch (e) {
+      console.warn("Erro ao buscar infoprodutos com push habilitado:", e);
+      return [];
+    }
+  };
+
+  const [recipes, packs, infoprodutos] = await Promise.all([
+    fetchRecipes(),
+    fetchPacks(),
+    fetchInfoprodutos()
+  ]);
+
+  return [...recipes, ...packs, ...infoprodutos];
+}
