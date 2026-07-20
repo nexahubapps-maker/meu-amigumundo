@@ -29,6 +29,9 @@ import {
   getPacks, 
   getNotifications,
   getCategories,
+  getRecipesByCategoria,
+  getRecipesByIds,
+  getPushEnabledItems,
   type SheetRecipe,
   type SheetInfoproduto,
   type SheetPack,
@@ -59,6 +62,7 @@ export default function Index() {
   const [notificationsList, setNotificationsList] = useState<SheetNotification[]>([]);
   const [categoriesList, setCategoriesList] = useState<SheetCategoria[]>([]);
   const [shuffledRecipes, setShuffledRecipes] = useState<SheetRecipe[]>([]);
+  const [favoriteRecipes, setFavoriteRecipes] = useState<SheetRecipe[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -120,7 +124,8 @@ export default function Index() {
           setHasUnreadNotifications(notificationsData.filter(n => n.ativo).length > 0);
         }
 
-        const pushItem = [...recipesData, ...infoprodutosData, ...packsData].find(item => item.disparar_push);
+        const pushItems = await getPushEnabledItems();
+        const pushItem = pushItems[0];
         if (pushItem) {
           if (Notification.permission === "granted") {
             new Notification(`Novidade: ${pushItem.nome}`, {
@@ -149,28 +154,66 @@ export default function Index() {
   }, []);
 
   useEffect(() => {
-    if (categoria_slug && recipesList.length > 0 && categoriesList.length > 0) {
-      const decodedCat = decodeURIComponent(categoria_slug).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-      
-      const matchedCat = categoriesList.find(c => {
-        const titleNormalized = c.titulo.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-        return titleNormalized === decodedCat;
-      });
+    const fetchCategoryRecipes = async () => {
+      if (categoria_slug && categoriesList.length > 0) {
+        const decodedCat = decodeURIComponent(categoria_slug).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        
+        const matchedCat = categoriesList.find(c => {
+          const titleNormalized = c.titulo.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+          return titleNormalized === decodedCat;
+        });
 
-      if (!matchedCat) {
-        navigate("/");
-        return;
+        if (!matchedCat) {
+          navigate("/");
+          return;
+        }
+
+        try {
+          const filtered = await getRecipesByCategoria(matchedCat.id);
+          setShuffledRecipes(shuffleArray(filtered));
+        } catch (e) {
+          console.error("Error fetching category recipes:", e);
+          setShuffledRecipes([]);
+        }
+      } else {
+        setShuffledRecipes([]);
       }
+    };
 
-      const filtered = recipesList.filter(r => {
-        return r.categoria === matchedCat.id;
-      });
+    fetchCategoryRecipes();
+  }, [categoria_slug, categoriesList, navigate]);
 
-      setShuffledRecipes(shuffleArray(filtered));
-    } else {
-      setShuffledRecipes([]);
-    }
-  }, [categoria_slug, recipesList, categoriesList, navigate]);
+  useEffect(() => {
+    const fetchTargetRecipe = async () => {
+      if (targetId) {
+        try {
+          const recipes = await getRecipesByIds([targetId]);
+          if (recipes && recipes.length > 0) {
+            setShowRecipe(recipes[0]);
+          }
+        } catch (e) {
+          console.error("Error fetching target recipe:", e);
+        }
+      }
+    };
+
+    fetchTargetRecipe();
+  }, [targetId]);
+
+  useEffect(() => {
+    const fetchFavoriteRecipes = async () => {
+      if (isFavoritesOpen && favorites.length > 0) {
+        try {
+          const recipes = await getRecipesByIds(favorites);
+          setFavoriteRecipes(recipes);
+        } catch (e) {
+          console.error("Error fetching favorite recipes:", e);
+        }
+      }
+    };
+
+    fetchFavoriteRecipes();
+  }, [isFavoritesOpen, favorites]);
 
   useEffect(() => {
     if (notificationsList.length === 0) return;
@@ -230,15 +273,6 @@ export default function Index() {
   useEffect(() => {
     localStorage.setItem("amigumundo-favorites", JSON.stringify(favorites));
   }, [favorites]);
-
-  useEffect(() => {
-    if (targetId && recipesList.length > 0) {
-      const recipe = recipesList.find(r => r.id === targetId);
-      if (recipe) {
-        setShowRecipe(recipe);
-      }
-    }
-  }, [targetId, recipesList]);
 
   const toggleFavorite = (id: string) => {
     setFavorites((prev) => {
@@ -358,10 +392,9 @@ export default function Index() {
   let metaDescription = "Olha o que encontrei no AmiguMundo! Tudo sem ocupar espaço na memória do celular.";
 
   if (location.pathname.startsWith("/receita/") && targetId) {
-    const recipe = recipesList.find(r => r.id === targetId);
-    if (recipe) {
-      metaTitle = `${recipe.nome} - R$ ${recipe.preco.toFixed(2)}`;
-      metaImage = recipe.imagem_url;
+    if (showRecipe) {
+      metaTitle = `${showRecipe.nome} - R$ ${showRecipe.preco.toFixed(2)}`;
+      metaImage = showRecipe.imagem_url;
     }
   } else if (location.pathname.startsWith("/pack/") && targetId) {
     const pack = packsList.find(p => p.id === targetId);
@@ -706,7 +739,7 @@ export default function Index() {
         onToggleFavorite={toggleFavorite}
         onAddToCart={addToCart}
         isInCart={isInCart}
-        recipes={recipesList}
+        recipes={favoriteRecipes}
         packs={packsList}
         infoprodutos={infoprodutosList}
       />
