@@ -679,8 +679,6 @@ export default function Index() {
 
       <DailyGiftSection />
 
-      <DailyGiftSection />
-
       <InstallGuideCard />
 
       <footer className="text-center py-3 px-4 border-t border-gray-100 bg-white">
