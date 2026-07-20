@@ -2,13 +2,12 @@
 
 import React, { useState } from "react";
 import { ShoppingBag, X, ArrowRight, Gift, Search } from "lucide-react";
-import { type SheetRecipe } from "@/utils/sheets";
+import { type SheetRecipe, getRecipesByIds } from "@/utils/sheets";
 import { type CartItem, calculateCart } from "@/utils/pricing";
 import { playHeartbeatSound } from "@/utils/audio";
 
 interface UnifiedCheckoutHubProps {
   cart: CartItem[];
-  allRecipes: SheetRecipe[];
   onRemoveFromCart: (id: string) => void;
   onAddToCart: (item: CartItem) => void;
   onCheckout: () => void;
@@ -17,7 +16,6 @@ interface UnifiedCheckoutHubProps {
 
 export const UnifiedCheckoutHub = ({
   cart,
-  allRecipes,
   onRemoveFromCart,
   onAddToCart,
   onCheckout,
@@ -27,14 +25,15 @@ export const UnifiedCheckoutHub = ({
   const [foundRecipe, setFoundRecipe] = useState<SheetRecipe | null>(null);
   const [searchError, setSearchError] = useState(false);
 
-  const calculated = calculateCart(cart, allRecipes);
+  const calculated = calculateCart(cart);
 
-  const handleCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCodeChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/\D/g, "");
     setCode(value);
 
     if (value.length === 4) {
-      const recipe = allRecipes.find((r) => r.id === value);
+      const results = await getRecipesByIds([value]);
+      const recipe = results[0] || null;
       if (recipe) {
         setFoundRecipe(recipe);
         setSearchError(false);
@@ -56,7 +55,7 @@ export const UnifiedCheckoutHub = ({
         nome: foundRecipe.nome,
         preco: foundRecipe.preco,
         tipo: "recipe",
-        imagem: foundRecipe.url_foto,
+        imagem: foundRecipe.imagem_url,
       });
       setFoundRecipe(null);
       setCode("");
@@ -172,10 +171,10 @@ export const UnifiedCheckoutHub = ({
           <div className="mt-3 p-2.5 bg-green-50 border-2 border-[#44FF00] rounded-lg flex items-center gap-3 animate-in zoom-in-95 duration-200">
             <div 
               className="relative aspect-square w-16 h-16 bg-gray-50 rounded-lg overflow-hidden shrink-0 group cursor-zoom-in"
-              onClick={() => onZoomImage?.(foundRecipe.url_foto)}
+              onClick={() => onZoomImage?.(foundRecipe.imagem_url)}
             >
               <img
-                src={foundRecipe.url_foto}
+                src={foundRecipe.imagem_url}
                 alt={foundRecipe.nome}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
               />

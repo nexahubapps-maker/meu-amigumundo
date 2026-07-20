@@ -1,7 +1,5 @@
 "use client";
 
-import { type SheetRecipe } from "./sheets";
-
 export interface CartItem {
   id: string;
   nome: string;
@@ -62,7 +60,7 @@ function getPricePerRecipe(paidCount: number): number {
   return 2.50;
 }
 
-export function calculateCart(cart: CartItem[], allRecipes: SheetRecipe[]): CalculatedCart {
+export function calculateCart(cart: CartItem[]): CalculatedCart {
   const recipeItems = cart.filter(item => item.tipo === "recipe");
   const otherItems = cart.filter(item => item.tipo !== "recipe");
 

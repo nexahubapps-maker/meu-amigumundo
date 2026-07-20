@@ -24,7 +24,6 @@ import { WelcomeBanner } from "@/components/WelcomeBanner";
 import { Breadcrumbs } from "@/components/common/Breadcrumbs";
 import { AdminSyncButton } from "@/components/features/admin/AdminSyncButton";
 import { 
-  getRecipes, 
   getInfoprodutos, 
   getPacks, 
   getNotifications,
@@ -56,7 +55,6 @@ export default function Index() {
   const location = useLocation();
   const { categoria_slug, id: routeProductId, slug_and_id } = useParams();
   
-  const [recipesList, setRecipesList] = useState<SheetRecipe[]>([]);
   const [infoprodutosList, setInfoprodutosList] = useState<SheetInfoproduto[]>([]);
   const [packsList, setPacksList] = useState<SheetPack[]>([]);
   const [notificationsList, setNotificationsList] = useState<SheetNotification[]>([]);
@@ -97,15 +95,13 @@ export default function Index() {
     const loadAllData = async () => {
       setIsLoading(true);
       try {
-        const [recipesData, infoprodutosData, packsData, notificationsData, categoriesData] = await Promise.all([
-          getRecipes(),
+        const [infoprodutosData, packsData, notificationsData, categoriesData] = await Promise.all([
           getInfoprodutos(),
           getPacks(),
           getNotifications(),
           getCategories()
         ]);
 
-        setRecipesList(recipesData);
         setInfoprodutosList(infoprodutosData);
         setPacksList(packsData);
         setNotificationsList(notificationsData);
@@ -307,7 +303,7 @@ export default function Index() {
     setCart((prev) => prev.filter((i) => i.id !== id));
   };
 
-  const calculatedCart = calculateCart(cart, recipesList);
+  const calculatedCart = calculateCart(cart);
 
   const handleRecipeAdd = (recipe: SheetRecipe) => {
     addToCart({ 
@@ -454,7 +450,6 @@ export default function Index() {
 
             <UnifiedCheckoutHub
               cart={cart}
-              allRecipes={recipesList}
               onRemoveFromCart={removeFromCart}
               onAddToCart={addToCart}
               onCheckout={() => navigate("/checkout")}
