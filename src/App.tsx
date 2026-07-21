@@ -24,6 +24,9 @@ const App = () => (
             {/* Grade da Categoria */}
             <Route path="/categoria/:categoria_slug" element={<Index />} />
             
+            {/* Resultados de Busca */}
+            <Route path="/busca/:termo" element={<Index />} />
+            
             {/* Detalhe do Produto */}
             <Route path="/produto/:id" element={<Index />} />
             
