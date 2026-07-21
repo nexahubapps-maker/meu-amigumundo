@@ -8,8 +8,7 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
-  signUpWithEmail: (email: string, password: string) => Promise<{ error: string | null }>;
-  signInWithEmail: (email: string, password: string) => Promise<{ error: string | null }>;
+  signInWithEmail: (email: string) => Promise<{ error: string | null }>;
   signInWithGoogle: () => Promise<{ error: string | null }>;
   signOut: () => Promise<void>;
 }
@@ -18,7 +17,6 @@ const AuthContext = createContext<AuthContextType>({
   user: null,
   session: null,
   loading: true,
-  signUpWithEmail: async () => ({ error: "AuthProvider não encontrado" }),
   signInWithEmail: async () => ({ error: "AuthProvider não encontrado" }),
   signInWithGoogle: async () => ({ error: "AuthProvider não encontrado" }),
   signOut: async () => {},
@@ -44,13 +42,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const signUpWithEmail = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signUp({ email, password });
-    return { error: error ? error.message : null };
-  };
-
-  const signInWithEmail = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+  const signInWithEmail = async (email: string) => {
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: { emailRedirectTo: window.location.origin },
+    });
     return { error: error ? error.message : null };
   };
 
@@ -67,7 +63,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <ContextWrapper value={{ user, session, loading, signUpWithEmail, signInWithEmail, signInWithGoogle, signOut }}>
+    <ContextWrapper value={{ user, session, loading, signInWithEmail, signInWithGoogle, signOut }}>
       {children}
     </ContextWrapper>
   );
