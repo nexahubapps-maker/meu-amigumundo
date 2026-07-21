@@ -18,6 +18,8 @@ import { InternalPopup } from "@/components/common/InternalPopup";
 import { UnifiedCheckoutHub } from "@/components/features/checkout/UnifiedCheckoutHub";
 import { CartFooter } from "@/components/features/checkout/CartFooter";
 import { CategoryDetailView } from "@/components/features/catalog/CategoryDetailView";
+import { SearchResultsView } from "@/components/features/catalog/SearchResultsView";
+import { RecipeSearchBar } from "@/components/features/catalog/RecipeSearchBar";
 import { LightboxModal } from "@/components/features/catalog/LightboxModal";
 import { InstallGuideCard } from "@/components/features/pwa/InstallGuideCard";
 import { WelcomeBanner } from "@/components/WelcomeBanner";
@@ -31,6 +33,7 @@ import {
   getRecipesByCategoria,
   getRecipesByIds,
   getPushEnabledItems,
+  searchRecipes,
   type SheetRecipe,
   type SheetInfoproduto,
   type SheetPack,
@@ -53,7 +56,7 @@ function shuffleArray<T>(array: T[]): T[] {
 export default function Index() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { categoria_slug, id: routeProductId, slug_and_id } = useParams();
+  const { categoria_slug, id: routeProductId, slug_and_id, termo } = useParams();
   
   const [infoprodutosList, setInfoprodutosList] = useState<SheetInfoproduto[]>([]);
   const [packsList, setPacksList] = useState<SheetPack[]>([]);
@@ -80,6 +83,9 @@ export default function Index() {
     const saved = localStorage.getItem("amigumundo-favorites");
     return saved ? JSON.parse(saved) : [];
   });
+
+  const [searchResults, setSearchResults] = useState<SheetRecipe[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
 
   const getTargetId = () => {
     if (slug_and_id) {
@@ -180,6 +186,28 @@ export default function Index() {
   }, [categoria_slug, categoriesList, navigate]);
 
   useEffect(() => {
+    const fetchSearchResults = async () => {
+      if (termo) {
+        setIsSearching(true);
+        setSearchResults([]);
+        try {
+          const results = await searchRecipes(decodeURIComponent(termo));
+          setSearchResults(results);
+        } catch (e) {
+          console.error("Error searching recipes:", e);
+          setSearchResults([]);
+        } finally {
+          setIsSearching(false);
+        }
+      } else {
+        setSearchResults([]);
+      }
+    };
+
+    fetchSearchResults();
+  }, [termo]);
+
+  useEffect(() => {
     const fetchTargetRecipe = async () => {
       if (targetId) {
         try {
@@ -246,7 +274,7 @@ export default function Index() {
   }, [location.pathname]);
 
   useEffect(() => {
-    const isModalOpen = !!showRecipe || !!activeUpsell || isFavoritesOpen || !!zoomImage || !!categoria_slug || !!targetId;
+    const isModalOpen = !!showRecipe || !!activeUpsell || isFavoritesOpen || !!zoomImage || !!categoria_slug || !!targetId || !!termo;
     if (isModalOpen) {
       document.body.style.overflow = "hidden";
     } else {
@@ -255,7 +283,7 @@ export default function Index() {
     return () => {
       document.body.style.overflow = "";
     };
-  }, [showRecipe, activeUpsell, isFavoritesOpen, zoomImage, categoria_slug, targetId]);
+  }, [showRecipe, activeUpsell, isFavoritesOpen, zoomImage, categoria_slug, targetId, termo]);
 
   useEffect(() => {
     const savedCart = localStorage.getItem("amigumundo-cart");
@@ -404,6 +432,8 @@ export default function Index() {
       metaTitle = `${upsell.nome} - R$ ${upsell.preco.toFixed(2)}`;
       metaImage = upsell.imagem_url;
     }
+  } else if (termo) {
+    metaTitle = `Busca: "${decodeURIComponent(termo)}" - AmiguMundo`;
   } else if (categoria_slug) {
     const decodedCat = decodeURIComponent(categoria_slug).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
     const matchedCat = categoriesList.find(c => {
@@ -468,7 +498,9 @@ export default function Index() {
           />
         </div>
 
-        <div className="max-w-6xl mx-auto px-2 sm:px-4 mt-3">
+        <RecipeSearchBar />
+
+        <div id="secao-categorias" className="max-w-6xl mx-auto px-2 sm:px-4 mt-3">
           <div className="bg-white rounded-3xl p-2 sm:p-3 shadow-lg border border-gray-100/80 flex flex-col gap-2">
             <div 
               style={textureLaranjaStyle}
@@ -752,6 +784,26 @@ export default function Index() {
           isLoading={isLoading}
           isInCart={isInCart}
           onBack={() => navigate("/")}
+          onRecipeAdd={handleRecipeAdd}
+          onRecipeRemove={removeFromCart}
+          onZoomImage={setZoomImage}
+          favorites={favorites}
+          onToggleFavorite={toggleFavorite}
+        />
+      )}
+
+      {termo && (
+        <SearchResultsView
+          termo={termo}
+          recipes={searchResults}
+          isLoading={isSearching}
+          isInCart={isInCart}
+          onBack={() => {
+            navigate("/");
+            setTimeout(() => {
+              document.getElementById("secao-categorias")?.scrollIntoView({ behavior: "smooth" });
+            }, 100);
+          }}
           onRecipeAdd={handleRecipeAdd}
           onRecipeRemove={removeFromCart}
           onZoomImage={setZoomImage}
