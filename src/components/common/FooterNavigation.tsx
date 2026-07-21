@@ -1,17 +1,17 @@
 "use client";
 
 import React from 'react';
-import { Heart, Bell } from 'lucide-react';
+import { User, Bell } from 'lucide-react';
 
 interface FooterNavigationProps {
-  onOpenFavorites: () => void;
+  onOpenMeuAmiguMundo: () => void;
   onOpenNotifications: () => void;
   favoritesCount: number;
   notificationsCount: number;
 }
 
 export const FooterNavigation = ({
-  onOpenFavorites,
+  onOpenMeuAmiguMundo,
   onOpenNotifications,
   favoritesCount,
   notificationsCount
@@ -33,7 +33,7 @@ export const FooterNavigation = ({
         <div className="relative">
           <Bell size={16} className="text-[#44FF00]" fill="#44FF00" />
           {notificationsCount > 0 && (
-            <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[7px] font-black w-3 h-3 rounded-full flex items-center justify-center">
+            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[7px] font-black w-3 h-3 rounded-full flex items-center justify-center">
               {notificationsCount}
             </span>
           )}
@@ -42,19 +42,19 @@ export const FooterNavigation = ({
       </button>
 
       <button
-        onClick={onOpenFavorites}
+        onClick={onOpenMeuAmiguMundo}
         translate="no"
         className="notranslate flex items-center justify-center gap-2 text-white hover:bg-white/10 active:scale-95 transition-all py-1 px-4 rounded-full"
       >
         <div className="relative">
-          <Heart size={16} className="text-[#44FF00]" fill="#44FF00" />
+          <User size={16} className="text-[#44FF00]" fill="#44FF00" />
           {favoritesCount > 0 && (
-            <span className="absolute -top-1.5 -right-1.5 bg-white text-[#171717] text-[7px] font-black w-3 h-3 rounded-full flex items-center justify-center">
+            <span className="absolute -top-1 -right-1 bg-white text-[#171717] text-[7px] font-black w-3 h-3 rounded-full flex items-center justify-center">
               {favoritesCount}
             </span>
           )}
         </div>
-        <span translate="no" className="notranslate text-xs font-black uppercase tracking-wider text-white">Favoritos</span>
+        <span translate="no" className="notranslate text-[10px] font-black uppercase tracking-wider text-white">Meu AmiguMundo</span>
       </button>
     </div>
   );

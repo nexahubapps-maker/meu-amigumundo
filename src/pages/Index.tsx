@@ -25,6 +25,8 @@ import { InstallGuideCard } from "@/components/features/pwa/InstallGuideCard";
 import { WelcomeBanner } from "@/components/WelcomeBanner";
 import { Breadcrumbs } from "@/components/common/Breadcrumbs";
 import { AdminSyncButton } from "@/components/features/admin/AdminSyncButton";
+import { useAuth } from "@/context/AuthContext";
+import { AuthModal } from "@/components/AuthModal";
 import { 
   getInfoprodutos, 
   getPacks, 
@@ -57,6 +59,7 @@ export default function Index() {
   const navigate = useNavigate();
   const location = useLocation();
   const { categoria_slug, id: routeProductId, slug_and_id, termo } = useParams();
+  const { user } = useAuth();
   
   const [infoprodutosList, setInfoprodutosList] = useState<SheetInfoproduto[]>([]);
   const [packsList, setPacksList] = useState<SheetPack[]>([]);
@@ -72,6 +75,7 @@ export default function Index() {
   const [error, setError] = useState<string | null>(null);
   const [isFavoritesOpen, setIsFavoritesOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+  const [isMeuAuthModalOpen, setIsMeuAuthModalOpen] = useState(false);
   const [activeUpsellIndex, setActiveUpsellIndex] = useState(0);
   const [zoomImage, setZoomImage] = useState<string | null>(null);
   const carouselRef = useRef<HTMLDivElement>(null);
@@ -390,6 +394,14 @@ export default function Index() {
   };
 
   const isInCart = (id: string) => cart.some((item) => item.id === id);
+
+  const handleOpenMeuAmiguMundo = () => {
+    if (user) {
+      setIsFavoritesOpen(true);
+    } else {
+      setIsMeuAuthModalOpen(true);
+    }
+  };
 
   const textureLaranjaStyle = {
     backgroundImage: "url('https://ik.imagekit.io/51b3srlsg/textura_laranja.jpeg')",
@@ -753,7 +765,7 @@ export default function Index() {
       />
 
       <FooterNavigation
-        onOpenFavorites={() => setIsFavoritesOpen(true)}
+        onOpenMeuAmiguMundo={handleOpenMeuAmiguMundo}
         onOpenNotifications={handleOpenNotifications}
         favoritesCount={favorites.length}
         notificationsCount={hasUnreadNotifications ? notificationsList.filter(n => n.ativo).length : 0}
@@ -820,6 +832,8 @@ export default function Index() {
       )}
 
       <AdminSyncButton />
+
+      <AuthModal isOpen={isMeuAuthModalOpen} onClose={() => setIsMeuAuthModalOpen(false)} />
     </div>
   );
 }
