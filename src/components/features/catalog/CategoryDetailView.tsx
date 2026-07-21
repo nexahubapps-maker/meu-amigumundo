@@ -4,6 +4,7 @@ import React from "react";
 import { ArrowLeft, Heart, Search, Share2 } from "lucide-react";
 import { type SheetRecipe } from "@/utils/sheets";
 import { showSuccess } from "@/utils/toast";
+import { RecipeSearchBar } from "@/components/features/catalog/RecipeSearchBar";
 
 interface CategoryDetailViewProps {
   categoriaSlug: string;
@@ -80,6 +81,8 @@ export const CategoryDetailView = ({
       </div>
 
       <div className="max-w-6xl mx-auto px-2 py-4">
+        <RecipeSearchBar />
+
         <div className="bg-blue-50 text-blue-700 text-[10px] font-bold py-1.5 px-3 rounded-lg text-center mb-3 uppercase tracking-wider">
           🔍 Clique nas imagens para ampliá-las
         </div>
