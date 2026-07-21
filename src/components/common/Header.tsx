@@ -1,7 +1,10 @@
 "use client";
 
-import { ShoppingCart } from "lucide-react";
+import { useState } from "react";
+import { ShoppingCart, User, LogOut } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useAuth } from "@/context/AuthContext";
+import { AuthModal } from "@/components/AuthModal";
 
 interface HeaderProps {
   cartCount?: number;
@@ -10,6 +13,8 @@ interface HeaderProps {
 export const Header = ({ cartCount = 0 }: HeaderProps) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user, signOut } = useAuth();
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   const scrollToCart = () => {
     if (location.pathname !== "/") {
@@ -51,19 +56,42 @@ export const Header = ({ cartCount = 0 }: HeaderProps) => {
             <span className="tracking-tight">AMIGUMUNDO ARTES</span>
           </div>
           
-          <button 
-            onClick={scrollToCart}
-            className="relative p-1.5 text-[#171717] hover:text-[#44FF00] transition-colors bg-gray-50 rounded-full flex items-center justify-center"
-          >
-            <ShoppingCart size={22} />
-            {cartCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-[#44FF00] text-[#171717] text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center border border-white">
-                {cartCount}
-              </span>
+          <div className="flex flex-row gap-2 items-center">
+            <button 
+              onClick={scrollToCart}
+              className="relative p-1.5 text-[#171717] hover:text-[#44FF00] transition-colors bg-gray-50 rounded-full flex items-center justify-center"
+              title="Ver Carrinho"
+            >
+              <ShoppingCart size={22} />
+              {cartCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-[#44FF00] text-[#171717] text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center border border-white">
+                  {cartCount}
+                </span>
+              )}
+            </button>
+
+            {user ? (
+              <button 
+                onClick={() => signOut()}
+                className="relative p-1.5 text-[#44FF00] hover:text-red-500 transition-colors bg-gray-50 rounded-full flex items-center justify-center"
+                title="Sair da Conta"
+              >
+                <LogOut size={22} />
+              </button>
+            ) : (
+              <button 
+                onClick={() => setIsAuthModalOpen(true)}
+                className="relative p-1.5 text-[#171717] hover:text-[#44FF00] transition-colors bg-gray-50 rounded-full flex items-center justify-center"
+                title="Entrar / Cadastrar"
+              >
+                <User size={22} />
+              </button>
             )}
-          </button>
+          </div>
         </div>
       </div>
+
+      <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
     </div>
   );
 };
