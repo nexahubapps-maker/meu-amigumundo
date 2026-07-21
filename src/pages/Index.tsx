@@ -374,7 +374,7 @@ export default function Index() {
 
   const handleUpsellBuy = () => {
     if (activeUpsell) {
-      const @upsell = infoprodutosList.find((u) => u.id === activeUpsell);
+      const upsell = infoprodutosList.find((u) => u.id === activeUpsell);
       if (upsell) {
         const newItem: CartItem = {
           id: upsell.id,
