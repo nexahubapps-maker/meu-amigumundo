@@ -27,6 +27,8 @@ import { Breadcrumbs } from "@/components/common/Breadcrumbs";
 import { AdminSyncButton } from "@/components/features/admin/AdminSyncButton";
 import { useAuth } from "@/context/AuthContext";
 import { AuthModal } from "@/components/AuthModal";
+import { getProfile } from "@/utils/profile";
+import { CompleteProfileModal } from "@/components/CompleteProfileModal";
 import { 
   getInfoprodutos, 
   getPacks, 
@@ -76,6 +78,7 @@ export default function Index() {
   const [isFavoritesOpen, setIsFavoritesOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [isMeuAuthModalOpen, setIsMeuAuthModalOpen] = useState(false);
+  const [isCompleteProfileOpen, setIsCompleteProfileOpen] = useState(false);
   const [activeUpsellIndex, setActiveUpsellIndex] = useState(0);
   const [zoomImage, setZoomImage] = useState<string | null>(null);
   const carouselRef = useRef<HTMLDivElement>(null);
@@ -371,7 +374,7 @@ export default function Index() {
 
   const handleUpsellBuy = () => {
     if (activeUpsell) {
-      const upsell = infoprodutosList.find((u) => u.id === activeUpsell);
+      const @upsell = infoprodutosList.find((u) => u.id === activeUpsell);
       if (upsell) {
         const newItem: CartItem = {
           id: upsell.id,
@@ -395,11 +398,16 @@ export default function Index() {
 
   const isInCart = (id: string) => cart.some((item) => item.id === id);
 
-  const handleOpenMeuAmiguMundo = () => {
-    if (user) {
-      setIsFavoritesOpen(true);
-    } else {
+  const handleOpenMeuAmiguMundo = async () => {
+    if (!user) {
       setIsMeuAuthModalOpen(true);
+      return;
+    }
+    const profile = await getProfile(user.id);
+    if (!profile?.telefone) {
+      setIsCompleteProfileOpen(true);
+    } else {
+      setIsFavoritesOpen(true);
     }
   };
 
@@ -834,6 +842,16 @@ export default function Index() {
       <AdminSyncButton />
 
       <AuthModal isOpen={isMeuAuthModalOpen} onClose={() => setIsMeuAuthModalOpen(false)} />
+
+      <CompleteProfileModal
+        isOpen={isCompleteProfileOpen}
+        onClose={() => setIsCompleteProfileOpen(false)}
+        userId={user?.id}
+        onSuccess={() => {
+          setIsCompleteProfileOpen(false);
+          setIsFavoritesOpen(true);
+        }}
+      />
     </div>
   );
 }
