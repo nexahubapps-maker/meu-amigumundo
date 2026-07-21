@@ -372,3 +372,26 @@ export async function getPushEnabledItems(): Promise<Array<{ id: string; nome: s
 
   return [...recipes, ...packs, ...infoprodutos];
 }
+
+export async function searchRecipes(termo: string): Promise<SheetRecipe[]> {
+  const query = termo.trim();
+  if (query.length === 0) return [];
+
+  const { data, error } = await supabase.rpc("buscar_receitas", { termo: query });
+
+  if (error) {
+    console.warn("Erro ao buscar receitas:", error);
+    return [];
+  }
+
+  return (data || []).map((row: any) => ({
+    id: row.codigo,
+    nome: row.nome || "",
+    slug: row.slug || "",
+    preco: Number(row.preco) || 0,
+    imagem_url: row.imagem_url || "",
+    categoria: row.categoria || "",
+    ativo: !!row.ativo,
+    disparar_push: !!row.disparar_push,
+  }));
+}
