@@ -79,7 +79,8 @@ export async function syncGoogleSheetsToSupabase(): Promise<SyncResult[]> {
       imagem_url: p.imagem_url,
       descricao: p.descricao,
       ativo: p.ativo,
-      disparar_push: p.disparar_push
+      disparar_push: p.disparar_push,
+      link_entrega: p.link_entrega
     }));
 
     const { error } = await supabase
@@ -104,7 +105,8 @@ export async function syncGoogleSheetsToSupabase(): Promise<SyncResult[]> {
       imagem_url: i.imagem_url,
       descricao: i.descricao,
       ativo: i.ativo,
-      disparar_push: i.disparar_push
+      disparar_push: i.disparar_push,
+      link_entrega: i.link_entrega
     }));
 
     const { error } = await supabase

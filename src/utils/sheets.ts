@@ -22,6 +22,7 @@ export interface SheetInfoproduto {
   descricao: string;
   ativo: boolean;
   disparar_push: boolean;
+  link_entrega: string;
 }
 
 export interface SheetPack {
@@ -33,6 +34,7 @@ export interface SheetPack {
   descricao: string;
   ativo: boolean;
   disparar_push: boolean;
+  link_entrega: string;
 }
 
 export interface SheetNotification {
@@ -147,7 +149,7 @@ export async function getRecipes(): Promise<SheetRecipe[]> {
 export async function getInfoprodutos(): Promise<SheetInfoproduto[]> {
   const { data, error } = await supabase
     .from("infoprodutos")
-    .select("codigo, nome, slug, preco, imagem_url, descricao, ativo, disparar_push");
+    .select("codigo, nome, slug, preco, imagem_url, descricao, ativo, disparar_push, link_entrega");
 
   if (error) {
     console.warn("Erro ao buscar infoprodutos no Supabase:", error);
@@ -162,14 +164,15 @@ export async function getInfoprodutos(): Promise<SheetInfoproduto[]> {
     imagem_url: row.imagem_url || "",
     descricao: row.descricao || "",
     ativo: !!row.ativo,
-    disparar_push: !!row.disparar_push
+    disparar_push: !!row.disparar_push,
+    link_entrega: row.link_entrega || ""
   }));
 }
 
 export async function getPacks(): Promise<SheetPack[]> {
   const { data, error } = await supabase
     .from("packs")
-    .select("codigo, nome, slug, preco, imagem_url, descricao, ativo, disparar_push");
+    .select("codigo, nome, slug, preco, imagem_url, descricao, ativo, disparar_push, link_entrega");
 
   if (error) {
     console.warn("Erro ao buscar packs no Supabase:", error);
@@ -184,7 +187,8 @@ export async function getPacks(): Promise<SheetPack[]> {
     imagem_url: row.imagem_url || "",
     descricao: row.descricao || "",
     ativo: !!row.ativo,
-    disparar_push: !!row.disparar_push
+    disparar_push: !!row.disparar_push,
+    link_entrega: row.link_entrega || ""
   }));
 }
 
@@ -323,7 +327,7 @@ export async function getPacksByIds(ids: string[]): Promise<SheetPack[]> {
   if (ids.length === 0) return [];
   const { data, error } = await supabase
     .from("packs")
-    .select("codigo, nome, slug, preco, imagem_url, descricao, ativo, disparar_push")
+    .select("codigo, nome, slug, preco, imagem_url, descricao, ativo, disparar_push, link_entrega")
     .in("codigo", ids);
 
   if (error) {
@@ -339,7 +343,8 @@ export async function getPacksByIds(ids: string[]): Promise<SheetPack[]> {
     imagem_url: row.imagem_url || "",
     descricao: row.descricao || "",
     ativo: !!row.ativo,
-    disparar_push: !!row.disparar_push
+    disparar_push: !!row.disparar_push,
+    link_entrega: row.link_entrega || ""
   }));
 }
 
@@ -347,7 +352,7 @@ export async function getInfoprodutosByIds(ids: string[]): Promise<SheetInfoprod
   if (ids.length === 0) return [];
   const { data, error } = await supabase
     .from("infoprodutos")
-    .select("codigo, nome, slug, preco, imagem_url, descricao, ativo, disparar_push")
+    .select("codigo, nome, slug, preco, imagem_url, descricao, ativo, disparar_push, link_entrega")
     .in("codigo", ids);
 
   if (error) {
@@ -363,7 +368,8 @@ export async function getInfoprodutosByIds(ids: string[]): Promise<SheetInfoprod
     imagem_url: row.imagem_url || "",
     descricao: row.descricao || "",
     ativo: !!row.ativo,
-    disparar_push: !!row.disparar_push
+    disparar_push: !!row.disparar_push,
+    link_entrega: row.link_entrega || ""
   }));
 }
 

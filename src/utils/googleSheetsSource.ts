@@ -74,7 +74,8 @@ export async function getInfoprodutosFromSheet() {
     imagem_url: row[4] || "",
     descricao: row[5] || "",
     ativo: row[6]?.toLowerCase() === "true",
-    disparar_push: row[7]?.toLowerCase() === "true"
+    disparar_push: row[7]?.toLowerCase() === "true",
+    link_entrega: row[8] || ""
   }));
 }
 
@@ -88,7 +89,8 @@ export async function getPacksFromSheet() {
     imagem_url: row[4] || "",
     descricao: row[5] || "",
     ativo: row[6]?.toLowerCase() === "true",
-    disparar_push: row[7]?.toLowerCase() === "true"
+    disparar_push: row[7]?.toLowerCase() === "true",
+    link_entrega: row[8] || ""
   }));
 }
 
