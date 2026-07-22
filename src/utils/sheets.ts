@@ -61,8 +61,64 @@ export interface SheetCategoria {
   ativo: boolean;
 }
 
-export const GOOGLE_DRIVE_FOLDER_ID = "YOUR_GOOGLE_DRIVE_FOLDER_ID";
-export const GOOGLE_DRIVE_API_KEY = "YOUR_GOOGLE_DRIVE_API_KEY";
+export const GOOGLE_DRIVE_FOLDER_ID = "1yrrZX5yqhLC8pi4phyOt8fxNzMiG1BoV";
+export const GOOGLE_DRIVE_API_KEY = "AIzaSyBJiL8IdTPi25jPZM0P6kl3dDUO8YHvVu4";
+
+let categoriaFolderCache: Record<string, string> | null = null;
+
+async function getCategoriaFolderMap(): Promise<Record<string, string>> {
+  if (categoriaFolderCache) return categoriaFolderCache;
+  try {
+    const url = `https://www.googleapis.com/drive/v3/files?q='${GOOGLE_DRIVE_FOLDER_ID}'+in+parents+and+mimeType='application/vnd.google-apps.folder'+and+trashed=false&fields=files(id,name)&key=${GOOGLE_DRIVE_API_KEY}&pageSize=100`;
+    const res = await fetch(url);
+    if (!res.ok) return {};
+    const data = await res.json();
+    const map: Record<string, string> = {};
+    (data.files || []).forEach((f: any) => {
+      const match = f.name.match(/^CARD(\d+)/i);
+      if (match) {
+        const code = `card${match[1].padStart(2, "0")}`;
+        map[code.toLowerCase()] = f.id;
+      }
+    });
+    categoriaFolderCache = map;
+    return map;
+  } catch (e) {
+    console.warn("Erro ao mapear pastas de categoria no Drive:", e);
+    return {};
+  }
+}
+
+async function getRecipeCoverFallback(codigo: string, categoria: string): Promise<string | null> {
+  try {
+    const folderMap = await getCategoriaFolderMap();
+    const subfolderId = folderMap[(categoria || "").toLowerCase()];
+    if (!subfolderId) return null;
+
+    const url = `https://www.googleapis.com/drive/v3/files?q='${subfolderId}'+in+parents+and+name+contains+'${codigo}'+and+mimeType='application/pdf'+and+trashed=false&fields=files(id,name)&key=${GOOGLE_DRIVE_API_KEY}`;
+    const res = await fetch(url);
+    if (!res.ok) return null;
+    const data = await res.json();
+    if (data.files && data.files.length > 0) {
+      return `https://drive.google.com/thumbnail?id=${data.files[0].id}&sz=w800`;
+    }
+    return null;
+  } catch (e) {
+    console.warn("Erro ao buscar capa fallback no Drive:", e);
+    return null;
+  }
+}
+
+async function resolveImagensReceitas(recipes: SheetRecipe[]): Promise<SheetRecipe[]> {
+  return Promise.all(
+    recipes.map(async (r) => {
+      const semImagem = !r.imagem_url || r.imagem_url.trim() === "-" || r.imagem_url.trim() === "";
+      if (!semImagem) return r;
+      const fallback = await getRecipeCoverFallback(r.id, r.categoria);
+      return fallback ? { ...r, imagem_url: fallback } : r;
+    })
+  );
+}
 
 export async function getRecipes(): Promise<SheetRecipe[]> {
   const { data, error } = await supabase
@@ -74,7 +130,7 @@ export async function getRecipes(): Promise<SheetRecipe[]> {
     return [];
   }
 
-  return (data || []).map((row) => ({
+  const mapped = (data || []).map((row) => ({
     id: row.codigo,
     nome: row.nome || "",
     slug: row.slug || "",
@@ -84,6 +140,8 @@ export async function getRecipes(): Promise<SheetRecipe[]> {
     ativo: !!row.ativo,
     disparar_push: !!row.disparar_push
   }));
+
+  return resolveImagensReceitas(mapped);
 }
 
 export async function getInfoprodutos(): Promise<SheetInfoproduto[]> {
@@ -219,7 +277,7 @@ export async function getRecipesByCategoria(categoriaId: string): Promise<SheetR
     return [];
   }
 
-  return (data || []).map((row) => ({
+  const mapped = (data || []).map((row) => ({
     id: row.codigo,
     nome: row.nome || "",
     slug: row.slug || "",
@@ -229,6 +287,8 @@ export async function getRecipesByCategoria(categoriaId: string): Promise<SheetR
     ativo: !!row.ativo,
     disparar_push: !!row.disparar_push
   }));
+
+  return resolveImagensReceitas(mapped);
 }
 
 export async function getRecipesByIds(ids: string[]): Promise<SheetRecipe[]> {
@@ -243,7 +303,7 @@ export async function getRecipesByIds(ids: string[]): Promise<SheetRecipe[]> {
     return [];
   }
 
-  return (data || []).map((row) => ({
+  const mapped = (data || []).map((row) => ({
     id: row.codigo,
     nome: row.nome || "",
     slug: row.slug || "",
@@ -253,6 +313,8 @@ export async function getRecipesByIds(ids: string[]): Promise<SheetRecipe[]> {
     ativo: !!row.ativo,
     disparar_push: !!row.disparar_push
   }));
+
+  return resolveImagensReceitas(mapped);
 }
 
 export async function getPacksByIds(ids: string[]): Promise<SheetPack[]> {
@@ -384,7 +446,7 @@ export async function searchRecipes(termo: string): Promise<SheetRecipe[]> {
     return [];
   }
 
-  return (data || []).map((row: any) => ({
+  const mapped = (data || []).map((row: any) => ({
     id: row.codigo,
     nome: row.nome || "",
     slug: row.slug || "",
@@ -394,4 +456,6 @@ export async function searchRecipes(termo: string): Promise<SheetRecipe[]> {
     ativo: !!row.ativo,
     disparar_push: !!row.disparar_push,
   }));
+
+  return resolveImagensReceitas(mapped);
 }
