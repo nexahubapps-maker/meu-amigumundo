@@ -24,7 +24,6 @@ export async function syncGoogleSheetsToSupabase(): Promise<SyncResult[]> {
   try {
     const categories = await getCategoriesFromSheet();
     const validCategories = categories.filter(c => c.id && c.titulo);
-    const validIds = validCategories.map(c => c.id);
 
     const data = validCategories.map(c => ({
       id: c.id,
@@ -37,13 +36,6 @@ export async function syncGoogleSheetsToSupabase(): Promise<SyncResult[]> {
       .from("categorias")
       .upsert(data, { onConflict: "id" });
 
-    if (!error && validIds.length > 0) {
-      await supabase
-        .from("categorias")
-        .delete()
-        .not("id", "in", `(${validIds.join(",")})`);
-    }
-
     results.push({ table: "categorias", success: !error, count: data.length, error: error?.message });
   } catch (e: any) {
     results.push({ table: "categorias", success: false, count: 0, error: e.message || String(e) });
@@ -53,7 +45,6 @@ export async function syncGoogleSheetsToSupabase(): Promise<SyncResult[]> {
   try {
     const recipes = await getRecipesFromSheet();
     const validRecipes = recipes.filter(r => r.id && r.nome);
-    const validCodigos = validRecipes.map(r => r.id);
 
     const data = validRecipes.map(r => ({
       codigo: r.id,
@@ -70,13 +61,6 @@ export async function syncGoogleSheetsToSupabase(): Promise<SyncResult[]> {
       .from("receitas")
       .upsert(data, { onConflict: "codigo" });
 
-    if (!error && validCodigos.length > 0) {
-      await supabase
-        .from("receitas")
-        .delete()
-        .not("codigo", "in", `(${validCodigos.join(",")})`);
-    }
-
     results.push({ table: "receitas", success: !error, count: data.length, error: error?.message });
   } catch (e: any) {
     results.push({ table: "receitas", success: false, count: 0, error: e.message || String(e) });
@@ -86,7 +70,6 @@ export async function syncGoogleSheetsToSupabase(): Promise<SyncResult[]> {
   try {
     const packs = await getPacksFromSheet();
     const validPacks = packs.filter(p => p.id && p.nome);
-    const validCodigos = validPacks.map(p => p.id);
 
     const data = validPacks.map(p => ({
       codigo: p.id,
@@ -103,13 +86,6 @@ export async function syncGoogleSheetsToSupabase(): Promise<SyncResult[]> {
       .from("packs")
       .upsert(data, { onConflict: "codigo" });
 
-    if (!error && validCodigos.length > 0) {
-      await supabase
-        .from("packs")
-        .delete()
-        .not("codigo", "in", `(${validCodigos.join(",")})`);
-    }
-
     results.push({ table: "packs", success: !error, count: data.length, error: error?.message });
   } catch (e: any) {
     results.push({ table: "packs", success: false, count: 0, error: e.message || String(e) });
@@ -119,7 +95,6 @@ export async function syncGoogleSheetsToSupabase(): Promise<SyncResult[]> {
   try {
     const infoproducts = await getInfoprodutosFromSheet();
     const validInfos = infoproducts.filter(i => i.id && i.nome);
-    const validCodigos = validInfos.map(i => i.id);
 
     const data = validInfos.map(i => ({
       codigo: i.id,
@@ -136,13 +111,6 @@ export async function syncGoogleSheetsToSupabase(): Promise<SyncResult[]> {
       .from("infoprodutos")
       .upsert(data, { onConflict: "codigo" });
 
-    if (!error && validCodigos.length > 0) {
-      await supabase
-        .from("infoprodutos")
-        .delete()
-        .not("codigo", "in", `(${validCodigos.join(",")})`);
-    }
-
     results.push({ table: "infoprodutos", success: !error, count: data.length, error: error?.message });
   } catch (e: any) {
     results.push({ table: "infoprodutos", success: false, count: 0, error: e.message || String(e) });
@@ -152,7 +120,6 @@ export async function syncGoogleSheetsToSupabase(): Promise<SyncResult[]> {
   try {
     const notifications = await getNotificationsFromSheet();
     const validNotifications = notifications.filter(n => n.id && n.titulo);
-    const validIds = validNotifications.map(n => n.id);
 
     const data = validNotifications.map(n => ({
       id: n.id,
@@ -169,13 +136,6 @@ export async function syncGoogleSheetsToSupabase(): Promise<SyncResult[]> {
       .from("notificacoes_internas")
       .upsert(data, { onConflict: "id" });
 
-    if (!error && validIds.length > 0) {
-      await supabase
-        .from("notificacoes_internas")
-        .delete()
-        .not("id", "in", `(${validIds.join(",")})`);
-    }
-
     results.push({ table: "notificacoes_internas", success: !error, count: data.length, error: error?.message });
   } catch (e: any) {
     results.push({ table: "notificacoes_internas", success: false, count: 0, error: e.message || String(e) });
@@ -185,7 +145,6 @@ export async function syncGoogleSheetsToSupabase(): Promise<SyncResult[]> {
   try {
     const freeRecipes = await getReceitaGratuitaFromSheet();
     const validFreeRecipes = freeRecipes.filter(f => f.codigo && f.nome);
-    const validCodigos = validFreeRecipes.map(f => f.codigo);
 
     const data = validFreeRecipes.map(f => ({
       codigo: f.codigo,
@@ -198,13 +157,6 @@ export async function syncGoogleSheetsToSupabase(): Promise<SyncResult[]> {
     const { error } = await supabase
       .from("receitas_gratuitas")
       .upsert(data, { onConflict: "codigo" });
-
-    if (!error && validCodigos.length > 0) {
-      await supabase
-        .from("receitas_gratuitas")
-        .delete()
-        .not("codigo", "in", `(${validCodigos.join(",")})`);
-    }
 
     results.push({ table: "receitas_gratuitas", success: !error, count: data.length, error: error?.message });
   } catch (e: any) {
