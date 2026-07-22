@@ -247,22 +247,24 @@ export async function getCategories(): Promise<SheetCategoria[]> {
   }));
 }
 
-export async function getDriveFileUrl(codigo: string): Promise<string> {
+export async function getDriveFileUrl(codigo: string, categoria: string): Promise<string | null> {
   try {
-    if (GOOGLE_DRIVE_FOLDER_ID && GOOGLE_DRIVE_FOLDER_ID !== "YOUR_GOOGLE_DRIVE_FOLDER_ID") {
-      const url = `https://www.googleapis.com/drive/v3/files?q='${GOOGLE_DRIVE_FOLDER_ID}'+in+parents+and+name='${codigo}.pdf'+and+trashed=false&fields=files(id,webContentLink)&key=${GOOGLE_DRIVE_API_KEY || ''}`;
-      const res = await fetch(url);
-      if (res.ok) {
-        const data = await res.json();
-        if (data.files && data.files.length > 0) {
-          return `https://drive.google.com/uc?export=download&id=${data.files[0].id}`;
-        }
-      }
+    const folderMap = await getCategoriaFolderMap();
+    const subfolderId = folderMap[(categoria || "").toLowerCase()];
+    if (!subfolderId) return null;
+
+    const url = `https://www.googleapis.com/drive/v3/files?q='${subfolderId}'+in+parents+and+name+contains+'${codigo}'+and+mimeType='application/pdf'+and+trashed=false&fields=files(id,name)&key=${GOOGLE_DRIVE_API_KEY}`;
+    const res = await fetch(url);
+    if (!res.ok) return null;
+    const data = await res.json();
+    if (data.files && data.files.length > 0) {
+      return `https://drive.google.com/uc?export=download&id=${data.files[0].id}`;
     }
+    return null;
   } catch (e) {
     console.warn("Erro ao buscar arquivo no Google Drive:", e);
+    return null;
   }
-  return `https://drive.google.com/uc?export=download&id=FILE_ID_FOR_${codigo}`;
 }
 
 export async function getRecipesByCategoria(categoriaId: string): Promise<SheetRecipe[]> {
