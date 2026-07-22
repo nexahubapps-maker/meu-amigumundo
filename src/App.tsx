@@ -7,6 +7,7 @@ import { HelmetProvider } from "react-helmet-async";
 import { AuthProvider } from "@/context/AuthContext";
 import Index from "./pages/Index";
 import Checkout from "./pages/Checkout";
+import ObrigadoPage from "@/pages/ObrigadoPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -40,6 +41,9 @@ const App = () => (
               {/* Tela de Checkout */}
               <Route path="/checkout" element={<Checkout />} />
               <Route path="/checkout/:id" element={<Checkout />} />
+
+              {/* Tela de Obrigado / Entrega do Pedido */}
+              <Route path="/obrigado/:idPedido" element={<ObrigadoPage />} />
               
               <Route path="*" element={<NotFound />} />
             </Routes>
