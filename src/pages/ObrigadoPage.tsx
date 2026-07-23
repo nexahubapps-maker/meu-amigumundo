@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { CheckCircle2, Download, ExternalLink, ArrowLeft, Loader2, AlertCircle, ShoppingBag, RefreshCw, Clock } from "lucide-react";
+import { CheckCircle2, Download, ExternalLink, ArrowLeft, Loader2, AlertCircle, ShoppingBag, RefreshCw, Clock, Sparkles } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { 
   getRecipesByIds, 
@@ -12,6 +12,8 @@ import {
 } from "@/utils/sheets";
 import { Header } from "@/components/common/Header";
 import { SupportButton } from "@/components/common/SupportButton";
+import { useAuth } from "@/context/AuthContext";
+import { AuthModal } from "@/components/AuthModal";
 
 interface Pedido {
   id: string;
@@ -37,11 +39,13 @@ interface PedidoItem {
 export default function ObrigadoPage() {
   const { idPedido } = useParams<{ idPedido: string }>();
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const [pedido, setPedido] = useState<Pedido | null>(null);
   const [itens, setItens] = useState<PedidoItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -132,6 +136,13 @@ export default function ObrigadoPage() {
       default:
         return "Acessar conteúdo";
     }
+  };
+
+  const textureLaranjaStyle = {
+    backgroundImage: "url('https://ik.imagekit.io/51b3srlsg/textura_laranja.jpeg')",
+    backgroundRepeat: "repeat",
+    backgroundSize: "150px",
+    textShadow: "1px 1px 2px rgba(0,0,0,0.5)"
   };
 
   return (
@@ -284,6 +295,31 @@ export default function ObrigadoPage() {
               </div>
             </div>
 
+            {/* Bloco de incentivo para criar conta grátis (apenas para compras deslogadas) */}
+            {!user && (
+              <div className="bg-gradient-to-br from-[#171717] to-[#2A2A2A] rounded-2xl p-6 text-white text-center shadow-xl border border-white/10 space-y-4 animate-in fade-in duration-300">
+                <div className="w-12 h-12 bg-[#44FF00]/10 rounded-full flex items-center justify-center text-[#44FF00] mx-auto">
+                  <Sparkles size={24} />
+                </div>
+
+                <div className="space-y-1">
+                  <h3 className="text-base sm:text-lg font-black uppercase tracking-tight text-white">
+                    Nunca mais perca uma receita! 🧶
+                  </h3>
+                  <p className="text-xs text-gray-300 font-medium leading-relaxed max-w-md mx-auto">
+                    Crie sua conta grátis e tudo que você comprar fica guardado automaticamente no seu <strong className="text-white">Meu AmiguMundo</strong> — sem precisar baixar ou salvar nada. Acesse quando quiser, quantas vezes quiser.
+                  </p>
+                </div>
+
+                <button
+                  onClick={() => setIsAuthModalOpen(true)}
+                  className="w-full sm:w-auto bg-[#44FF00] hover:bg-[#3ee600] active:scale-95 text-[#171717] px-6 py-3.5 rounded-xl font-black text-xs uppercase tracking-widest transition-all shadow-md"
+                >
+                  Quero minha conta grátis →
+                </button>
+              </div>
+            )}
+
             {/* Agradecimento Final & Botao Voltar */}
             <div className="text-center pt-2">
               <button
@@ -298,6 +334,11 @@ export default function ObrigadoPage() {
       </div>
 
       <SupportButton />
+
+      <AuthModal 
+        isOpen={isAuthModalOpen} 
+        onClose={() => setIsAuthModalOpen(false)} 
+      />
     </div>
   );
 }
