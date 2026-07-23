@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import type { Session, User } from "@supabase/supabase-js";
+import { vincularComprasAntigas } from "@/utils/vincularCompras";
 
 interface AuthContextType {
   user: User | null;
@@ -34,9 +35,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setLoading(false);
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
+
+      if (event === "SIGNED_IN" && session?.user?.email) {
+        vincularComprasAntigas(session.user.id, session.user.email);
+      }
     });
 
     return () => subscription.unsubscribe();
