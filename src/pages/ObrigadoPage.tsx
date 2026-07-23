@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { CheckCircle2, Download, ExternalLink, ArrowLeft, Loader2, AlertCircle, ShoppingBag } from "lucide-react";
+import { CheckCircle2, Download, ExternalLink, ArrowLeft, Loader2, AlertCircle, ShoppingBag, RefreshCw, Clock } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { 
   getRecipesByIds, 
@@ -47,79 +47,79 @@ export default function ObrigadoPage() {
     window.scrollTo(0, 0);
   }, []);
 
-  useEffect(() => {
-    async function loadPedido() {
-      if (!idPedido) {
-        setErrorMessage("Identificador do pedido não informado.");
+  const loadPedido = useCallback(async () => {
+    if (!idPedido) {
+      setErrorMessage("Identificador do pedido não informado.");
+      setIsLoading(false);
+      return;
+    }
+
+    setIsLoading(true);
+    setErrorMessage(null);
+
+    try {
+      // 1. Busca os dados do pedido e dos itens no Supabase
+      const [resPedido, resItens] = await Promise.all([
+        supabase.from("pedidos").select("*").eq("id", idPedido).single(),
+        supabase.from("pedido_itens").select("*").eq("pedido_id", idPedido)
+      ]);
+
+      if (resPedido.error || !resPedido.data) {
+        setErrorMessage("Pedido não encontrado ou indisponível.");
         setIsLoading(false);
         return;
       }
 
-      setIsLoading(true);
-      setErrorMessage(null);
+      setPedido(resPedido.data);
 
-      try {
-        // 1. Busca os dados do pedido e dos itens no Supabase
-        const [resPedido, resItens] = await Promise.all([
-          supabase.from("pedidos").select("*").eq("id", idPedido).single(),
-          supabase.from("pedido_itens").select("*").eq("pedido_id", idPedido)
-        ]);
+      const rawItens: PedidoItem[] = resItens.data || [];
 
-        if (resPedido.error || !resPedido.data) {
-          setErrorMessage("Pedido não encontrado ou indisponível.");
-          setIsLoading(false);
-          return;
-        }
+      // 2. Resolve linkAcesso em paralelo para cada item do pedido
+      const itensComLinks = await Promise.all(
+        rawItens.map(async (item) => {
+          let linkAcesso: string | null = null;
 
-        setPedido(resPedido.data);
-
-        const rawItens: PedidoItem[] = resItens.data || [];
-
-        // 2. Resolve linkAcesso em paralelo para cada item do pedido
-        const itensComLinks = await Promise.all(
-          rawItens.map(async (item) => {
-            let linkAcesso: string | null = null;
-
-            try {
-              if (item.tipo_produto === "receita") {
-                const recipes = await getRecipesByIds([item.codigo_produto]);
-                if (recipes && recipes.length > 0) {
-                  const cat = recipes[0].categoria;
-                  linkAcesso = await getDriveFileUrl(item.codigo_produto, cat);
-                }
-              } else if (item.tipo_produto === "pack") {
-                const packs = await getPacksByIds([item.codigo_produto]);
-                if (packs && packs.length > 0) {
-                  linkAcesso = packs[0].link_entrega || null;
-                }
-              } else if (item.tipo_produto === "infoproduto") {
-                const infoproducts = await getInfoprodutosByIds([item.codigo_produto]);
-                if (infoproducts && infoproducts.length > 0) {
-                  linkAcesso = infoproducts[0].link_entrega || null;
-                }
+          try {
+            if (item.tipo_produto === "receita") {
+              const recipes = await getRecipesByIds([item.codigo_produto]);
+              if (recipes && recipes.length > 0) {
+                const cat = recipes[0].categoria;
+                linkAcesso = await getDriveFileUrl(item.codigo_produto, cat);
               }
-            } catch (err) {
-              console.warn(`Erro ao resolver linkAcesso para o item ${item.codigo_produto}:`, err);
+            } else if (item.tipo_produto === "pack") {
+              const packs = await getPacksByIds([item.codigo_produto]);
+              if (packs && packs.length > 0) {
+                linkAcesso = packs[0].link_entrega || null;
+              }
+            } else if (item.tipo_produto === "infoproduto") {
+              const infoproducts = await getInfoprodutosByIds([item.codigo_produto]);
+              if (infoproducts && infoproducts.length > 0) {
+                linkAcesso = infoproducts[0].link_entrega || null;
+              }
             }
+          } catch (err) {
+            console.warn(`Erro ao resolver linkAcesso para o item ${item.codigo_produto}:`, err);
+          }
 
-            return {
-              ...item,
-              linkAcesso
-            };
-          })
-        );
+          return {
+            ...item,
+            linkAcesso
+          };
+        })
+      );
 
-        setItens(itensComLinks);
-      } catch (err: any) {
-        console.error("Erro ao carregar dados do pedido:", err);
-        setErrorMessage("Erro ao carregar os dados do pedido. Tente novamente.");
-      } finally {
-        setIsLoading(false);
-      }
+      setItens(itensComLinks);
+    } catch (err: any) {
+      console.error("Erro ao carregar dados do pedido:", err);
+      setErrorMessage("Erro ao carregar os dados do pedido. Tente novamente.");
+    } finally {
+      setIsLoading(false);
     }
-
-    loadPedido();
   }, [idPedido]);
+
+  useEffect(() => {
+    loadPedido();
+  }, [loadPedido]);
 
   const getButtonText = (tipo: string) => {
     switch (tipo) {
@@ -165,7 +165,45 @@ export default function ObrigadoPage() {
               Ir para a página inicial
             </button>
           </div>
+        ) : pedido && pedido.status !== "approved" ? (
+          /* Tela quando o pagamento ainda não foi aprovado */
+          <div className="bg-white rounded-2xl p-8 text-center shadow-sm border border-blue-100 flex flex-col items-center gap-4">
+            <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center text-blue-600">
+              <Clock size={32} className="animate-pulse" />
+            </div>
+            
+            <div className="space-y-1">
+              <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest block">
+                Status: {pedido.status || "Pendente"}
+              </span>
+              <h2 className="text-lg font-black text-gray-900 uppercase tracking-tight">
+                Aguardando confirmação do pagamento...
+              </h2>
+            </div>
+
+            <p className="text-xs text-gray-600 font-medium leading-relaxed max-w-md">
+              Seu pagamento ainda está sendo processado pelo banco. Assim que for confirmado, seus links de acesso aparecerão aqui automaticamente.
+            </p>
+
+            <button
+              onClick={() => loadPedido()}
+              className="mt-2 bg-[#0E5E6F] hover:bg-[#164B56] active:scale-95 text-white px-6 py-3 rounded-xl font-black text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2 shadow-sm"
+            >
+              <RefreshCw size={14} />
+              Atualizar Status
+            </button>
+
+            {pedido && (
+              <div className="pt-4 border-t border-gray-100 w-full flex justify-center gap-4 text-[10px] text-gray-400 font-bold uppercase tracking-wider">
+                <span>Pedido #{pedido.id}</span>
+                {pedido.valor_total && (
+                  <span>Total: R$ {Number(pedido.valor_total).toFixed(2)}</span>
+                )}
+              </div>
+            )}
+          </div>
         ) : (
+          /* Tela quando o pagamento foi aprovado */
           <div className="space-y-4">
             {/* Cabecalho de Agradecimento */}
             <div className="bg-white rounded-2xl p-6 text-center shadow-sm border border-gray-100 space-y-3">
