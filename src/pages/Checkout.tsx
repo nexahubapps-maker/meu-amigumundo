@@ -2,12 +2,15 @@
 
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ChevronLeft, ShieldCheck, Zap, CreditCard, Mail, Phone, Lock } from "lucide-react";
+import { ChevronLeft, ShieldCheck, Zap, CreditCard, Mail, User, FileText, Lock, Loader2, Copy, Check } from "lucide-react";
 import { SupportButton } from "@/components/common/SupportButton";
 import { playHeartbeatSound } from "@/utils/audio";
 import { getRecipesByIds, getInfoprodutos, getPacks } from "@/utils/sheets";
 import { calculateCart } from "@/utils/pricing";
 import { showSuccess, showError } from "@/utils/toast";
+import { supabase } from "@/lib/supabase";
+
+const MERCADOPAGO_TEST_PUBLIC_KEY = "TEST-8878940279043894-050722-fa275d8975f12bc95c8c11a41aff7dba-2462056714";
 
 export default function Checkout() {
   const navigate = useNavigate();
@@ -16,7 +19,8 @@ export default function Checkout() {
   const [paymentMethod, setPaymentMethod] = useState<"pix" | "card">("pix");
   
   const [email, setEmail] = useState(() => localStorage.getItem("amigumundo-email") || "");
-  const [whatsapp, setWhatsapp] = useState(() => localStorage.getItem("amigumundo-whatsapp") || "");
+  const [nomeCompleto, setNomeCompleto] = useState(() => localStorage.getItem("amigumundo-nome") || "");
+  const [cpf, setCpf] = useState(() => localStorage.getItem("amigumundo-cpf") || "");
 
   const [cardNumber, setCardNumber] = useState("");
   const [cardName, setCardName] = useState("");
@@ -24,9 +28,51 @@ export default function Checkout() {
   const [cardCvv, setCardCvv] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
 
+  const [pixData, setPixData] = useState<{ pedidoId: number; qrCode: string; qrCodeBase64: string } | null>(null);
+  const [isWaitingPayment, setIsWaitingPayment] = useState(false);
+  const [copiedPix, setCopiedPix] = useState(false);
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  useEffect(() => {
+    const savedPix = localStorage.getItem("amigumundo-pix-pendente");
+    if (savedPix) {
+      try {
+        const parsed = JSON.parse(savedPix);
+        if (parsed && parsed.pedidoId && parsed.qrCode) {
+          setPixData(parsed);
+          setIsWaitingPayment(true);
+        }
+      } catch (e) {
+        console.error("Erro ao ler PIX pendente do localStorage:", e);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!isWaitingPayment || !pixData) return;
+
+    const interval = setInterval(async () => {
+      const { data } = await supabase
+        .from("pedidos")
+        .select("status")
+        .eq("id", pixData.pedidoId)
+        .single();
+
+      if (data?.status === "approved") {
+        clearInterval(interval);
+        setIsWaitingPayment(false);
+        localStorage.removeItem("amigumundo-pix-pendente");
+        if (!checkoutProductId) localStorage.removeItem("amigumundo-cart");
+        localStorage.removeItem("amigumundo-favorites");
+        navigate(`/obrigado/${pixData.pedidoId}`);
+      }
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [isWaitingPayment, pixData, checkoutProductId, navigate]);
 
   useEffect(() => {
     const loadCheckoutData = async () => {
@@ -67,24 +113,24 @@ export default function Checkout() {
   }, [email]);
 
   useEffect(() => {
-    localStorage.setItem("amigumundo-whatsapp", whatsapp);
-  }, [whatsapp]);
+    localStorage.setItem("amigumundo-nome", nomeCompleto);
+  }, [nomeCompleto]);
 
-  const handleWhatsappChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const rawValue = e.target.value.replace(/\D/g, "");
-    let formattedValue = "";
+  useEffect(() => {
+    localStorage.setItem("amigumundo-cpf", cpf);
+  }, [cpf]);
 
-    if (rawValue.length > 0) {
-      formattedValue += `(${rawValue.substring(0, 2)}`;
+  const handleCpfChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/\D/g, "").substring(0, 11);
+    let formatted = value;
+    if (value.length > 9) {
+      formatted = `${value.substring(0, 3)}.${value.substring(3, 6)}.${value.substring(6, 9)}-${value.substring(9)}`;
+    } else if (value.length > 6) {
+      formatted = `${value.substring(0, 3)}.${value.substring(3, 6)}.${value.substring(6)}`;
+    } else if (value.length > 3) {
+      formatted = `${value.substring(0, 3)}.${value.substring(3)}`;
     }
-    if (rawValue.length > 2) {
-      formattedValue += `) ${rawValue.substring(2, 7)}`;
-    }
-    if (rawValue.length > 7) {
-      formattedValue += `-${rawValue.substring(7, 11)}`;
-    }
-
-    setWhatsapp(formattedValue);
+    setCpf(formatted);
   };
 
   const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -107,8 +153,8 @@ export default function Checkout() {
     setCardCvv(value);
   };
 
-  const rawWhatsappDigits = whatsapp.replace(/\D/g, "");
-  const isWhatsappValid = rawWhatsappDigits.length === 11;
+  const isNomeValid = nomeCompleto.trim().length > 3;
+  const isCpfValid = cpf.replace(/\D/g, "").length === 11;
   const isEmailValid = email.includes("@") && email.includes(".");
   
   const isCardValid = 
@@ -117,7 +163,7 @@ export default function Checkout() {
     cardExpiry.length === 5 &&
     cardCvv.length >= 3;
 
-  const isFormValid = isWhatsappValid && isEmailValid && (paymentMethod === "pix" || isCardValid) && !isProcessing;
+  const isFormValid = isNomeValid && isCpfValid && isEmailValid && (paymentMethod === "pix" || isCardValid) && !isProcessing;
 
   const calculated = calculateCart(cart);
   const total = calculated.total;
@@ -129,7 +175,7 @@ export default function Checkout() {
 
     try {
       const response = await fetch(
-        `https://api.mercadopago.com/v1/card_tokens?public_key=APP_USR-cb091ede-b395-4bf8-b8f0-555846ae0acc`,
+        `https://api.mercadopago.com/v1/card_tokens?public_key=${MERCADOPAGO_TEST_PUBLIC_KEY}`,
         {
           method: "POST",
           headers: {
@@ -177,36 +223,50 @@ export default function Checkout() {
       }
     }
 
-    const sanitizedWhatsapp = rawWhatsappDigits.startsWith("55") ? rawWhatsappDigits : "55" + rawWhatsappDigits;
-    const codigosReceitas = calculated.items.map(item => item.id).join(",");
+    const itemsPayload = calculated.items.map((item) => ({
+      id: item.id,
+      nome: item.nome,
+      preco: item.precoFinal,
+      tipo: item.tipo === "recipe" ? "receita" : item.tipo === "upsell" ? "infoproduto" : "pack",
+      imagem_url: item.imagem || "",
+    }));
 
     try {
-      const response = await fetch(
-        "https://script.google.com/macros/s/AKfycbwPW3Qj7VAmCX6B8BdzMFDd9OBHih26uQo1lHipIm9dRikC1nkcN53WONbqXdTVevvWwg/exec?action=create_payment",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "text/plain",
-          },
-          body: JSON.stringify({
-            payment_method: paymentMethod,
-            token: cardToken,
-            amount: total,
-            email: email,
-            whatsapp: sanitizedWhatsapp,
-            recipes: codigosReceitas
-          }),
-        }
-      );
+      const response = await fetch("/.netlify/functions/criar-pagamento", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          paymentMethod,
+          cardToken: paymentMethod === "card" ? cardToken : undefined,
+          amount: total,
+          email,
+          nome: nomeCompleto,
+          cpf: cpf.replace(/\D/g, ""),
+          items: itemsPayload,
+          usuarioId: null,
+        }),
+      });
 
-      showSuccess("Pedido recebido! Assim que o pagamento for confirmado, as receitas serão enviadas no seu WhatsApp.");
-      
-      if (!checkoutProductId) {
-        localStorage.removeItem("amigumundo-cart");
+      const data = await response.json();
+
+      if (!response.ok) {
+        showError(data.error || "Não foi possível processar o pagamento. Tente novamente.");
+        setIsProcessing(false);
+        return;
       }
-      localStorage.removeItem("amigumundo-favorites");
 
-      navigate("/");
+      if (paymentMethod === "card") {
+        if (!checkoutProductId) localStorage.removeItem("amigumundo-cart");
+        localStorage.removeItem("amigumundo-favorites");
+        navigate(`/obrigado/${data.pedidoId}`);
+        return;
+      }
+
+      setPixData({ pedidoId: data.pedidoId, qrCode: data.qrCode, qrCodeBase64: data.qrCodeBase64 });
+      setIsWaitingPayment(true);
+      localStorage.setItem("amigumundo-pix-pendente", JSON.stringify({ 
+        pedidoId: data.pedidoId, qrCode: data.qrCode, qrCodeBase64: data.qrCodeBase64 
+      }));
     } catch (e) {
       console.error("Payment submission error:", e);
       showError("Ocorreu um erro ao processar seu pedido. Tente novamente.");
@@ -232,9 +292,7 @@ export default function Checkout() {
           <h1 className="text-xl font-black text-gray-900 mb-1.5 tracking-tight">QUASE LÁ!</h1>
           <div className="bg-[#0E5E6F] text-white border border-white/10 rounded-xl p-3 text-center max-w-md mx-auto shadow-sm">
             <p className="font-semibold text-xs leading-relaxed">
-              Para enviarmos suas receitas, preencha <br />
-              seu e-mail e WhatsApp.<br />
-              Você receberá as receitas em segundos após a confirmação do pagamento.
+              Preencha seus dados para finalizar a compra com segurança.
             </p>
           </div>
         </div>
@@ -245,34 +303,50 @@ export default function Checkout() {
             <h2 className="font-bold uppercase tracking-tight text-xs">Dados para Entrega</h2>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <div className="relative">
-              <label className="block text-[9px] font-bold text-gray-400 uppercase mb-0.5 ml-1">E-mail</label>
+          <div className="space-y-3">
+            <div>
+              <label className="block text-[9px] font-bold text-gray-400 uppercase mb-0.5 ml-1">Nome completo</label>
               <div className="relative">
-                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+                <User className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
                 <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="seu@email.com"
+                  type="text"
+                  value={nomeCompleto}
+                  onChange={(e) => setNomeCompleto(e.target.value)}
+                  placeholder="Seu Nome Completo"
                   className="w-full pl-10 pr-3 py-2.5 bg-gray-50 border-2 border-gray-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-gray-700 font-medium text-sm"
                 />
               </div>
             </div>
-            <div className="relative">
-              <label className="block text-[9px] font-bold text-gray-400 uppercase mb-0.5 ml-1">WhatsApp</label>
-              <div className="relative">
-                <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-                <input
-                  type="text"
-                  value={whatsapp}
-                  onChange={handleWhatsappChange}
-                  placeholder="(00) 90000-0000"
-                  maxLength={15}
-                  className="w-full pl-10 pr-3 py-2.5 bg-gray-50 border-2 border-gray-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-gray-700 font-medium text-sm"
-                />
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div>
+                <label className="block text-[9px] font-bold text-gray-400 uppercase mb-0.5 ml-1">CPF</label>
+                <div className="relative">
+                  <FileText className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+                  <input
+                    type="text"
+                    value={cpf}
+                    onChange={handleCpfChange}
+                    placeholder="000.000.000-00"
+                    maxLength={14}
+                    className="w-full pl-10 pr-3 py-2.5 bg-gray-50 border-2 border-gray-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-gray-700 font-medium text-sm"
+                  />
+                </div>
               </div>
-              <span className="text-[9px] text-gray-400 mt-0.5 block ml-1">Digite o DDD + seu número</span>
+
+              <div>
+                <label className="block text-[9px] font-bold text-gray-400 uppercase mb-0.5 ml-1">E-mail</label>
+                <div className="relative">
+                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="seu@email.com"
+                    className="w-full pl-10 pr-3 py-2.5 bg-gray-50 border-2 border-gray-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-gray-700 font-medium text-sm"
+                  />
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -299,98 +373,161 @@ export default function Checkout() {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-4">
-          <div className="flex items-center gap-2 mb-3 text-gray-800">
-            <CreditCard size={18} className="text-blue-500" />
-            <h2 className="font-bold uppercase tracking-tight text-xs">Forma de Pagamento</h2>
-          </div>
-
-          <div className="grid grid-cols-2 gap-3 mb-3">
-            <button 
-              onClick={() => setPaymentMethod("pix")}
-              className={`flex flex-col items-center justify-center gap-1.5 p-3 rounded-xl border-2 transition-all ${paymentMethod === "pix" ? "border-blue-500 bg-blue-50" : "border-gray-200 bg-gray-50 hover:bg-gray-100"}`}
-            >
-              <Zap size={20} className={paymentMethod === "pix" ? "text-blue-600" : "text-gray-400"} fill={paymentMethod === "pix" ? "currentColor" : "none"} />
-              <span className={`text-[11px] font-bold uppercase ${paymentMethod === "pix" ? "text-blue-700" : "text-gray-500"}`}>Pix</span>
-            </button>
-            <button 
-              onClick={() => setPaymentMethod("card")}
-              className={`flex flex-col items-center justify-center gap-1.5 p-3 rounded-xl border-2 transition-all ${paymentMethod === "card" ? "border-blue-500 bg-blue-50" : "border-gray-200 bg-gray-50 hover:bg-gray-100"}`}
-            >
-              <CreditCard size={20} className={paymentMethod === "card" ? "text-blue-600" : "text-gray-400"} />
-              <span className={`text-[11px] font-bold uppercase ${paymentMethod === "card" ? "text-blue-700" : "text-gray-500"}`}>Cartão</span>
-            </button>
-          </div>
-
-          {paymentMethod === "pix" && (
-            <div className="bg-[#e6eedc] border border-[#c8dcb4] rounded-xl p-3 mb-3">
-              <p className="text-[#4a613c] text-[10px] font-bold text-center uppercase tracking-wider">
-                Liberação imediata ao pagar no Pix!
+        {pixData && isWaitingPayment ? (
+          <div className="bg-white rounded-xl shadow-sm border-2 border-blue-500 p-5 mb-4 text-center space-y-4 animate-in fade-in">
+            <div className="bg-blue-50 border border-blue-100 rounded-xl p-3 text-center">
+              <h3 className="font-black text-sm text-blue-900 uppercase tracking-tight">
+                Pagamento Via Pix Gerado!
+              </h3>
+              <p className="text-xs text-blue-700 font-medium mt-0.5">
+                Escaneie o código abaixo com o aplicativo do seu banco ou copie a chave Pix.
               </p>
             </div>
-          )}
 
-          {paymentMethod === "card" && (
-            <div className="space-y-3 mb-3 p-3 bg-gray-50 rounded-xl border border-gray-200">
-              <p className="text-gray-700 text-[10px] font-bold uppercase tracking-wider mb-1">
-                Dados do Cartão de Crédito (Modo Sandbox)
-              </p>
-              <div>
-                <label className="block text-[9px] font-bold text-gray-400 uppercase mb-0.5 ml-1">Número do Cartão</label>
-                <input
-                  type="text"
-                  value={cardNumber}
-                  onChange={handleCardNumberChange}
-                  placeholder="0000 0000 0000 0000"
-                  maxLength={19}
-                  className="w-full px-3 py-2 bg-white border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-gray-700 font-medium text-sm"
+            {pixData.qrCodeBase64 && (
+              <div className="flex justify-center my-2">
+                <img 
+                  src={`data:image/png;base64,${pixData.qrCodeBase64}`} 
+                  alt="QR Code Pix"
+                  className="w-48 h-48 rounded-xl border border-gray-200 shadow-sm"
                 />
               </div>
-              <div>
-                <label className="block text-[9px] font-bold text-gray-400 uppercase mb-0.5 ml-1">Nome Impresso no Cartão</label>
-                <input
-                  type="text"
-                  value={cardName}
-                  onChange={(e) => setCardName(e.target.value.toUpperCase())}
-                  placeholder="NOME COMO ESTÁ NO CARTÃO"
-                  className="w-full px-3 py-2 bg-white border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-gray-700 font-medium text-sm uppercase"
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-[9px] font-bold text-gray-400 uppercase mb-0.5 ml-1">Validade (MM/AA)</label>
+            )}
+
+            {pixData.qrCode && (
+              <div className="space-y-2 text-left">
+                <label className="block text-[10px] font-bold text-gray-500 uppercase">
+                  Código Copia e Cola
+                </label>
+                <div className="flex gap-2">
                   <input
                     type="text"
-                    value={cardExpiry}
-                    onChange={handleCardExpiryChange}
-                    placeholder="MM/AA"
-                    maxLength={5}
-                    className="w-full px-3 py-2 bg-white border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-gray-700 font-medium text-sm text-center"
+                    readOnly
+                    value={pixData.qrCode}
+                    className="flex-1 px-3 py-2 bg-gray-50 border border-gray-300 rounded-xl text-xs font-mono text-gray-700 select-all truncate outline-none"
+                  />
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(pixData.qrCode);
+                      setCopiedPix(true);
+                      showSuccess("Código Pix copiado com sucesso!");
+                      setTimeout(() => setCopiedPix(false), 3000);
+                    }}
+                    className="bg-[#22C55E] hover:bg-[#16a34a] text-white px-4 py-2 rounded-xl font-bold text-xs uppercase tracking-wider flex items-center gap-1.5 shrink-0 transition-all active:scale-95"
+                  >
+                    {copiedPix ? <Check size={14} /> : <Copy size={14} />}
+                    {copiedPix ? "Copiado!" : "Copiar"}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            <div className="pt-3 border-t border-gray-100 flex flex-col items-center gap-2">
+              <div className="flex items-center gap-2 text-blue-600">
+                <Loader2 size={18} className="animate-spin" />
+                <span className="text-xs font-bold uppercase tracking-wider">
+                  Aguardando confirmação do pagamento...
+                </span>
+              </div>
+              <p className="text-[11px] text-gray-500 font-medium leading-relaxed max-w-md">
+                Depois de pagar, não feche esta aba — a confirmação aparece aqui sozinha em alguns segundos.
+              </p>
+            </div>
+          </div>
+        ) : (
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-4">
+            <div className="flex items-center gap-2 mb-3 text-gray-800">
+              <CreditCard size={18} className="text-blue-500" />
+              <h2 className="font-bold uppercase tracking-tight text-xs">Forma de Pagamento</h2>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3 mb-3">
+              <button 
+                onClick={() => setPaymentMethod("pix")}
+                className={`flex flex-col items-center justify-center gap-1.5 p-3 rounded-xl border-2 transition-all ${paymentMethod === "pix" ? "border-blue-500 bg-blue-50" : "border-gray-200 bg-gray-50 hover:bg-gray-100"}`}
+              >
+                <Zap size={20} className={paymentMethod === "pix" ? "text-blue-600" : "text-gray-400"} fill={paymentMethod === "pix" ? "currentColor" : "none"} />
+                <span className={`text-[11px] font-bold uppercase ${paymentMethod === "pix" ? "text-blue-700" : "text-gray-500"}`}>Pix</span>
+              </button>
+              <button 
+                onClick={() => setPaymentMethod("card")}
+                className={`flex flex-col items-center justify-center gap-1.5 p-3 rounded-xl border-2 transition-all ${paymentMethod === "card" ? "border-blue-500 bg-blue-50" : "border-gray-200 bg-gray-50 hover:bg-gray-100"}`}
+              >
+                <CreditCard size={20} className={paymentMethod === "card" ? "text-blue-600" : "text-gray-400"} />
+                <span className={`text-[11px] font-bold uppercase ${paymentMethod === "card" ? "text-blue-700" : "text-gray-500"}`}>Cartão</span>
+              </button>
+            </div>
+
+            {paymentMethod === "pix" && (
+              <div className="bg-[#e6eedc] border border-[#c8dcb4] rounded-xl p-3 mb-3">
+                <p className="text-[#4a613c] text-[10px] font-bold text-center uppercase tracking-wider">
+                  Liberação imediata ao pagar no Pix!
+                </p>
+              </div>
+            )}
+
+            {paymentMethod === "card" && (
+              <div className="space-y-3 mb-3 p-3 bg-gray-50 rounded-xl border border-gray-200">
+                <p className="text-gray-700 text-[10px] font-bold uppercase tracking-wider mb-1">
+                  Dados do Cartão de Crédito
+                </p>
+                <div>
+                  <label className="block text-[9px] font-bold text-gray-400 uppercase mb-0.5 ml-1">Número do Cartão</label>
+                  <input
+                    type="text"
+                    value={cardNumber}
+                    onChange={handleCardNumberChange}
+                    placeholder="0000 0000 0000 0000"
+                    maxLength={19}
+                    className="w-full px-3 py-2 bg-white border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-gray-700 font-medium text-sm"
                   />
                 </div>
                 <div>
-                  <label className="block text-[9px] font-bold text-gray-400 uppercase mb-0.5 ml-1">Código (CVV)</label>
+                  <label className="block text-[9px] font-bold text-gray-400 uppercase mb-0.5 ml-1">Nome Impresso no Cartão</label>
                   <input
                     type="text"
-                    value={cardCvv}
-                    onChange={handleCardCvvChange}
-                    placeholder="123"
-                    maxLength={4}
-                    className="w-full px-3 py-2 bg-white border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-gray-700 font-medium text-sm text-center"
+                    value={cardName}
+                    onChange={(e) => setCardName(e.target.value.toUpperCase())}
+                    placeholder="NOME COMO ESTÁ NO CARTÃO"
+                    className="w-full px-3 py-2 bg-white border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-gray-700 font-medium text-sm uppercase"
                   />
                 </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[9px] font-bold text-gray-400 uppercase mb-0.5 ml-1">Validade (MM/AA)</label>
+                    <input
+                      type="text"
+                      value={cardExpiry}
+                      onChange={handleCardExpiryChange}
+                      placeholder="MM/AA"
+                      maxLength={5}
+                      className="w-full px-3 py-2 bg-white border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-gray-700 font-medium text-sm text-center"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[9px] font-bold text-gray-400 uppercase mb-0.5 ml-1">Código (CVV)</label>
+                    <input
+                      type="text"
+                      value={cardCvv}
+                      onChange={handleCardCvvChange}
+                      placeholder="123"
+                      maxLength={4}
+                      className="w-full px-3 py-2 bg-white border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-gray-700 font-medium text-sm text-center"
+                    />
+                  </div>
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
-          <button 
-            onClick={handlePaymentSubmit}
-            disabled={!isFormValid}
-            className={`w-full py-3.5 rounded-xl font-black text-base shadow-md transition-all uppercase tracking-widest flex items-center justify-center gap-2 ${isFormValid ? 'bg-[#22C55E] hover:bg-[#16a34a] text-white active:scale-[0.98]' : 'bg-gray-200 text-gray-400 cursor-not-allowed shadow-none'}`}
-          >
-            <Lock size={18} /> {isProcessing ? "Processando..." : "Finalizar Pagamento"}
-          </button>
-        </div>
+            <button 
+              onClick={handlePaymentSubmit}
+              disabled={!isFormValid}
+              className={`w-full py-3.5 rounded-xl font-black text-base shadow-md transition-all uppercase tracking-widest flex items-center justify-center gap-2 ${isFormValid ? 'bg-[#22C55E] hover:bg-[#16a34a] text-white active:scale-[0.98]' : 'bg-gray-200 text-gray-400 cursor-not-allowed shadow-none'}`}
+            >
+              <Lock size={18} /> {isProcessing ? "Processando..." : "Finalizar Pagamento"}
+            </button>
+          </div>
+        )}
 
         <div className="w-full overflow-visible mb-6">
           <div className="relative grid grid-cols-2 gap-3 w-full bg-[#0f172a] border border-[#22c55e] rounded-2xl p-4 shadow-xl">
