@@ -10,7 +10,7 @@ import { calculateCart } from "@/utils/pricing";
 import { showSuccess, showError } from "@/utils/toast";
 import { supabase } from "@/lib/supabase";
 
-const MERCADOPAGO_TEST_PUBLIC_KEY = "TEST-8878940279043894-050722-fa275d8975f12bc95c8c11a41aff7dba-2462056714";
+const MERCADOPAGO_TEST_PUBLIC_KEY = "TEST-f2993981-4aad-4e7a-a767-ad00a2c0634e";
 
 export default function Checkout() {
   const navigate = useNavigate();
