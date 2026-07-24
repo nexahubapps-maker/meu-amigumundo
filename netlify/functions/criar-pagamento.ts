@@ -23,6 +23,7 @@ export const handler: Handler = async (event) => {
     const body = JSON.parse(event.body || "{}");
     const {
       paymentMethod,
+      paymentMethodId,
       cardToken,
       amount,
       email,
@@ -32,6 +33,7 @@ export const handler: Handler = async (event) => {
       usuarioId,
     }: {
       paymentMethod: "pix" | "card";
+      paymentMethodId?: string;
       cardToken?: string;
       amount: number;
       email: string;
@@ -68,6 +70,7 @@ export const handler: Handler = async (event) => {
       mpBody.payment_method_id = "pix";
     } else {
       mpBody.token = cardToken;
+      mpBody.payment_method_id = paymentMethodId || "visa";
       mpBody.installments = 1;
     }
 

@@ -168,6 +168,15 @@ export default function Checkout() {
   const calculated = calculateCart(cart);
   const total = calculated.total;
 
+  function detectPaymentMethodId(cardNumber: string): string {
+    const digits = cardNumber.replace(/\s/g, "");
+    if (/^4/.test(digits)) return "visa";
+    if (/^5[1-5]/.test(digits) || /^2[2-7]/.test(digits)) return "master";
+    if (/^3[47]/.test(digits)) return "amex";
+    if (/^636368|^438935|^504175|^451416|^636297/.test(digits)) return "elo";
+    return "visa";
+  }
+
   const generateCardToken = async () => {
     const cleanCardNumber = cardNumber.replace(/\s/g, "");
     const [expiryMonth, expiryYear] = cardExpiry.split("/");
@@ -231,12 +240,15 @@ export default function Checkout() {
       imagem_url: item.imagem || "",
     }));
 
+    const paymentMethodId = paymentMethod === "card" ? detectPaymentMethodId(cardNumber) : undefined;
+
     try {
       const response = await fetch("/.netlify/functions/criar-pagamento", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           paymentMethod,
+          paymentMethodId,
           cardToken: paymentMethod === "card" ? cardToken : undefined,
           amount: total,
           email,
