@@ -176,7 +176,7 @@ export default function ObrigadoPage() {
               Ir para a página inicial
             </button>
           </div>
-        ) : pedido && pedido.status !== "approved" ? (
+        ) : pedido && pedido.status !== "aprovado" ? (
           /* Tela quando o pagamento ainda não foi aprovado */
           <div className="bg-white rounded-2xl p-8 text-center shadow-sm border border-blue-100 flex flex-col items-center gap-4">
             <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center text-blue-600">

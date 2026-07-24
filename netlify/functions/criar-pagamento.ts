@@ -14,6 +14,21 @@ interface CartItemPayload {
   imagem_url?: string;
 }
 
+function traduzirStatus(statusMercadoPago: string): string {
+  const mapa: Record<string, string> = {
+    approved: "aprovado",
+    pending: "pendente",
+    in_process: "pendente",
+    authorized: "pendente",
+    in_mediation: "pendente",
+    rejected: "recusado",
+    cancelled: "cancelado",
+    refunded: "reembolsado",
+    charged_back: "reembolsado",
+  };
+  return mapa[statusMercadoPago] || "pendente";
+}
+
 export const handler: Handler = async (event) => {
   if (event.httpMethod !== "POST") {
     return { statusCode: 405, body: JSON.stringify({ error: "Método não permitido" }) };
@@ -102,7 +117,7 @@ export const handler: Handler = async (event) => {
         nome_comprador: nome,
         cpf_comprador: cleanCpf,
         valor_total: amount,
-        status: mpData.status,
+        status: traduzirStatus(mpData.status),
         pix_gerado_em: paymentMethod === "pix" ? new Date().toISOString() : null,
         criado_em: new Date().toISOString(),
         atualizado_em: new Date().toISOString(),

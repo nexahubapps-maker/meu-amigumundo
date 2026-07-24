@@ -61,7 +61,7 @@ export default function Checkout() {
         .eq("id", pixData.pedidoId)
         .single();
 
-      if (data?.status === "approved") {
+      if (data?.status === "aprovado") {
         clearInterval(interval);
         setIsWaitingPayment(false);
         localStorage.removeItem("amigumundo-pix-pendente");

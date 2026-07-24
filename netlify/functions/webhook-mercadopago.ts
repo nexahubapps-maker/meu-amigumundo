@@ -53,6 +53,21 @@ async function enviarEmailBackup(pedido: { id: number; email_comprador: string; 
   }
 }
 
+function traduzirStatus(statusMercadoPago: string): string {
+  const mapa: Record<string, string> = {
+    approved: "aprovado",
+    pending: "pendente",
+    in_process: "pendente",
+    authorized: "pendente",
+    in_mediation: "pendente",
+    rejected: "recusado",
+    cancelled: "cancelado",
+    refunded: "reembolsado",
+    charged_back: "reembolsado",
+  };
+  return mapa[statusMercadoPago] || "pendente";
+}
+
 export const handler: Handler = async (event) => {
   try {
     const bodyData = event.body ? JSON.parse(event.body) : {};
@@ -91,18 +106,18 @@ export const handler: Handler = async (event) => {
       return { statusCode: 404, body: "Pedido não encontrado" };
     }
 
-    const jaEstavaAprovado = pedidoAtual.status === "approved";
+    const jaEstavaAprovado = pedidoAtual.status === "aprovado";
 
     await supabaseAdmin
       .from("pedidos")
       .update({
-        status: novoStatus,
-        aprovado_em: novoStatus === "approved" ? new Date().toISOString() : null,
+        status: traduzirStatus(novoStatus),
+        aprovado_em: traduzirStatus(novoStatus) === "aprovado" ? new Date().toISOString() : null,
         atualizado_em: new Date().toISOString(),
       })
       .eq("id", pedidoAtual.id);
 
-    if (novoStatus === "approved" && !jaEstavaAprovado) {
+    if (traduzirStatus(novoStatus) === "aprovado" && !jaEstavaAprovado) {
       await enviarEmailBackup(pedidoAtual as any);
     }
 
