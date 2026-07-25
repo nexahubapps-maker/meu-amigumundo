@@ -156,7 +156,7 @@ export default function Index() {
 
       } catch (e) {
         console.error("Error loading sheets data:", e);
-      } font-medium
+      } finally {
         setIsLoading(false);
       }
     };
