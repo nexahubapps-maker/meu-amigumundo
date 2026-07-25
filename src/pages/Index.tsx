@@ -175,7 +175,7 @@ export default function Index() {
 
       } catch (e) {
         console.error("Error loading sheets data:", e);
-      } finally {
+      } font-medium
         setIsLoading(false);
       }
     };
@@ -893,7 +893,7 @@ export default function Index() {
       )}
 
       {isMeuAmiguMundoOpen && (
-        <MeuAmiguMundoView onBack={() => setIsMeuAmiguMundoOpen(false)} />
+        <MeuAmiguMundoView onBack={() => setIsMeuAmiguMundoOpen(false)} onAddToCart={addToCart} />
       )}
 
       <AdminSyncButton />

@@ -10,6 +10,7 @@ import { CompleteProfileModal } from "@/components/CompleteProfileModal";
 
 interface MeuAmiguMundoViewProps {
   onBack: () => void;
+  onAddToCart?: (item: any) => void;
 }
 
 const TABS = [
@@ -22,7 +23,7 @@ const TABS = [
 
 type TabType = (typeof TABS)[number];
 
-export const MeuAmiguMundoView = ({ onBack }: MeuAmiguMundoViewProps) => {
+export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProps) => {
   const { user, signOut } = useAuth();
   const [profile, setProfile] = useState<Perfil | null>(null);
   const [activeTab, setActiveTab] = useState<TabType>("Minhas Compras");
