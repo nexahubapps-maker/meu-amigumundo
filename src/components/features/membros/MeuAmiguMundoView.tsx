@@ -130,7 +130,7 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
           .from("biblioteca")
           .select("*")
           .eq("usuario_id", user.id)
-          .eq("tipo_item", "receita_gratuita")
+          .eq("tipo_item", "gratuita")
           .order("adicionado_em", { ascending: false });
 
         const itens = data || [];

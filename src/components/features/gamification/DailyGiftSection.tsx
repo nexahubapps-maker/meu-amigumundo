@@ -94,17 +94,22 @@ export const DailyGiftSection = () => {
     if (!user || !dailyRecipe) return;
     setIsSalvando(true);
     try {
-      await supabase.from("biblioteca").upsert({
+      const { error } = await supabase.from("biblioteca").upsert({
         usuario_id: user.id,
-        tipo_item: "receita_gratuita",
+        tipo_item: "gratuita",
         codigo_item: dailyRecipe.codigo,
         nome_item: dailyRecipe.nome,
         imagem_url: dailyRecipe.imagem_url,
         adicionado_em: new Date().toISOString(),
       }, { onConflict: "usuario_id,tipo_item,codigo_item" });
+
+      if (error) {
+        console.error("Erro ao salvar na biblioteca:", error);
+        return;
+      }
       setIsSalvo(true);
     } catch (e) {
-      console.error("Erro ao salvar na biblioteca:", e);
+      console.error("Erro inesperado ao salvar na biblioteca:", e);
     } finally {
       setIsSalvando(false);
     }
