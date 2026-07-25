@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { ArrowLeft, User as UserIcon, Download, ExternalLink, Loader2, ShoppingBag, Package, Pencil, LogOut } from "lucide-react";
+import { ArrowLeft, User as UserIcon, Download, ExternalLink, Loader2, ShoppingBag, Package, Pencil, LogOut, Heart, Trash2 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { getProfile, type Perfil } from "@/utils/profile";
 import { supabase } from "@/lib/supabase";
@@ -32,6 +32,9 @@ export const MeuAmiguMundoView = ({ onBack }: MeuAmiguMundoViewProps) => {
 
   const [packsList, setPacksList] = useState<any[]>([]);
   const [isLoadingPacks, setIsLoadingPacks] = useState(false);
+
+  const [favoritosList, setFavoritosList] = useState<any[]>([]);
+  const [isLoadingFavoritos, setIsLoadingFavoritos] = useState(false);
 
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
 
@@ -76,7 +79,7 @@ export const MeuAmiguMundoView = ({ onBack }: MeuAmiguMundoViewProps) => {
         setComprasList(resolved);
       } catch (e) {
         console.error("Erro ao carregar compras:", e);
-      } finally {
+      } font-medium
         setIsLoadingCompras(false);
       }
     };
@@ -113,6 +116,31 @@ export const MeuAmiguMundoView = ({ onBack }: MeuAmiguMundoViewProps) => {
     };
     fetchPacks();
   }, [activeTab, user, packsList.length]);
+
+  useEffect(() => {
+    const fetchFavoritos = async () => {
+      if (activeTab !== "Favoritos" || !user || favoritosList.length > 0) return;
+      setIsLoadingFavoritos(true);
+      try {
+        const { data } = await supabase
+          .from("favoritos")
+          .select("*")
+          .eq("usuario_id", user.id)
+          .order("favoritado_em", { ascending: false });
+        setFavoritosList(data || []);
+      } catch (e) {
+        console.error("Erro ao carregar favoritos:", e);
+      } finally {
+        setIsLoadingFavoritos(false);
+      }
+    };
+    fetchFavoritos();
+  }, [activeTab, user, favoritosList.length]);
+
+  const removerFavorito = async (item: any) => {
+    await supabase.from("favoritos").delete().eq("id", item.id);
+    setFavoritosList((prev) => prev.filter((f) => f.id !== item.id));
+  };
 
   const textureLaranjaStyle = {
     backgroundImage: "url('https://ik.imagekit.io/51b3srlsg/textura_laranja.jpeg')",
@@ -345,6 +373,63 @@ export const MeuAmiguMundoView = ({ onBack }: MeuAmiguMundoViewProps) => {
                     </div>
                   );
                 })}
+              </div>
+            </div>
+          )
+        ) : activeTab === "Favoritos" ? (
+          isLoadingFavoritos ? (
+            <div className="h-64 flex flex-col items-center justify-center gap-3 text-gray-500">
+              <Loader2 size={32} className="animate-spin text-[#0E5E6F]" />
+              <p className="text-xs font-bold uppercase tracking-wider">Carregando seus favoritos...</p>
+            </div>
+          ) : favoritosList.length === 0 ? (
+            <div className="text-center py-16 px-4 bg-white rounded-2xl border border-gray-100 shadow-sm max-w-md mx-auto">
+              <Heart size={48} className="text-gray-300 mx-auto mb-3" />
+              <p className="text-gray-700 font-black text-sm uppercase tracking-tight">
+                Você ainda não favoritou nada.
+              </p>
+              <p className="text-gray-400 text-xs font-medium mt-1">
+                Toque no coração dos itens da loja para salvá-los aqui e acessar rapidinho!
+              </p>
+            </div>
+          ) : (
+            <div className="max-w-4xl mx-auto space-y-3">
+              <p className="text-xs font-black text-gray-500 uppercase tracking-wider mb-2">
+                Seus Itens Favoritados ({favoritosList.length})
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {favoritosList.map((item) => (
+                  <div
+                    key={item.id}
+                    className="bg-white rounded-2xl p-3.5 border border-gray-100 shadow-sm flex items-center gap-3"
+                  >
+                    <img
+                      src={item.imagem_url || `https://picsum.photos/seed/${item.codigo_item}/150/150`}
+                      alt={item.nome_item}
+                      className="w-16 h-16 rounded-xl object-cover border border-gray-100 shrink-0 bg-gray-50"
+                    />
+                    <div className="flex-1 min-w-0 flex flex-col justify-between h-16">
+                      <div>
+                        <h4 className="text-xs font-black text-gray-900 uppercase leading-tight line-clamp-1">
+                          {item.nome_item}
+                        </h4>
+                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mt-0.5">
+                          Código: {item.codigo_item}
+                        </span>
+                      </div>
+
+                      <div>
+                        <button
+                          onClick={() => removerFavorito(item)}
+                          className="inline-flex items-center gap-1.5 bg-red-50 hover:bg-red-100 text-red-600 active:scale-95 px-3 py-1.5 rounded-xl font-bold text-[10px] uppercase tracking-wider transition-all"
+                        >
+                          <Trash2 size={12} />
+                          Remover dos Favoritos
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           )
