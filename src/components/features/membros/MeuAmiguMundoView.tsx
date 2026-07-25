@@ -79,7 +79,7 @@ export const MeuAmiguMundoView = ({ onBack }: MeuAmiguMundoViewProps) => {
         setComprasList(resolved);
       } catch (e) {
         console.error("Erro ao carregar compras:", e);
-      } font-medium
+      } finally {
         setIsLoadingCompras(false);
       }
     };
