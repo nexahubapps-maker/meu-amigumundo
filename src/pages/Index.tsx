@@ -29,6 +29,7 @@ import { useAuth } from "@/context/AuthContext";
 import { AuthModal } from "@/components/AuthModal";
 import { getProfile } from "@/utils/profile";
 import { CompleteProfileModal } from "@/components/CompleteProfileModal";
+import { MeuAmiguMundoView } from "@/components/features/membros/MeuAmiguMundoView";
 import { 
   getInfoprodutos, 
   getPacks, 
@@ -76,6 +77,7 @@ export default function Index() {
   const [activeUpsell, setActiveUpsell] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isFavoritesOpen, setIsFavoritesOpen] = useState(false);
+  const [isMeuAmiguMundoOpen, setIsMeuAmiguMundoOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [isMeuAuthModalOpen, setIsMeuAuthModalOpen] = useState(false);
   const [isCompleteProfileOpen, setIsCompleteProfileOpen] = useState(false);
@@ -154,6 +156,7 @@ export default function Index() {
 
       } catch (e) {
         console.error("Error loading sheets data:", e);
+      } font-medium {
       } finally {
         setIsLoading(false);
       }
@@ -281,7 +284,7 @@ export default function Index() {
   }, [location.pathname]);
 
   useEffect(() => {
-    const isModalOpen = !!showRecipe || !!activeUpsell || isFavoritesOpen || !!zoomImage || !!categoria_slug || !!targetId || !!termo;
+    const isModalOpen = !!showRecipe || !!activeUpsell || isFavoritesOpen || !!zoomImage || !!categoria_slug || !!targetId || !!termo || isMeuAmiguMundoOpen;
     if (isModalOpen) {
       document.body.style.overflow = "hidden";
     } else {
@@ -290,7 +293,7 @@ export default function Index() {
     return () => {
       document.body.style.overflow = "";
     };
-  }, [showRecipe, activeUpsell, isFavoritesOpen, zoomImage, categoria_slug, targetId, termo]);
+  }, [showRecipe, activeUpsell, isFavoritesOpen, zoomImage, categoria_slug, targetId, termo, isMeuAmiguMundoOpen]);
 
   useEffect(() => {
     const savedCart = localStorage.getItem("amigumundo-cart");
@@ -407,7 +410,7 @@ export default function Index() {
     if (!profile?.telefone) {
       setIsCompleteProfileOpen(true);
     } else {
-      setIsFavoritesOpen(true);
+      setIsMeuAmiguMundoOpen(true);
     }
   };
 
@@ -839,6 +842,10 @@ export default function Index() {
         />
       )}
 
+      {isMeuAmiguMundoOpen && (
+        <MeuAmiguMundoView onBack={() => setIsMeuAmiguMundoOpen(false)} />
+      )}
+
       <AdminSyncButton />
 
       <AuthModal isOpen={isMeuAuthModalOpen} onClose={() => setIsMeuAuthModalOpen(false)} />
@@ -849,7 +856,7 @@ export default function Index() {
         userId={user?.id}
         onSuccess={() => {
           setIsCompleteProfileOpen(false);
-          setIsFavoritesOpen(true);
+          setIsMeuAmiguMundoOpen(true);
         }}
       />
     </div>
