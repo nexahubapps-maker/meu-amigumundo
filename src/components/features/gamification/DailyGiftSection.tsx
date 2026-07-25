@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import confetti from 'canvas-confetti';
 import { Download, Bookmark, Check, Loader2 } from 'lucide-react';
 import { playHeartbeatSound } from '@/utils/audio';
-import { getReceitaGratuita, getRecipesByIds, getDriveFileUrl, type SheetReceitaGratuita } from '@/utils/sheets';
+import { getReceitaGratuita, getReceitaGratuitaDownloadUrl, type SheetReceitaGratuita } from '@/utils/sheets';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/lib/supabase';
 
@@ -70,19 +70,8 @@ export const DailyGiftSection = () => {
   }, [isOpened, dailyRecipe]);
 
   useEffect(() => {
-    const resolveLink = async () => {
-      if (!isOpened || !dailyRecipe) return;
-      try {
-        const recipes = await getRecipesByIds([dailyRecipe.codigo]);
-        const categoria = recipes[0]?.categoria || "";
-        const url = await getDriveFileUrl(dailyRecipe.codigo, categoria);
-        setLinkDownload(url);
-      } catch (e) {
-        console.error("Erro ao gerar link de download:", e);
-      }
-    };
-
-    resolveLink();
+    if (!isOpened || !dailyRecipe) return;
+    getReceitaGratuitaDownloadUrl(dailyRecipe.codigo).then(setLinkDownload);
   }, [isOpened, dailyRecipe]);
 
   const handleOpenPresent = () => {
