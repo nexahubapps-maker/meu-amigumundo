@@ -2,18 +2,21 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import confetti from 'canvas-confetti';
-import { SuccessModal } from './SuccessModal';
+import { Download, Bookmark, Check, Loader2 } from 'lucide-react';
 import { playHeartbeatSound } from '@/utils/audio';
-import { getReceitaGratuita, type SheetReceitaGratuita } from '@/utils/sheets';
+import { getReceitaGratuita, getRecipesByIds, getDriveFileUrl, type SheetReceitaGratuita } from '@/utils/sheets';
+import { useAuth } from '@/context/AuthContext';
+import { supabase } from '@/lib/supabase';
 
 export const DailyGiftSection = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { user } = useAuth();
   const [dailyRecipe, setDailyRecipe] = useState<SheetReceitaGratuita | null>(null);
-  const [whatsapp, setWhatsapp] = useState<string>("");
-  const [statusMessage, setStatusMessage] = useState<string>("");
-  const [isSending, setIsSending] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [isOpened, setIsOpened] = useState(false);
+
+  const [linkDownload, setLinkDownload] = useState<string | null>(null);
+  const [isSalvo, setIsSalvo] = useState(false);
+  const [isSalvando, setIsSalvando] = useState(false);
 
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -66,22 +69,21 @@ export const DailyGiftSection = () => {
     }
   }, [isOpened, dailyRecipe]);
 
-  const handleWhatsappChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const rawValue = e.target.value.replace(/\D/g, "");
-    let formattedValue = "";
+  useEffect(() => {
+    const resolveLink = async () => {
+      if (!isOpened || !dailyRecipe) return;
+      try {
+        const recipes = await getRecipesByIds([dailyRecipe.codigo]);
+        const categoria = recipes[0]?.categoria || "";
+        const url = await getDriveFileUrl(dailyRecipe.codigo, categoria);
+        setLinkDownload(url);
+      } catch (e) {
+        console.error("Erro ao gerar link de download:", e);
+      }
+    };
 
-    if (rawValue.length > 0) {
-      formattedValue += `+55 (${rawValue.substring(2, 4)}`;
-    }
-    if (rawValue.length > 4) {
-      formattedValue += `) ${rawValue.substring(4, 9)}`;
-    }
-    if (rawValue.length > 9) {
-      formattedValue += `-${rawValue.substring(9, 13)}`;
-    }
-
-    setWhatsapp(formattedValue);
-  };
+    resolveLink();
+  }, [isOpened, dailyRecipe]);
 
   const handleOpenPresent = () => {
     if (isOpened) return;
@@ -96,50 +98,23 @@ export const DailyGiftSection = () => {
     });
   };
 
-  const handleSendGift = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const rawDigits = whatsapp.replace(/\D/g, "");
-    if (rawDigits.length < 10) {
-      setStatusMessage("❌ Por favor, digite um número de WhatsApp válido.");
-      return;
-    }
-
-    if (!dailyRecipe) return;
-
-    setIsSending(true);
-    setStatusMessage("");
-    playHeartbeatSound();
-
+  const handleSalvarBiblioteca = async () => {
+    if (!user || !dailyRecipe) return;
+    setIsSalvando(true);
     try {
-      const messageText = `Quero minha receita grátis: ${dailyRecipe.nome} (${dailyRecipe.codigo})`;
-      const waUrl = `https://wa.me/5544999999999?text=${encodeURIComponent(messageText)}`;
-
-      setStatusMessage("🎉 Redirecionando para o WhatsApp para liberar seu PDF instantaneamente...");
-      setWhatsapp("");
-      
-      const duration = 3 * 1000;
-      const animationEnd = Date.now() + duration;
-      const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 999 };
-      const randomInRange = (min: number, max: number) => Math.random() * (max - min) + min;
-
-      const interval: any = setInterval(function() {
-        const timeLeft = animationEnd - Date.now();
-        if (timeLeft <= 0) return clearInterval(interval);
-        const particleCount = 50 * (timeLeft / duration);
-        confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } });
-        confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } });
-      }, 250);
-
-      setTimeout(() => {
-        setIsModalOpen(true);
-        window.open(waUrl, "_blank");
-      }, 800);
-
-    } catch (error) {
-      console.error("Erro ao enviar presente:", error);
-      setStatusMessage("❌ Ocorreu um erro ao enviar. Tente novamente mais tarde.");
+      await supabase.from("biblioteca").upsert({
+        usuario_id: user.id,
+        tipo_item: "receita_gratuita",
+        codigo_item: dailyRecipe.codigo,
+        nome_item: dailyRecipe.nome,
+        imagem_url: dailyRecipe.imagem_url,
+        adicionado_em: new Date().toISOString(),
+      }, { onConflict: "usuario_id,tipo_item,codigo_item" });
+      setIsSalvo(true);
+    } catch (e) {
+      console.error("Erro ao salvar na biblioteca:", e);
     } finally {
-      setIsSending(false);
+      setIsSalvando(false);
     }
   };
 
@@ -225,42 +200,62 @@ export const DailyGiftSection = () => {
                 </p>
               </div>
 
-              <form onSubmit={handleSendGift} className="w-full space-y-3 max-w-md">
-                <div className="relative">
-                  <input
-                    type="text"
-                    value={whatsapp}
-                    onChange={handleWhatsappChange}
-                    placeholder="+55 (00) 00000-0000"
-                    maxLength={19}
-                    className="w-full px-5 py-4 border-2 border-gray-200 rounded-2xl text-center font-black text-gray-700 focus:outline-none focus:border-[#44FF00] transition-all shadow-sm focus:shadow-md placeholder:text-gray-300 text-base"
-                    required
-                  />
-                </div>
-                
-                <button
-                  type="submit"
-                  disabled={isSending}
-                  className="w-full bg-[#44FF00] hover:bg-[#3ee600] active:bg-[#38cc00] text-[#171717] py-4 rounded-2xl font-black text-sm sm:text-base flex items-center justify-center gap-2 shadow-lg hover:shadow-xl active:scale-[0.98] transition-all disabled:opacity-50 uppercase tracking-wider leading-tight"
-                >
-                  {isSending ? "Enviando..." : (
-                    <span>
-                      Quero receber meu<br />Presente no WhatsApp
-                    </span>
-                  )}
-                </button>
-              </form>
+              <div className="w-full space-y-3 max-w-md mt-2">
+                {linkDownload ? (
+                  <a
+                    href={linkDownload}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full bg-[#44FF00] hover:bg-[#3ee600] active:bg-[#38cc00] text-[#171717] py-4 rounded-2xl font-black text-sm sm:text-base flex items-center justify-center gap-2 shadow-lg hover:shadow-xl active:scale-[0.98] transition-all uppercase tracking-wider leading-tight"
+                  >
+                    <Download size={18} />
+                    <span>Baixar Receita (PDF)</span>
+                  </a>
+                ) : (
+                  <button
+                    disabled
+                    className="w-full bg-gray-100 text-gray-400 py-4 rounded-2xl font-black text-sm flex items-center justify-center gap-2 cursor-not-allowed uppercase tracking-wider"
+                  >
+                    <Loader2 size={18} className="animate-spin" />
+                    <span>Gerando link...</span>
+                  </button>
+                )}
 
-              {statusMessage && (
-                <p className="text-xs font-bold text-gray-700 mt-1 animate-fade-in">{statusMessage}</p>
-              )}
+                {user ? (
+                  <button
+                    onClick={handleSalvarBiblioteca}
+                    disabled={isSalvo || isSalvando}
+                    className={`w-full py-3.5 rounded-2xl font-black text-xs sm:text-sm flex items-center justify-center gap-2 transition-all uppercase tracking-wider ${
+                      isSalvo 
+                        ? 'bg-green-50 text-green-700 border border-green-200 cursor-default' 
+                        : 'bg-gray-100 hover:bg-gray-200 active:scale-[0.98] text-gray-800'
+                    }`}
+                  >
+                    {isSalvando ? (
+                      <Loader2 size={16} className="animate-spin" />
+                    ) : isSalvo ? (
+                      <>
+                        <Check size={16} className="text-green-600" />
+                        <span>Salvo! ✅</span>
+                      </>
+                    ) : (
+                      <>
+                        <Bookmark size={16} />
+                        <span>Salvar na Biblioteca</span>
+                      </>
+                    )}
+                  </button>
+                ) : (
+                  <p className="text-[11px] text-gray-500 font-bold leading-relaxed px-2 pt-1">
+                    💡 Crie sua conta grátis pra salvar essa receita na sua Biblioteca e nunca mais perder o mimo do dia.
+                  </p>
+                )}
+              </div>
             </div>
           )}
 
         </div>
       </div>
-
-      <SuccessModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </section>
   );
 };
