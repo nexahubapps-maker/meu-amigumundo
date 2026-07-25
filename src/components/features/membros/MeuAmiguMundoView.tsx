@@ -1,16 +1,16 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { ArrowLeft, User as UserIcon, Download, ExternalLink, Loader2, ShoppingBag, Package, Pencil, LogOut, Heart, Trash2 } from "lucide-react";
+import { ArrowLeft, User as UserIcon, Download, ExternalLink, Loader2, ShoppingBag, Package, Pencil, LogOut, Heart, Trash2, Gift } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { getProfile, type Perfil } from "@/utils/profile";
 import { supabase } from "@/lib/supabase";
-import { getRecipesByIds, getDriveFileUrl, getPacksByIds, getInfoprodutosByIds } from "@/utils/sheets";
+import { getRecipesByIds, getDriveFileUrl, getPacksByIds, getInfoprodutosByIds, getReceitaGratuitaDownloadUrl } from "@/utils/sheets";
 import { CompleteProfileModal } from "@/components/CompleteProfileModal";
 
 interface MeuAmiguMundoViewProps {
   onBack: () => void;
-  onAddToCart?: (item: any) => void;
+  onAddToCart: (items: any[]) => void;
 }
 
 const TABS = [
@@ -33,6 +33,9 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
 
   const [packsList, setPacksList] = useState<any[]>([]);
   const [isLoadingPacks, setIsLoadingPacks] = useState(false);
+
+  const [gratuitasList, setGratuitasList] = useState<any[]>([]);
+  const [isLoadingGratuitas, setIsLoadingGratuitas] = useState(false);
 
   const [favoritosList, setFavoritosList] = useState<any[]>([]);
   const [isLoadingFavoritos, setIsLoadingFavoritos] = useState(false);
@@ -119,6 +122,35 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
   }, [activeTab, user, packsList.length]);
 
   useEffect(() => {
+    const fetchGratuitas = async () => {
+      if (activeTab !== "Receitas Gratuitas" || !user || gratuitasList.length > 0) return;
+      setIsLoadingGratuitas(true);
+      try {
+        const { data } = await supabase
+          .from("biblioteca")
+          .select("*")
+          .eq("usuario_id", user.id)
+          .eq("tipo_item", "receita_gratuita")
+          .order("adicionado_em", { ascending: false });
+
+        const itens = data || [];
+        const resolved = await Promise.all(
+          itens.map(async (item: any) => {
+            const link = await getReceitaGratuitaDownloadUrl(item.codigo_item);
+            return { ...item, linkAcesso: link };
+          })
+        );
+        setGratuitasList(resolved);
+      } catch (e) {
+        console.error("Erro ao carregar receitas gratuitas:", e);
+      } finally {
+        setIsLoadingGratuitas(false);
+      }
+    };
+    fetchGratuitas();
+  }, [activeTab, user, gratuitasList.length]);
+
+  useEffect(() => {
     const fetchFavoritos = async () => {
       if (activeTab !== "Favoritos" || !user || favoritosList.length > 0) return;
       setIsLoadingFavoritos(true);
@@ -141,6 +173,26 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
   const removerFavorito = async (item: any) => {
     await supabase.from("favoritos").delete().eq("id", item.id);
     setFavoritosList((prev) => prev.filter((f) => f.id !== item.id));
+  };
+
+  const handleAdicionarTudoAoCarrinho = async () => {
+    const receitaIds = favoritosList.filter(f => f.tipo_item === "receita").map(f => f.codigo_item);
+    const packIds = favoritosList.filter(f => f.tipo_item === "pack").map(f => f.codigo_item);
+    const infoprodutoIds = favoritosList.filter(f => f.tipo_item === "infoproduto").map(f => f.codigo_item);
+
+    const [receitas, packs, infoprodutos] = await Promise.all([
+      receitaIds.length > 0 ? getRecipesByIds(receitaIds) : Promise.resolve([]),
+      packIds.length > 0 ? getPacksByIds(packIds) : Promise.resolve([]),
+      infoprodutoIds.length > 0 ? getInfoprodutosByIds(infoprodutoIds) : Promise.resolve([]),
+    ]);
+
+    const items = [
+      ...receitas.map((r: any) => ({ id: r.id, nome: r.nome, preco: r.preco, tipo: "recipe", imagem: r.imagem_url })),
+      ...packs.map((p: any) => ({ id: p.id, nome: p.nome, preco: p.preco, tipo: "pack", imagem: p.imagem_url })),
+      ...infoprodutos.map((i: any) => ({ id: i.id, nome: i.nome, preco: i.preco, tipo: "upsell", imagem: i.imagem_url })),
+    ];
+
+    onAddToCart(items);
   };
 
   const textureLaranjaStyle = {
@@ -377,6 +429,72 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
               </div>
             </div>
           )
+        ) : activeTab === "Receitas Gratuitas" ? (
+          isLoadingGratuitas ? (
+            <div className="h-64 flex flex-col items-center justify-center gap-3 text-gray-500">
+              <Loader2 size={32} className="animate-spin text-[#0E5E6F]" />
+              <p className="text-xs font-bold uppercase tracking-wider">Carregando suas receitas gratuitas...</p>
+            </div>
+          ) : gratuitasList.length === 0 ? (
+            <div className="text-center py-16 px-4 bg-white rounded-2xl border border-gray-100 shadow-sm max-w-md mx-auto">
+              <Gift size={48} className="text-gray-300 mx-auto mb-3" />
+              <p className="text-gray-700 font-black text-sm uppercase tracking-tight">
+                Você ainda não salvou nenhuma receita gratuita.
+              </p>
+              <p className="text-gray-400 text-xs font-medium mt-1">
+                Resgate o seu presente diário no AmiguMundo e clique em "Salvar na Biblioteca" para guardar aqui!
+              </p>
+            </div>
+          ) : (
+            <div className="max-w-4xl mx-auto space-y-3">
+              <p className="text-xs font-black text-gray-500 uppercase tracking-wider mb-2">
+                Suas Receitas Gratuitas Salvas ({gratuitasList.length})
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {gratuitasList.map((item, idx) => (
+                  <div
+                    key={item.id || idx}
+                    className="bg-white rounded-2xl p-3.5 border border-gray-100 shadow-sm flex items-center gap-3"
+                  >
+                    <img
+                      src={item.imagem_url || `https://picsum.photos/seed/${item.codigo_item}/150/150`}
+                      alt={item.nome_item}
+                      className="w-16 h-16 rounded-xl object-cover border border-gray-100 shrink-0 bg-gray-50"
+                    />
+                    <div className="flex-1 min-w-0 flex flex-col justify-between h-16">
+                      <div>
+                        <h4 className="text-xs font-black text-gray-900 uppercase leading-tight line-clamp-1">
+                          {item.nome_item}
+                        </h4>
+                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mt-0.5">
+                          Código: {item.codigo_item}
+                        </span>
+                      </div>
+
+                      <div>
+                        {item.linkAcesso ? (
+                          <a
+                            href={item.linkAcesso}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1.5 bg-[#44FF00] hover:bg-[#3ee600] active:scale-95 text-[#171717] px-3 py-1.5 rounded-xl font-black text-[10px] uppercase tracking-wider transition-all shadow-sm"
+                          >
+                            <Download size={12} />
+                            Baixar Receita (PDF)
+                            <ExternalLink size={10} className="opacity-70" />
+                          </a>
+                        ) : (
+                          <span className="text-[10px] font-bold text-amber-600 bg-amber-50 px-2.5 py-1 rounded-lg inline-block">
+                            Link indisponível no momento
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )
         ) : activeTab === "Favoritos" ? (
           isLoadingFavoritos ? (
             <div className="h-64 flex flex-col items-center justify-center gap-3 text-gray-500">
@@ -398,6 +516,14 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
               <p className="text-xs font-black text-gray-500 uppercase tracking-wider mb-2">
                 Seus Itens Favoritados ({favoritosList.length})
               </p>
+
+              <button
+                onClick={handleAdicionarTudoAoCarrinho}
+                className="w-full mb-3 bg-[#44FF00] hover:bg-[#3ee600] active:scale-95 text-[#171717] py-3 rounded-xl font-black text-xs uppercase tracking-wider transition-all shadow-sm"
+              >
+                Adicionar tudo ao carrinho ({favoritosList.length})
+              </button>
+
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {favoritosList.map((item) => (
                   <div
