@@ -1,11 +1,12 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { ArrowLeft, User as UserIcon, Download, ExternalLink, Loader2, ShoppingBag, Package } from "lucide-react";
+import { ArrowLeft, User as UserIcon, Download, ExternalLink, Loader2, ShoppingBag, Package, Pencil, LogOut } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { getProfile, type Perfil } from "@/utils/profile";
 import { supabase } from "@/lib/supabase";
 import { getRecipesByIds, getDriveFileUrl, getPacksByIds, getInfoprodutosByIds } from "@/utils/sheets";
+import { CompleteProfileModal } from "@/components/CompleteProfileModal";
 
 interface MeuAmiguMundoViewProps {
   onBack: () => void;
@@ -22,7 +23,7 @@ const TABS = [
 type TabType = (typeof TABS)[number];
 
 export const MeuAmiguMundoView = ({ onBack }: MeuAmiguMundoViewProps) => {
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
   const [profile, setProfile] = useState<Perfil | null>(null);
   const [activeTab, setActiveTab] = useState<TabType>("Minhas Compras");
 
@@ -31,6 +32,15 @@ export const MeuAmiguMundoView = ({ onBack }: MeuAmiguMundoViewProps) => {
 
   const [packsList, setPacksList] = useState<any[]>([]);
   const [isLoadingPacks, setIsLoadingPacks] = useState(false);
+
+  const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
+
+  const recarregarPerfil = async () => {
+    if (user) {
+      const p = await getProfile(user.id);
+      setProfile(p);
+    }
+  };
 
   useEffect(() => {
     async function loadProfile() {
@@ -114,6 +124,11 @@ export const MeuAmiguMundoView = ({ onBack }: MeuAmiguMundoViewProps) => {
   const displayName = profile?.nome || user?.email || "Visitante";
   const avatarUrl = profile?.foto_url;
 
+  const handleSignOut = async () => {
+    await signOut();
+    onBack();
+  };
+
   return (
     <div className="fixed inset-0 z-[90] bg-[#F5F5F7] overflow-y-auto animate-in slide-in-from-bottom duration-300 flex flex-col">
       {/* Cabeçalho Fixo com Textura Laranja */}
@@ -134,25 +149,44 @@ export const MeuAmiguMundoView = ({ onBack }: MeuAmiguMundoViewProps) => {
       </div>
 
       {/* Faixa de Perfil */}
-      <div className="bg-white border-b border-gray-100 px-4 py-3 flex items-center gap-3 shrink-0 shadow-sm">
-        <div className="w-11 h-11 rounded-full overflow-hidden bg-gray-100 border border-gray-200 flex items-center justify-center shrink-0">
-          {avatarUrl ? (
-            <img
-              src={avatarUrl}
-              alt={displayName}
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <UserIcon className="text-gray-400" size={22} />
-          )}
+      <div className="bg-white border-b border-gray-100 px-4 py-3 flex items-center justify-between gap-3 shrink-0 shadow-sm">
+        <div className="flex items-center gap-3 min-w-0 flex-1">
+          <div className="w-11 h-11 rounded-full overflow-hidden bg-gray-100 border border-gray-200 flex items-center justify-center shrink-0">
+            {avatarUrl ? (
+              <img
+                src={avatarUrl}
+                alt={displayName}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <UserIcon className="text-gray-400" size={22} />
+            )}
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider leading-none mb-0.5">
+              Área de Membros
+            </p>
+            <h3 className="text-sm font-black text-gray-900 truncate uppercase leading-tight">
+              {displayName}
+            </h3>
+          </div>
         </div>
-        <div className="flex-1 min-w-0">
-          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider leading-none mb-0.5">
-            Área de Membros
-          </p>
-          <h3 className="text-sm font-black text-gray-900 truncate uppercase leading-tight">
-            {displayName}
-          </h3>
+
+        <div className="flex items-center gap-1.5 shrink-0">
+          <button
+            onClick={() => setIsEditProfileOpen(true)}
+            className="p-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl transition-colors active:scale-95"
+            title="Editar perfil"
+          >
+            <Pencil size={16} />
+          </button>
+          <button
+            onClick={handleSignOut}
+            className="p-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl transition-colors active:scale-95"
+            title="Sair da conta"
+          >
+            <LogOut size={16} />
+          </button>
         </div>
       </div>
 
@@ -325,6 +359,19 @@ export const MeuAmiguMundoView = ({ onBack }: MeuAmiguMundoViewProps) => {
           </div>
         )}
       </div>
+
+      <CompleteProfileModal
+        isOpen={isEditProfileOpen}
+        onClose={() => setIsEditProfileOpen(false)}
+        userId={user?.id}
+        nomeAtual={profile?.nome}
+        fotoAtual={profile?.foto_url}
+        telefoneAtual={profile?.telefone}
+        onSuccess={() => {
+          setIsEditProfileOpen(false);
+          recarregarPerfil();
+        }}
+      />
     </div>
   );
 };
