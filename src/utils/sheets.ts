@@ -64,6 +64,7 @@ export interface SheetCategoria {
 }
 
 export const GOOGLE_DRIVE_FOLDER_ID = "1yrrZX5yqhLC8pi4phyOt8fxNzMiG1BoV";
+export const GOOGLE_DRIVE_RECEITAS_GRATUITAS_FOLDER_ID = "1gwkPEe6E74YxkDbrSRzoNfNpnjzztY8u";
 export const GOOGLE_DRIVE_API_KEY = "AIzaSyBJiL8IdTPi25jPZM0P6kl3dDUO8YHvVu4";
 
 let categoriaFolderCache: Record<string, string> | null = null;
@@ -120,6 +121,29 @@ async function resolveImagensReceitas(recipes: SheetRecipe[]): Promise<SheetReci
       return fallback ? { ...r, imagem_url: fallback } : r;
     })
   );
+}
+
+async function buscarArquivoReceitaGratuita(codigo: string): Promise<string | null> {
+  try {
+    const url = `https://www.googleapis.com/drive/v3/files?q='${GOOGLE_DRIVE_RECEITAS_GRATUITAS_FOLDER_ID}'+in+parents+and+name+contains+'${codigo}'+and+mimeType='application/pdf'+and+trashed=false&fields=files(id,name)&key=${GOOGLE_DRIVE_API_KEY}`;
+    const res = await fetch(url);
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data.files && data.files.length > 0 ? data.files[0].id : null;
+  } catch (e) {
+    console.warn("Erro ao buscar receita gratuita no Drive:", e);
+    return null;
+  }
+}
+
+export async function getReceitaGratuitaDownloadUrl(codigo: string): Promise<string | null> {
+  const fileId = await buscarArquivoReceitaGratuita(codigo);
+  return fileId ? `https://drive.google.com/uc?export=download&id=${fileId}` : null;
+}
+
+export async function getReceitaGratuitaCoverFallback(codigo: string): Promise<string | null> {
+  const fileId = await buscarArquivoReceitaGratuita(codigo);
+  return fileId ? `https://drive.google.com/thumbnail?id=${fileId}&sz=w800` : null;
 }
 
 export async function getRecipes(): Promise<SheetRecipe[]> {
@@ -224,13 +248,22 @@ export async function getReceitaGratuita(): Promise<SheetReceitaGratuita[]> {
     return [];
   }
 
-  return (data || []).map((row) => ({
+  const mapped = (data || []).map((row) => ({
     codigo: row.codigo,
     data: row.data || "",
     nome: row.nome || "",
     imagem_url: row.imagem_url || "",
     ativo: !!row.ativo
   }));
+
+  return Promise.all(
+    mapped.map(async (r) => {
+      const semImagem = !r.imagem_url || r.imagem_url.trim() === "-" || r.imagem_url.trim() === "";
+      if (!semImagem) return r;
+      const fallback = await getReceitaGratuitaCoverFallback(r.codigo);
+      return fallback ? { ...r, imagem_url: fallback } : r;
+    })
+  );
 }
 
 export async function getCategories(): Promise<SheetCategoria[]> {
