@@ -30,6 +30,7 @@ import { AuthModal } from "@/components/AuthModal";
 import { getProfile } from "@/utils/profile";
 import { CompleteProfileModal } from "@/components/CompleteProfileModal";
 import { MeuAmiguMundoView } from "@/components/features/membros/MeuAmiguMundoView";
+import { supabase } from "@/lib/supabase";
 import { 
   getInfoprodutos, 
   getPacks, 
@@ -105,6 +106,24 @@ export default function Index() {
   };
 
   const targetId = getTargetId();
+
+  useEffect(() => {
+    const mesclarFavoritos = async () => {
+      if (!user) return;
+      const { data } = await supabase
+        .from("favoritos")
+        .select("codigo_item")
+        .eq("usuario_id", user.id);
+      if (data && data.length > 0) {
+        setFavorites((prev) => {
+          const idsSupabase = data.map((f: any) => f.codigo_item);
+          const combinados = Array.from(new Set([...prev, ...idsSupabase]));
+          return combinados;
+        });
+      }
+    };
+    mesclarFavoritos();
+  }, [user]);
 
   useEffect(() => {
     const loadAllData = async () => {
@@ -307,14 +326,28 @@ export default function Index() {
     localStorage.setItem("amigumundo-favorites", JSON.stringify(favorites));
   }, [favorites]);
 
-  const toggleFavorite = (id: string) => {
+  const toggleFavorite = (id: string, item?: { nome: string; imagem_url: string; tipo: string }) => {
     setFavorites((prev) => {
       const isFav = prev.includes(id);
       if (isFav) {
         showSuccess("Item removido dos favoritos.");
+        if (user) {
+          supabase.from("favoritos").delete()
+            .eq("usuario_id", user.id).eq("codigo_item", id).then(() => {});
+        }
         return prev.filter((favId) => favId !== id);
       } else {
         showSuccess("Item adicionado aos favoritos! ❤️");
+        if (user && item) {
+          supabase.from("favoritos").upsert({
+            usuario_id: user.id,
+            tipo_item: item.tipo,
+            codigo_item: id,
+            nome_item: item.nome,
+            imagem_url: item.imagem_url,
+            favoritado_em: new Date().toISOString(),
+          }, { onConflict: "usuario_id,tipo_item,codigo_item" }).then(() => {});
+        }
         return [...prev, id];
       }
     });
@@ -601,7 +634,7 @@ export default function Index() {
                       copiaVendas: [upsell.descricao]
                     }} 
                     isFavorite={favorites.includes(upsell.id)}
-                    onToggleFavorite={() => toggleFavorite(upsell.id)}
+                    onToggleFavorite={() => toggleFavorite(upsell.id, { nome: upsell.nome, imagem_url: upsell.imagem_url, tipo: "infoproduto" })}
                     onOpen={() => {
                       playHeartbeatSound();
                       setActiveUpsell(upsell.id);
@@ -639,7 +672,7 @@ export default function Index() {
             <RecipeCard
               recipe={showRecipe}
               isFavorite={favorites.includes(showRecipe.id)}
-              onToggleFavorite={() => toggleFavorite(showRecipe.id)}
+              onToggleFavorite={() => toggleFavorite(showRecipe.id, { nome: showRecipe.nome, imagem_url: showRecipe.imagem_url, tipo: "receita" })}
               onAdd={() => handleRecipeAdd(showRecipe)}
               onReject={() => {
                 setShowRecipe(null);
@@ -725,7 +758,7 @@ export default function Index() {
                   }}
                   inCart={isInCart(pack.id)}
                   isFavorite={favorites.includes(pack.id)}
-                  onToggleFavorite={() => toggleFavorite(pack.id)}
+                  onToggleFavorite={() => toggleFavorite(pack.id, { nome: pack.nome, imagem_url: pack.imagem_url, tipo: "pack" })}
                   onAdd={() => handlePackAdd(pack.id)}
                   onRemove={() => removeFromCart(pack.id)}
                 />
@@ -785,7 +818,19 @@ export default function Index() {
         isOpen={isFavoritesOpen}
         onClose={() => setIsFavoritesOpen(false)}
         favoriteIds={favorites}
-        onToggleFavorite={toggleFavorite}
+        onToggleFavorite={(id) => {
+          const recipe = favoriteRecipes.find((r) => r.id === id);
+          const pack = packsList.find((p) => p.id === id);
+          const upsell = infoprodutosList.find((u) => u.id === id);
+          const item = recipe 
+            ? { nome: recipe.nome, imagem_url: recipe.imagem_url, tipo: "receita" }
+            : pack 
+            ? { nome: pack.nome, imagem_url: pack.imagem_url, tipo: "pack" }
+            : upsell 
+            ? { nome: upsell.nome, imagem_url: upsell.imagem_url, tipo: "infoproduto" }
+            : undefined;
+          toggleFavorite(id, item);
+        }}
         onAddToCart={addToCart}
         isInCart={isInCart}
         recipes={favoriteRecipes}
@@ -810,7 +855,10 @@ export default function Index() {
           onRecipeRemove={removeFromCart}
           onZoomImage={setZoomImage}
           favorites={favorites}
-          onToggleFavorite={toggleFavorite}
+          onToggleFavorite={(id) => {
+            const recipe = shuffledRecipes.find((r) => r.id === id);
+            toggleFavorite(id, recipe ? { nome: recipe.nome, imagem_url: recipe.imagem_url, tipo: "receita" } : undefined);
+          }}
         />
       )}
 
@@ -830,7 +878,10 @@ export default function Index() {
           onRecipeRemove={removeFromCart}
           onZoomImage={setZoomImage}
           favorites={favorites}
-          onToggleFavorite={toggleFavorite}
+          onToggleFavorite={(id) => {
+            const recipe = searchResults.find((r) => r.id === id);
+            toggleFavorite(id, recipe ? { nome: recipe.nome, imagem_url: recipe.imagem_url, tipo: "receita" } : undefined);
+          }}
         />
       )}
 
