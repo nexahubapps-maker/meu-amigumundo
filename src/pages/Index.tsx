@@ -156,7 +156,7 @@ export default function Index() {
 
       } catch (e) {
         console.error("Error loading sheets data:", e);
-      } finally {
+      } font-medium
         setIsLoading(false);
       }
     };
@@ -482,7 +482,7 @@ export default function Index() {
 
       <WelcomeBanner isDirectEntry={isDirectEntry} />
 
-      <Header cartCount={cart.length} />
+      <Header cartCount={cart.length} onOpenMeuAmiguMundo={handleOpenMeuAmiguMundo} />
 
       <InternalPopup notifications={notificationsList} />
 

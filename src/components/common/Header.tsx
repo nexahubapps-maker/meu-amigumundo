@@ -1,37 +1,34 @@
 "use client";
 
-import { useState } from "react";
-import { ShoppingCart, User, LogOut } from "lucide-react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { User } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { AuthModal } from "@/components/AuthModal";
+import { getProfile, type Perfil } from "@/utils/profile";
 
 interface HeaderProps {
   cartCount?: number;
+  onOpenMeuAmiguMundo?: () => void;
 }
 
-export const Header = ({ cartCount = 0 }: HeaderProps) => {
+export const Header = ({ cartCount = 0, onOpenMeuAmiguMundo }: HeaderProps) => {
   const navigate = useNavigate();
-  const location = useLocation();
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [profile, setProfile] = useState<Perfil | null>(null);
 
-  const scrollToCart = () => {
-    if (location.pathname !== "/") {
-      navigate("/");
-      setTimeout(() => {
-        const cartElement = document.getElementById('cart-section');
-        if (cartElement) {
-          cartElement.scrollIntoView({ behavior: 'smooth' });
-        }
-      }, 150);
-    } else {
-      const cartElement = document.getElementById('cart-section');
-      if (cartElement) {
-        cartElement.scrollIntoView({ behavior: 'smooth' });
+  useEffect(() => {
+    async function fetchProfile() {
+      if (user) {
+        const p = await getProfile(user.id);
+        setProfile(p);
+      } else {
+        setProfile(null);
       }
     }
-  };
+    fetchProfile();
+  }, [user]);
 
   return (
     <div className="relative mx-4 my-2 lg:mx-auto lg:max-w-6xl bg-white h-[92px] flex items-center px-4 shadow-[0_8px_30px_rgb(0,0,0,0.08)] rounded-2xl border border-gray-100/80">
@@ -57,26 +54,21 @@ export const Header = ({ cartCount = 0 }: HeaderProps) => {
           </div>
           
           <div className="flex flex-row gap-2 items-center">
-            <button 
-              onClick={scrollToCart}
-              className="relative p-1.5 text-[#171717] hover:text-[#44FF00] transition-colors bg-gray-50 rounded-full flex items-center justify-center"
-              title="Ver Carrinho"
-            >
-              <ShoppingCart size={22} />
-              {cartCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-[#44FF00] text-[#171717] text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center border border-white">
-                  {cartCount}
-                </span>
-              )}
-            </button>
-
             {user ? (
               <button 
-                onClick={() => signOut()}
-                className="relative p-1.5 text-[#44FF00] hover:text-red-500 transition-colors bg-gray-50 rounded-full flex items-center justify-center"
-                title="Sair da Conta"
+                onClick={onOpenMeuAmiguMundo}
+                className="flex flex-col items-center gap-0.5 max-w-[64px]"
               >
-                <LogOut size={22} />
+                <div className="w-9 h-9 rounded-full overflow-hidden bg-gray-100 border-2 border-[#44FF00] flex items-center justify-center shrink-0">
+                  {profile?.foto_url ? (
+                    <img src={profile.foto_url} alt={profile.nome || "Perfil"} className="w-full h-full object-cover" />
+                  ) : (
+                    <User size={18} className="text-gray-400" />
+                  )}
+                </div>
+                <span className="text-[8px] font-black text-gray-700 uppercase truncate w-full text-center leading-tight">
+                  {profile?.nome || "Perfil"}
+                </span>
               </button>
             ) : (
               <button 
