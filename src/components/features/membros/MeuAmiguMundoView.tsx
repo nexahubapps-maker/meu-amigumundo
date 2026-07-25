@@ -1,9 +1,11 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { ArrowLeft, User as UserIcon } from "lucide-react";
+import { ArrowLeft, User as UserIcon, Download, ExternalLink, Loader2, ShoppingBag } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { getProfile, type Perfil } from "@/utils/profile";
+import { supabase } from "@/lib/supabase";
+import { getRecipesByIds, getDriveFileUrl } from "@/utils/sheets";
 
 interface MeuAmiguMundoViewProps {
   onBack: () => void;
@@ -24,6 +26,9 @@ export const MeuAmiguMundoView = ({ onBack }: MeuAmiguMundoViewProps) => {
   const [profile, setProfile] = useState<Perfil | null>(null);
   const [activeTab, setActiveTab] = useState<TabType>("Minhas Compras");
 
+  const [comprasList, setComprasList] = useState<any[]>([]);
+  const [isLoadingCompras, setIsLoadingCompras] = useState(false);
+
   useEffect(() => {
     async function loadProfile() {
       if (user) {
@@ -33,6 +38,37 @@ export const MeuAmiguMundoView = ({ onBack }: MeuAmiguMundoViewProps) => {
     }
     loadProfile();
   }, [user]);
+
+  useEffect(() => {
+    const fetchCompras = async () => {
+      if (activeTab !== "Minhas Compras" || !user || comprasList.length > 0) return;
+      setIsLoadingCompras(true);
+      try {
+        const { data } = await supabase
+          .from("pedido_itens")
+          .select("*, pedidos!inner(usuario_id, status)")
+          .eq("pedidos.usuario_id", user.id)
+          .eq("pedidos.status", "aprovado")
+          .eq("tipo_produto", "receita");
+
+        const itens = data || [];
+        const resolved = await Promise.all(
+          itens.map(async (item: any) => {
+            const receitas = await getRecipesByIds([item.codigo_produto]);
+            const categoria = receitas[0]?.categoria || "";
+            const link = await getDriveFileUrl(item.codigo_produto, categoria);
+            return { ...item, linkAcesso: link };
+          })
+        );
+        setComprasList(resolved);
+      } catch (e) {
+        console.error("Erro ao carregar compras:", e);
+      } finally {
+        setIsLoadingCompras(false);
+      }
+    };
+    fetchCompras();
+  }, [activeTab, user, comprasList.length]);
 
   const textureLaranjaStyle = {
     backgroundImage: "url('https://ik.imagekit.io/51b3srlsg/textura_laranja.jpeg')",
@@ -109,13 +145,83 @@ export const MeuAmiguMundoView = ({ onBack }: MeuAmiguMundoViewProps) => {
       </div>
 
       {/* Conteúdo Dinâmico por Aba */}
-      <div className="flex-1 p-6 flex items-center justify-center">
-        <div className="text-center py-12 px-4 bg-white rounded-2xl border border-gray-100 shadow-sm max-w-sm w-full">
-          <p className="text-gray-400 font-bold text-xs uppercase tracking-wider mb-1">
-            {activeTab}
-          </p>
-          <p className="text-gray-600 font-black text-sm uppercase">Em breve</p>
-        </div>
+      <div className="flex-1 p-4 sm:p-6 overflow-y-auto">
+        {activeTab === "Minhas Compras" ? (
+          isLoadingCompras ? (
+            <div className="h-64 flex flex-col items-center justify-center gap-3 text-gray-500">
+              <Loader2 size={32} className="animate-spin text-[#0E5E6F]" />
+              <p className="text-xs font-bold uppercase tracking-wider">Carregando suas compras...</p>
+            </div>
+          ) : comprasList.length === 0 ? (
+            <div className="text-center py-16 px-4 bg-white rounded-2xl border border-gray-100 shadow-sm max-w-md mx-auto">
+              <ShoppingBag size={48} className="text-gray-300 mx-auto mb-3" />
+              <p className="text-gray-700 font-black text-sm uppercase tracking-tight">
+                Você ainda não comprou nenhuma receita avulsa.
+              </p>
+              <p className="text-gray-400 text-xs font-medium mt-1">
+                Suas receitas compradas aparecerão aqui para você baixar sempre que quiser!
+              </p>
+            </div>
+          ) : (
+            <div className="max-w-4xl mx-auto space-y-3">
+              <p className="text-xs font-black text-gray-500 uppercase tracking-wider mb-2">
+                Suas Receitas Adquiridas ({comprasList.length})
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {comprasList.map((item, idx) => (
+                  <div
+                    key={item.id || idx}
+                    className="bg-white rounded-2xl p-3.5 border border-gray-100 shadow-sm flex items-center gap-3"
+                  >
+                    <img
+                      src={item.imagem_url || `https://picsum.photos/seed/${item.codigo_produto}/150/150`}
+                      alt={item.nome_produto}
+                      className="w-16 h-16 rounded-xl object-cover border border-gray-100 shrink-0 bg-gray-50"
+                    />
+                    <div className="flex-1 min-w-0 flex flex-col justify-between h-16">
+                      <div>
+                        <h4 className="text-xs font-black text-gray-900 uppercase leading-tight line-clamp-1">
+                          {item.nome_produto}
+                        </h4>
+                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mt-0.5">
+                          Código: {item.codigo_produto}
+                        </span>
+                      </div>
+
+                      <div>
+                        {item.linkAcesso ? (
+                          <a
+                            href={item.linkAcesso}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1.5 bg-[#44FF00] hover:bg-[#3ee600] active:scale-95 text-[#171717] px-3 py-1.5 rounded-xl font-black text-[10px] uppercase tracking-wider transition-all shadow-sm"
+                          >
+                            <Download size={12} />
+                            Baixar Receita (PDF)
+                            <ExternalLink size={10} className="opacity-70" />
+                          </a>
+                        ) : (
+                          <span className="text-[10px] font-bold text-amber-600 bg-amber-50 px-2.5 py-1 rounded-lg inline-block">
+                            Link indisponível no momento
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )
+        ) : (
+          <div className="h-64 flex items-center justify-center">
+            <div className="text-center py-12 px-4 bg-white rounded-2xl border border-gray-100 shadow-sm max-w-sm w-full">
+              <p className="text-gray-400 font-bold text-xs uppercase tracking-wider mb-1">
+                {activeTab}
+              </p>
+              <p className="text-gray-600 font-black text-sm uppercase">Em breve</p>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
