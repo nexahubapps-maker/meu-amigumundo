@@ -57,6 +57,14 @@ export const DailyGiftSection = () => {
   }, []);
 
   useEffect(() => {
+    if (!dailyRecipe) return;
+    const jaAberto = localStorage.getItem(`daily-gift-opened-${dailyRecipe.codigo}`);
+    if (jaAberto) setIsOpened(true);
+    const jaSalvo = localStorage.getItem(`daily-gift-saved-${dailyRecipe.codigo}`);
+    if (jaSalvo) setIsSalvo(true);
+  }, [dailyRecipe]);
+
+  useEffect(() => {
     const video = videoRef.current;
     if (video) {
       video.playbackRate = 3.0;
@@ -82,6 +90,9 @@ export const DailyGiftSection = () => {
     
     playHeartbeatSound();
     setIsOpened(true);
+    if (dailyRecipe) {
+      localStorage.setItem(`daily-gift-opened-${dailyRecipe.codigo}`, "true");
+    }
     
     confetti({
       particleCount: 50,
@@ -108,6 +119,9 @@ export const DailyGiftSection = () => {
         return;
       }
       setIsSalvo(true);
+      if (dailyRecipe) {
+        localStorage.setItem(`daily-gift-saved-${dailyRecipe.codigo}`, "true");
+      }
     } catch (e) {
       console.error("Erro inesperado ao salvar na biblioteca:", e);
     } finally {
