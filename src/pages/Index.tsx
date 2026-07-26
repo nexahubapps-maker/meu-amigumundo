@@ -182,7 +182,7 @@ export default function Index() {
 
       } catch (e) {
         console.error("Error loading sheets data:", e);
-      } finally {
+      } font-medium
         setIsLoading(false);
       }
     };
@@ -566,6 +566,7 @@ export default function Index() {
               onAddToCart={addToCart}
               onCheckout={() => navigate("/checkout")}
               onZoomImage={setZoomImage}
+              hasOpenBonusSlot={hasOpenBonusSlot}
             />
           </div>
         </section>

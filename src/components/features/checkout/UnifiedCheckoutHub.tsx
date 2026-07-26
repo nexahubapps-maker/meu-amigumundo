@@ -12,6 +12,7 @@ interface UnifiedCheckoutHubProps {
   onAddToCart: (item: CartItem) => void;
   onCheckout: () => void;
   onZoomImage?: (url: string) => void;
+  hasOpenBonusSlot: boolean;
 }
 
 export const UnifiedCheckoutHub = ({
@@ -20,6 +21,7 @@ export const UnifiedCheckoutHub = ({
   onAddToCart,
   onCheckout,
   onZoomImage,
+  hasOpenBonusSlot,
 }: UnifiedCheckoutHubProps) => {
   const [code, setCode] = useState("");
   const [foundRecipe, setFoundRecipe] = useState<SheetRecipe | null>(null);
@@ -56,6 +58,7 @@ export const UnifiedCheckoutHub = ({
         preco: foundRecipe.preco,
         tipo: "recipe",
         imagem: foundRecipe.imagem_url,
+        isBonus: hasOpenBonusSlot && foundRecipe.preco === 5,
       });
       setFoundRecipe(null);
       setCode("");
@@ -71,33 +74,33 @@ export const UnifiedCheckoutHub = ({
 
   let neuromarketingText = "";
   if (P >= 1 && P <= 4) {
-    neuromarketingText = `✨ Adicione mais ${5 - P} receitas e o preço de todas cairá para R$ 4,00 cada! Aproveite!`;
+    neuromarketingText = `✨ Adicione mais ${5 - P} receita(s) e ganhe 20% OFF em tudo!`;
   } else if (P >= 5 && P <= 9) {
-    neuromarketingText = `🔥 Faltam só ${10 - P} receitas para o preço de todas cair para R$ 3,00 e você ganhar 1 RECEITA GRÁTIS! 🎁`;
+    neuromarketingText = `🔥 Faltam só ${10 - P} receita(s) pro desconto subir pra 40% OFF + 1 RECEITA GRÁTIS! 🎁`;
   } else if (P >= 10 && P <= 14) {
     if (F === 0) {
-      neuromarketingText = `🎉 Parabéns! Você ganhou 1 RECEITA! Escolha o modelo que quiser, ela sairá GRÁTIS.`;
+      neuromarketingText = `🎉 Parabéns! Você já tem 40% OFF e ganhou 1 RECEITA GRÁTIS! Escolha uma receita de R$5 pra levar de presente.`;
     } else {
-      neuromarketingText = `🚀 Muito bem! Adicione mais ${15 - P} receitas para o preço cair para R$ 2,50 e levar mais 1 GRÁTIS!`;
+      neuromarketingText = `🚀 Muito bem! Adicione mais ${15 - P} receita(s) pro desconto subir pra 50% OFF + mais 1 GRÁTIS!`;
     }
   } else if (P >= 15 && P <= 19) {
     if (F < 2) {
-      neuromarketingText = `🎁 Você liberou mais 1 RECEITA GRÁTIS! Pode escolher o seu próximo presente na loja.`;
+      neuromarketingText = `🎁 Você já tem 50% OFF e liberou mais 1 RECEITA GRÁTIS! Escolha uma receita de R$5 pra levar de presente.`;
     } else {
-      neuromarketingText = `🏆 Você está imparável! Mais ${20 - P} receitas e você ganha o prêmio máximo: 5 RECEITAS GRÁTIS!`;
+      neuromarketingText = `🏆 Você está imparável! Mais ${20 - P} receita(s) e você ganha o prêmio máximo: 5 RECEITAS GRÁTIS!`;
     }
   } else if (P >= 20) {
     if (F < 5) {
-      neuromarketingText = `👑 Sensacional! Você atingiu o topo e liberou 5 RECEITAS GRÁTIS no total! Escolha as suas receitas preferidas!`;
+      neuromarketingText = `👑 Sensacional! Você atingiu o topo: 50% OFF + até 5 RECEITAS GRÁTIS no total! Escolha receitas de R$5 pra completar seus presentes.`;
     } else {
-      neuromarketingText = `❤️ Carrinho perfeito! Você garantiu o melhor preço e todos os seus presentes!`;
+      neuromarketingText = `❤️ Carrinho perfeito! Você garantiu o melhor desconto e todos os seus presentes!`;
     }
   }
 
   const tableRows = [
     {
-      range: "Todas as receitas AmiguMundo",
-      price: "R$ 5,00 cada",
+      range: "Até 4 receitas",
+      price: "Preço cheio",
       bonus: "—",
       isBonusActive: false,
       isActive: P <= 4,
@@ -105,7 +108,7 @@ export const UnifiedCheckoutHub = ({
     },
     {
       range: "Com 5 a 9 receitas no carrinho",
-      price: "R$ 4,00 cada",
+      price: "20% OFF",
       bonus: "—",
       isBonusActive: false,
       isActive: P >= 5 && P <= 9,
@@ -113,15 +116,15 @@ export const UnifiedCheckoutHub = ({
     },
     {
       range: "Com 10 a 14 receitas no carrinho",
-      price: "R$ 3,00 cada",
+      price: "40% OFF",
       bonus: "+1 GRÁTIS",
       isBonusActive: true,
       isActive: P >= 10 && P <= 14,
       isBasePrice: false
     },
     {
-      range: "Acima de 15 receitas no carrinho",
-      price: "R$ 2,50 cada",
+      range: "Com 15 a 19 receitas no carrinho",
+      price: "50% OFF",
       bonus: "+2 GRÁTIS",
       isBonusActive: true,
       isActive: P >= 15 && P <= 19,
@@ -129,7 +132,7 @@ export const UnifiedCheckoutHub = ({
     },
     {
       range: "Com 20 ou mais receitas no carrinho",
-      price: "R$ 2,50 cada",
+      price: "50% OFF",
       bonus: "+5 GRÁTIS",
       isBonusActive: true,
       isActive: P >= 20,
