@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { ArrowLeft, User as UserIcon, Download, ExternalLink, Loader2, ShoppingBag, Package, Pencil, LogOut, Heart, Trash2, Gift } from "lucide-react";
+import { ArrowLeft, User as UserIcon, Download, ExternalLink, Loader2, ShoppingBag, Package, Pencil, LogOut, Heart, Trash2, Gift, Printer } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { getProfile, type Perfil } from "@/utils/profile";
 import { supabase } from "@/lib/supabase";
@@ -210,6 +210,12 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
     onBack();
   };
 
+  const getLinkVisualizacao = (linkDownload: string | null): string | null => {
+    if (!linkDownload) return null;
+    const match = linkDownload.match(/id=([^&]+)/);
+    return match ? `https://drive.google.com/file/d/${match[1]}/view` : linkDownload;
+  };
+
   return (
     <div className="fixed inset-0 z-[90] bg-[#F5F5F7] overflow-y-auto animate-in slide-in-from-bottom duration-300 flex flex-col">
       {/* Cabeçalho Fixo com Textura Laranja */}
@@ -339,16 +345,27 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
 
                       <div>
                         {item.linkAcesso ? (
-                          <a
-                            href={item.linkAcesso}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1.5 bg-[#44FF00] hover:bg-[#3ee600] active:scale-95 text-[#171717] px-3 py-1.5 rounded-xl font-black text-[10px] uppercase tracking-wider transition-all shadow-sm"
-                          >
-                            <Download size={12} />
-                            Baixar Receita (PDF)
-                            <ExternalLink size={10} className="opacity-70" />
-                          </a>
+                          <div className="flex items-center gap-2">
+                            <a
+                              href={item.linkAcesso}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1.5 bg-[#44FF00] hover:bg-[#3ee600] active:scale-95 text-[#171717] px-3 py-1.5 rounded-xl font-black text-[10px] uppercase tracking-wider transition-all shadow-sm"
+                            >
+                              <Download size={12} />
+                              Baixar Receita (PDF)
+                              <ExternalLink size={10} className="opacity-70" />
+                            </a>
+                            <a
+                              href={getLinkVisualizacao(item.linkAcesso) || item.linkAcesso}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1.5 bg-gray-100 hover:bg-gray-200 active:scale-95 text-gray-800 px-3 py-1.5 rounded-xl font-black text-[10px] uppercase tracking-wider transition-all shadow-sm"
+                            >
+                              <Printer size={12} />
+                              Imprimir
+                            </a>
+                          </div>
                         ) : (
                           <span className="text-[10px] font-bold text-amber-600 bg-amber-50 px-2.5 py-1 rounded-lg inline-block">
                             Link indisponível no momento
@@ -473,16 +490,27 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
 
                       <div>
                         {item.linkAcesso ? (
-                          <a
-                            href={item.linkAcesso}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1.5 bg-[#44FF00] hover:bg-[#3ee600] active:scale-95 text-[#171717] px-3 py-1.5 rounded-xl font-black text-[10px] uppercase tracking-wider transition-all shadow-sm"
-                          >
-                            <Download size={12} />
-                            Baixar Receita (PDF)
-                            <ExternalLink size={10} className="opacity-70" />
-                          </a>
+                          <div className="flex items-center gap-2">
+                            <a
+                              href={item.linkAcesso}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1.5 bg-[#44FF00] hover:bg-[#3ee600] active:scale-95 text-[#171717] px-3 py-1.5 rounded-xl font-black text-[10px] uppercase tracking-wider transition-all shadow-sm"
+                            >
+                              <Download size={12} />
+                              Baixar Receita (PDF)
+                              <ExternalLink size={10} className="opacity-70" />
+                            </a>
+                            <a
+                              href={getLinkVisualizacao(item.linkAcesso) || item.linkAcesso}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1.5 bg-gray-100 hover:bg-gray-200 active:scale-95 text-gray-800 px-3 py-1.5 rounded-xl font-black text-[10px] uppercase tracking-wider transition-all shadow-sm"
+                            >
+                              <Printer size={12} />
+                              Imprimir
+                            </a>
+                          </div>
                         ) : (
                           <span className="text-[10px] font-bold text-amber-600 bg-amber-50 px-2.5 py-1 rounded-lg inline-block">
                             Link indisponível no momento
