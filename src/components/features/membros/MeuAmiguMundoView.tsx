@@ -10,6 +10,7 @@ import { CompleteProfileModal } from "@/components/CompleteProfileModal";
 import { CalculadoraPreco } from "@/components/features/ferramentas/CalculadoraPreco";
 import { ContadorCarreiras } from "@/components/features/ferramentas/ContadorCarreiras";
 import { ConversorAgulha } from "@/components/features/ferramentas/ConversorAgulha";
+import { CombinadorCores } from "@/components/features/ferramentas/CombinadorCores";
 
 interface MeuAmiguMundoViewProps {
   onBack: () => void;
@@ -30,7 +31,7 @@ const FERRAMENTAS = [
   { id: "calculadora-preco", nome: "Calculadora de Preço", descricao: "Descubra o preço justo pra vender", icone: Calculator, disponivel: true },
   { id: "contador", nome: "Contador de Carreiras e Pontos", descricao: "Nunca mais perca a conta", icone: ListChecks, disponivel: true },
   { id: "conversor", nome: "Conversor de Agulha/Fio", descricao: "Tabela de conversão rápida", icone: Ruler, disponivel: true },
-  { id: "cores", nome: "Combinador de Cores", descricao: "Paletas harmônicas pro seu amigurumi", icone: Palette, disponivel: false },
+  { id: "cores", nome: "Combinador de Cores", descricao: "Paletas harmônicas pro seu amigurumi", icone: Palette, disponivel: true },
 ];
 
 export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProps) => {
@@ -668,6 +669,10 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
 
       {ferramentaAberta === "conversor" && (
         <ConversorAgulha onBack={() => setFerramentaAberta(null)} />
+      )}
+
+      {ferramentaAberta === "cores" && (
+        <CombinadorCores onBack={() => setFerramentaAberta(null)} />
       )}
     </div>
   );
