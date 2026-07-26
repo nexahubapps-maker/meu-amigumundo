@@ -59,6 +59,13 @@ function shuffleArray<T>(array: T[]): T[] {
   return arr;
 }
 
+function getBonusSlotsForPaidCount(paidCount: number): number {
+  if (paidCount < 10) return 0;
+  if (paidCount < 15) return 1;
+  if (paidCount < 20) return 2;
+  return 5;
+}
+
 export default function Index() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -370,18 +377,38 @@ export default function Index() {
   };
 
   const removeFromCart = (id: string) => {
-    setCart((prev) => prev.filter((i) => i.id !== id));
+    setCart((prev) => {
+      const updated = prev.filter((i) => i.id !== id);
+      const paidCount = updated.filter(i => i.tipo === "recipe" && !i.isBonus).length;
+      const allowedSlots = getBonusSlotsForPaidCount(paidCount);
+      const bonusItems = updated.filter(i => i.tipo === "recipe" && i.isBonus);
+      if (bonusItems.length > allowedSlots) {
+        const excesso = bonusItems.length - allowedSlots;
+        const idsParaRemover = bonusItems.slice(bonusItems.length - excesso).map(b => b.id);
+        return updated.filter(i => !idsParaRemover.includes(i.id));
+      }
+      return updated;
+    });
   };
 
   const calculatedCart = calculateCart(cart);
+  const paidRecipeCountAtual = cart.filter(i => i.tipo === "recipe" && !i.isBonus).length;
+  const bonusRecipeCountAtual = cart.filter(i => i.tipo === "recipe" && i.isBonus).length;
+  const hasOpenBonusSlot = getBonusSlotsForPaidCount(paidRecipeCountAtual) > bonusRecipeCountAtual;
 
   const handleRecipeAdd = (recipe: SheetRecipe) => {
-    addToCart({ 
-      id: recipe.id, 
-      nome: recipe.nome, 
-      preco: recipe.preco, 
+    const paidCount = cart.filter(i => i.tipo === "recipe" && !i.isBonus).length;
+    const bonusCount = cart.filter(i => i.tipo === "recipe" && i.isBonus).length;
+    const allowedSlots = getBonusSlotsForPaidCount(paidCount);
+    const isBonus = allowedSlots > bonusCount && recipe.preco === 5;
+
+    addToCart({
+      id: recipe.id,
+      nome: recipe.nome,
+      preco: recipe.preco,
       tipo: "recipe",
-      imagem: recipe.imagem_url
+      imagem: recipe.imagem_url,
+      isBonus
     });
   };
 
@@ -544,7 +571,7 @@ export default function Index() {
         </section>
       </div>
 
-      <section className="bg-[#F5F5F7] pt-0 pb-6">
+      <section className="bg-[#F5F5F7] pt-0 pb-[#0px]">
         <div className="w-full overflow-hidden">
           <img 
             src="https://ik.imagekit.io/51b3srlsg/Loja_AmiguMundo_amigurumis.jpeg" 
@@ -836,6 +863,7 @@ export default function Index() {
         recipes={favoriteRecipes}
         packs={packsList}
         infoprodutos={infoprodutosList}
+        hasOpenBonusSlot={hasOpenBonusSlot}
       />
 
       <NotificationsModal
@@ -859,6 +887,7 @@ export default function Index() {
             const recipe = shuffledRecipes.find((r) => r.id === id);
             toggleFavorite(id, recipe ? { nome: recipe.nome, imagem_url: recipe.imagem_url, tipo: "receita" } : undefined);
           }}
+          hasOpenBonusSlot={hasOpenBonusSlot}
         />
       )}
 
@@ -882,6 +911,7 @@ export default function Index() {
             const recipe = searchResults.find((r) => r.id === id);
             toggleFavorite(id, recipe ? { nome: recipe.nome, imagem_url: recipe.imagem_url, tipo: "receita" } : undefined);
           }}
+          hasOpenBonusSlot={hasOpenBonusSlot}
         />
       )}
 
