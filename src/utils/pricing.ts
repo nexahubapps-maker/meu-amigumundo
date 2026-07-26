@@ -6,6 +6,7 @@ export interface CartItem {
   preco: number;
   tipo: "recipe" | "pack" | "combo" | "upsell";
   imagem?: string;
+  isBonus?: boolean;
 }
 
 export interface CalculatedCart {
@@ -40,6 +41,7 @@ export interface CalculatedCart {
   recipeCount: number; // paid recipes count
   bonusCount: number;  // filled free slots count
   maxBonusSlots: number; // total allowed free slots
+  discountPercent: number;
   pricePerRecipe: number;
 }
 
@@ -51,52 +53,35 @@ function getFreeSlotsCount(paidCount: number): number {
   return 5;
 }
 
-// Helper to get price per recipe based on paid recipes count
-function getPricePerRecipe(paidCount: number): number {
-  if (paidCount === 0) return 0;
-  if (paidCount <= 4) return 5.00;
-  if (paidCount <= 9) return 4.00;
-  if (paidCount <= 14) return 3.00;
-  return 2.50;
+// Helper to get discount percentage based on paid recipes count
+function getDiscountPercent(paidCount: number): number {
+  if (paidCount < 5) return 0;
+  if (paidCount < 10) return 0.20;
+  if (paidCount < 15) return 0.40;
+  return 0.50;
 }
 
 export function calculateCart(cart: CartItem[]): CalculatedCart {
   const recipeItems = cart.filter(item => item.tipo === "recipe");
   const otherItems = cart.filter(item => item.tipo !== "recipe");
 
-  const N = recipeItems.length;
-  let bestPaidCount = N;
-  let bestFreeCount = 0;
-  let minCost = Infinity;
+  const paidRecipeItems = recipeItems.filter(item => !item.isBonus);
+  const bonusRecipeItems = recipeItems.filter(item => item.isBonus);
 
-  // Find the optimal split of Paid (P) and Free (F) recipes that minimizes cost
-  for (let P = 0; P <= N; P++) {
-    const F = N - P;
-    const allowedSlots = getFreeSlotsCount(P);
-    if (F <= allowedSlots) {
-      const cost = P * getPricePerRecipe(P);
-      if (cost < minCost) {
-        minCost = cost;
-        bestPaidCount = P;
-        bestFreeCount = F;
-      }
-    }
-  }
+  const paidCount = paidRecipeItems.length;
+  const discountPercent = getDiscountPercent(paidCount);
+  const maxBonusSlots = getFreeSlotsCount(paidCount);
 
-  const pricePerRecipe = getPricePerRecipe(bestPaidCount);
-  const maxBonusSlots = getFreeSlotsCount(bestPaidCount);
-
-  // Map paid and free recipes
-  const paidRecipes = recipeItems.slice(0, bestPaidCount).map(item => ({
+  const paidRecipes = paidRecipeItems.map(item => ({
     id: item.id,
     nome: item.nome,
     precoOriginal: item.preco,
-    precoFinal: pricePerRecipe,
+    precoFinal: item.preco * (1 - discountPercent),
     tipo: "recipe" as const,
     imagem: item.imagem
   }));
 
-  const freeRecipes = recipeItems.slice(bestPaidCount, bestPaidCount + bestFreeCount).map(item => ({
+  const freeRecipes = bonusRecipeItems.map(item => ({
     id: item.id,
     nome: item.nome,
     precoOriginal: item.preco,
@@ -130,9 +115,10 @@ export function calculateCart(cart: CartItem[]): CalculatedCart {
     subtotalRecipes,
     subtotalOthers,
     total,
-    recipeCount: bestPaidCount,
-    bonusCount: bestFreeCount,
+    recipeCount: paidCount,
+    bonusCount: bonusRecipeItems.length,
     maxBonusSlots,
-    pricePerRecipe
+    discountPercent,
+    pricePerRecipe: 0
   };
 }
