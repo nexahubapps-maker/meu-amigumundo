@@ -8,6 +8,7 @@ import { supabase } from "@/lib/supabase";
 import { getRecipesByIds, getDriveFileUrl, getPacksByIds, getInfoprodutosByIds, getReceitaGratuitaDownloadUrl } from "@/utils/sheets";
 import { CompleteProfileModal } from "@/components/CompleteProfileModal";
 import { CalculadoraPreco } from "@/components/features/ferramentas/CalculadoraPreco";
+import { ContadorCarreiras } from "@/components/features/ferramentas/ContadorCarreiras";
 
 interface MeuAmiguMundoViewProps {
   onBack: () => void;
@@ -26,7 +27,7 @@ type TabType = (typeof TABS)[number];
 
 const FERRAMENTAS = [
   { id: "calculadora-preco", nome: "Calculadora de Preço", descricao: "Descubra o preço justo pra vender", icone: Calculator, disponivel: true },
-  { id: "contador", nome: "Contador de Carreiras e Pontos", descricao: "Nunca mais perca a conta", icone: ListChecks, disponivel: false },
+  { id: "contador", nome: "Contador de Carreiras e Pontos", descricao: "Nunca mais perca a conta", icone: ListChecks, disponivel: true },
   { id: "conversor", nome: "Conversor de Agulha/Fio", descricao: "Tabela de conversão rápida", icone: Ruler, disponivel: false },
   { id: "cores", nome: "Combinador de Cores", descricao: "Paletas harmônicas pro seu amigurumi", icone: Palette, disponivel: false },
 ];
@@ -618,7 +619,7 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
                       <Icone size={22} className="text-[#171717]" />
                       {!f.disponivel && (
                         <div className="absolute -top-1 -right-1 bg-gray-300 rounded-full p-1">
-                          <Lock size={10} className="text-white" />
+                          <Lock size={10} className="text-[#171717]" />
                         </div>
                       )}
                     </div>
@@ -658,6 +659,10 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
 
       {ferramentaAberta === "calculadora-preco" && (
         <CalculadoraPreco onBack={() => setFerramentaAberta(null)} />
+      )}
+
+      {ferramentaAberta === "contador" && (
+        <ContadorCarreiras onBack={() => setFerramentaAberta(null)} />
       )}
     </div>
   );
