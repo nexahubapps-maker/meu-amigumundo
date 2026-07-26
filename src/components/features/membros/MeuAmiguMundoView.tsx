@@ -1,12 +1,13 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { ArrowLeft, User as UserIcon, Download, ExternalLink, Loader2, ShoppingBag, Package, Pencil, LogOut, Heart, Trash2, Gift, Printer } from "lucide-react";
+import { ArrowLeft, User as UserIcon, Download, ExternalLink, Loader2, ShoppingBag, Package, Pencil, LogOut, Heart, Trash2, Gift, Printer, Calculator, ListChecks, Ruler, Palette, Lock } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { getProfile, type Perfil } from "@/utils/profile";
 import { supabase } from "@/lib/supabase";
 import { getRecipesByIds, getDriveFileUrl, getPacksByIds, getInfoprodutosByIds, getReceitaGratuitaDownloadUrl } from "@/utils/sheets";
 import { CompleteProfileModal } from "@/components/CompleteProfileModal";
+import { CalculadoraPreco } from "@/components/features/ferramentas/CalculadoraPreco";
 
 interface MeuAmiguMundoViewProps {
   onBack: () => void;
@@ -22,6 +23,13 @@ const TABS = [
 ] as const;
 
 type TabType = (typeof TABS)[number];
+
+const FERRAMENTAS = [
+  { id: "calculadora-preco", nome: "Calculadora de Preço", descricao: "Descubra o preço justo pra vender", icone: Calculator, disponivel: true },
+  { id: "contador", nome: "Contador de Carreiras e Pontos", descricao: "Nunca mais perca a conta", icone: ListChecks, disponivel: false },
+  { id: "conversor", nome: "Conversor de Agulha/Fio", descricao: "Tabela de conversão rápida", icone: Ruler, disponivel: false },
+  { id: "cores", nome: "Combinador de Cores", descricao: "Paletas harmônicas pro seu amigurumi", icone: Palette, disponivel: false },
+];
 
 export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProps) => {
   const { user, signOut } = useAuth();
@@ -41,6 +49,7 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
   const [isLoadingFavoritos, setIsLoadingFavoritos] = useState(false);
 
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
+  const [ferramentaAberta, setFerramentaAberta] = useState<string | null>(null);
 
   const recarregarPerfil = async () => {
     if (user) {
@@ -588,6 +597,40 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
               </div>
             </div>
           )
+        ) : activeTab === "Ferramentas" ? (
+          <div className="max-w-4xl mx-auto">
+            <p className="text-xs font-black text-gray-500 uppercase tracking-wider mb-3">
+              Ferramentas Gratuitas
+            </p>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {FERRAMENTAS.map((f) => {
+                const Icone = f.icone;
+                return (
+                  <button
+                    key={f.id}
+                    onClick={() => f.disponivel && setFerramentaAberta(f.id)}
+                    disabled={!f.disponivel}
+                    className={`bg-white rounded-2xl p-4 border border-gray-100 shadow-sm flex flex-col items-center text-center gap-2 transition-all ${
+                      f.disponivel ? "hover:shadow-md active:scale-95 cursor-pointer" : "opacity-50 cursor-not-allowed"
+                    }`}
+                  >
+                    <div className="w-12 h-12 rounded-full bg-[#44FF00]/15 flex items-center justify-center relative">
+                      <Icone size={22} className="text-[#171717]" />
+                      {!f.disponivel && (
+                        <div className="absolute -top-1 -right-1 bg-gray-300 rounded-full p-1">
+                          <Lock size={10} className="text-white" />
+                        </div>
+                      )}
+                    </div>
+                    <h4 className="text-[11px] font-black text-gray-900 uppercase leading-tight">{f.nome}</h4>
+                    <p className="text-[10px] text-gray-400 font-medium leading-tight">
+                      {f.disponivel ? f.descricao : "Em breve"}
+                    </p>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
         ) : (
           <div className="h-64 flex items-center justify-center">
             <div className="text-center py-12 px-4 bg-white rounded-2xl border border-gray-100 shadow-sm max-w-sm w-full">
@@ -612,6 +655,10 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
           recarregarPerfil();
         }}
       />
+
+      {ferramentaAberta === "calculadora-preco" && (
+        <CalculadoraPreco onBack={() => setFerramentaAberta(null)} />
+      )}
     </div>
   );
 };
