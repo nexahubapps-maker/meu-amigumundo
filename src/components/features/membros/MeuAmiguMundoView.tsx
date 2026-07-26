@@ -9,6 +9,7 @@ import { getRecipesByIds, getDriveFileUrl, getPacksByIds, getInfoprodutosByIds, 
 import { CompleteProfileModal } from "@/components/CompleteProfileModal";
 import { CalculadoraPreco } from "@/components/features/ferramentas/CalculadoraPreco";
 import { ContadorCarreiras } from "@/components/features/ferramentas/ContadorCarreiras";
+import { ConversorAgulha } from "@/components/features/ferramentas/ConversorAgulha";
 
 interface MeuAmiguMundoViewProps {
   onBack: () => void;
@@ -28,7 +29,7 @@ type TabType = (typeof TABS)[number];
 const FERRAMENTAS = [
   { id: "calculadora-preco", nome: "Calculadora de Preço", descricao: "Descubra o preço justo pra vender", icone: Calculator, disponivel: true },
   { id: "contador", nome: "Contador de Carreiras e Pontos", descricao: "Nunca mais perca a conta", icone: ListChecks, disponivel: true },
-  { id: "conversor", nome: "Conversor de Agulha/Fio", descricao: "Tabela de conversão rápida", icone: Ruler, disponivel: false },
+  { id: "conversor", nome: "Conversor de Agulha/Fio", descricao: "Tabela de conversão rápida", icone: Ruler, disponivel: true },
   { id: "cores", nome: "Combinador de Cores", descricao: "Paletas harmônicas pro seu amigurumi", icone: Palette, disponivel: false },
 ];
 
@@ -663,6 +664,10 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
 
       {ferramentaAberta === "contador" && (
         <ContadorCarreiras onBack={() => setFerramentaAberta(null)} />
+      )}
+
+      {ferramentaAberta === "conversor" && (
+        <ConversorAgulha onBack={() => setFerramentaAberta(null)} />
       )}
     </div>
   );
