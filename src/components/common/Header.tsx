@@ -59,14 +59,14 @@ export const Header = ({ cartCount = 0, onOpenMeuAmiguMundo }: HeaderProps) => {
                 onClick={onOpenMeuAmiguMundo}
                 className="flex flex-col items-center gap-0.5 max-w-[64px]"
               >
-                <div className="w-9 h-9 rounded-full overflow-hidden bg-gray-100 border-2 border-[#44FF00] flex items-center justify-center shrink-0">
+                <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-100 border-2 border-[#44FF00] flex items-center justify-center shrink-0">
                   {profile?.foto_url ? (
                     <img src={profile.foto_url} alt={profile.nome || "Perfil"} className="w-full h-full object-cover" />
                   ) : (
-                    <User size={18} className="text-gray-400" />
+                    <User size={22} className="text-gray-400" />
                   )}
                 </div>
-                <span className="text-[8px] font-black text-gray-700 uppercase truncate w-full text-center leading-tight">
+                <span className="text-[10px] font-black text-gray-700 uppercase truncate w-full text-center leading-tight">
                   {profile?.nome || "Perfil"}
                 </span>
               </button>
