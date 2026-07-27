@@ -133,8 +133,8 @@ export const UnifiedCheckoutHub = ({
   ];
 
   return (
-    <div id="cart-section" className="max-w-xl mx-auto my-2 bg-white rounded-xl p-3 shadow-md border-2 border-[#44FF00] text-left w-full">
-      <div className="bg-gray-50 rounded-lg p-3 border border-gray-200 mb-3">
+    <div id="cart-section" className="max-w-xl mx-auto my-2 bg-white rounded-xl p-2 shadow-md border-2 border-[#44FF00] text-left w-full">
+      <div className="bg-gray-50 rounded-lg p-2.5 border border-gray-200 mb-3">
         <div className="text-center mb-2">
           <p className="text-sm text-gray-500 font-bold leading-tight">
             Digite abaixo o código da receita e adicione ao carrinho.
@@ -235,13 +235,13 @@ export const UnifiedCheckoutHub = ({
                     row.isActive ? "bg-white" : ""
                   }`}
                 >
-                  <td className="py-1.5 px-2.5 text-sm text-gray-800 font-bold">
+                  <td className="py-1.5 px-1.5 text-sm text-gray-800 font-bold whitespace-nowrap">
                     {row.range}
                   </td>
-                  <td className="py-1.5 px-2.5 text-sm text-gray-800 font-bold text-center">
+                  <td className="py-1.5 px-1.5 text-sm text-gray-800 font-bold text-center whitespace-nowrap">
                     {row.price}
                   </td>
-                  <td className="py-1.5 px-2.5 text-sm text-center">
+                  <td className="py-1.5 px-1.5 text-sm text-center">
                     {row.isBonusActive ? (
                       <span className="inline-block bg-green-100 text-green-700 font-bold px-2 py-0.5 rounded-full text-[11px]">
                         {row.bonus}
