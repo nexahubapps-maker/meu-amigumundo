@@ -36,6 +36,7 @@ export interface CalculatedCart {
     imagem?: string;
   }[];
   subtotalRecipes: number;
+  subtotalRecipesOriginal: number;
   subtotalOthers: number;
   total: number;
   recipeCount: number; // paid recipes count
@@ -101,6 +102,7 @@ export function calculateCart(cart: CartItem[]): CalculatedCart {
   }));
 
   const subtotalRecipes = paidRecipes.reduce((sum, item) => sum + item.precoFinal, 0);
+  const subtotalRecipesOriginal = paidRecipes.reduce((sum, item) => sum + item.precoOriginal, 0);
   const subtotalOthers = calculatedOthers.reduce((sum, item) => sum + item.precoFinal, 0);
   const total = subtotalRecipes + subtotalOthers;
 
@@ -113,6 +115,7 @@ export function calculateCart(cart: CartItem[]): CalculatedCart {
     paidRecipes,
     freeRecipes,
     subtotalRecipes,
+    subtotalRecipesOriginal,
     subtotalOthers,
     total,
     recipeCount: paidCount,
