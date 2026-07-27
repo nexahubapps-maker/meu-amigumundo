@@ -74,26 +74,26 @@ export const UnifiedCheckoutHub = ({
 
   let neuromarketingText = "";
   if (P >= 1 && P <= 4) {
-    neuromarketingText = `✨ Adicione mais ${5 - P} receita(s) e ganhe 20% OFF em tudo!`;
+    neuromarketingText = `Adicione mais ${5 - P} receita(s) e ganhe 20% OFF em tudo!`;
   } else if (P >= 5 && P <= 9) {
-    neuromarketingText = `🔥 Faltam só ${10 - P} receita(s) pro desconto subir pra 40% OFF + 1 RECEITA GRÁTIS! 🎁`;
+    neuromarketingText = `Faltam só ${10 - P} receita(s) para o desconto subir para 40% OFF + 1 RECEITA GRÁTIS!`;
   } else if (P >= 10 && P <= 14) {
     if (F === 0) {
-      neuromarketingText = `🎉 Parabéns! Você já tem 40% OFF e ganhou 1 RECEITA GRÁTIS! Escolha uma receita de R$5 pra levar de presente.`;
+      neuromarketingText = `Parabéns! Você já tem 40% OFF e ganhou 1 RECEITA GRÁTIS! Escolha uma receita de R$5 para levar de presente.`;
     } else {
-      neuromarketingText = `🚀 Muito bem! Adicione mais ${15 - P} receita(s) pro desconto subir pra 50% OFF + mais 1 GRÁTIS!`;
+      neuromarketingText = `Muito bem! Adicione mais ${15 - P} receita(s) para o desconto subir para 50% OFF + mais 1 GRÁTIS!`;
     }
   } else if (P >= 15 && P <= 19) {
     if (F < 2) {
-      neuromarketingText = `🎁 Você já tem 50% OFF e liberou mais 1 RECEITA GRÁTIS! Escolha uma receita de R$5 pra levar de presente.`;
+      neuromarketingText = `Você já tem 50% OFF e liberou mais 1 RECEITA GRÁTIS! Escolha uma receita de R$5 para levar de presente.`;
     } else {
-      neuromarketingText = `🏆 Você está imparável! Mais ${20 - P} receita(s) e você ganha o prêmio máximo: 5 RECEITAS GRÁTIS!`;
+      neuromarketingText = `Você está imparável! Mais ${20 - P} receita(s) e você ganha o prêmio máximo: 5 RECEITAS GRÁTIS!`;
     }
   } else if (P >= 20) {
     if (F < 5) {
-      neuromarketingText = `👑 Sensacional! Você atingiu o topo: 50% OFF + até 5 RECEITAS GRÁTIS no total! Escolha receitas de R$5 pra completar seus presentes.`;
+      neuromarketingText = `Sensacional! Você atingiu o topo: 50% OFF + até 5 RECEITAS GRÁTIS no total! Escolha receitas de R$5 para completar seus presentes.`;
     } else {
-      neuromarketingText = `❤️ Carrinho perfeito! Você garantiu o melhor desconto e todos os seus presentes!`;
+      neuromarketingText = `Carrinho perfeito! Você garantiu o melhor desconto e todos os seus presentes!`;
     }
   }
 
@@ -225,29 +225,29 @@ export const UnifiedCheckoutHub = ({
           </div>
         </div>
 
-        <div className="bg-[#5D0599] rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+        <div className="bg-gray-100 rounded-xl border border-gray-200 shadow-sm overflow-hidden">
           <table className="w-full text-left border-collapse">
             <tbody>
               {tableRows.map((row, index) => (
                 <tr
                   key={index}
-                  className={`border-b border-white/20 last:border-0 transition-colors ${
-                    row.isActive ? "bg-white/15" : ""
+                  className={`border-b border-gray-200 last:border-0 transition-colors ${
+                    row.isActive ? "bg-white" : ""
                   }`}
                 >
-                  <td className="py-1.5 px-2.5 text-sm text-white font-bold">
+                  <td className="py-1.5 px-2.5 text-sm text-gray-800 font-bold">
                     {row.range}
                   </td>
-                  <td className="py-1.5 px-2.5 text-sm text-white font-bold text-center">
+                  <td className="py-1.5 px-2.5 text-sm text-gray-800 font-bold text-center">
                     {row.price}
                   </td>
                   <td className="py-1.5 px-2.5 text-sm text-center">
                     {row.isBonusActive ? (
-                      <span className="inline-block bg-white text-[#22c55e] font-bold px-2 py-0.5 rounded-full text-[11px]">
+                      <span className="inline-block bg-green-100 text-green-700 font-bold px-2 py-0.5 rounded-full text-[11px]">
                         {row.bonus}
                       </span>
                     ) : (
-                      <span className="text-white/40 font-medium">{row.bonus}</span>
+                      <span className="text-gray-400 font-medium">{row.bonus}</span>
                     )}
                   </td>
                 </tr>
