@@ -235,13 +235,13 @@ export const UnifiedCheckoutHub = ({
                     row.isActive ? "bg-white" : ""
                   }`}
                 >
-                  <td className="py-1.5 px-1.5 text-sm text-gray-800 font-bold whitespace-nowrap">
+                  <td className="py-0.5 px-1.5 text-sm text-gray-800 font-bold whitespace-nowrap">
                     {row.range}
                   </td>
-                  <td className="py-1.5 px-1.5 text-sm text-gray-800 font-bold text-center whitespace-nowrap">
+                  <td className="py-0.5 px-1.5 text-sm text-gray-800 font-bold text-center whitespace-nowrap">
                     {row.price}
                   </td>
-                  <td className="py-1.5 px-1.5 text-sm text-center">
+                  <td className="py-0.5 px-1.5 text-sm text-center">
                     {row.isBonusActive ? (
                       <span className="inline-block bg-green-100 text-green-700 font-bold px-2 py-0.5 rounded-full text-[11px]">
                         {row.bonus}
