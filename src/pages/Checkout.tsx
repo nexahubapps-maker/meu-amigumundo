@@ -309,6 +309,40 @@ export default function Checkout() {
           </div>
         </div>
 
+        {/* Resumo do Pedido (agora exibido em primeiro) */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-3">
+          <div className="flex items-center mb-2 text-gray-800">
+            <h2 className="font-bold uppercase tracking-tight text-xs">Resumo do Pedido</h2>
+          </div>
+          <div className="space-y-2">
+            {calculated.items.map((item, i) => (
+              <div key={i} className="flex justify-between items-center text-xs">
+                <span className="text-gray-600">
+                  {item.nome} {item.isBonus && <span className="text-green-600 font-bold">(BRINDE)</span>}
+                </span>
+                <span className="font-bold text-gray-800">
+                  {item.isBonus ? "Grátis" : `R$ ${item.precoOriginal.toFixed(2)}`}
+                </span>
+              </div>
+            ))}
+
+            {calculated.subtotalRecipesOriginal > calculated.subtotalRecipes && (
+              <div className="flex justify-between items-center text-xs">
+                <span className="font-bold text-green-600">Desconto</span>
+                <span className="font-bold text-green-600">
+                  - R$ {(calculated.subtotalRecipesOriginal - calculated.subtotalRecipes).toFixed(2)}
+                </span>
+              </div>
+            )}
+
+            <div className="pt-2 border-t border-dashed border-gray-200 flex justify-between items-center">
+              <span className="font-bold text-xs text-gray-800">Total</span>
+              <span className="text-lg font-black text-blue-600">R$ {total.toFixed(2)}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Dados para Entrega (agora exibido em segundo) */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-3">
           <div className="flex items-center gap-2 mb-3 text-gray-800">
             <ShieldCheck size={18} className="text-blue-500" />
@@ -359,28 +393,6 @@ export default function Checkout() {
                   />
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-3">
-          <div className="flex items-center mb-2 text-gray-800">
-            <h2 className="font-bold uppercase tracking-tight text-xs">Resumo do Pedido</h2>
-          </div>
-          <div className="space-y-2">
-            {calculated.items.map((item, i) => (
-              <div key={i} className="flex justify-between items-center text-xs">
-                <span className="text-gray-600">
-                  {item.nome} {item.isBonus && <span className="text-green-600 font-bold">(BRINDE)</span>}
-                </span>
-                <span className="font-bold text-gray-800">
-                  {item.precoFinal === 0 ? "Grátis" : `R$ ${item.precoFinal.toFixed(2)}`}
-                </span>
-              </div>
-            ))}
-            <div className="pt-2 border-t border-dashed border-gray-200 flex justify-between items-center">
-              <span className="font-bold text-xs text-gray-800">Total</span>
-              <span className="text-lg font-black text-blue-600">R$ {total.toFixed(2)}</span>
             </div>
           </div>
         </div>
