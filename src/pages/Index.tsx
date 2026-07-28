@@ -50,6 +50,8 @@ import { playHeartbeatSound } from "@/utils/audio";
 import { type CartItem, calculateCart } from "@/utils/pricing";
 import { showCartAdd, showSuccess, showInfo } from "@/utils/toast";
 
+const ADMIN_EMAIL = "crochecrochet1@gmail.com";
+
 function shuffleArray<T>(array: T[]): T[] {
   const arr = [...array];
   for (let i = arr.length - 1; i > 0; i--) {
@@ -927,7 +929,7 @@ export default function Index() {
         <MeuAmiguMundoView onBack={() => setIsMeuAmiguMundoOpen(false)} onAddToCart={addToCart} />
       )}
 
-      <AdminSyncButton />
+      {user?.email === ADMIN_EMAIL && <AdminSyncButton />}
 
       <AuthModal isOpen={isMeuAuthModalOpen} onClose={() => setIsMeuAuthModalOpen(false)} />
 
