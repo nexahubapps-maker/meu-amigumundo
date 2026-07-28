@@ -142,8 +142,26 @@ export default async function handler(request: Request, context: Context) {
     `;
   }
 
+  let structuredData = "";
+  if (priceAmount) {
+    const productData = {
+      "@context": "https://schema.org",
+      "@type": "Product",
+      "name": title.split(" - R$")[0],
+      "image": image,
+      "description": description,
+      "offers": {
+        "@type": "Offer",
+        "priceCurrency": priceCurrency,
+        "price": priceAmount,
+        "availability": "https://schema.org/InStock"
+      }
+    };
+    structuredData = `<script type="application/ld+json">${JSON.stringify(productData)}</script>`;
+  }
+
   // Inject meta tags into the head of index.html
-  html = html.replace("<head>", `<head>${metaTags}`);
+  html = html.replace("<head>", `<head>${metaTags}${structuredData}`);
 
   return new Response(html, {
     headers: {
