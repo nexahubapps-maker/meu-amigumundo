@@ -29,3 +29,7 @@ export const getStoredUTMs = (): UTMParams => {
   const stored = localStorage.getItem("amigumundo-utms");
   return stored ? JSON.parse(stored) : {};
 };
+
+export const appendShareUTM = (url: string): string => {
+  return `${url}?utm_source=compartilhamento&utm_medium=cliente&utm_campaign=organico`;
+};

@@ -30,6 +30,7 @@ import { AuthModal } from "@/components/AuthModal";
 import { getProfile } from "@/utils/profile";
 import { CompleteProfileModal } from "@/components/CompleteProfileModal";
 import { MeuAmiguMundoView } from "@/components/features/membros/MeuAmiguMundoView";
+import { captureUTMs } from "@/lib/tracking/utmify-service";
 import { supabase } from "@/lib/supabase";
 import { 
   getInfoprodutos, 
@@ -56,7 +57,7 @@ function shuffleArray<T>(array: T[]): T[] {
   const arr = [...array];
   for (let i = arr.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
+    [arr[i], arr[j]] = [arr[i], arr[j]];
   }
   return arr;
 }
@@ -105,6 +106,10 @@ export default function Index() {
 
   const [searchResults, setSearchResults] = useState<SheetRecipe[]>([]);
   const [isSearching, setIsSearching] = useState(false);
+
+  useEffect(() => {
+    captureUTMs();
+  }, []);
 
   const getTargetId = () => {
     if (slug_and_id) {
@@ -233,7 +238,7 @@ export default function Index() {
         } catch (e) {
           console.error("Error searching recipes:", e);
           setSearchResults([]);
-        } finally {
+        } fontally {
           setIsSearching(false);
         }
       } else {
@@ -526,7 +531,7 @@ export default function Index() {
     });
     
     if (matchedCat) {
-      metaTitle = `Coleção ${matchedCat.titulo} - AmiguMundo`;
+      metaTitle = `Coleção ${matchedCat.titulo} - Amigu Mundo`;
       metaImage = matchedCat.imagem_url;
     }
   }
