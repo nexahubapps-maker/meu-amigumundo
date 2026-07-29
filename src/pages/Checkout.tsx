@@ -5,7 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { ChevronLeft, ShieldCheck, Zap, CreditCard, Mail, User, FileText, Lock, Loader2, Copy, Check } from "lucide-react";
 import { SupportButton } from "@/components/common/SupportButton";
 import { playHeartbeatSound } from "@/utils/audio";
-import { getRecipesByIds, getInfoprodutos, getPacks } from "@/utils/sheets";
+import { getRecipesByIds, getInfoprodutos, getPacks, getBumpInfoprodutos } from "@/utils/sheets";
 import { calculateCart } from "@/utils/pricing";
 import { showSuccess, showError } from "@/utils/toast";
 import { supabase } from "@/lib/supabase";
@@ -33,8 +33,14 @@ export default function Checkout() {
   const [isWaitingPayment, setIsWaitingPayment] = useState(false);
   const [copiedPix, setCopiedPix] = useState(false);
 
+  const [bumpOfertas, setBumpOfertas] = useState<any[]>([]);
+
   useEffect(() => {
     window.scrollTo(0, 0);
+  }, []);
+
+  useEffect(() => {
+    getBumpInfoprodutos().then(setBumpOfertas);
   }, []);
 
   useEffect(() => {
@@ -120,6 +126,19 @@ export default function Checkout() {
   useEffect(() => {
     localStorage.setItem("amigumundo-cpf", cpf);
   }, [cpf]);
+
+  const handleAddBump = (bump: any) => {
+    setCart((prev) => [
+      ...prev,
+      {
+        id: bump.id,
+        nome: bump.nome,
+        preco: bump.preco * 0.8,
+        tipo: "upsell",
+        imagem: bump.imagem_url,
+      },
+    ]);
+  };
 
   const handleCpfChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/\D/g, "").substring(0, 11);
@@ -398,6 +417,62 @@ export default function Checkout() {
             </div>
           </div>
         </div>
+
+        {!isWaitingPayment && (() => {
+          const idsNoCarrinho = cart.map((i: any) => i.id);
+          const bumpsDisponiveis = bumpOfertas.filter((b) => !idsNoCarrinho.includes(b.id));
+          if (bumpsDisponiveis.length === 0) return null;
+
+          return (
+            <div className="bg-amber-50 rounded-xl shadow-sm border-2 border-amber-300 p-4 mb-3">
+              <div className="flex items-center gap-2 mb-3 text-amber-800">
+                <span className="text-lg">⚡</span>
+                <h2 className="font-black uppercase tracking-tight text-xs">
+                  Só Agora: Aproveite Também
+                </h2>
+              </div>
+              <div className="space-y-2.5">
+                {bumpsDisponiveis.map((bump) => (
+                  <div
+                    key={bump.id}
+                    className="bg-white rounded-xl p-3 border border-amber-200 flex items-center gap-3"
+                  >
+                    <img
+                      src={bump.imagem_url}
+                      alt={bump.nome}
+                      className="w-14 h-14 rounded-lg object-cover shrink-0 bg-gray-50"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <h4 className="text-xs font-black text-gray-900 uppercase leading-tight line-clamp-1">
+                        {bump.nome}
+                      </h4>
+                      <p className="text-[10px] text-gray-500 font-medium line-clamp-1 mt-0.5">
+                        {bump.descricao}
+                      </p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className="text-[10px] text-gray-400 line-through">
+                          R$ {bump.preco.toFixed(2)}
+                        </span>
+                        <span className="text-xs font-black text-green-600">
+                          R$ {(bump.preco * 0.8).toFixed(2)}
+                        </span>
+                        <span className="text-[9px] font-black text-white bg-green-600 px-1.5 py-0.5 rounded-full">
+                          20% OFF
+                        </span>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => handleAddBump(bump)}
+                      className="bg-[#44FF00] text-[#171717] px-3 py-2 rounded-xl font-black text-[10px] uppercase tracking-wider shrink-0 active:scale-95 transition-transform"
+                    >
+                      Adicionar
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          );
+        })()}
 
         {pixData && isWaitingPayment ? (
           <div className="bg-white rounded-xl shadow-sm border-2 border-blue-500 p-5 mb-4 text-center space-y-4 animate-in fade-in">
