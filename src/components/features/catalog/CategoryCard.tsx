@@ -2,6 +2,7 @@
 
 import { Share2 } from "lucide-react";
 import { showSuccess } from "@/utils/toast";
+import { appendShareUTM } from "@/lib/tracking/utmify-service";
 
 interface CategoryCardProps {
   nome: string;
@@ -13,7 +14,7 @@ export const CategoryCard = ({ nome, imagem, onClick }: CategoryCardProps) => {
   const handleShare = async (e: React.MouseEvent) => {
     e.stopPropagation();
     const slug = nome.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "");
-    const shareUrl = `${window.location.origin}/categoria/${slug}`;
+    const shareUrl = appendShareUTM(`${window.location.origin}/categoria/${slug}`);
     
     try {
       if (navigator.share) {

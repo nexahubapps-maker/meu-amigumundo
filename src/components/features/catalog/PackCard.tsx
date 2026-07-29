@@ -3,6 +3,7 @@
 import { type Pack } from "@/data/packs";
 import { Heart, Share2 } from "lucide-react";
 import { showSuccess } from "@/utils/toast";
+import { appendShareUTM } from "@/lib/tracking/utmify-service";
 
 interface PackCardProps {
   pack: Pack;
@@ -20,7 +21,7 @@ export const PackCard = ({ pack, inCart, isFavorite, onToggleFavorite, onAdd, on
   const handleShare = async (e: React.MouseEvent) => {
     e.stopPropagation();
     const slug = pack.nome.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "");
-    const shareUrl = `${window.location.origin}/pack/${slug}-${pack.id}`;
+    const shareUrl = appendShareUTM(`${window.location.origin}/pack/${slug}-${pack.id}`);
     
     try {
       if (navigator.share) {
