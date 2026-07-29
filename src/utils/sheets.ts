@@ -23,6 +23,7 @@ export interface SheetInfoproduto {
   ativo: boolean;
   disparar_push: boolean;
   link_entrega: string;
+  bump_ativo: boolean;
 }
 
 export interface SheetPack {
@@ -173,7 +174,7 @@ export async function getRecipes(): Promise<SheetRecipe[]> {
 export async function getInfoprodutos(): Promise<SheetInfoproduto[]> {
   const { data, error } = await supabase
     .from("infoprodutos")
-    .select("codigo, nome, slug, preco, imagem_url, descricao, ativo, disparar_push, link_entrega");
+    .select("codigo, nome, slug, preco, imagem_url, descricao, ativo, disparar_push, link_entrega, bump_ativo");
 
   if (error) {
     console.warn("Erro ao buscar infoprodutos no Supabase:", error);
@@ -189,7 +190,8 @@ export async function getInfoprodutos(): Promise<SheetInfoproduto[]> {
     descricao: row.descricao || "",
     ativo: !!row.ativo,
     disparar_push: !!row.disparar_push,
-    link_entrega: row.link_entrega || ""
+    link_entrega: row.link_entrega || "",
+    bump_ativo: !!row.bump_ativo
   }));
 }
 
@@ -385,7 +387,7 @@ export async function getInfoprodutosByIds(ids: string[]): Promise<SheetInfoprod
   if (ids.length === 0) return [];
   const { data, error } = await supabase
     .from("infoprodutos")
-    .select("codigo, nome, slug, preco, imagem_url, descricao, ativo, disparar_push, link_entrega")
+    .select("codigo, nome, slug, preco, imagem_url, descricao, ativo, disparar_push, link_entrega, bump_ativo")
     .in("codigo", ids);
 
   if (error) {
@@ -402,8 +404,40 @@ export async function getInfoprodutosByIds(ids: string[]): Promise<SheetInfoprod
     descricao: row.descricao || "",
     ativo: !!row.ativo,
     disparar_push: !!row.disparar_push,
-    link_entrega: row.link_entrega || ""
+    link_entrega: row.link_entrega || "",
+    bump_ativo: !!row.bump_ativo
   }));
+}
+
+export async function getBumpInfoprodutos(): Promise<SheetInfoproduto[]> {
+  try {
+    const { data, error } = await supabase
+      .from("infoprodutos")
+      .select("codigo, nome, slug, preco, imagem_url, descricao, ativo, disparar_push, link_entrega, bump_ativo")
+      .eq("ativo", true)
+      .eq("bump_ativo", true);
+
+    if (error) {
+      console.warn("Erro ao buscar infoprodutos de bump:", error);
+      return [];
+    }
+
+    return (data || []).map((row: any) => ({
+      id: row.codigo,
+      nome: row.nome,
+      slug: row.slug,
+      preco: row.preco,
+      imagem_url: row.imagem_url,
+      descricao: row.descricao,
+      ativo: row.ativo,
+      disparar_push: row.disparar_push,
+      link_entrega: row.link_entrega,
+      bump_ativo: row.bump_ativo,
+    }));
+  } catch (e) {
+    console.warn("Erro inesperado ao buscar bumps:", e);
+    return [];
+  }
 }
 
 export async function getPushEnabledItems(): Promise<Array<{ id: string; nome: string; descricao: string; tipo: "receita" | "pack" | "infoproduto" }>> {
