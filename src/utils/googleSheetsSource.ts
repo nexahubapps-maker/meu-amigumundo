@@ -75,7 +75,8 @@ export async function getInfoprodutosFromSheet() {
     descricao: row[5] || "",
     ativo: row[6]?.toLowerCase() === "true",
     disparar_push: row[7]?.toLowerCase() === "true",
-    link_entrega: row[8] || ""
+    link_entrega: row[8] || "",
+    bump_ativo: row[9] === "TRUE"
   }));
 }
 

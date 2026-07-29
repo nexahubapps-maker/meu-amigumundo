@@ -106,7 +106,8 @@ export async function syncGoogleSheetsToSupabase(): Promise<SyncResult[]> {
       descricao: i.descricao,
       ativo: i.ativo,
       disparar_push: i.disparar_push,
-      link_entrega: i.link_entrega
+      link_entrega: i.link_entrega,
+      bump_ativo: i.bump_ativo
     }));
 
     const { error } = await supabase
