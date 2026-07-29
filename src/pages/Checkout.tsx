@@ -9,6 +9,7 @@ import { getRecipesByIds, getInfoprodutos, getPacks } from "@/utils/sheets";
 import { calculateCart } from "@/utils/pricing";
 import { showSuccess, showError } from "@/utils/toast";
 import { supabase } from "@/lib/supabase";
+import { getStoredUTMs } from "@/lib/tracking/utmify-service";
 
 const MERCADOPAGO_TEST_PUBLIC_KEY = "TEST-f2993981-4aad-4e7a-a767-ad00a2c0634e";
 
@@ -247,6 +248,7 @@ export default function Checkout() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          ...getStoredUTMs(),
           paymentMethod,
           paymentMethodId,
           cardToken: paymentMethod === "card" ? cardToken : undefined,

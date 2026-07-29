@@ -46,6 +46,10 @@ export const handler: Handler = async (event) => {
       cpf,
       items,
       usuarioId,
+      utm_source,
+      utm_medium,
+      utm_campaign,
+      utm_content,
     }: {
       paymentMethod: "pix" | "card";
       paymentMethodId?: string;
@@ -56,6 +60,10 @@ export const handler: Handler = async (event) => {
       cpf: string;
       items: CartItemPayload[];
       usuarioId?: string | null;
+      utm_source?: string;
+      utm_medium?: string;
+      utm_campaign?: string;
+      utm_content?: string;
     } = body;
 
     if (!email || !nome || !cpf || !amount || !items || items.length === 0) {
@@ -121,6 +129,10 @@ export const handler: Handler = async (event) => {
         pix_gerado_em: paymentMethod === "pix" ? new Date().toISOString() : null,
         criado_em: new Date().toISOString(),
         atualizado_em: new Date().toISOString(),
+        utm_source: utm_source || null,
+        utm_medium: utm_medium || null,
+        utm_campaign: utm_campaign || null,
+        utm_content: utm_content || null,
       })
       .select()
       .single();
