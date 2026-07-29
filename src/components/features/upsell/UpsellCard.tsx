@@ -3,6 +3,7 @@
 import { type Upsell } from "@/data/upsells";
 import { Heart, Share2 } from "lucide-react";
 import { showSuccess } from "@/utils/toast";
+import { appendShareUTM } from "@/lib/tracking/utmify-service";
 
 interface UpsellCardProps {
   upsell: Upsell;
@@ -15,7 +16,7 @@ export const UpsellCard = ({ upsell, isFavorite, onToggleFavorite, onOpen }: Ups
   const handleShare = async (e: React.MouseEvent) => {
     e.stopPropagation();
     const slug = upsell.nome.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "");
-    const shareUrl = `${window.location.origin}/infoproduto/${slug}-${upsell.id}`;
+    const shareUrl = appendShareUTM(`${window.location.origin}/infoproduto/${slug}-${upsell.id}`);
     
     try {
       if (navigator.share) {

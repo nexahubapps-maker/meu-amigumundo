@@ -4,6 +4,7 @@ import React from "react";
 import { ArrowLeft, Heart, Search, Share2 } from "lucide-react";
 import { type SheetRecipe } from "@/utils/sheets";
 import { showSuccess } from "@/utils/toast";
+import { appendShareUTM } from "@/lib/tracking/utmify-service";
 
 interface SearchResultsViewProps {
   termo: string;
@@ -42,7 +43,7 @@ export const SearchResultsView = ({
   const handleShare = async (recipe: SheetRecipe, e: React.MouseEvent) => {
     e.stopPropagation();
     const slug = recipe.nome.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "");
-    const shareUrl = `${window.location.origin}/receita/${slug}-${recipe.id}`;
+    const shareUrl = appendShareUTM(`${window.location.origin}/receita/${slug}-${recipe.id}`);
     
     try {
       if (navigator.share) {
