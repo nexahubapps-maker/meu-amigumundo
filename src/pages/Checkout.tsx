@@ -435,21 +435,21 @@ export default function Checkout() {
                 {bumpsDisponiveis.map((bump) => (
                   <div
                     key={bump.id}
-                    className="bg-white rounded-xl p-3 border border-amber-200 flex items-center gap-3"
+                    className="bg-white rounded-xl p-2 border border-amber-200 flex items-center gap-2"
                   >
                     <img
                       src={bump.imagem_url}
                       alt={bump.nome}
-                      className="w-14 h-14 rounded-lg object-cover shrink-0 bg-gray-50"
+                      className="w-12 h-12 rounded-lg object-cover shrink-0 bg-gray-50"
                     />
                     <div className="flex-1 min-w-0">
-                      <h4 className="text-xs font-black text-gray-900 uppercase leading-tight line-clamp-1">
+                      <h4 className="text-xs font-black text-gray-900 uppercase leading-tight">
                         {bump.nome}
                       </h4>
-                      <p className="text-[10px] text-gray-500 font-medium line-clamp-1 mt-0.5">
+                      <p className="text-[10px] text-gray-500 font-medium leading-tight mt-0.5">
                         {bump.descricao}
                       </p>
-                      <div className="flex items-center gap-2 mt-1">
+                      <div className="flex items-center flex-wrap gap-1.5 mt-1">
                         <span className="text-[10px] text-gray-400 line-through">
                           R$ {bump.preco.toFixed(2)}
                         </span>
