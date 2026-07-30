@@ -397,53 +397,48 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
                   <p className="text-xs font-black text-gray-500 uppercase tracking-wider mb-2">
                     {categoriaAtual?.titulo} ({receitasDaCategoria.length})
                   </p>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="grid grid-cols-3 lg:grid-cols-5 gap-1 sm:gap-2 lg:gap-4">
                     {receitasDaCategoria.map((item, idx) => (
-                      <div
-                        key={item.id || idx}
-                        className="bg-white rounded-2xl p-3.5 border border-gray-100 shadow-sm flex items-center gap-3"
-                      >
-                        <img
-                          src={item.imagem_url || `https://picsum.photos/seed/${item.codigo_produto}/150/150`}
-                          alt={item.nome_produto}
-                          className="w-16 h-16 rounded-xl object-cover border border-gray-100 shrink-0 bg-gray-50"
-                        />
-                        <div className="flex-1 min-w-0 flex flex-col justify-between h-16">
+                      <div key={item.id || idx} className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden flex flex-col justify-between p-1">
+                        <div className="relative aspect-square bg-gray-50 overflow-hidden rounded-lg">
+                          <img
+                            src={item.imagem_url || `https://picsum.photos/seed/${item.codigo_produto}/400/400`}
+                            alt={item.nome_produto}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <div className="pt-1.5 flex flex-col justify-between flex-1">
                           <div>
-                            <h4 className="text-xs font-black text-gray-900 uppercase leading-tight line-clamp-1">
+                            <h4 className="text-[9px] lg:text-xs font-black text-gray-800 uppercase tracking-tight line-clamp-1 leading-none mb-1">
                               {item.nome_produto}
                             </h4>
-                            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mt-0.5">
-                              Código: {item.codigo_produto}
+                            <span className="text-[8px] lg:text-[10px] text-gray-400 font-bold block mb-1.5">
+                              ({item.codigo_produto})
                             </span>
                           </div>
-
-                          <div>
+                          <div className="flex flex-col gap-1">
                             {item.linkAcesso ? (
-                              <div className="flex items-center gap-2">
+                              <>
                                 <a
                                   href={item.linkAcesso}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="inline-flex items-center gap-1.5 bg-[#44FF00] hover:bg-[#3ee600] active:scale-95 text-[#171717] px-3 py-1.5 rounded-xl font-black text-[10px] uppercase tracking-wider transition-all shadow-sm"
+                                  className="flex items-center justify-center gap-1 bg-[#44FF00] text-[#171717] py-1 rounded-lg font-black text-[8px] lg:text-[10px] uppercase tracking-wider transition-all hover:scale-105 active:scale-95"
                                 >
-                                  <Download size={12} />
-                                  Baixar Receita (PDF)
-                                  <ExternalLink size={10} className="opacity-70" />
+                                  <Download size={10} /> Baixar
                                 </a>
                                 <a
                                   href={getLinkVisualizacao(item.linkAcesso) || item.linkAcesso}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="inline-flex items-center gap-1.5 bg-gray-100 hover:bg-gray-200 active:scale-95 text-gray-800 px-3 py-1.5 rounded-xl font-black text-[10px] uppercase tracking-wider transition-all shadow-sm"
+                                  className="flex items-center justify-center gap-1 bg-gray-100 text-gray-800 py-1 rounded-lg font-black text-[8px] lg:text-[10px] uppercase tracking-wider transition-all hover:scale-105 active:scale-95"
                                 >
-                                  <Printer size={12} />
-                                  Imprimir
+                                  <Printer size={10} /> Imprimir
                                 </a>
-                              </div>
+                              </>
                             ) : (
-                              <span className="text-[10px] font-bold text-amber-600 bg-amber-50 px-2.5 py-1 rounded-lg inline-block">
-                                Link indisponível no momento
+                              <span className="text-[8px] font-bold text-amber-600 bg-amber-50 px-1.5 py-1 rounded-lg text-center">
+                                Indisponível
                               </span>
                             )}
                           </div>
