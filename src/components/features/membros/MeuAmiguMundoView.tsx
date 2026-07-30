@@ -5,7 +5,8 @@ import { ArrowLeft, User as UserIcon, Download, ExternalLink, Loader2, ShoppingB
 import { useAuth } from "@/context/AuthContext";
 import { getProfile, type Perfil } from "@/utils/profile";
 import { supabase } from "@/lib/supabase";
-import { getRecipesByIds, getDriveFileUrl, getPacksByIds, getInfoprodutosByIds, getReceitaGratuitaDownloadUrl } from "@/utils/sheets";
+import { getRecipesByIds, getDriveFileUrl, getPacksByIds, getInfoprodutosByIds, getReceitaGratuitaDownloadUrl, getCategories } from "@/utils/sheets";
+import { CategoryCard } from "@/components/features/catalog/CategoryCard";
 import { CompleteProfileModal } from "@/components/CompleteProfileModal";
 import { CalculadoraPreco } from "@/components/features/ferramentas/CalculadoraPreco";
 import { ContadorCarreiras } from "@/components/features/ferramentas/ContadorCarreiras";
@@ -42,6 +43,9 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
   const [comprasList, setComprasList] = useState<any[]>([]);
   const [isLoadingCompras, setIsLoadingCompras] = useState(false);
 
+  const [categoriesList, setCategoriesList] = useState<any[]>([]);
+  const [categoriaAbertaCompras, setCategoriaAbertaCompras] = useState<string | null>(null);
+
   const [packsList, setPacksList] = useState<any[]>([]);
   const [isLoadingPacks, setIsLoadingPacks] = useState(false);
 
@@ -72,6 +76,12 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
   }, [user]);
 
   useEffect(() => {
+    if (activeTab === "Minhas Compras" && categoriesList.length === 0) {
+      getCategories().then(setCategoriesList);
+    }
+  }, [activeTab, categoriesList.length]);
+
+  useEffect(() => {
     const fetchCompras = async () => {
       if (activeTab !== "Minhas Compras" || !user || comprasList.length > 0) return;
       setIsLoadingCompras(true);
@@ -89,7 +99,7 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
             const receitas = await getRecipesByIds([item.codigo_produto]);
             const categoria = receitas[0]?.categoria || "";
             const link = await getDriveFileUrl(item.codigo_produto, categoria);
-            return { ...item, linkAcesso: link };
+            return { ...item, linkAcesso: link, categoria };
           })
         );
         setComprasList(resolved);
@@ -318,7 +328,10 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
       ) : (
         <div className="bg-white border-b border-gray-200 px-4 py-2.5">
           <button
-            onClick={() => setActiveTab(null)}
+            onClick={() => {
+              setActiveTab(null);
+              setCategoriaAbertaCompras(null);
+            }}
             className="flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-gray-600 hover:text-gray-900"
           >
             <ArrowLeft size={14} /> Voltar ao menu
@@ -345,67 +358,102 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
                   Suas receitas compradas aparecerão aqui para você baixar sempre que quiser!
                 </p>
               </div>
-            ) : (
-              <div className="max-w-4xl mx-auto space-y-3">
-                <p className="text-xs font-black text-gray-500 uppercase tracking-wider mb-2">
-                  Suas Receitas Adquiridas ({comprasList.length})
-                </p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {comprasList.map((item, idx) => (
-                    <div
-                      key={item.id || idx}
-                      className="bg-white rounded-2xl p-3.5 border border-gray-100 shadow-sm flex items-center gap-3"
-                    >
-                      <img
-                        src={item.imagem_url || `https://picsum.photos/seed/${item.codigo_produto}/150/150`}
-                        alt={item.nome_produto}
-                        className="w-16 h-16 rounded-xl object-cover border border-gray-100 shrink-0 bg-gray-50"
-                      />
-                      <div className="flex-1 min-w-0 flex flex-col justify-between h-16">
-                        <div>
-                          <h4 className="text-xs font-black text-gray-900 uppercase leading-tight line-clamp-1">
-                            {item.nome_produto}
-                          </h4>
-                          <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mt-0.5">
-                            Código: {item.codigo_produto}
-                          </span>
-                        </div>
+            ) : (() => {
+              const categoriasComCompra = categoriesList.filter((cat) =>
+                comprasList.some((item) => item.categoria === cat.id)
+              );
 
-                        <div>
-                          {item.linkAcesso ? (
-                            <div className="flex items-center gap-2">
-                              <a
-                                href={item.linkAcesso}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="inline-flex items-center gap-1.5 bg-[#44FF00] hover:bg-[#3ee600] active:scale-95 text-[#171717] px-3 py-1.5 rounded-xl font-black text-[10px] uppercase tracking-wider transition-all shadow-sm"
-                              >
-                                <Download size={12} />
-                                Baixar Receita (PDF)
-                                <ExternalLink size={10} className="opacity-70" />
-                              </a>
-                              <a
-                                href={getLinkVisualizacao(item.linkAcesso) || item.linkAcesso}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="inline-flex items-center gap-1.5 bg-gray-100 hover:bg-gray-200 active:scale-95 text-gray-800 px-3 py-1.5 rounded-xl font-black text-[10px] uppercase tracking-wider transition-all shadow-sm"
-                              >
-                                <Printer size={12} />
-                                Imprimir
-                              </a>
-                            </div>
-                          ) : (
-                            <span className="text-[10px] font-bold text-amber-600 bg-amber-50 px-2.5 py-1 rounded-lg inline-block">
-                              Link indisponível no momento
+              if (categoriaAbertaCompras === null) {
+                return (
+                  <div className="max-w-4xl mx-auto">
+                    <p className="text-xs font-black text-gray-500 uppercase tracking-wider mb-3">
+                      Suas Categorias Compradas
+                    </p>
+                    <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+                      {categoriasComCompra.map((cat) => (
+                        <CategoryCard
+                          key={cat.id}
+                          nome={cat.titulo}
+                          imagem={cat.imagem_url}
+                          onClick={() => setCategoriaAbertaCompras(cat.id)}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                );
+              }
+
+              const receitasDaCategoria = comprasList.filter((item) => item.categoria === categoriaAbertaCompras);
+              const categoriaAtual = categoriesList.find((c) => c.id === categoriaAbertaCompras);
+
+              return (
+                <div className="max-w-4xl mx-auto space-y-3">
+                  <button
+                    onClick={() => setCategoriaAbertaCompras(null)}
+                    className="flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-gray-600 hover:text-gray-900 mb-2"
+                  >
+                    <ArrowLeft size={14} /> Voltar às categorias
+                  </button>
+                  <p className="text-xs font-black text-gray-500 uppercase tracking-wider mb-2">
+                    {categoriaAtual?.titulo} ({receitasDaCategoria.length})
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {receitasDaCategoria.map((item, idx) => (
+                      <div
+                        key={item.id || idx}
+                        className="bg-white rounded-2xl p-3.5 border border-gray-100 shadow-sm flex items-center gap-3"
+                      >
+                        <img
+                          src={item.imagem_url || `https://picsum.photos/seed/${item.codigo_produto}/150/150`}
+                          alt={item.nome_produto}
+                          className="w-16 h-16 rounded-xl object-cover border border-gray-100 shrink-0 bg-gray-50"
+                        />
+                        <div className="flex-1 min-w-0 flex flex-col justify-between h-16">
+                          <div>
+                            <h4 className="text-xs font-black text-gray-900 uppercase leading-tight line-clamp-1">
+                              {item.nome_produto}
+                            </h4>
+                            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mt-0.5">
+                              Código: {item.codigo_produto}
                             </span>
-                          )}
+                          </div>
+
+                          <div>
+                            {item.linkAcesso ? (
+                              <div className="flex items-center gap-2">
+                                <a
+                                  href={item.linkAcesso}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="inline-flex items-center gap-1.5 bg-[#44FF00] hover:bg-[#3ee600] active:scale-95 text-[#171717] px-3 py-1.5 rounded-xl font-black text-[10px] uppercase tracking-wider transition-all shadow-sm"
+                                >
+                                  <Download size={12} />
+                                  Baixar Receita (PDF)
+                                  <ExternalLink size={10} className="opacity-70" />
+                                </a>
+                                <a
+                                  href={getLinkVisualizacao(item.linkAcesso) || item.linkAcesso}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="inline-flex items-center gap-1.5 bg-gray-100 hover:bg-gray-200 active:scale-95 text-gray-800 px-3 py-1.5 rounded-xl font-black text-[10px] uppercase tracking-wider transition-all shadow-sm"
+                                >
+                                  <Printer size={12} />
+                                  Imprimir
+                                </a>
+                              </div>
+                            ) : (
+                              <span className="text-[10px] font-bold text-amber-600 bg-amber-50 px-2.5 py-1 rounded-lg inline-block">
+                                Link indisponível no momento
+                              </span>
+                            )}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
-              </div>
-            )
+              );
+            })()
           ) : activeTab === "Packs & Promoções" ? (
             isLoadingPacks ? (
               <div className="h-64 flex flex-col items-center justify-center gap-3 text-gray-500">
