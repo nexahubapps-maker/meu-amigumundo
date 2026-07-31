@@ -1,3 +1,4 @@
+finally na busca de receitas">
 "use client";
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
@@ -238,7 +239,7 @@ export default function Index() {
         } catch (e) {
           console.error("Error searching recipes:", e);
           setSearchResults([]);
-        } fontally {
+        } finally {
           setIsSearching(false);
         }
       } else {
