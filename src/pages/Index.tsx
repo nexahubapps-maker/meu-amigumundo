@@ -1,4 +1,3 @@
-finally na busca de receitas">
 "use client";
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
@@ -58,7 +57,7 @@ function shuffleArray<T>(array: T[]): T[] {
   const arr = [...array];
   for (let i = arr.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[i], arr[j]];
+    [arr[i], arr[j]] = [arr[j], arr[i]];
   }
   return arr;
 }
@@ -580,7 +579,7 @@ export default function Index() {
         </section>
       </div>
 
-      <section className="bg-[#F5F5F7] pt-0 pb-[#0px]">
+      <section className="bg-[#F5F5F7] pt-0 pb-0">
         <div className="w-full overflow-hidden">
           <img 
             src="https://ik.imagekit.io/51b3srlsg/Loja_AmiguMundo_amigurumis.jpeg" 
@@ -603,7 +602,7 @@ export default function Index() {
             </div>
             
             <p className="text-gray-600 text-[10px] sm:text-xs font-bold text-center uppercase tracking-tight -mt-0.5 mb-1">
-              Novas traduções adicionadas todos os dias
+              Novas receitas adicionadas todos os dias
             </p>
             
             <div className="grid grid-cols-3 lg:grid-cols-6 gap-x-1 gap-y-1.5 lg:gap-4 px-0.5">
