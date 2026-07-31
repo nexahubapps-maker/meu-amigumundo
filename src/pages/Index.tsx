@@ -594,15 +594,15 @@ export default function Index() {
           <div className="bg-white rounded-3xl p-2 sm:p-3 shadow-lg border border-gray-100/80 flex flex-col gap-2">
             <div 
               style={textureLaranjaStyle}
-              className="w-full py-1.5 px-3 shadow-sm rounded-xl text-center border border-gray-100"
+              className="w-full py-2 px-3 shadow-sm rounded-xl text-center border border-gray-100"
             >
-              <h2 className="text-xs sm:text-sm font-black uppercase tracking-wider text-white m-0">
+              <h2 className="text-base sm:text-lg font-black uppercase tracking-wider text-white m-0">
                 CATEGORIAS DE AMIGURUMIS
               </h2>
             </div>
             
-            <p className="text-gray-600 text-[10px] sm:text-xs font-bold text-center uppercase tracking-tight -mt-1 mb-1">
-              Novas receitas adicionadas todos os dias
+            <p className="text-gray-600 text-[10px] sm:text-xs font-bold text-center uppercase tracking-tight -mt-0.5 mb-1">
+              Novas traduções adicionadas todos os dias
             </p>
             
             <div className="grid grid-cols-3 lg:grid-cols-6 gap-x-1 gap-y-1.5 lg:gap-4 px-0.5">
