@@ -11,7 +11,7 @@ import { showSuccess, showError } from "@/utils/toast";
 import { supabase } from "@/lib/supabase";
 import { getStoredUTMs } from "@/lib/tracking/utmify-service";
 
-const MERCADOPAGO_TEST_PUBLIC_KEY = "TEST-f2993981-4aad-4e7a-a767-ad00a2c0634e";
+const MERCADOPAGO_PUBLIC_KEY = import.meta.env.VITE_MERCADOPAGO_PUBLIC_KEY || "TEST-f2993981-4aad-4e7a-a767-ad00a2c0634e";
 
 export default function Checkout() {
   const navigate = useNavigate();
@@ -204,7 +204,7 @@ export default function Checkout() {
 
     try {
       const response = await fetch(
-        `https://api.mercadopago.com/v1/card_tokens?public_key=${MERCADOPAGO_TEST_PUBLIC_KEY}`,
+        `https://api.mercadopago.com/v1/card_tokens?public_key=${MERCADOPAGO_PUBLIC_KEY}`,
         {
           method: "POST",
           headers: {
