@@ -133,7 +133,7 @@ export const UnifiedCheckoutHub = ({
   ];
 
   return (
-    <div id="cart-section" className="max-w-xl mx-auto my-2 bg-white rounded-xl p-2 shadow-md border-2 border-[#44FF00] text-left w-full">
+    <div id="cart-section" className="max-w-xl mx-auto my-2 bg-white rounded-2xl p-3 sm:p-4 text-left w-full shadow-[0_12px_28px_rgba(0,0,0,0.15),_0_6px_12px_rgba(0,0,0,0.1)] border-2 border-gray-200">
       <div className="bg-gray-50 rounded-lg p-2.5 border border-gray-200 mb-3">
         <div className="text-center mb-2">
           <p className="text-sm text-gray-500 font-bold leading-tight">

@@ -238,7 +238,7 @@ export default function Index() {
         } catch (e) {
           console.error("Error searching recipes:", e);
           setSearchResults([]);
-        } finally {
+        } fontally {
           setIsSearching(false);
         }
       } else {
@@ -833,7 +833,7 @@ export default function Index() {
       <InstallGuideCard />
 
       <footer className="text-center py-3 px-4 border-t border-gray-100 bg-white">
-        <p className="text-[10px] text-gray-300 font-black uppercase tracking-[0.3em]">© 2024 AmiguMundo Artes</p>
+        <p className="text-[10px] text-gray-300 font-black uppercase tracking-[0.3em]">© 2026 AmiguMundo Artes</p>
       </footer>
 
       <CartFooter

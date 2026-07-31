@@ -43,7 +43,7 @@ export const CategoryCard = ({ nome, imagem, onClick }: CategoryCardProps) => {
       onClick={onClick}
       className="flex flex-col items-center cursor-pointer group w-full relative"
     >
-      <div className="w-full aspect-square rounded-2xl overflow-hidden bg-gray-50 shadow-sm border border-gray-100 relative lg:max-w-[140px] lg:mx-auto">
+      <div className="w-full aspect-square rounded-2xl overflow-hidden bg-gray-50 shadow-[0_8px_20px_rgba(0,0,0,0.12),_0_4px_8px_rgba(0,0,0,0.08)] border-2 border-gray-200/80 relative lg:max-w-[140px] lg:mx-auto transition-transform duration-300 group-hover:scale-105">
         <img 
           src={imagem || `https://picsum.photos/seed/${encodeURIComponent(nome)}/400/400`} 
           alt={nome} 
