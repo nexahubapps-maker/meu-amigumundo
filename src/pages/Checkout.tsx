@@ -10,12 +10,14 @@ import { calculateCart } from "@/utils/pricing";
 import { showSuccess, showError } from "@/utils/toast";
 import { supabase } from "@/lib/supabase";
 import { getStoredUTMs } from "@/lib/tracking/utmify-service";
+import { useAuth } from "@/context/AuthContext";
 
 const MERCADOPAGO_PUBLIC_KEY = import.meta.env.VITE_MERCADOPAGO_PUBLIC_KEY || "TEST-f2993981-4aad-4e7a-a767-ad00a2c0634e";
 
 export default function Checkout() {
   const navigate = useNavigate();
   const { id: checkoutProductId } = useParams();
+  const { user } = useAuth();
   const [cart, setCart] = useState<any[]>([]);
   const [paymentMethod, setPaymentMethod] = useState<"pix" | "card">("pix");
   
@@ -276,7 +278,7 @@ export default function Checkout() {
           nome: nomeCompleto,
           cpf: cpf.replace(/\D/g, ""),
           items: itemsPayload,
-          usuarioId: null,
+          usuarioId: user?.id || null,
         }),
       });
 
