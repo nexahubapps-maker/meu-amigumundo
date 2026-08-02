@@ -145,12 +145,12 @@ export const CategoryDetailView = ({
 
                   <div className="pt-1.5 flex flex-col justify-between flex-1">
                     <div>
-                      <h4 className="text-[9px] lg:text-xs font-black text-gray-800 uppercase tracking-tight line-clamp-1 leading-none mb-1">
+                      <h4 className="text-[11px] lg:text-sm font-black text-gray-800 uppercase tracking-tight leading-tight mb-1">
                         {recipe.nome}
                       </h4>
-                      <div className="flex items-center justify-between text-[8px] lg:text-[10px] text-gray-400 font-bold mb-1.5">
-                        <span>({recipe.id})</span>
-                        <span className="text-gray-900 font-black">R$ {recipe.preco.toFixed(2)}</span>
+                      <div className="flex items-center justify-between mb-1.5">
+                        <span className="text-[9px] lg:text-[11px] text-gray-400 font-bold">({recipe.id})</span>
+                        <span className="text-gray-900 font-black text-[13px] lg:text-base">R$ {recipe.preco.toFixed(2)}</span>
                       </div>
                     </div>
                     
