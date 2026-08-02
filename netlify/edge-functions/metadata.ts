@@ -32,7 +32,7 @@ async function getCategoriaFolderMap(): Promise<Record<string, string>> {
   }
 }
 
-async function getRecipeCoverFallback(codigo: string, categoria: string): Promise<string | null> {
+async function getRecipeCoverFallback(codigo: string, categoria: string, origin: string): Promise<string | null> {
   try {
     const folderMap = await getCategoriaFolderMap();
     const subfolderId = folderMap[(categoria || "").toLowerCase()];
@@ -43,7 +43,7 @@ async function getRecipeCoverFallback(codigo: string, categoria: string): Promis
     if (!res.ok) return null;
     const data = await res.json();
     if (data.files && data.files.length > 0) {
-      return `https://drive.google.com/thumbnail?id=${data.files[0].id}&sz=w800`;
+      return `${origin}/capa/${data.files[0].id}`;
     }
     return null;
   } catch (e) {
@@ -139,7 +139,7 @@ export default async function handler(request: Request, context: Context) {
         title = `${match[1]} - R$ ${parseFloat(match[3]).toFixed(2)}`;
         const rawImg = match[4];
         if (!rawImg || rawImg.trim() === "" || rawImg.trim() === "-") {
-          const fallback = await getRecipeCoverFallback(id, match[5] || "");
+          const fallback = await getRecipeCoverFallback(id, match[5] || "", url.origin);
           image = fallback || DEFAULT_LOGO;
         } else {
           image = rawImg;

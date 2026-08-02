@@ -1,5 +1,6 @@
-[functions]
-  directory = "netlify/functions"
+[build]
+  command = "npm run build"
+  publish = "dist"
 
 [[edge_functions]]
   path = "/receita/*"
@@ -14,14 +15,9 @@
   function = "metadata"
 
 [[edge_functions]]
-  path = "/upsell/*"
-  function = "metadata"
-
-[[edge_functions]]
   path = "/categoria/*"
   function = "metadata"
 
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+[[edge_functions]]
+  path = "/capa/*"
+  function = "capa-imagem"
