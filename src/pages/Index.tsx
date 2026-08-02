@@ -121,6 +121,17 @@ export default function Index() {
   const targetId = getTargetId();
 
   useEffect(() => {
+    const isPackOrUpsellLink = location.pathname.startsWith("/pack/") || location.pathname.startsWith("/infoproduto/");
+    if (isPackOrUpsellLink && targetId && !isLoading) {
+      const timer = setTimeout(() => {
+        const el = document.getElementById(`item-${targetId}`);
+        if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+      }, 400);
+      return () => clearTimeout(timer);
+    }
+  }, [location.pathname, targetId, isLoading]);
+
+  useEffect(() => {
     const mesclarFavoritos = async () => {
       if (!user) return;
       const { data } = await supabase
@@ -651,7 +662,7 @@ export default function Index() {
               ))
             ) : (
               infoprodutosList.map((upsell) => (
-                <div key={upsell.id} className="snap-center shrink-0 w-[85vw] max-w-[320px]">
+                <div key={upsell.id} id={`item-${upsell.id}`} className="snap-center shrink-0 w-[85vw] max-w-[320px]">
                   <UpsellCard 
                     upsell={{
                       id: upsell.id,
@@ -778,24 +789,25 @@ export default function Index() {
               ))
             ) : (
               packsList.map((pack) => (
-                <PackCard
-                  key={pack.id}
-                  pack={{
-                    id: pack.id,
-                    nome: pack.nome,
-                    descricao: pack.descricao,
-                    receitas: 20,
-                    precoOriginal: pack.preco * 1.5,
-                    precoAtual: pack.preco,
-                    emoji: "🎁",
-                    imagem_url: pack.imagem_url
-                  }}
-                  inCart={isInCart(pack.id)}
-                  isFavorite={favorites.includes(pack.id)}
-                  onToggleFavorite={() => toggleFavorite(pack.id, { nome: pack.nome, imagem_url: pack.imagem_url, tipo: "pack" })}
-                  onAdd={() => handlePackAdd(pack.id)}
-                  onRemove={() => removeFromCart(pack.id)}
-                />
+                <div key={pack.id} id={`item-${pack.id}`}>
+                  <PackCard
+                    pack={{
+                      id: pack.id,
+                      nome: pack.nome,
+                      descricao: pack.descricao,
+                      receitas: 20,
+                      precoOriginal: pack.preco * 1.5,
+                      precoAtual: pack.preco,
+                      emoji: "🎁",
+                      imagem_url: pack.imagem_url
+                    }}
+                    inCart={isInCart(pack.id)}
+                    isFavorite={favorites.includes(pack.id)}
+                    onToggleFavorite={() => toggleFavorite(pack.id, { nome: pack.nome, imagem_url: pack.imagem_url, tipo: "pack" })}
+                    onAdd={() => handlePackAdd(pack.id)}
+                    onRemove={() => removeFromCart(pack.id)}
+                  />
+                </div>
               ))
             )}
           </div>
