@@ -10,6 +10,7 @@ interface RecipeCardProps {
     nome: string;
     preco: number;
     categoria: string;
+    imagem_url: string;
   };
   isFavorite: boolean;
   onToggleFavorite: () => void;
@@ -50,9 +51,9 @@ const RecipeCard = ({ recipe, isFavorite, onToggleFavorite, onAdd, onReject, isI
 
   return (
     <div className={`overflow-hidden relative flex flex-col bg-white rounded-2xl border border-gray-100 shadow-sm transition-all duration-300 ${isInCart ? 'animate-pulse-subtle border-[#44FF00]' : ''}`}>
-      <div className="relative h-[120px] lg:h-48 w-full bg-gray-50">
+      <div className="relative aspect-[3/4] w-full bg-gray-50">
         <img
-          src={`https://picsum.photos/seed/${recipe.id}/400/300`}
+          src={recipe.imagem_url || `https://picsum.photos/seed/${recipe.id}/400/300`}
           alt={recipe.nome}
           className="w-full h-full object-cover"
         />

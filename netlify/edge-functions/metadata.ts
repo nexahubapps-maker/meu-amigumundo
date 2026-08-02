@@ -4,6 +4,54 @@ import { Context } from "https://edge.netlify.com";
 const SPREADSHEET_ID = "1RUrFeuyLIqxf7vK9Vypo7XzcigV6v4koHg1v0fmjR8k";
 const DEFAULT_LOGO = "https://ik.imagekit.io/51b3srlsg/icone_amigumundo.png";
 
+const GOOGLE_DRIVE_FOLDER_ID = "1yrrZX5yqhLC8pi4phyOt8fxNzMiG1BoV";
+const GOOGLE_DRIVE_API_KEY = "AIzaSyBJiL8IdTPi25jPZM0P6kl3dDUO8YHvVu4";
+
+let categoriaFolderCache: Record<string, string> | null = null;
+
+async function getCategoriaFolderMap(): Promise<Record<string, string>> {
+  if (categoriaFolderCache) return categoriaFolderCache;
+  try {
+    const url = `https://www.googleapis.com/drive/v3/files?q='${GOOGLE_DRIVE_FOLDER_ID}'+in+parents+and+mimeType='application/vnd.google-apps.folder'+and+trashed=false&fields=files(id,name)&key=${GOOGLE_DRIVE_API_KEY}&pageSize=100`;
+    const res = await fetch(url);
+    if (!res.ok) return {};
+    const data = await res.json();
+    const map: Record<string, string> = {};
+    (data.files || []).forEach((f: any) => {
+      const match = f.name.match(/^CARD(\d+)/i);
+      if (match) {
+        const code = `card${match[1].padStart(2, "0")}`;
+        map[code.toLowerCase()] = f.id;
+      }
+    });
+    categoriaFolderCache = map;
+    return map;
+  } catch (e) {
+    console.warn("Erro ao mapear pastas de categoria no Drive:", e);
+    return {};
+  }
+}
+
+async function getRecipeCoverFallback(codigo: string, categoria: string): Promise<string | null> {
+  try {
+    const folderMap = await getCategoriaFolderMap();
+    const subfolderId = folderMap[(categoria || "").toLowerCase()];
+    if (!subfolderId) return null;
+
+    const url = `https://www.googleapis.com/drive/v3/files?q='${subfolderId}'+in+parents+and+name+contains+'${codigo}'+and+mimeType='application/pdf'+and+trashed=false&fields=files(id,name)&key=${GOOGLE_DRIVE_API_KEY}`;
+    const res = await fetch(url);
+    if (!res.ok) return null;
+    const data = await res.json();
+    if (data.files && data.files.length > 0) {
+      return `https://drive.google.com/thumbnail?id=${data.files[0].id}&sz=w800`;
+    }
+    return null;
+  } catch (e) {
+    console.warn("Erro ao buscar capa fallback no Drive:", e);
+    return null;
+  }
+}
+
 // Helper to parse CSV rows safely
 function parseCSV(text: string): string[][] {
   const lines: string[][] = [];
@@ -89,7 +137,13 @@ export default async function handler(request: Request, context: Context) {
       const match = rows.find(r => r[0] === id);
       if (match) {
         title = `${match[1]} - R$ ${parseFloat(match[3]).toFixed(2)}`;
-        image = match[4] || DEFAULT_LOGO;
+        const rawImg = match[4];
+        if (!rawImg || rawImg.trim() === "" || rawImg.trim() === "-") {
+          const fallback = await getRecipeCoverFallback(id, match[5] || "");
+          image = fallback || DEFAULT_LOGO;
+        } else {
+          image = rawImg;
+        }
         priceAmount = parseFloat(match[3]).toFixed(2);
       }
     } else if (isPack) {
