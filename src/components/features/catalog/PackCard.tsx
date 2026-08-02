@@ -27,7 +27,6 @@ export const PackCard = ({ pack, inCart, isFavorite, onToggleFavorite, onAdd, on
       if (navigator.share) {
         await navigator.share({
           title: 'AmiguMundo - ' + pack.nome,
-          text: 'Olha o que encontrei no AmiguMundo! Tudo sem ocupar espaço na memória do celular.',
           url: shareUrl,
         });
       } else {

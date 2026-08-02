@@ -20,7 +20,6 @@ export const CategoryCard = ({ nome, imagem, onClick }: CategoryCardProps) => {
       if (navigator.share) {
         await navigator.share({
           title: 'AmiguMundo - ' + nome,
-          text: 'Olha o que encontrei no AmiguMundo! Tudo sem ocupar espaço na memória do celular.',
           url: shareUrl,
         });
       } else {

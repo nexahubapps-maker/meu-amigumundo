@@ -49,7 +49,6 @@ export const SearchResultsView = ({
       if (navigator.share) {
         await navigator.share({
           title: 'AmiguMundo - ' + recipe.nome,
-          text: 'Olha o que encontrei no AmiguMundo! Tudo sem ocupar espaço na memória do celular.',
           url: shareUrl,
         });
       } else {

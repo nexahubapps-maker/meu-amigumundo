@@ -22,7 +22,6 @@ export const UpsellCard = ({ upsell, isFavorite, onToggleFavorite, onOpen }: Ups
       if (navigator.share) {
         await navigator.share({
           title: 'AmiguMundo - ' + upsell.nome,
-          text: 'Olha o que encontrei no AmiguMundo! Tudo sem ocupar espaço na memória do celular.',
           url: shareUrl,
         });
       } else {
