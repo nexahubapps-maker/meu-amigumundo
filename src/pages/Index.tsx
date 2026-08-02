@@ -199,7 +199,6 @@ export default function Index() {
 
       } catch (e) {
         console.error("Error loading sheets data:", e);
-      } font-medium
       } finally {
         setIsLoading(false);
       }
@@ -249,7 +248,8 @@ export default function Index() {
         } catch (e) {
           console.error("Error searching recipes:", e);
           setSearchResults([]);
-        } finally {
+        } font-medium
+        finally {
           setIsSearching(false);
         }
       } else {
