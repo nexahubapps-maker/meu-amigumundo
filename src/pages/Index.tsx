@@ -199,6 +199,7 @@ export default function Index() {
 
       } catch (e) {
         console.error("Error loading sheets data:", e);
+      } font-medium
       } finally {
         setIsLoading(false);
       }
@@ -707,7 +708,7 @@ export default function Index() {
           setShowRecipe(null);
           if (targetId) navigate("/");
         }}>
-          <div className="modal-content p-6 overflow-hidden" onClick={(e) => e.stopPropagation()}>
+          <div className="modal-content p-6" onClick={(e) => e.stopPropagation()}>
             <Breadcrumbs 
               categoria={categoriesList.find(c => c.id === showRecipe.categoria)?.titulo || showRecipe.categoria} 
               produtoNome={showRecipe.nome} 
