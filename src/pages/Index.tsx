@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import { Header } from "@/components/common/Header";
 import RecipeCard from "@/components/features/catalog/RecipeCard";
 import { UpsellCard } from "@/components/features/upsell/UpsellCard";
@@ -653,43 +654,59 @@ export default function Index() {
             </p>
           </div>
 
-          <div 
-            ref={carouselRef}
-            onScroll={handleCarouselScroll}
-            className="flex overflow-x-auto snap-x snap-mandatory scrollbar-none gap-4 pb-4 px-4 -mx-4"
-            style={{ scrollbarWidth: 'none' }}
-          >
-            {isLoading ? (
-              Array.from({ length: 3 }).map((_, i) => (
-                <div key={i} className="snap-center shrink-0 w-[85vw] max-w-[320px] bg-gray-800 rounded-2xl aspect-[16/10] animate-pulse" />
-              ))
-            ) : (
-              infoprodutosList.map((upsell) => (
-                <div key={upsell.id} id={`item-${upsell.id}`} className="snap-center shrink-0 w-[85vw] max-w-[320px]">
-                  <UpsellCard 
-                    upsell={{
-                      id: upsell.id,
-                      nome: upsell.nome,
-                      descricao: upsell.descricao,
-                      descricaoLonga: upsell.descricao,
-                      precoOriginal: upsell.preco * 1.5,
-                      precoAtual: upsell.preco,
-                      emoji: "💡",
-                      cor: "#FF3D9A",
-                      beneficios: ["Acesso imediato", "Suporte exclusivo"],
-                      copiaVendas: [upsell.descricao],
-                      imagem_url: upsell.imagem_url
-                    }} 
-                    isFavorite={favorites.includes(upsell.id)}
-                    onToggleFavorite={() => toggleFavorite(upsell.id, { nome: upsell.nome, imagem_url: upsell.imagem_url, tipo: "infoproduto" })}
-                    onOpen={() => {
-                      playHeartbeatSound();
-                      setActiveUpsell(upsell.id);
-                    }} 
-                  />
-                </div>
-              ))
-            )}
+          <div className="relative">
+            <div 
+              ref={carouselRef}
+              onScroll={handleCarouselScroll}
+              className="flex overflow-x-auto snap-x snap-mandatory scrollbar-none gap-4 pb-4 px-4 -mx-4"
+              style={{ scrollbarWidth: 'none' }}
+            >
+              {isLoading ? (
+                Array.from({ length: 3 }).map((_, i) => (
+                  <div key={i} className="snap-center shrink-0 w-[85vw] max-w-[320px] bg-gray-800 rounded-2xl aspect-[16/10] animate-pulse" />
+                ))
+              ) : (
+                infoprodutosList.map((upsell) => (
+                  <div key={upsell.id} id={`item-${upsell.id}`} className="snap-center shrink-0 w-[85vw] max-w-[320px]">
+                    <UpsellCard 
+                      upsell={{
+                        id: upsell.id,
+                        nome: upsell.nome,
+                        descricao: upsell.descricao,
+                        descricaoLonga: upsell.descricao,
+                        precoOriginal: upsell.preco * 1.5,
+                        precoAtual: upsell.preco,
+                        emoji: "💡",
+                        cor: "#FF3D9A",
+                        beneficios: ["Acesso imediato", "Suporte exclusivo"],
+                        copiaVendas: [upsell.descricao],
+                        imagem_url: upsell.imagem_url
+                      }} 
+                      isFavorite={favorites.includes(upsell.id)}
+                      onToggleFavorite={() => toggleFavorite(upsell.id, { nome: upsell.nome, imagem_url: upsell.imagem_url, tipo: "infoproduto" })}
+                      onOpen={() => {
+                        playHeartbeatSound();
+                        setActiveUpsell(upsell.id);
+                      }} 
+                    />
+                  </div>
+                ))
+              )}
+            </div>
+            <button
+              onClick={() => carouselRef.current?.scrollBy({ left: -340, behavior: "smooth" })}
+              className="hidden lg:flex absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 z-10 bg-white text-[#171717] p-2 rounded-full shadow-lg hover:scale-110 active:scale-95 transition-transform"
+              aria-label="Anterior"
+            >
+              <ArrowLeft size={20} />
+            </button>
+            <button
+              onClick={() => carouselRef.current?.scrollBy({ left: 340, behavior: "smooth" })}
+              className="hidden lg:flex absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 z-10 bg-white text-[#171717] p-2 rounded-full shadow-lg hover:scale-110 active:scale-95 transition-transform"
+              aria-label="Próximo"
+            >
+              <ArrowRight size={20} />
+            </button>
           </div>
 
           <div className="flex justify-center gap-1.5 mt-2">
