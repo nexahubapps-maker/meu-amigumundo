@@ -6,7 +6,7 @@ import { showSuccess } from "@/utils/toast";
 import { appendShareUTM } from "@/lib/tracking/utmify-service";
 
 interface PackCardProps {
-  pack: Pack;
+  pack: Pack & { imagem_url?: string };
   inCart: boolean;
   isFavorite: boolean;
   onToggleFavorite: () => void;
@@ -48,7 +48,7 @@ export const PackCard = ({ pack, inCart, isFavorite, onToggleFavorite, onAdd, on
     <div className={`flex flex-col rounded-2xl overflow-hidden bg-white shadow-[0_12px_28px_rgba(0,0,0,0.15),_0_6px_12px_rgba(0,0,0,0.1)] hover:shadow-[0_16px_32px_rgba(0,0,0,0.2)] hover:-translate-y-1 transition-all duration-300 border-2 border-gray-200 ${inCart ? 'animate-pulse-subtle border-[#44FF00]' : ''}`}>
       <div className="relative aspect-square w-full bg-gray-50">
         <img
-          src={`https://picsum.photos/seed/${pack.id}/400/400`}
+          src={pack.imagem_url || `https://picsum.photos/seed/${pack.id}/400/400`}
           alt={pack.nome}
           className="w-full h-full object-cover"
         />

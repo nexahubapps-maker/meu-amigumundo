@@ -6,7 +6,7 @@ import { showSuccess } from "@/utils/toast";
 import { appendShareUTM } from "@/lib/tracking/utmify-service";
 
 interface UpsellCardProps {
-  upsell: Upsell;
+  upsell: Upsell & { imagem_url?: string };
   isFavorite: boolean;
   onToggleFavorite: () => void;
   onOpen: () => void;
@@ -43,7 +43,7 @@ export const UpsellCard = ({ upsell, isFavorite, onToggleFavorite, onOpen }: Ups
     <div className="bg-white rounded-2xl overflow-hidden border-2 border-gray-200 shadow-[0_12px_28px_rgba(0,0,0,0.18),_0_6px_12px_rgba(0,0,0,0.12)] flex flex-col transition-all duration-300 hover:shadow-[0_16px_32px_rgba(0,0,0,0.22)] hover:-translate-y-1 h-full">
       <div className="relative aspect-[16/10] w-full bg-gray-50 cursor-pointer" onClick={onOpen}>
         <img 
-          src={`https://picsum.photos/seed/${upsell.id}/600/375`} 
+          src={upsell.imagem_url || `https://picsum.photos/seed/${upsell.id}/600/375`} 
           alt={upsell.nome} 
           className="w-full h-full object-cover"
         />

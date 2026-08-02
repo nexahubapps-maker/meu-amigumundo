@@ -189,7 +189,7 @@ export default function Index() {
 
       } catch (e) {
         console.error("Error loading sheets data:", e);
-      } finally {
+      } font-medium finally {
         setIsLoading(false);
       }
     };
@@ -666,7 +666,8 @@ export default function Index() {
                       emoji: "💡",
                       cor: "#FF3D9A",
                       beneficios: ["Acesso imediato", "Suporte exclusivo"],
-                      copiaVendas: [upsell.descricao]
+                      copiaVendas: [upsell.descricao],
+                      imagem_url: upsell.imagem_url
                     }} 
                     isFavorite={favorites.includes(upsell.id)}
                     onToggleFavorite={() => toggleFavorite(upsell.id, { nome: upsell.nome, imagem_url: upsell.imagem_url, tipo: "infoproduto" })}
@@ -789,7 +790,8 @@ export default function Index() {
                     receitas: 20,
                     precoOriginal: pack.preco * 1.5,
                     precoAtual: pack.preco,
-                    emoji: "🎁"
+                    emoji: "🎁",
+                    imagem_url: pack.imagem_url
                   }}
                   inCart={isInCart(pack.id)}
                   isFavorite={favorites.includes(pack.id)}
