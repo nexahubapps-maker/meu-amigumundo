@@ -12,6 +12,7 @@ import { CalculadoraPreco } from "@/components/features/ferramentas/CalculadoraP
 import { ContadorCarreiras } from "@/components/features/ferramentas/ContadorCarreiras";
 import { ConversorAgulha } from "@/components/features/ferramentas/ConversorAgulha";
 import { CombinadorCores } from "@/components/features/ferramentas/CombinadorCores";
+import { LightboxModal } from "@/components/features/catalog/LightboxModal";
 
 interface MeuAmiguMundoViewProps {
   onBack: () => void;
@@ -57,6 +58,7 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
 
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
   const [ferramentaAberta, setFerramentaAberta] = useState<string | null>(null);
+  const [zoomImage, setZoomImage] = useState<string | null>(null);
 
   const recarregarPerfil = async () => {
     if (user) {
@@ -404,7 +406,8 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
                           <img
                             src={item.imagem_url || `https://picsum.photos/seed/${item.codigo_produto}/400/400`}
                             alt={item.nome_produto}
-                            className="w-full h-full object-cover"
+                            className="w-full h-full object-cover cursor-zoom-in"
+                            onClick={() => setZoomImage(item.imagem_url || `https://picsum.photos/seed/${item.codigo_produto}/400/400`)}
                           />
                         </div>
                         <div className="pt-1.5 flex flex-col justify-between flex-1">
@@ -734,6 +737,10 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
 
       {ferramentaAberta === "cores" && (
         <CombinadorCores onBack={() => setFerramentaAberta(null)} />
+      )}
+
+      {zoomImage && (
+        <LightboxModal imageUrl={zoomImage} onClose={() => setZoomImage(null)} />
       )}
     </div>
   );

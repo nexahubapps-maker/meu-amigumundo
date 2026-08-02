@@ -390,7 +390,10 @@ export default function Index() {
       }
       return [...prev, ...filteredNewItems];
     });
-    if (showRecipe) setShowRecipe(null);
+    if (showRecipe) {
+      setShowRecipe(null);
+      if (targetId) navigate("/");
+    }
   };
 
   const removeFromCart = (id: string) => {
