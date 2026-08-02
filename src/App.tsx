@@ -9,6 +9,7 @@ import Index from "./pages/Index";
 import Checkout from "./pages/Checkout";
 import ObrigadoPage from "@/pages/ObrigadoPage";
 import NotFound from "./pages/NotFound";
+import { FloatingBackButton } from "@/components/common/FloatingBackButton";
 
 const queryClient = new QueryClient();
 
@@ -20,6 +21,7 @@ const App = () => (
           <Toaster />
           <Sonner />
           <BrowserRouter>
+            <FloatingBackButton />
             <Routes>
               {/* Home / Categories */}
               <Route path="/" element={<Index />} />
