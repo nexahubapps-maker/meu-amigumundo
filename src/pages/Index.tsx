@@ -238,7 +238,7 @@ export default function Index() {
         } catch (e) {
           console.error("Error searching recipes:", e);
           setSearchResults([]);
-        } font-medium
+        } finally {
           setIsSearching(false);
         }
       } else {
