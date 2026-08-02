@@ -127,17 +127,17 @@ export const CategoryDetailView = ({
                         e.stopPropagation();
                         onToggleFavorite(recipe.id);
                       }}
-                      className={`absolute top-1.5 right-1.5 bg-white/90 backdrop-blur-sm p-1 rounded-full shadow-md hover:scale-110 active:scale-90 transition-transform z-10 ${isFavorite ? 'text-[#44FF00]' : 'text-gray-400'}`}
+                      className={`absolute top-1.5 right-1.5 bg-white/90 backdrop-blur-sm p-1.5 rounded-full shadow-md hover:scale-110 active:scale-90 transition-transform z-10 ${isFavorite ? 'text-[#44FF00]' : 'text-gray-400'}`}
                     >
-                      <Heart size={10} fill={isFavorite ? "currentColor" : "none"} />
+                      <Heart size={14} fill={isFavorite ? "currentColor" : "none"} />
                     </button>
 
                     <button 
                       onClick={(e) => handleShare(recipe, e)}
-                      className="absolute top-7 right-1.5 bg-white/90 backdrop-blur-sm p-1 rounded-full shadow-md hover:scale-110 active:scale-90 transition-transform text-gray-500 hover:text-gray-800 z-10"
+                      className="absolute top-9 right-1.5 bg-white/90 backdrop-blur-sm p-1.5 rounded-full shadow-md hover:scale-110 active:scale-90 transition-transform text-gray-500 hover:text-gray-800 z-10"
                       title="Compartilhar"
                     >
-                      <Share2 size={10} />
+                      <Share2 size={14} />
                     </button>
                   </div>
 

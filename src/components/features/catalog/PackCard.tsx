@@ -64,17 +64,17 @@ export const PackCard = ({ pack, inCart, isFavorite, onToggleFavorite, onAdd, on
             e.stopPropagation();
             onToggleFavorite();
           }}
-          className={`absolute top-2 right-2 bg-white/90 backdrop-blur-sm p-1 rounded-full shadow-md hover:scale-110 active:scale-90 transition-transform ${isFavorite ? 'text-[#44FF00]' : 'text-gray-400'}`}
+          className={`absolute top-2 right-2 bg-white/90 backdrop-blur-sm p-1.5 rounded-full shadow-md hover:scale-110 active:scale-90 transition-transform ${isFavorite ? 'text-[#44FF00]' : 'text-gray-400'}`}
         >
-          <Heart size={14} fill={isFavorite ? "currentColor" : "none"} />
+          <Heart size={20} fill={isFavorite ? "currentColor" : "none"} />
         </button>
 
         <button 
           onClick={handleShare}
-          className="absolute top-10 right-2 bg-white/90 backdrop-blur-sm p-1 rounded-full shadow-md hover:scale-110 active:scale-90 transition-transform text-gray-500 hover:text-gray-800"
+          className="absolute top-12 right-2 bg-white/90 backdrop-blur-sm p-1.5 rounded-full shadow-md hover:scale-110 active:scale-90 transition-transform text-gray-500 hover:text-gray-800"
           title="Compartilhar"
         >
-          <Share2 size={14} />
+          <Share2 size={20} />
         </button>
 
         <div className="absolute bottom-2 left-2 bg-black/70 backdrop-blur-sm text-white text-[8px] font-bold px-2 py-0.5 rounded-md shadow-sm">
