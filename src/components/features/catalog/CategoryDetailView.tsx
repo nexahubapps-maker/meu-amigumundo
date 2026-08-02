@@ -83,7 +83,7 @@ export const CategoryDetailView = ({
         <div className="w-12"></div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-2 py-4">
+      <div className="max-w-6xl mx-auto px-2 pt-4 pb-24">
         <RecipeSearchBar />
 
         <div className="bg-blue-50 text-blue-700 text-[10px] font-bold py-1.5 px-3 rounded-lg text-center mb-3 uppercase tracking-wider">
