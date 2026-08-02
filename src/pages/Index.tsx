@@ -22,7 +22,6 @@ import { SearchResultsView } from "@/components/features/catalog/SearchResultsVi
 import { RecipeSearchBar } from "@/components/features/catalog/RecipeSearchBar";
 import { LightboxModal } from "@/components/features/catalog/LightboxModal";
 import { InstallGuideCard } from "@/components/features/pwa/InstallGuideCard";
-import { WelcomeBanner } from "@/components/WelcomeBanner";
 import { Breadcrumbs } from "@/components/common/Breadcrumbs";
 import { AdminSyncButton } from "@/components/features/admin/AdminSyncButton";
 import { useAuth } from "@/context/AuthContext";
@@ -546,8 +545,6 @@ export default function Index() {
         <meta name="twitter:card" content="summary_large_image" />
         <meta property="og:image:type" content="image/jpeg" />
       </Helmet>
-
-      <WelcomeBanner isDirectEntry={isDirectEntry} />
 
       <Header cartCount={cart.length} onOpenMeuAmiguMundo={handleOpenMeuAmiguMundo} />
 
