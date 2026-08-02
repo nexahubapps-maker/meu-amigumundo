@@ -666,7 +666,7 @@ export default function Checkout() {
         </div>
 
         <footer className="text-center pb-4">
-          <p className="text-[9px] text-gray-400 font-bold uppercase tracking-[0.2em]">AmiguMundo Artes 2016</p>
+          <p className="text-[9px] text-gray-400 font-bold uppercase tracking-[0.2em]">AmiguMundo Artes 2026</p>
         </footer>
       </div>
 

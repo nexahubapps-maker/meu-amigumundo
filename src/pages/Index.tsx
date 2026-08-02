@@ -249,7 +249,7 @@ export default function Index() {
         } catch (e) {
           console.error("Error searching recipes:", e);
           setSearchResults([]);
-        } finally {
+        } fontally {
           setIsSearching(false);
         }
       } else {
@@ -613,8 +613,8 @@ export default function Index() {
               </h2>
             </div>
             
-            <p className="text-gray-600 text-[10px] sm:text-xs font-bold text-center uppercase tracking-tight -mt-0.5 mb-1">
-              Novas receitas adicionadas todos os dias
+            <p className="text-gray-600 text-xs sm:text-sm font-bold text-center uppercase tracking-tight -mt-0.5 mb-1">
+              NOVAS TRADUÇÕES ADICIONADAS TODOS OS DIAS
             </p>
             
             <div className="grid grid-cols-3 lg:grid-cols-6 gap-x-1 gap-y-1.5 lg:gap-4 px-0.5">

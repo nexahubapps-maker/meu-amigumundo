@@ -54,7 +54,7 @@ export const CategoryCard = ({ nome, imagem, onClick }: CategoryCardProps) => {
           className="absolute top-1.5 right-1.5 bg-white/90 backdrop-blur-sm p-1.5 rounded-full shadow-md hover:scale-110 active:scale-90 transition-transform text-gray-500 hover:text-gray-800 z-10"
           title="Compartilhar Categoria"
         >
-          <Share2 size={18} />
+          <Share2 size={15} />
         </button>
       </div>
       <span className="text-[#171717] text-[11px] sm:text-[13px] lg:text-xs font-black text-center uppercase tracking-tight truncate w-full mt-1.5">

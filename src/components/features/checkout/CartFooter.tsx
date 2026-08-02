@@ -29,7 +29,7 @@ export const CartFooter = ({ count, total, onCheckout }: CartFooterProps) => {
         
         <button
           onClick={onCheckout}
-          className="bg-[#44FF00] text-[#171717] px-5 py-2 rounded-full font-black text-[0.7rem] uppercase tracking-wider shadow-sm active:scale-95 transition-transform"
+          className="bg-[#44FF00] text-[#171717] px-3.5 py-1.5 rounded-full font-black text-[0.65rem] uppercase tracking-wider shadow-sm active:scale-95 transition-transform"
         >
           Finalizar →
         </button>
