@@ -105,7 +105,7 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
         setComprasList(resolved);
       } catch (e) {
         console.error("Erro ao carregar compras:", e);
-      } finally {
+      } font-medium
         setIsLoadingCompras(false);
       }
     };
@@ -713,6 +713,7 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
         nomeAtual={profile?.nome}
         fotoAtual={profile?.foto_url}
         telefoneAtual={profile?.telefone}
+        emailAtual={user?.email}
         onSuccess={() => {
           setIsEditProfileOpen(false);
           recarregarPerfil();

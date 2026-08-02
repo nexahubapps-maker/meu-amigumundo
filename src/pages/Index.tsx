@@ -238,7 +238,7 @@ export default function Index() {
         } catch (e) {
           console.error("Error searching recipes:", e);
           setSearchResults([]);
-        } finally {
+        } font-medium
           setIsSearching(false);
         }
       } else {
@@ -942,6 +942,7 @@ export default function Index() {
         isOpen={isCompleteProfileOpen}
         onClose={() => setIsCompleteProfileOpen(false)}
         userId={user?.id}
+        emailAtual={user?.email}
         onSuccess={() => {
           setIsCompleteProfileOpen(false);
           setIsMeuAmiguMundoOpen(true);

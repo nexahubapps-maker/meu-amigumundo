@@ -12,6 +12,7 @@ interface CompleteProfileModalProps {
   nomeAtual?: string | null;
   fotoAtual?: string | null;
   telefoneAtual?: string | null;
+  emailAtual?: string | null;
 }
 
 export const CompleteProfileModal = ({
@@ -22,6 +23,7 @@ export const CompleteProfileModal = ({
   nomeAtual,
   fotoAtual,
   telefoneAtual,
+  emailAtual,
 }: CompleteProfileModalProps) => {
   const [nome, setNome] = useState(nomeAtual || "");
   const [telefone, setTelefone] = useState(telefoneAtual || "");
@@ -157,6 +159,11 @@ export const CompleteProfileModal = ({
             <p className="text-xs text-gray-700 font-bold leading-relaxed">
               Complete seu perfil pra acessar sua área <strong className="text-gray-900">Meu AmiguMundo</strong>.
             </p>
+            {emailAtual && (
+              <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">
+                Conectada como: {emailAtual}
+              </p>
+            )}
           </div>
 
           {errorMessage && (
