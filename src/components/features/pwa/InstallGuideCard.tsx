@@ -3,9 +3,12 @@
 import React, { useState } from "react";
 import { Smartphone, ArrowRight } from "lucide-react";
 import { InstallGuideModal } from "./InstallGuideModal";
+import { isPwaInstalled } from "@/utils/pwa";
 
 export const InstallGuideCard = () => {
   const [isOpen, setIsOpen] = useState(false);
+
+  if (isPwaInstalled()) return null;
 
   return (
     <>

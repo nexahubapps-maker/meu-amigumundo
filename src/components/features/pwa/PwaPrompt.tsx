@@ -3,13 +3,14 @@
 import React, { useState, useEffect } from 'react';
 import { Smartphone, X, ArrowRight } from 'lucide-react';
 import { InstallGuideModal } from './InstallGuideModal';
+import { isPwaInstalled } from "@/utils/pwa";
 
 export const PwaPrompt = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
-    const isInstalled = localStorage.getItem('amigumundo-installed');
+    const isInstalled = isPwaInstalled();
     
     if (!isInstalled) {
       const showTimer = setTimeout(() => {
