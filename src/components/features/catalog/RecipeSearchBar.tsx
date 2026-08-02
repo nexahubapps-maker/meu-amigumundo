@@ -22,9 +22,11 @@ export const RecipeSearchBar = ({ placeholder = "Buscar receita pelo nome..." }:
 
   return (
     <form onSubmit={handleSearch} className="w-full max-w-xl mx-auto px-4 my-3">
-      <p className="text-sm text-gray-600 font-medium mb-1.5 text-left pl-1">
-        Digite abaixo o nome da receita que você procura
-      </p>
+      <div className="bg-gray-100 rounded-xl px-3 py-2 mb-2 shadow-[0_4px_10px_rgba(0,0,0,0.12),_0_2px_4px_rgba(0,0,0,0.08)] border border-gray-200/60">
+        <p className="text-sm text-gray-700 font-bold text-left m-0">
+          Digite abaixo o nome da receita que você procura
+        </p>
+      </div>
       <div className="relative flex items-center">
         <input
           type="text"

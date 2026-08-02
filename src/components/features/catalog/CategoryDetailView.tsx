@@ -85,7 +85,9 @@ export const CategoryDetailView = ({
       <div className="max-w-6xl mx-auto px-2 pt-4 pb-24">
         <RecipeSearchBar />
 
-        <div className="bg-blue-50 text-blue-700 text-[10px] font-bold py-1.5 px-3 rounded-lg text-center mb-3 uppercase tracking-wider">
+        <div className="w-2/3 max-w-xs mx-auto h-px bg-gray-200 my-3"></div>
+
+        <div className="bg-white text-gray-700 text-sm font-bold py-2.5 px-4 rounded-xl text-center mb-3 uppercase tracking-wider shadow-[0_6px_16px_rgba(0,0,0,0.1),_0_3px_6px_rgba(0,0,0,0.06)] border border-gray-100">
           🔍 Clique nas imagens para ampliá-las
         </div>
 
