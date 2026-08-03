@@ -28,7 +28,7 @@ export const FooterNavigation = ({
       <button
         onClick={onOpenNotifications}
         translate="no"
-        className="notranslate flex items-center justify-center gap-2 text-white hover:bg-white/10 active:scale-95 transition-all py-1 px-4 rounded-full"
+        className="notranslate flex items-center justify-center gap-2 text-white bg-white/10 hover:bg-white/20 active:scale-95 transition-all py-1.5 px-4 rounded-full border border-white/15 shadow-[inset_0_1px_1px_rgba(255,255,255,0.15)]"
       >
         <div className="relative">
           <Bell size={16} className="text-[#44FF00]" fill="#44FF00" />
@@ -44,7 +44,7 @@ export const FooterNavigation = ({
       <button
         onClick={onOpenMeuAmiguMundo}
         translate="no"
-        className="notranslate flex items-center justify-center gap-2 text-white hover:bg-white/10 active:scale-95 transition-all py-1 px-4 rounded-full"
+        className="notranslate flex items-center justify-center gap-2 text-white bg-white/10 hover:bg-white/20 active:scale-95 transition-all py-1.5 px-4 rounded-full border border-white/15 shadow-[inset_0_1px_1px_rgba(255,255,255,0.15)]"
       >
         <div className="relative">
           <User size={16} className="text-[#44FF00]" fill="#44FF00" />
@@ -54,7 +54,7 @@ export const FooterNavigation = ({
             </span>
           )}
         </div>
-        <span translate="no" className="notranslate text-[10px] font-black uppercase tracking-wider text-white">Meu AmiguMundo</span>
+        <span translate="no" className="notranslate text-xs font-black uppercase tracking-wider text-white">Meu AmiguMundo</span>
       </button>
     </div>
   );
