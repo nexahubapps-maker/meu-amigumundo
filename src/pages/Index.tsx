@@ -50,7 +50,7 @@ import {
 } from "@/utils/sheets";
 import { playHeartbeatSound } from "@/utils/audio";
 import { type CartItem, calculateCart } from "@/utils/pricing";
-import { showCartAdd, showSuccess, showInfo } from "@/utils/toast";
+import { showCartAdd, showSuccess, showInfo, showNotificationPopup } from "@/utils/toast";
 
 const ADMIN_EMAIL = "crochecrochet1@gmail.com";
 
@@ -296,7 +296,7 @@ export default function Index() {
         if (now >= notifTime) {
           const hasBeenShown = localStorage.getItem(`notif-shown-${notif.id}`);
           if (!hasBeenShown) {
-            showInfo(`🔔 ${notif.titulo}: ${notif.mensagem}`);
+            showNotificationPopup(notif.titulo, notif.mensagem, notif.imagem_url);
             localStorage.setItem(`notif-shown-${notif.id}`, "true");
           }
         }

@@ -45,10 +45,10 @@ export const NotificationsModal = ({ isOpen, onClose, notifications }: Notificat
   };
 
   const formatDate = (raw: string) => {
-    const date = new Date(raw);
-    return isNaN(date.getTime())
-      ? raw
-      : date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+    const match = raw.match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})/);
+    if (!match) return raw;
+    const [, , month, day, hour, minute] = match;
+    return `${day}/${month} - ${hour}:${minute}`;
   };
 
   return (
@@ -91,7 +91,7 @@ export const NotificationsModal = ({ isOpen, onClose, notifications }: Notificat
                         <h4 className="text-xs font-black text-gray-800 uppercase leading-tight">
                           {notif.titulo}
                         </h4>
-                        <div className="flex items-center gap-1 text-[9px] text-gray-400 font-bold mt-1">
+                        <div className="flex items-center gap-1 text-[11px] text-gray-400 font-bold mt-1">
                           <Calendar size={10} />
                           <span>{formatDate(notif.data_hora)}</span>
                         </div>
@@ -130,7 +130,7 @@ export const NotificationsModal = ({ isOpen, onClose, notifications }: Notificat
               <img src={selectedNotif.imagem_url} alt="" className="w-full h-40 object-cover rounded-2xl border border-gray-100 mb-3" />
             )}
             <p className="text-sm text-gray-600 font-medium leading-relaxed mb-4">{selectedNotif.mensagem}</p>
-            <div className="flex items-center gap-1 text-[10px] text-gray-400 font-bold mb-4">
+            <div className="flex items-center gap-1 text-[12px] text-gray-400 font-bold mb-4">
               <Calendar size={11} />
               <span>{formatDate(selectedNotif.data_hora)}</span>
             </div>
