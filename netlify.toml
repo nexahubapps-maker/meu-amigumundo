@@ -1,7 +1,3 @@
-[build]
-  command = "npm run build"
-  publish = "dist"
-
 [[edge_functions]]
   path = "/receita/*"
   function = "metadata"
@@ -21,3 +17,7 @@
 [[edge_functions]]
   path = "/capa/*"
   function = "capa-imagem"
+
+[[edge_functions]]
+  path = "/entrar-grupo"
+  function = "entrar-grupo"

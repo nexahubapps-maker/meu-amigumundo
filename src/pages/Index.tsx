@@ -241,7 +241,7 @@ export default function Index() {
         } catch (e) {
           console.error("Error searching recipes:", e);
           setSearchResults([]);
-        } finally {
+        } fontally {
           setIsSearching(false);
         }
       } else {
@@ -831,7 +831,7 @@ export default function Index() {
 
       <div className="max-w-2xl mx-auto px-4 my-6">
         <a 
-          href="https://wa.me/5544999999999" 
+          href="/entrar-grupo" 
           target="_blank" 
           rel="noopener noreferrer"
           className="bg-[#0E5E6F] text-white p-3.5 rounded-2xl text-center shadow-md flex items-center justify-center gap-4 hover:scale-[1.01] active:scale-[0.99] transition-transform border border-white/10"
