@@ -41,7 +41,7 @@ export const LoginUpsellCard = ({ onOpenAuth }: LoginUpsellCardProps) => {
   ];
 
   return (
-    <div className="bg-[#E5E7EB] rounded-[28px] p-3 sm:p-5 text-gray-900 shadow-[0_12px_28px_rgba(0,0,0,0.22),_0_6px_12px_rgba(0,0,0,0.15)] border-2 border-gray-300 text-left my-4 max-w-2xl mx-1 sm:mx-auto">
+    <div style={{ textShadow: "none" }} className="bg-[#E5E7EB] rounded-[28px] p-3 sm:p-5 text-gray-900 shadow-[0_12px_28px_rgba(0,0,0,0.22),_0_6px_12px_rgba(0,0,0,0.15)] border-2 border-gray-300 text-left my-4 mx-1">
       <div className="text-center sm:text-left space-y-1.5 mb-4">
         <h2 className="text-base sm:text-lg font-black uppercase tracking-tight leading-tight text-gray-900">
           🎁 GANHE SUA BIBLIOTECA<br />DE GRAÇA, AGORA MESMO

@@ -23,7 +23,7 @@ export const FooterNavigation = ({
   return (
     <div 
       style={tealBackgroundStyle}
-      className="fixed bottom-0 left-0 right-0 z-50 h-[40px] flex items-center justify-around px-6 shadow-[0_-4px_15px_rgba(0,0,0,0.15)] border-t border-white/10"
+      className="fixed bottom-0 left-0 right-0 z-50 h-[40px] flex items-center justify-between px-4 shadow-[0_-4px_15px_rgba(0,0,0,0.15)] border-t border-white/10"
     >
       <button
         onClick={onOpenNotifications}

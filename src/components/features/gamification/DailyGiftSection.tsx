@@ -141,7 +141,7 @@ export const DailyGiftSection = () => {
   return (
     <>
       <section id="receitas-gratuitas" style={textureVerdeOlivaStyle} className="py-6 px-4 text-center">
-        <div className="max-w-xl mx-auto">
+        <div className="max-w-2xl mx-auto">
           <p className="text-white text-sm sm:text-base font-black uppercase tracking-wide mb-4">
             Volte todos os dias para retirar sua receita grátis e garantir seu presente diário!
           </p>
