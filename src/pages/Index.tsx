@@ -32,6 +32,7 @@ import { CompleteProfileModal } from "@/components/CompleteProfileModal";
 import { MeuAmiguMundoView } from "@/components/features/membros/MeuAmiguMundoView";
 import { captureUTMs } from "@/lib/tracking/utmify-service";
 import { supabase } from "@/lib/supabase";
+import { getReadNotificationIds } from "@/utils/notificacoesLidas";
 import { 
   getInfoprodutos, 
   getPacks, 
@@ -96,7 +97,7 @@ export default function Index() {
   const [zoomImage, setZoomImage] = useState<string | null>(null);
   const carouselRef = useRef<HTMLDivElement>(null);
   
-  const [hasUnreadNotifications, setHasUnreadNotifications] = useState(true);
+  const [readNotificationIds, setReadNotificationIds] = useState<string[]>(() => getReadNotificationIds());
   const [isDirectEntry, setIsDirectEntry] = useState(false);
 
   const [favorites, setFavorites] = useState<string[]>(() => {
@@ -169,15 +170,6 @@ export default function Index() {
           .filter(c => c.ativo)
           .sort((a, b) => a.id.localeCompare(b.id, undefined, { numeric: true, sensitivity: 'base' }));
         setCategoriesList(activeCategories);
-
-        const lastRead = localStorage.getItem("notifications-last-read");
-        if (lastRead) {
-          const activeNotifs = notificationsData.filter(n => n.ativo);
-          const hasNew = activeNotifs.some(n => new Date(n.data_hora) > new Date(lastRead));
-          setHasUnreadNotifications(hasNew);
-        } else {
-          setHasUnreadNotifications(notificationsData.filter(n => n.ativo).length > 0);
-        }
 
         const pushItems = await getPushEnabledItems();
         const pushItem = pushItems[0];
@@ -510,8 +502,11 @@ export default function Index() {
 
   const handleOpenNotifications = () => {
     setIsNotificationsOpen(true);
-    setHasUnreadNotifications(false);
-    localStorage.setItem("notifications-last-read", new Date().toISOString());
+  };
+
+  const handleCloseNotifications = () => {
+    setIsNotificationsOpen(false);
+    setReadNotificationIds(getReadNotificationIds());
   };
 
   let metaTitle = "Amigu Mundo";
@@ -877,7 +872,7 @@ export default function Index() {
         onOpenMeuAmiguMundo={handleOpenMeuAmiguMundo}
         onOpenNotifications={handleOpenNotifications}
         favoritesCount={favorites.length}
-        notificationsCount={hasUnreadNotifications ? notificationsList.filter(n => n.ativo).length : 0}
+        notificationsCount={notificationsList.filter(n => n.ativo && !readNotificationIds.includes(n.id)).length}
       />
 
       <FavoritesModal
@@ -907,7 +902,7 @@ export default function Index() {
 
       <NotificationsModal
         isOpen={isNotificationsOpen}
-        onClose={() => setIsNotificationsOpen(false)}
+        onClose={handleCloseNotifications}
         notifications={notificationsList}
       />
 
