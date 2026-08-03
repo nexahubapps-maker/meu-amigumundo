@@ -1,6 +1,6 @@
 "use client";
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { X, Bell, Calendar, ExternalLink } from 'lucide-react';
 import { type SheetNotification } from '@/utils/sheets';
@@ -12,23 +12,22 @@ interface NotificationsModalProps {
   notifications: SheetNotification[];
 }
 
-export const NotificationsModal = ({
-  isOpen,
-  onClose,
-  notifications
-}: NotificationsModalProps) => {
+export const NotificationsModal = ({ isOpen, onClose, notifications }: NotificationsModalProps) => {
   const navigate = useNavigate();
+  const [readIds, setReadIds] = useState<string[]>(() => getReadNotificationIds());
+  const [selectedNotif, setSelectedNotif] = useState<SheetNotification | null>(null);
+
   if (!isOpen) return null;
 
   const activeNotifications = notifications.filter(n => n.ativo);
-  const readIds = getReadNotificationIds();
 
-  const handleClose = () => {
-    markNotificationsAsRead(activeNotifications.map(n => n.id));
-    onClose();
+  const handleOpenDetail = (notif: SheetNotification) => {
+    setSelectedNotif(notif);
+    markNotificationsAsRead([notif.id]);
+    setReadIds(getReadNotificationIds());
   };
 
-  const handleNotificationClick = (link: string) => {
+  const handleGoToLink = (link: string) => {
     if (!link) return;
     if (link.startsWith("http")) {
       window.open(link, "_blank");
@@ -38,11 +37,18 @@ export const NotificationsModal = ({
       setTimeout(() => {
         document.getElementById(hash)?.scrollIntoView({ behavior: "smooth" });
       }, 300);
-      handleClose();
     } else {
       navigate(link);
-      handleClose();
     }
+    setSelectedNotif(null);
+    onClose();
+  };
+
+  const formatDate = (raw: string) => {
+    const date = new Date(raw);
+    return isNaN(date.getTime())
+      ? raw
+      : date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
   };
 
   return (
@@ -53,7 +59,7 @@ export const NotificationsModal = ({
             <Bell className="text-[#44FF00]" size={20} />
             <h2 className="text-base font-black uppercase tracking-tight text-gray-800">Histórico de Notificações</h2>
           </div>
-          <button onClick={handleClose} className="p-1.5 hover:bg-gray-50 rounded-full text-gray-400 hover:text-gray-600 transition-colors">
+          <button onClick={onClose} className="p-1.5 hover:bg-gray-50 rounded-full text-gray-400 hover:text-gray-600 transition-colors">
             <X size={20} />
           </button>
         </div>
@@ -68,32 +74,29 @@ export const NotificationsModal = ({
           ) : (
             <div className="space-y-2">
               {activeNotifications.map((notif) => {
-                const date = new Date(notif.data_hora);
-                const formattedDate = isNaN(date.getTime())
-                  ? notif.data_hora
-                  : date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
                 const isUnread = !readIds.includes(notif.id);
-
                 return (
                   <div
                     key={notif.id}
-                    onClick={() => handleNotificationClick(notif.link)}
-                    className={`p-3 bg-gray-50 rounded-2xl border space-y-2 transition-all ${notif.link ? 'cursor-pointer hover:bg-gray-100/80 active:scale-[0.99]' : ''} ${isUnread ? 'border-[#44FF00]/50' : 'border-gray-100'}`}
+                    onClick={() => handleOpenDetail(notif)}
+                    className={`relative p-3 rounded-2xl border space-y-2 cursor-pointer active:scale-[0.99] transition-all ${isUnread ? 'bg-green-50 border-green-200' : 'bg-white border-gray-100'}`}
                   >
+                    {isUnread && (
+                      <span className="absolute -top-2 -right-2 bg-[#44FF00] text-[#171717] text-[9px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider shadow-sm">
+                        Nova
+                      </span>
+                    )}
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex-1 min-w-0">
-                        <h4 className="text-xs font-black text-gray-800 uppercase leading-tight flex items-center gap-1.5">
-                          {isUnread && <span className="w-1.5 h-1.5 rounded-full bg-[#44FF00] shrink-0" />}
+                        <h4 className="text-xs font-black text-gray-800 uppercase leading-tight">
                           {notif.titulo}
-                          {notif.link && <ExternalLink size={10} className="text-gray-400" />}
                         </h4>
                         <div className="flex items-center gap-1 text-[9px] text-gray-400 font-bold mt-1">
                           <Calendar size={10} />
-                          <span>{formattedDate}</span>
+                          <span>{formatDate(notif.data_hora)}</span>
                         </div>
                       </div>
                     </div>
-
                     <div className="flex gap-2 items-start">
                       {notif.imagem_url && (
                         <img
@@ -102,7 +105,7 @@ export const NotificationsModal = ({
                           className="w-14 h-14 rounded-xl object-cover border border-gray-200 shrink-0"
                         />
                       )}
-                      <p className="text-xs text-gray-600 font-medium leading-relaxed flex-1">
+                      <p className="text-xs text-gray-600 font-medium leading-relaxed flex-1 line-clamp-2">
                         {notif.mensagem}
                       </p>
                     </div>
@@ -113,6 +116,35 @@ export const NotificationsModal = ({
           )}
         </div>
       </div>
+
+      {selectedNotif && (
+        <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-black/70" onClick={() => setSelectedNotif(null)}>
+          <div className="bg-white rounded-3xl max-w-sm w-full p-5 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-start justify-between mb-3">
+              <h3 className="text-sm font-black text-gray-800 uppercase leading-tight pr-2">{selectedNotif.titulo}</h3>
+              <button onClick={() => setSelectedNotif(null)} className="p-1 text-gray-400 hover:text-gray-600 shrink-0">
+                <X size={18} />
+              </button>
+            </div>
+            {selectedNotif.imagem_url && (
+              <img src={selectedNotif.imagem_url} alt="" className="w-full h-40 object-cover rounded-2xl border border-gray-100 mb-3" />
+            )}
+            <p className="text-sm text-gray-600 font-medium leading-relaxed mb-4">{selectedNotif.mensagem}</p>
+            <div className="flex items-center gap-1 text-[10px] text-gray-400 font-bold mb-4">
+              <Calendar size={11} />
+              <span>{formatDate(selectedNotif.data_hora)}</span>
+            </div>
+            {selectedNotif.link && (
+              <button
+                onClick={() => handleGoToLink(selectedNotif.link)}
+                className="w-full bg-[#44FF00] text-[#171717] py-3 rounded-2xl font-black text-xs uppercase tracking-wider shadow-sm active:scale-95 transition-transform flex items-center justify-center gap-1.5"
+              >
+                Ver agora <ExternalLink size={14} />
+              </button>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
