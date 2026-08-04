@@ -173,7 +173,7 @@ export default function Index() {
 
       } catch (e) {
         console.error("Error loading sheets data:", e);
-      } fontally {
+      } finally {
         setIsLoading(false);
       }
     };
