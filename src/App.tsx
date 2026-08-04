@@ -10,6 +10,7 @@ import Checkout from "./pages/Checkout";
 import ObrigadoPage from "@/pages/ObrigadoPage";
 import NotFound from "./pages/NotFound";
 import { FloatingBackButton } from "@/components/common/FloatingBackButton";
+import { DailyReminderPopup } from "@/components/common/DailyReminderPopup";
 
 const queryClient = new QueryClient();
 
@@ -22,6 +23,7 @@ const App = () => (
           <Sonner />
           <BrowserRouter>
             <FloatingBackButton />
+            <DailyReminderPopup />
             <Routes>
               {/* Home / Categories */}
               <Route path="/" element={<Index />} />

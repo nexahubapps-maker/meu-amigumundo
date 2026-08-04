@@ -40,7 +40,6 @@ import {
   getCategories,
   getRecipesByCategoria,
   getRecipesByIds,
-  getPushEnabledItems,
   searchRecipes,
   type SheetRecipe,
   type SheetInfoproduto,
@@ -170,25 +169,6 @@ export default function Index() {
           .filter(c => c.ativo)
           .sort((a, b) => a.id.localeCompare(b.id, undefined, { numeric: true, sensitivity: 'base' }));
         setCategoriesList(activeCategories);
-
-        const pushItems = await getPushEnabledItems();
-        const pushItem = pushItems[0];
-        if (pushItem) {
-          if (Notification.permission === "granted") {
-            new Notification(`Novidade: ${pushItem.nome}`, {
-              body: pushItem.descricao,
-              icon: "https://ik.imagekit.io/51b3srlsg/icone_amigumundo.png"
-            });
-          } else if (Notification.permission !== "denied") {
-            Notification.requestPermission().then(permission => {
-              if (permission === "granted") {
-                new Notification(`Novidade: ${pushItem.nome}`, {
-                  body: pushItem.descricao
-                });
-              }
-            });
-          }
-        }
 
       } catch (e) {
         console.error("Error loading sheets data:", e);
