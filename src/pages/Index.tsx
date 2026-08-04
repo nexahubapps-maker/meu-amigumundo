@@ -4,6 +4,7 @@ import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { Header } from "@/components/common/Header";
+import { PushOptInCard } from "@/components/features/pwa/PushOptInCard";
 import RecipeCard from "@/components/features/catalog/RecipeCard";
 import { UpsellCard } from "@/components/features/upsell/UpsellCard";
 import { UpsellModal } from "@/components/features/upsell/UpsellModal";
@@ -172,7 +173,7 @@ export default function Index() {
 
       } catch (e) {
         console.error("Error loading sheets data:", e);
-      } finally {
+      } fontally {
         setIsLoading(false);
       }
     };
@@ -537,6 +538,7 @@ export default function Index() {
       </Helmet>
 
       <Header cartCount={cart.length} onOpenMeuAmiguMundo={handleOpenMeuAmiguMundo} />
+      <PushOptInCard />
 
       <InternalPopup notifications={notificationsList} />
 
