@@ -19,7 +19,9 @@ export interface SyncResult {
 
 async function removerAusentes(tabela: string, coluna: string, idsValidos: (string | number)[]) {
   if (idsValidos.length === 0) return;
-  await supabase.from(tabela).delete().not(coluna, "in", idsValidos);
+  const lista = idsValidos.map(id => `"${id}"`).join(",");
+  const { error } = await supabase.from(tabela).delete().not(coluna, "in", `(${lista})`);
+  if (error) console.error(`Erro ao remover itens ausentes de ${tabela}:`, error);
 }
 
 export async function syncGoogleSheetsToSupabase(): Promise<SyncResult[]> {
