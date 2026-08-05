@@ -54,7 +54,7 @@ export const PackCard = ({ pack, inCart, isFavorite, onToggleFavorite, onAdd, on
         />
         
         {badge && (
-          <div className={`absolute top-2 left-2 ${badge.bg} text-[7px] font-black px-2 py-0.5 rounded-full shadow-sm uppercase tracking-wider`}>
+          <div className={`absolute top-2 left-2 ${badge.bg} text-[8px] sm:text-[9px] font-black px-2 py-0.5 rounded-full shadow-sm uppercase tracking-wider`}>
             {badge.text}
           </div>
         )}
@@ -76,31 +76,27 @@ export const PackCard = ({ pack, inCart, isFavorite, onToggleFavorite, onAdd, on
         >
           <Share2 size={20} />
         </button>
-
-        <div className="absolute bottom-2 left-2 bg-black/70 backdrop-blur-sm text-white text-[8px] font-bold px-2 py-0.5 rounded-md shadow-sm">
-          {pack.emoji} {pack.receitas} Rec.
-        </div>
       </div>
 
-      <div className="p-2.5 flex flex-col justify-between flex-1 bg-white">
+      <div className="p-3 flex flex-col justify-between flex-1 bg-white">
         <div>
-          <h3 className="text-[10px] sm:text-xs font-black leading-tight text-[#171717] uppercase tracking-tight line-clamp-2">
+          <h3 className="text-xs sm:text-sm font-black leading-tight text-[#171717] uppercase tracking-tight line-clamp-2">
             {pack.nome}
           </h3>
-          <p className="text-[9px] text-gray-500 font-medium mt-0.5 leading-tight">
+          <p className="text-[11px] sm:text-xs text-gray-500 font-medium mt-1 leading-tight">
             {pack.descricao}
           </p>
-          <div className="flex items-center gap-1.5 mt-1">
-            <span className="text-gray-400 line-through text-[8px]">R$ {pack.precoOriginal.toFixed(2)}</span>
-            <span className="text-[10px] sm:text-xs font-black text-[#171717]">R$ {pack.precoAtual.toFixed(2)}</span>
+          <div className="flex items-center gap-1.5 mt-2">
+            <span className="text-gray-400 line-through text-[10px] sm:text-xs font-bold">R$ {pack.precoOriginal.toFixed(2)}</span>
+            <span className="text-sm sm:text-base font-black text-[#171717]">R$ {pack.precoAtual.toFixed(2)}</span>
           </div>
         </div>
         
-        <div className="flex gap-1 mt-2">
+        <div className="flex gap-1 mt-3">
           <button
             onClick={onAdd}
             disabled={inCart}
-            className={`flex-1 py-1.5 rounded-lg font-black text-[8px] sm:text-[9px] uppercase tracking-wider transition-all active:scale-95 ${
+            className={`flex-1 py-2 rounded-xl font-black text-xs uppercase tracking-wider transition-all active:scale-95 ${
               inCart 
                 ? 'bg-gray-100 text-gray-400' 
                 : 'bg-[#44FF00] text-[#171717] hover:scale-[1.02]'
@@ -111,7 +107,7 @@ export const PackCard = ({ pack, inCart, isFavorite, onToggleFavorite, onAdd, on
           {inCart && (
             <button 
               onClick={onRemove} 
-              className="px-2 rounded-lg bg-red-50 text-red-500 text-[10px] hover:bg-red-100 transition-colors"
+              className="px-2.5 rounded-xl bg-red-50 text-red-500 text-xs hover:bg-red-100 transition-colors"
             >
               ✕
             </button>
