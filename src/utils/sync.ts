@@ -17,6 +17,11 @@ export interface SyncResult {
   error?: string;
 }
 
+async function removerAusentes(tabela: string, coluna: string, idsValidos: (string | number)[]) {
+  if (idsValidos.length === 0) return;
+  await supabase.from(tabela).delete().not(coluna, "in", idsValidos);
+}
+
 export async function syncGoogleSheetsToSupabase(): Promise<SyncResult[]> {
   const results: SyncResult[] = [];
 
@@ -32,9 +37,8 @@ export async function syncGoogleSheetsToSupabase(): Promise<SyncResult[]> {
       ativo: c.ativo
     }));
 
-    const { error } = await supabase
-      .from("categorias")
-      .upsert(data, { onConflict: "id" });
+    const { error } = await supabase.from("categorias").upsert(data, { onConflict: "id" });
+    if (!error) await removerAusentes("categorias", "id", validCategories.map(c => c.id));
 
     results.push({ table: "categorias", success: !error, count: data.length, error: error?.message });
   } catch (e: any) {
@@ -57,9 +61,8 @@ export async function syncGoogleSheetsToSupabase(): Promise<SyncResult[]> {
       disparar_push: r.disparar_push
     }));
 
-    const { error } = await supabase
-      .from("receitas")
-      .upsert(data, { onConflict: "codigo" });
+    const { error } = await supabase.from("receitas").upsert(data, { onConflict: "codigo" });
+    if (!error) await removerAusentes("receitas", "codigo", validRecipes.map(r => r.id));
 
     results.push({ table: "receitas", success: !error, count: data.length, error: error?.message });
   } catch (e: any) {
@@ -83,9 +86,8 @@ export async function syncGoogleSheetsToSupabase(): Promise<SyncResult[]> {
       link_entrega: p.link_entrega
     }));
 
-    const { error } = await supabase
-      .from("packs")
-      .upsert(data, { onConflict: "codigo" });
+    const { error } = await supabase.from("packs").upsert(data, { onConflict: "codigo" });
+    if (!error) await removerAusentes("packs", "codigo", validPacks.map(p => p.id));
 
     results.push({ table: "packs", success: !error, count: data.length, error: error?.message });
   } catch (e: any) {
@@ -110,9 +112,8 @@ export async function syncGoogleSheetsToSupabase(): Promise<SyncResult[]> {
       bump_ativo: i.bump_ativo
     }));
 
-    const { error } = await supabase
-      .from("infoprodutos")
-      .upsert(data, { onConflict: "codigo" });
+    const { error } = await supabase.from("infoprodutos").upsert(data, { onConflict: "codigo" });
+    if (!error) await removerAusentes("infoprodutos", "codigo", validInfos.map(i => i.id));
 
     results.push({ table: "infoprodutos", success: !error, count: data.length, error: error?.message });
   } catch (e: any) {
@@ -135,9 +136,8 @@ export async function syncGoogleSheetsToSupabase(): Promise<SyncResult[]> {
       disparar_push: n.disparar_push
     }));
 
-    const { error } = await supabase
-      .from("notificacoes_internas")
-      .upsert(data, { onConflict: "id" });
+    const { error } = await supabase.from("notificacoes_internas").upsert(data, { onConflict: "id" });
+    if (!error) await removerAusentes("notificacoes_internas", "id", validNotifications.map(n => n.id));
 
     results.push({ table: "notificacoes_internas", success: !error, count: data.length, error: error?.message });
   } catch (e: any) {
@@ -157,9 +157,8 @@ export async function syncGoogleSheetsToSupabase(): Promise<SyncResult[]> {
       ativo: f.ativo
     }));
 
-    const { error } = await supabase
-      .from("receitas_gratuitas")
-      .upsert(data, { onConflict: "codigo" });
+    const { error } = await supabase.from("receitas_gratuitas").upsert(data, { onConflict: "codigo" });
+    if (!error) await removerAusentes("receitas_gratuitas", "codigo", validFreeRecipes.map(f => f.codigo));
 
     results.push({ table: "receitas_gratuitas", success: !error, count: data.length, error: error?.message });
   } catch (e: any) {
