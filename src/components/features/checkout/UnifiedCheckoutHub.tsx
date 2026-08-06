@@ -89,44 +89,9 @@ export const UnifiedCheckoutHub = ({
     }
   }
 
-  const tableRows = [
-    {
-      range: "De 5 a 9 receitas",
-      price: "20% OFF",
-      bonus: "—",
-      isBonusActive: false,
-      isActive: P >= 5 && P <= 9,
-      isBasePrice: false
-    },
-    {
-      range: "De 10 a 14 receitas",
-      price: "40% OFF",
-      bonus: "+1 GRÁTIS",
-      isBonusActive: true,
-      isActive: P >= 10 && P <= 14,
-      isBasePrice: false
-    },
-    {
-      range: "De 15 a 19 receitas",
-      price: "50% OFF",
-      bonus: "+2 GRÁTIS",
-      isBonusActive: true,
-      isActive: P >= 15 && P <= 19,
-      isBasePrice: false
-    },
-    {
-      range: "De 20 ou mais receitas",
-      price: "50% OFF",
-      bonus: "+5 GRÁTIS",
-      isBonusActive: true,
-      isActive: P >= 20,
-      isBasePrice: false
-    }
-  ];
-
   return (
     <div id="cart-section" className="max-w-xl mx-auto my-2 bg-white rounded-2xl p-3 sm:p-4 text-left w-full shadow-[0_12px_28px_rgba(0,0,0,0.15),_0_6px_12px_rgba(0,0,0,0.1)] border-2 border-gray-200">
-      <div className="bg-gray-50 rounded-lg p-2.5 border border-gray-200 mb-3">
+      <div className="bg-gray-50 rounded-lg p-2.5 border border-gray-200 mb-1">
         <div className="text-center mb-2">
           <p className="text-sm text-gray-500 font-bold leading-tight">
             Digite abaixo o código da receita e adicione ao carrinho.
@@ -208,45 +173,6 @@ export const UnifiedCheckoutHub = ({
             </div>
           </div>
         )}
-      </div>
-
-      <div className="mb-3">
-        <div className="mb-2 flex justify-center">
-          <div className="bg-[#44FF00] text-[#171717] px-4 py-1.5 rounded-lg text-[11px] sm:text-sm font-black uppercase tracking-wider shadow-sm text-center leading-tight">
-            Preços acessíveis para todas as <br /> Crocheteiras Apaixonadas
-          </div>
-        </div>
-
-        <div className="bg-gray-100 rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-          <table className="w-full text-left border-collapse">
-            <tbody>
-              {tableRows.map((row, index) => (
-                <tr
-                  key={index}
-                  className={`border-b border-gray-200 last:border-0 transition-colors ${
-                    row.isActive ? "bg-white" : ""
-                  }`}
-                >
-                  <td className="py-0.5 px-1.5 text-sm text-gray-800 font-bold whitespace-nowrap">
-                    {row.range}
-                  </td>
-                  <td className="py-0.5 px-1.5 text-sm text-gray-800 font-bold text-center whitespace-nowrap">
-                    {row.price}
-                  </td>
-                  <td className="py-0.5 px-1.5 text-sm text-center">
-                    {row.isBonusActive ? (
-                      <span className="inline-block bg-green-100 text-green-700 font-bold px-2 py-0.5 rounded-full text-[11px]">
-                        {row.bonus}
-                      </span>
-                    ) : (
-                      <span className="text-gray-400 font-medium">{row.bonus}</span>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
       </div>
 
       {neuromarketingText && (
