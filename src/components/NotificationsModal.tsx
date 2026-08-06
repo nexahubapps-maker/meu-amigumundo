@@ -19,7 +19,7 @@ export const NotificationsModal = ({ isOpen, onClose, notifications }: Notificat
 
   if (!isOpen) return null;
 
-  const activeNotifications = notifications.filter(n => n.ativo);
+  const activeNotifications = notifications.filter(n => n.ativo && new Date(n.data_hora.replace(" ", "T")) <= new Date());
 
   const handleOpenDetail = (notif: SheetNotification) => {
     setSelectedNotif(notif);
