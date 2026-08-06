@@ -63,10 +63,9 @@ function shuffleArray<T>(array: T[]): T[] {
 }
 
 function getBonusSlotsForPaidCount(paidCount: number): number {
-  if (paidCount < 10) return 0;
-  if (paidCount < 15) return 1;
-  if (paidCount < 20) return 2;
-  return 5;
+  if (paidCount < 11) return 0;
+  if (paidCount < 16) return 1;
+  return 3;
 }
 
 export default function Index() {

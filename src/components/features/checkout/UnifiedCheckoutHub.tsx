@@ -73,23 +73,17 @@ export const UnifiedCheckoutHub = ({
   let neuromarketingText = "";
   if (P >= 1 && P <= 4) {
     neuromarketingText = `Adicione mais ${5 - P} receita(s) e ganhe 20% OFF em tudo!`;
-  } else if (P >= 5 && P <= 9) {
-    neuromarketingText = `Faltam só ${10 - P} receita(s) para o desconto subir para 40% OFF + 1 RECEITA GRÁTIS!`;
-  } else if (P >= 10 && P <= 14) {
+  } else if (P >= 5 && P <= 10) {
+    neuromarketingText = `Faltam só ${11 - P} receita(s) para o desconto subir para 40% OFF + 1 RECEITA GRÁTIS!`;
+  } else if (P >= 11 && P <= 15) {
     if (F === 0) {
       neuromarketingText = `Parabéns! Você já tem 40% OFF e ganhou 1 RECEITA GRÁTIS! Escolha uma receita de R$5 para levar de presente.`;
     } else {
-      neuromarketingText = `Muito bem! Adicione mais ${15 - P} receita(s) para o desconto subir para 50% OFF + mais 1 GRÁTIS!`;
+      neuromarketingText = `Muito bem! Adicione mais ${16 - P} receita(s) para o desconto subir para 50% OFF + mais 2 GRÁTIS!`;
     }
-  } else if (P >= 15 && P <= 19) {
-    if (F < 2) {
-      neuromarketingText = `Você já tem 50% OFF e liberou mais 1 RECEITA GRÁTIS! Escolha uma receita de R$5 para levar de presente.`;
-    } else {
-      neuromarketingText = `Você está imparável! Mais ${20 - P} receita(s) e você ganha o prêmio máximo: 5 RECEITAS GRÁTIS!`;
-    }
-  } else if (P >= 20) {
-    if (F < 5) {
-      neuromarketingText = `Sensacional! Você atingiu o topo: 50% OFF + até 5 RECEITAS GRÁTIS no total! Escolha receitas de R$5 para completar seus presentes.`;
+  } else if (P >= 16) {
+    if (F < 3) {
+      neuromarketingText = `Sensacional! Você atingiu o topo: 50% OFF + até 3 RECEITAS GRÁTIS no total! Escolha receitas de R$5 para completar seus presentes.`;
     } else {
       neuromarketingText = `Carrinho perfeito! Você garantiu o melhor desconto e todos os seus presentes!`;
     }

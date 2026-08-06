@@ -48,17 +48,16 @@ export interface CalculatedCart {
 
 // Helper to get allowed free slots based on paid recipes count
 function getFreeSlotsCount(paidCount: number): number {
-  if (paidCount < 10) return 0;
-  if (paidCount < 15) return 1;
-  if (paidCount < 20) return 2;
-  return 5;
+  if (paidCount < 11) return 0;
+  if (paidCount < 16) return 1;
+  return 3;
 }
 
 // Helper to get discount percentage based on paid recipes count
 function getDiscountPercent(paidCount: number): number {
   if (paidCount < 5) return 0;
-  if (paidCount < 10) return 0.20;
-  if (paidCount < 15) return 0.40;
+  if (paidCount < 11) return 0.20;
+  if (paidCount < 16) return 0.40;
   return 0.50;
 }
 
