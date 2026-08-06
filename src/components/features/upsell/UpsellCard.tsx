@@ -10,9 +10,10 @@ interface UpsellCardProps {
   isFavorite: boolean;
   onToggleFavorite: () => void;
   onOpen: () => void;
+  onZoomImage?: (url: string) => void;
 }
 
-export const UpsellCard = ({ upsell, isFavorite, onToggleFavorite, onOpen }: UpsellCardProps) => {
+export const UpsellCard = ({ upsell, isFavorite, onToggleFavorite, onOpen, onZoomImage }: UpsellCardProps) => {
   const handleShare = async (e: React.MouseEvent) => {
     e.stopPropagation();
     const slug = upsell.nome.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "");
@@ -45,7 +46,13 @@ export const UpsellCard = ({ upsell, isFavorite, onToggleFavorite, onOpen }: Ups
         <img 
           src={upsell.imagem_url || `https://picsum.photos/seed/${upsell.id}/600/375`} 
           alt={upsell.nome} 
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover cursor-zoom-in"
+          onClick={(e) => {
+            e.stopPropagation();
+            if (upsell.imagem_url) {
+              onZoomImage?.(upsell.imagem_url);
+            }
+          }}
         />
         
         <button 

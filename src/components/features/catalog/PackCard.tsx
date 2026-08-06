@@ -12,9 +12,10 @@ interface PackCardProps {
   onToggleFavorite: () => void;
   onAdd: () => void;
   onRemove: () => void;
+  onZoomImage?: (url: string) => void;
 }
 
-export const PackCard = ({ pack, inCart, isFavorite, onToggleFavorite, onAdd, onRemove }: PackCardProps) => {
+export const PackCard = ({ pack, inCart, isFavorite, onToggleFavorite, onAdd, onRemove, onZoomImage }: PackCardProps) => {
   const badge = pack.id === "pack1" ? { text: "MAIS VENDIDO", bg: "bg-[#44FF00] text-[#171717]" } : 
                 pack.id === "pack2" ? { text: "NOVO", bg: "bg-blue-500 text-white" } : null;
 
@@ -50,7 +51,11 @@ export const PackCard = ({ pack, inCart, isFavorite, onToggleFavorite, onAdd, on
         <img
           src={pack.imagem_url || `https://picsum.photos/seed/${pack.id}/400/400`}
           alt={pack.nome}
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover cursor-zoom-in"
+          onClick={(e) => {
+            e.stopPropagation();
+            onZoomImage?.(pack.imagem_url || `https://picsum.photos/seed/${pack.id}/400/400`);
+          }}
         />
         
         {badge && (

@@ -661,6 +661,7 @@ export default function Index() {
                       onOpen={() => {
                         setActiveUpsell(upsell.id);
                       }} 
+                      onZoomImage={setZoomImage}
                     />
                   </div>
                 ))
@@ -799,6 +800,7 @@ export default function Index() {
                     onToggleFavorite={() => toggleFavorite(pack.id, { nome: pack.nome, imagem_url: pack.imagem_url, tipo: "pack" })}
                     onAdd={() => handlePackAdd(pack.id)}
                     onRemove={() => removeFromCart(pack.id)}
+                    onZoomImage={setZoomImage}
                   />
                 </div>
               ))
