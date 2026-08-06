@@ -91,6 +91,13 @@ export const UnifiedCheckoutHub = ({
 
   return (
     <div id="cart-section" className="max-w-xl mx-auto my-2 bg-white rounded-2xl p-3 sm:p-4 text-left w-full shadow-[0_12px_28px_rgba(0,0,0,0.15),_0_6px_12px_rgba(0,0,0,0.1)] border-2 border-gray-200">
+      <div className="mb-2">
+        <img
+          src="https://ik.imagekit.io/di3huhaluc/amigumundo_descontos"
+          alt="Preços acessíveis para todas as crocheteiras apaixonadas"
+          className="w-full h-auto rounded-2xl shadow-[0_12px_28px_rgba(0,0,0,0.15)]"
+        />
+      </div>
       <div className="bg-gray-50 rounded-lg p-2.5 border border-gray-200 mb-1">
         <div className="text-center mb-2">
           <p className="text-sm text-gray-500 font-bold leading-tight">
