@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ChevronLeft, ShieldCheck, Zap, CreditCard, Mail, User, FileText, Lock, Loader2, Copy, Check } from "lucide-react";
 import { SupportButton } from "@/components/common/SupportButton";
-import { playHeartbeatSound } from "@/utils/audio";
 import { getRecipesByIds, getInfoprodutos, getPacks, getBumpInfoprodutos } from "@/utils/sheets";
 import { calculateCart } from "@/utils/pricing";
 import { showSuccess, showError } from "@/utils/toast";
@@ -241,7 +240,6 @@ export default function Checkout() {
     if (!isFormValid) return;
 
     setIsProcessing(true);
-    playHeartbeatSound();
 
     let cardToken = "";
     if (paymentMethod === "card") {

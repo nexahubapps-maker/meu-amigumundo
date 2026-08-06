@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import { ShoppingBag, X, ArrowRight, Gift, Search } from "lucide-react";
 import { type SheetRecipe, getRecipesByIds } from "@/utils/sheets";
 import { type CartItem, calculateCart } from "@/utils/pricing";
-import { playHeartbeatSound } from "@/utils/audio";
 
 interface UnifiedCheckoutHubProps {
   cart: CartItem[];
@@ -39,7 +38,6 @@ export const UnifiedCheckoutHub = ({
       if (recipe) {
         setFoundRecipe(recipe);
         setSearchError(false);
-        playHeartbeatSound();
       } else {
         setFoundRecipe(null);
         setSearchError(true);
@@ -408,10 +406,7 @@ export const UnifiedCheckoutHub = ({
           )}
 
           <button
-            onClick={() => {
-              playHeartbeatSound();
-              onCheckout();
-            }}
+            onClick={onCheckout}
             className="w-full bg-[#44FF00] text-[#171717] py-3 rounded-xl font-bold text-base shadow-sm hover:scale-[1.01] active:scale-95 transition-transform uppercase tracking-wider flex items-center justify-center gap-2 border-b-4 border-green-600"
           >
             FINALIZAR PEDIDO <ArrowRight size={16} />

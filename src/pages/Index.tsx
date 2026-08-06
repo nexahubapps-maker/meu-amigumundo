@@ -48,7 +48,6 @@ import {
   type SheetNotification,
   type SheetCategoria
 } from "@/utils/sheets";
-import { playHeartbeatSound } from "@/utils/audio";
 import { type CartItem, calculateCart } from "@/utils/pricing";
 import { showCartAdd, showSuccess, showInfo, showNotificationPopup } from "@/utils/toast";
 
@@ -173,7 +172,7 @@ export default function Index() {
 
       } catch (e) {
         console.error("Error loading sheets data:", e);
-      } finally {
+      } font-medium {
         setIsLoading(false);
       }
     };
@@ -352,7 +351,6 @@ export default function Index() {
   };
 
   const addToCart = (item: CartItem | CartItem[]) => {
-    playHeartbeatSound();
     setCart((prev) => {
       const itemsToAdd = Array.isArray(item) ? item : [item];
       const filteredNewItems = itemsToAdd.filter(
@@ -601,7 +599,6 @@ export default function Index() {
                   nome={cat.titulo} 
                   imagem={cat.imagem_url}
                   onClick={() => {
-                    playHeartbeatSound();
                     navigate(`/categoria/${encodeURIComponent(cat.titulo.toLowerCase())}`);
                   }} 
                 />
@@ -662,7 +659,6 @@ export default function Index() {
                       isFavorite={favorites.includes(upsell.id)}
                       onToggleFavorite={() => toggleFavorite(upsell.id, { nome: upsell.nome, imagem_url: upsell.imagem_url, tipo: "infoproduto" })}
                       onOpen={() => {
-                        playHeartbeatSound();
                         setActiveUpsell(upsell.id);
                       }} 
                     />

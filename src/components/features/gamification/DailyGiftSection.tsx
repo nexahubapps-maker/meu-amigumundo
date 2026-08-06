@@ -3,7 +3,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import confetti from 'canvas-confetti';
 import { Download, Bookmark, Check, Loader2 } from 'lucide-react';
-import { playHeartbeatSound } from '@/utils/audio';
 import { getReceitaGratuita, getReceitaGratuitaDownloadUrl, type SheetReceitaGratuita } from '@/utils/sheets';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/lib/supabase';
@@ -88,7 +87,6 @@ export const DailyGiftSection = () => {
   const handleOpenPresent = () => {
     if (isOpened) return;
     
-    playHeartbeatSound();
     setIsOpened(true);
     if (dailyRecipe) {
       localStorage.setItem(`daily-gift-opened-${dailyRecipe.codigo}`, "true");
