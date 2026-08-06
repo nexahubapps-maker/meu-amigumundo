@@ -93,19 +93,19 @@ export const showNotificationPopup = (titulo: string, mensagem: string, imagemUr
   toast.custom((t) => React.createElement(
     "div",
     {
-      className: "bg-white border border-gray-100 rounded-2xl p-4 shadow-[0_10px_30px_rgba(0,0,0,0.12)] flex items-start gap-3 max-w-sm w-full mx-auto pointer-events-auto animate-in slide-in-from-top duration-300",
+      className: "bg-white border border-gray-100 rounded-3xl p-4 shadow-[0_16px_40px_rgba(0,0,0,0.18)] flex items-start gap-3.5 max-w-md w-full mx-auto pointer-events-auto animate-in slide-in-from-top duration-300",
       onClick: () => toast.dismiss(t)
     },
     imagemUrl ? React.createElement("img", {
       src: imagemUrl,
       alt: "",
-      className: "w-14 h-14 rounded-xl object-cover shrink-0 border border-gray-100"
+      className: "w-20 h-20 rounded-2xl object-cover shrink-0 border border-gray-100 shadow-sm"
     }) : null,
     React.createElement(
       "div",
-      { className: "flex-1 min-w-0" },
-      React.createElement("p", { className: "text-sm font-black text-gray-900 uppercase tracking-tight" }, "🔔 " + titulo),
-      React.createElement("p", { className: "text-xs text-gray-500 font-medium leading-tight mt-1" }, mensagem)
+      { className: "flex-1 min-w-0 py-0.5" },
+      React.createElement("p", { className: "text-base font-black text-gray-900 uppercase tracking-tight leading-tight" }, "🔔 " + titulo),
+      React.createElement("p", { className: "text-sm text-gray-500 font-medium leading-snug mt-1.5" }, mensagem)
     )
   ), { duration: 10000 });
 };
