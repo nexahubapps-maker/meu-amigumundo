@@ -171,7 +171,8 @@ export default function Index() {
 
       } catch (e) {
         console.error("Error loading sheets data:", e);
-      } finally {
+      } font-medium
+      finally {
         setIsLoading(false);
       }
     };
@@ -471,13 +472,6 @@ export default function Index() {
     textShadow: "1px 1px 2px rgba(0,0,0,0.5)"
   };
 
-  const textureVerdeOlivaStyle = {
-    backgroundImage: "url('https://ik.imagekit.io/51b3srlsg/textura_verde_oliva.jpeg')",
-    backgroundRepeat: "repeat",
-    backgroundSize: "150px",
-    textShadow: "1px 1px 2px rgba(0,0,0,0.5)"
-  };
-
   const handleOpenNotifications = () => {
     setIsNotificationsOpen(true);
   };
@@ -540,12 +534,11 @@ export default function Index() {
       <InternalPopup notifications={notificationsList} />
 
       <div className="max-w-6xl mx-auto px-4 mt-1 flex flex-col gap-1">
-        <div 
-          style={textureVerdeOlivaStyle}
-          className="text-white p-2.5 rounded-lg text-center text-xs sm:text-sm font-black uppercase tracking-wide shadow-sm"
-        >
-          PRESENTE DIÁRIO: Vá até o final da página e baixe a Receita Gratuita de hoje! ↓
-        </div>
+        <img 
+          src="https://ik.imagekit.io/di3huhaluc/banner_transparente.png" 
+          alt="Banner Presente Diário" 
+          className="w-full h-auto object-contain"
+        />
       </div>
 
       <div className="bg-[#e6dcd3] mt-1 pt-1 pb-2">

@@ -101,7 +101,12 @@ export const UnifiedCheckoutHub = ({
       <div className="bg-gray-50 rounded-lg p-2.5 border border-gray-200 mb-1">
         <div className="text-center mb-2">
           <p className="text-sm text-gray-500 font-bold leading-tight">
-            Digite abaixo o código da receita e adicione ao carrinho.
+            Digite abaixo o código da receita <br />
+            e adicione ao carrinho.
+          </p>
+          <p className="text-sm font-bold leading-tight text-[#5D0599] mt-0.5">
+            Ou escolha suas receitas na <br />
+            Loja AmiguMundo, abaixo
           </p>
         </div>
 
