@@ -50,7 +50,7 @@ const RecipeCard = ({ recipe, isFavorite, onToggleFavorite, onAdd, onReject, isI
   };
 
   return (
-    <div className={`overflow-hidden relative flex flex-col bg-white rounded-2xl border border-gray-100 shadow-sm transition-all duration-300 ${isInCart ? 'animate-pulse-subtle border-[#44FF00]' : ''}`}>
+    <div className={`overflow-hidden relative flex flex-col bg-white rounded-2xl border border-gray-100 shadow-sm transition-all duration-300 ${isInCart ? 'border-[#44FF00]' : ''}`}>
       <div className="relative aspect-[3/4] w-full bg-gray-50">
         <img
           src={recipe.imagem_url || `https://picsum.photos/seed/${recipe.id}/400/300`}
