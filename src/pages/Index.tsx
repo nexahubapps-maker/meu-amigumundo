@@ -171,7 +171,7 @@ export default function Index() {
 
       } catch (e) {
         console.error("Error loading sheets data:", e);
-      } font-medium
+      }
       finally {
         setIsLoading(false);
       }
@@ -221,7 +221,8 @@ export default function Index() {
         } catch (e) {
           console.error("Error searching recipes:", e);
           setSearchResults([]);
-        } finally {
+        } font-medium
+        finally {
           setIsSearching(false);
         }
       } else {
@@ -533,15 +534,15 @@ export default function Index() {
 
       <InternalPopup notifications={notificationsList} />
 
-      <div className="max-w-6xl mx-auto px-4 mt-1 flex flex-col gap-1">
+      <div className="max-w-6xl mx-auto px-4 mt-1 flex flex-col gap-0 items-center">
         <img 
           src="https://ik.imagekit.io/di3huhaluc/banner_transparente.png" 
           alt="Banner Presente Diário" 
-          className="w-full h-auto object-contain"
+          className="w-full h-auto object-contain mix-blend-multiply"
         />
       </div>
 
-      <div className="bg-[#e6dcd3] mt-1 pt-1 pb-2">
+      <div className="bg-[#e6dcd3] mt-0 pt-0 pb-2">
         <section className="pb-1">
           <div className="max-w-6xl mx-auto px-4">
             <PwaPrompt />

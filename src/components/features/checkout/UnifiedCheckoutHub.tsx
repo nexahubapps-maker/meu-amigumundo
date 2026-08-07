@@ -104,10 +104,6 @@ export const UnifiedCheckoutHub = ({
             Digite abaixo o código da receita <br />
             e adicione ao carrinho.
           </p>
-          <p className="text-sm font-bold leading-tight text-[#5D0599] mt-0.5">
-            Ou escolha suas receitas na <br />
-            Loja AmiguMundo, abaixo
-          </p>
         </div>
 
         <div className="relative max-w-[200px] mx-auto">
