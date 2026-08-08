@@ -542,7 +542,7 @@ export default function Index() {
         />
       </div>
 
-      <div className="bg-[#e6dcd3] mt-0 pt-0 pb-2">
+      <div className="bg-white mt-0 pt-0 pb-2">
         <section className="pb-1">
           <div className="max-w-6xl mx-auto px-4">
             <PwaPrompt />
@@ -577,7 +577,7 @@ export default function Index() {
               className="w-full py-2 px-3 shadow-sm rounded-xl text-center border border-gray-100"
             >
               <h2 className="text-base sm:text-lg font-black uppercase tracking-wider text-white m-0">
-                CATEGORIAS DE AMIGURUMIS
+                CATEGORIAS DE RECEITAS
               </h2>
             </div>
             
@@ -755,14 +755,14 @@ export default function Index() {
         />
       )}
 
-      <section className="bg-[#e6dcd3] py-6">
+      <section className="bg-white py-6">
         <div className="max-w-6xl mx-auto px-4">
           <div 
             style={textureLaranjaStyle}
             className="w-full py-2 px-4 mb-4 shadow-sm rounded-xl text-center border border-gray-100"
           >
             <h2 className="text-sm sm:text-base font-black uppercase tracking-wider text-white m-0">
-              Packs e Combos Especiais
+              Packs Temáticos Premium
             </h2>
           </div>
           <p className="text-gray-600 text-xs font-bold mb-4 text-center uppercase tracking-tight">
