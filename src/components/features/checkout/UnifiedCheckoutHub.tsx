@@ -92,7 +92,7 @@ export const UnifiedCheckoutHub = ({
   return (
     <div 
       id="cart-section" 
-      className="max-w-xl mx-auto my-4 bg-white rounded-3xl p-4 sm:p-5 text-left w-full shadow-[0_25px_60px_-15px_rgba(0,0,0,0.25),0_15px_25px_-5px_rgba(0,0,0,0.12)] border-2 border-gray-100/80 transition-transform duration-300 hover:-translate-y-1"
+      className="max-w-xl mx-auto mt-1 mb-4 bg-white rounded-3xl p-4 sm:p-5 text-left w-full shadow-[0_25px_60px_-15px_rgba(0,0,0,0.25),0_15px_25px_-5px_rgba(0,0,0,0.12)] border-2 border-gray-100/80 transition-transform duration-300 hover:-translate-y-1"
     >
       <div className="mb-2">
         <img

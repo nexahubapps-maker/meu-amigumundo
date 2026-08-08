@@ -534,7 +534,7 @@ export default function Index() {
 
       <InternalPopup notifications={notificationsList} />
 
-      <div className="max-w-6xl mx-auto px-4 mt-1 flex flex-col gap-0 items-center">
+      <div className="max-w-6xl mx-auto px-4 my-0 flex flex-col items-center">
         <img 
           src="https://ik.imagekit.io/di3huhaluc/banner_presente_diario.png" 
           alt="Banner Presente Diário" 
@@ -542,8 +542,8 @@ export default function Index() {
         />
       </div>
 
-      <div className="bg-white mt-0 pt-0 pb-2">
-        <section className="pb-1">
+      <div className="bg-white mt-0 pt-0 pb-0">
+        <section className="py-0">
           <div className="max-w-6xl mx-auto px-4">
             <PwaPrompt />
 
