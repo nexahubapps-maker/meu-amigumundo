@@ -221,7 +221,7 @@ export default function Index() {
         } catch (e) {
           console.error("Error searching recipes:", e);
           setSearchResults([]);
-        } font-medium
+        }
         finally {
           setIsSearching(false);
         }
@@ -536,7 +536,7 @@ export default function Index() {
 
       <div className="max-w-6xl mx-auto px-4 mt-1 flex flex-col gap-0 items-center">
         <img 
-          src="https://ik.imagekit.io/di3huhaluc/banner_transparente.png" 
+          src="https://ik.imagekit.io/di3huhaluc/banner_presente_diario.png" 
           alt="Banner Presente Diário" 
           className="w-full h-auto object-contain mix-blend-multiply"
         />
