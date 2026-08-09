@@ -339,10 +339,10 @@ export default function Checkout() {
             {calculated.items.map((item, i) => (
               <div key={i} className="flex justify-between items-center text-xs">
                 <span className="text-gray-600">
-                  {item.nome} {item.isBonus && <span className="text-green-600 font-bold">(BRINDE)</span>}
+                  {item.nome}
                 </span>
                 <span className="font-bold text-gray-800">
-                  {item.isBonus ? "Grátis" : `R$ ${item.precoOriginal.toFixed(2)}`}
+                  R$ {item.precoFinal.toFixed(2)}
                 </span>
               </div>
             ))}
