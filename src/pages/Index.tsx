@@ -268,6 +268,7 @@ export default function Index() {
 
     const checkNotifications = () => {
       const now = new Date();
+      let delay = 0;
       notificationsList.forEach((notif) => {
         if (!notif.ativo) return;
         
@@ -275,7 +276,10 @@ export default function Index() {
         if (now >= notifTime) {
           const hasBeenShown = localStorage.getItem(`notif-shown-${notif.id}`);
           if (!hasBeenShown) {
-            showNotificationPopup(notif.titulo, notif.mensagem, notif.imagem_url);
+            setTimeout(() => {
+              showNotificationPopup(notif.titulo, notif.mensagem, notif.imagem_url);
+            }, delay);
+            delay += 900;
             localStorage.setItem(`notif-shown-${notif.id}`, "true");
           }
         }
@@ -516,7 +520,7 @@ export default function Index() {
         <img 
           src="https://ik.imagekit.io/di3huhaluc/banner_presente_diario.png" 
           alt="Banner Presente Diário" 
-          className="w-full h-auto object-contain mix-blend-multiply"
+          className="w-full max-w-xl h-auto object-contain mix-blend-multiply"
         />
       </div>
 
@@ -524,7 +528,7 @@ export default function Index() {
         <img 
           src="https://ik.imagekit.io/di3huhaluc/banner%20do%20carrinho%20amigumundo?updatedAt=1786225221413" 
           alt="Banner do Carrinho AmiguMundo" 
-          className="w-full h-auto object-contain rounded-2xl"
+          className="w-full max-w-xl h-auto object-contain rounded-2xl"
         />
       </div>
 
