@@ -82,20 +82,8 @@ export const UnifiedCheckoutHub = ({
       id="cart-section" 
       className="max-w-2xl mx-auto my-4 bg-white rounded-3xl p-3 sm:p-5 text-left w-full shadow-[0_25px_60px_-15px_rgba(0,0,0,0.25),0_15px_25px_-5px_rgba(0,0,0,0.12)] border-2 border-gray-100/80 transition-transform duration-300 hover:-translate-y-1"
     >
-      <div className="mb-3">
-        <LiquidGlassCard tintColor="rgba(255,255,255,0.6)" pulse className="w-full border border-gray-200/80">
-          <div className="p-4">
-            <p className="text-gray-900 text-[11px] font-black uppercase tracking-wider mb-1">
-              R$ {calculated.pricePerRecipe.toFixed(2)} por receita agora
-            </p>
-            <p className="text-gray-800 text-sm font-bold leading-snug">
-              {tierMessage}
-            </p>
-          </div>
-        </LiquidGlassCard>
-      </div>
-
-      <div className="bg-gray-50/80 rounded-xl p-2.5 border border-gray-200/80 mb-1">
+      {/* Campo de Código */}
+      <div className="bg-gray-50/80 rounded-xl p-2.5 border border-gray-200/80 mb-3">
         <div className="text-center mb-2">
           <p className="text-sm text-gray-500 font-bold leading-tight">
             Digite abaixo o código da receita <br />
@@ -180,6 +168,7 @@ export const UnifiedCheckoutHub = ({
         )}
       </div>
 
+      {/* Lista de Itens do Carrinho */}
       <div className="mb-3">
         <h3 className="text-sm font-bold text-gray-900 uppercase tracking-tight mb-1.5 flex items-center gap-1.5">
           🛒 Meu Carrinho ({calculated.items.length} {calculated.items.length === 1 ? "item" : "itens"})
@@ -233,12 +222,27 @@ export const UnifiedCheckoutHub = ({
         )}
       </div>
 
+      {/* Card Liquid Glass com Gatilhos (Posicionado estrategicamente entre os itens e a área de pagamentos) */}
+      <div className="my-3">
+        <LiquidGlassCard tintColor="rgba(255,255,255,0.7)" pulse className="w-full border border-gray-200/80">
+          <div className="p-3.5">
+            <span className="inline-block bg-[#3CB19E] text-white text-[10px] font-black uppercase tracking-wide px-3 py-1 rounded-full shadow-sm mb-1.5">
+              R$ {calculated.pricePerRecipe.toFixed(2)} por receita agora
+            </span>
+            <p className="text-gray-800 text-xs font-bold leading-relaxed">
+              {tierMessage}
+            </p>
+          </div>
+        </LiquidGlassCard>
+      </div>
+
+      {/* Área de Totais e Finalização */}
       {calculated.items.length > 0 && (
         <div className="pt-2.5 border-t border-gray-100">
           {calculated.economia > 0 && (
             <div className="flex justify-between items-baseline mb-2">
               <span className="text-sm font-bold text-gray-500 uppercase tracking-wide">Você está economizando</span>
-              <span className="text-xl font-black text-red-[#171717]">R$ {calculated.economia.toFixed(2)}</span>
+              <span className="text-xl font-black text-red-600">R$ {calculated.economia.toFixed(2)}</span>
             </div>
           )}
 
