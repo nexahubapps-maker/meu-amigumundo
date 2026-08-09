@@ -822,7 +822,7 @@ export default function Index() {
 
       <CartFooter
         count={cart.length}
-        total={calculatedCart.total}
+        total={calculated.total}
         onCheckout={() => navigate("/checkout")}
       />
 
