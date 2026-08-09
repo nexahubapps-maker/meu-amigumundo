@@ -171,7 +171,7 @@ export const UnifiedCheckoutHub = ({
       {/* Lista de Itens do Carrinho */}
       <div className="mb-3">
         <h3 className="text-sm font-bold text-gray-900 uppercase tracking-tight mb-1.5 flex items-center gap-1.5">
-          🛒 Meu Carrinho <span className="bg-[#3CB19E] text-white text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full shadow-sm ml-0.5">{calculated.items.length} {calculated.items.length === 1 ? "item" : "itens"}</span>
+          🛒 Meu Carrinho <span className="bg-[#3CB19E] text-white text-[10px] font-black uppercase tracking-wide px-2.5 py-0.5 rounded-full shadow-sm ml-1">{calculated.items.length} {calculated.items.length === 1 ? "RECEITA" : "RECEITAS"}</span>
         </h3>
 
         {calculated.items.length === 0 ? (
@@ -241,19 +241,19 @@ export const UnifiedCheckoutHub = ({
         <div className="pt-2.5 border-t border-gray-100">
           {calculated.economia > 0 && (
             <div className="flex justify-between items-baseline mb-2">
-              <span className="text-sm font-bold text-gray-500 uppercase tracking-wide">Você está economizando</span>
-              <span className="text-xl font-black text-red-600">R$ {calculated.economia.toFixed(2)}</span>
+              <span className="text-xs sm:text-sm font-bold text-gray-500 uppercase tracking-wide">Você está economizando</span>
+              <span className="text-lg sm:text-xl font-black text-red-600">R$ {calculated.economia.toFixed(2)}</span>
             </div>
           )}
 
           <div className="flex justify-between items-baseline mb-2.5">
-            <span className="text-sm font-bold text-gray-400 uppercase tracking-widest">Total a pagar</span>
-            <span className="text-3xl font-black text-green-600">R$ {calculated.total.toFixed(2)}</span>
+            <span className="text-xs sm:text-sm font-bold text-gray-400 uppercase tracking-widest">Total a pagar</span>
+            <span className="text-xl sm:text-2xl font-black text-green-600">R$ {calculated.total.toFixed(2)}</span>
           </div>
 
           <button
             onClick={onCheckout}
-            className="w-full bg-[#44FF00] text-[#171717] py-3 rounded-xl font-bold text-base shadow-sm hover:scale-[1.01] active:scale-95 transition-transform uppercase tracking-wider flex items-center justify-center gap-2 border-b-4 border-green-600"
+            className="w-full bg-[#44FF00] text-[#171717] py-2.5 rounded-xl font-extrabold text-xs sm:text-sm shadow-sm hover:scale-[1.01] active:scale-95 transition-transform uppercase tracking-wider flex items-center justify-center gap-2 border-b-4 border-green-600"
           >
             FINALIZAR PEDIDO <ArrowRight size={16} />
           </button>
