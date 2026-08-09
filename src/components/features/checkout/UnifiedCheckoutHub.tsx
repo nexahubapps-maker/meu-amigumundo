@@ -171,7 +171,7 @@ export const UnifiedCheckoutHub = ({
       {/* Lista de Itens do Carrinho */}
       <div className="mb-3">
         <h3 className="text-sm font-bold text-gray-900 uppercase tracking-tight mb-1.5 flex items-center gap-1.5">
-          🛒 Meu Carrinho ({calculated.items.length} {calculated.items.length === 1 ? "item" : "itens"})
+          🛒 Meu Carrinho <span className="bg-[#3CB19E] text-white text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full shadow-sm ml-0.5">{calculated.items.length} {calculated.items.length === 1 ? "item" : "itens"}</span>
         </h3>
 
         {calculated.items.length === 0 ? (
@@ -243,14 +243,6 @@ export const UnifiedCheckoutHub = ({
             <div className="flex justify-between items-baseline mb-2">
               <span className="text-sm font-bold text-gray-500 uppercase tracking-wide">Você está economizando</span>
               <span className="text-xl font-black text-red-600">R$ {calculated.economia.toFixed(2)}</span>
-            </div>
-          )}
-
-          {calculated.pricePerRecipe < 5 && (
-            <div className="mb-2">
-              <span className="inline-block bg-[#3CB19E] text-white text-[11px] font-black uppercase tracking-wide px-3 py-1 rounded-full animate-pulse-subtle">
-                O preço caiu para R$ {calculated.pricePerRecipe.toFixed(2)}
-              </span>
             </div>
           )}
 

@@ -330,7 +330,7 @@ export default function Checkout() {
           </div>
         </div>
 
-        {/* Resumo do Pedido (agora exibido em primeiro) */}
+        {/* Resumo do Pedido */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-3">
           <div className="flex items-center mb-2 text-gray-800">
             <h2 className="font-bold uppercase tracking-tight text-xs">Resumo do Pedido</h2>
@@ -349,8 +349,8 @@ export default function Checkout() {
 
             {calculated.subtotalRecipesOriginal > calculated.subtotalRecipes && (
               <div className="flex justify-between items-center text-xs">
-                <span className="font-bold text-green-600">Desconto</span>
-                <span className="font-bold text-green-600">
+                <span className="font-bold text-red-600">Desconto</span>
+                <span className="font-bold text-red-600">
                   - R$ {(calculated.subtotalRecipesOriginal - calculated.subtotalRecipes).toFixed(2)}
                 </span>
               </div>
@@ -358,12 +358,12 @@ export default function Checkout() {
 
             <div className="pt-2 border-t border-dashed border-gray-200 flex justify-between items-center">
               <span className="font-bold text-xs text-gray-800">Total</span>
-              <span className="text-lg font-black text-blue-600">R$ {total.toFixed(2)}</span>
+              <span className="text-lg font-black text-green-600">R$ {total.toFixed(2)}</span>
             </div>
           </div>
         </div>
 
-        {/* Dados para Entrega (agora exibido em segundo) */}
+        {/* Dados para Entrega */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-3">
           <div className="flex items-center gap-2 mb-3 text-gray-800">
             <ShieldCheck size={18} className="text-blue-500" />
