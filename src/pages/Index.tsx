@@ -62,12 +62,6 @@ function shuffleArray<T>(array: T[]): T[] {
   return arr;
 }
 
-function getBonusSlotsForPaidCount(paidCount: number): number {
-  if (paidCount < 11) return 0;
-  if (paidCount < 16) return 1;
-  return 3;
-}
-
 export default function Index() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -370,38 +364,18 @@ export default function Index() {
   };
 
   const removeFromCart = (id: string) => {
-    setCart((prev) => {
-      const updated = prev.filter((i) => i.id !== id);
-      const paidCount = updated.filter(i => i.tipo === "recipe" && !i.isBonus).length;
-      const allowedSlots = getBonusSlotsForPaidCount(paidCount);
-      const bonusItems = updated.filter(i => i.tipo === "recipe" && i.isBonus);
-      if (bonusItems.length > allowedSlots) {
-        const excesso = bonusItems.length - allowedSlots;
-        const idsParaRemover = bonusItems.slice(bonusItems.length - excesso).map(b => b.id);
-        return updated.filter(i => !idsParaRemover.includes(i.id));
-      }
-      return updated;
-    });
+    setCart((prev) => prev.filter((i) => i.id !== id));
   };
 
   const calculatedCart = calculateCart(cart);
-  const paidRecipeCountAtual = cart.filter(i => i.tipo === "recipe" && !i.isBonus).length;
-  const bonusRecipeCountAtual = cart.filter(i => i.tipo === "recipe" && i.isBonus).length;
-  const hasOpenBonusSlot = getBonusSlotsForPaidCount(paidRecipeCountAtual) > bonusRecipeCountAtual;
 
   const handleRecipeAdd = (recipe: SheetRecipe) => {
-    const paidCount = cart.filter(i => i.tipo === "recipe" && !i.isBonus).length;
-    const bonusCount = cart.filter(i => i.tipo === "recipe" && i.isBonus).length;
-    const allowedSlots = getBonusSlotsForPaidCount(paidCount);
-    const isBonus = allowedSlots > bonusCount && recipe.preco === 5;
-
     addToCart({
       id: recipe.id,
       nome: recipe.nome,
       preco: recipe.preco,
       tipo: "recipe",
       imagem: recipe.imagem_url,
-      isBonus
     });
   };
 
@@ -553,7 +527,6 @@ export default function Index() {
               onAddToCart={addToCart}
               onCheckout={() => navigate("/checkout")}
               onZoomImage={setZoomImage}
-              hasOpenBonusSlot={hasOpenBonusSlot}
             />
           </div>
         </section>
@@ -870,7 +843,6 @@ export default function Index() {
         recipes={favoriteRecipes}
         packs={packsList}
         infoprodutos={infoprodutosList}
-        hasOpenBonusSlot={hasOpenBonusSlot}
       />
 
       <NotificationsModal
@@ -894,7 +866,6 @@ export default function Index() {
             const recipe = shuffledRecipes.find((r) => r.id === id);
             toggleFavorite(id, recipe ? { nome: recipe.nome, imagem_url: recipe.imagem_url, tipo: "receita" } : undefined);
           }}
-          hasOpenBonusSlot={hasOpenBonusSlot}
         />
       )}
 
@@ -918,7 +889,6 @@ export default function Index() {
             const recipe = searchResults.find((r) => r.id === id);
             toggleFavorite(id, recipe ? { nome: recipe.nome, imagem_url: recipe.imagem_url, tipo: "receita" } : undefined);
           }}
-          hasOpenBonusSlot={hasOpenBonusSlot}
         />
       )}
 

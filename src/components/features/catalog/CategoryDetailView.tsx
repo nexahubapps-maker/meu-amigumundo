@@ -18,7 +18,7 @@ interface CategoryDetailViewProps {
   onZoomImage: (url: string) => void;
   favorites: string[];
   onToggleFavorite: (id: string) => void;
-  hasOpenBonusSlot: boolean;
+  hasOpenBonusSlot?: boolean;
 }
 
 export const CategoryDetailView = ({
@@ -32,7 +32,6 @@ export const CategoryDetailView = ({
   onZoomImage,
   favorites,
   onToggleFavorite,
-  hasOpenBonusSlot,
 }: CategoryDetailViewProps) => {
   const textureLaranjaStyle = {
     backgroundImage: "url('https://ik.imagekit.io/51b3srlsg/textura_laranja.jpeg')",
@@ -108,7 +107,6 @@ export const CategoryDetailView = ({
           <div className="grid grid-cols-3 lg:grid-cols-5 gap-1 sm:gap-2 lg:gap-4">
             {recipes.map((recipe) => {
               const added = isInCart(recipe.id);
-              const bloqueadoPorBonus = hasOpenBonusSlot && recipe.preco !== 5;
               const isFavorite = favorites.includes(recipe.id);
               return (
                 <div key={recipe.id} className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden flex flex-col justify-between p-1">
@@ -157,14 +155,14 @@ export const CategoryDetailView = ({
                     <div className="flex gap-1">
                       <button
                         onClick={() => onRecipeAdd(recipe)}
-                        disabled={added || bloqueadoPorBonus}
+                        disabled={added}
                         className={`flex-1 py-1 rounded-lg font-black text-[8px] lg:text-[10px] uppercase tracking-wider transition-all ${
-                          (added || bloqueadoPorBonus) 
+                          added 
                             ? 'bg-gray-100 text-gray-400' 
                             : 'bg-[#44FF00] text-[#171717] hover:scale-105 active:scale-95'
                         }`}
                       >
-                        {added ? "✓" : bloqueadoPorBonus ? "🎁 R$5" : "Quero"}
+                        {added ? "✓" : "Quero"}
                       </button>
                       {added && (
                         <button 

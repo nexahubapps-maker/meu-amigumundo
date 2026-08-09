@@ -19,75 +19,39 @@ export interface CalculatedCart {
     imagem?: string;
     isBonus?: boolean;
   }[];
-  paidRecipes: {
-    id: string;
-    nome: string;
-    precoOriginal: number;
-    precoFinal: number;
-    tipo: "recipe";
-    imagem?: string;
-  }[];
-  freeRecipes: {
-    id: string;
-    nome: string;
-    precoOriginal: number;
-    precoFinal: number;
-    tipo: "recipe";
-    imagem?: string;
-  }[];
   subtotalRecipes: number;
   subtotalRecipesOriginal: number;
   subtotalOthers: number;
   total: number;
-  recipeCount: number; // paid recipes count
-  bonusCount: number;  // filled free slots count
-  maxBonusSlots: number; // total allowed free slots
-  discountPercent: number;
+  recipeCount: number;
   pricePerRecipe: number;
+  economia: number;
 }
 
-// Helper to get allowed free slots based on paid recipes count
-function getFreeSlotsCount(paidCount: number): number {
-  if (paidCount < 11) return 0;
-  if (paidCount < 16) return 1;
-  return 3;
-}
+const PRECO_BASE_RECEITA = 5;
 
-// Helper to get discount percentage based on paid recipes count
-function getDiscountPercent(paidCount: number): number {
-  if (paidCount < 5) return 0;
-  if (paidCount < 11) return 0.20;
-  if (paidCount < 16) return 0.40;
-  return 0.50;
+export function getPrecoPorReceita(paidCount: number): number {
+  if (paidCount < 6) return 5;
+  if (paidCount < 11) return 3;
+  if (paidCount < 21) return 2.5;
+  return 2;
 }
 
 export function calculateCart(cart: CartItem[]): CalculatedCart {
   const recipeItems = cart.filter(item => item.tipo === "recipe");
   const otherItems = cart.filter(item => item.tipo !== "recipe");
 
-  const paidRecipeItems = recipeItems.filter(item => !item.isBonus);
-  const bonusRecipeItems = recipeItems.filter(item => item.isBonus);
+  const recipeCount = recipeItems.length;
+  const pricePerRecipe = getPrecoPorReceita(recipeCount);
 
-  const paidCount = paidRecipeItems.length;
-  const discountPercent = getDiscountPercent(paidCount);
-  const maxBonusSlots = getFreeSlotsCount(paidCount);
-
-  const paidRecipes = paidRecipeItems.map(item => ({
+  const calculatedRecipes = recipeItems.map(item => ({
     id: item.id,
     nome: item.nome,
-    precoOriginal: item.preco,
-    precoFinal: item.preco * (1 - discountPercent),
+    precoOriginal: PRECO_BASE_RECEITA,
+    precoFinal: pricePerRecipe,
     tipo: "recipe" as const,
-    imagem: item.imagem
-  }));
-
-  const freeRecipes = bonusRecipeItems.map(item => ({
-    id: item.id,
-    nome: item.nome,
-    precoOriginal: item.preco,
-    precoFinal: 0,
-    tipo: "recipe" as const,
-    imagem: item.imagem
+    imagem: item.imagem,
+    isBonus: false
   }));
 
   const calculatedOthers = otherItems.map(item => ({
@@ -100,27 +64,20 @@ export function calculateCart(cart: CartItem[]): CalculatedCart {
     isBonus: false
   }));
 
-  const subtotalRecipes = paidRecipes.reduce((sum, item) => sum + item.precoFinal, 0);
-  const subtotalRecipesOriginal = paidRecipes.reduce((sum, item) => sum + item.precoOriginal, 0);
+  const subtotalRecipes = calculatedRecipes.reduce((sum, item) => sum + item.precoFinal, 0);
+  const subtotalRecipesOriginal = recipeCount * PRECO_BASE_RECEITA;
   const subtotalOthers = calculatedOthers.reduce((sum, item) => sum + item.precoFinal, 0);
   const total = subtotalRecipes + subtotalOthers;
+  const economia = subtotalRecipesOriginal - subtotalRecipes;
 
   return {
-    items: [
-      ...paidRecipes.map(r => ({ ...r, isBonus: false })),
-      ...freeRecipes.map(r => ({ ...r, isBonus: true })),
-      ...calculatedOthers
-    ],
-    paidRecipes,
-    freeRecipes,
+    items: [...calculatedRecipes, ...calculatedOthers],
     subtotalRecipes,
     subtotalRecipesOriginal,
     subtotalOthers,
     total,
-    recipeCount: paidCount,
-    bonusCount: bonusRecipeItems.length,
-    maxBonusSlots,
-    discountPercent,
-    pricePerRecipe: 0
+    recipeCount,
+    pricePerRecipe,
+    economia
   };
 }

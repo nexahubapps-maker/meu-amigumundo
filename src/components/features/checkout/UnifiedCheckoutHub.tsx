@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
-import { ShoppingBag, X, ArrowRight, Gift, Search } from "lucide-react";
+import { ShoppingBag, X, ArrowRight, Search } from "lucide-react";
 import { type SheetRecipe, getRecipesByIds } from "@/utils/sheets";
-import { type CartItem, calculateCart } from "@/utils/pricing";
+import { type CartItem, calculateCart, getPrecoPorReceita } from "@/utils/pricing";
 
 interface UnifiedCheckoutHubProps {
   cart: CartItem[];
@@ -11,7 +11,7 @@ interface UnifiedCheckoutHubProps {
   onAddToCart: (item: CartItem) => void;
   onCheckout: () => void;
   onZoomImage?: (url: string) => void;
-  hasOpenBonusSlot: boolean;
+  hasOpenBonusSlot?: boolean;
 }
 
 export const UnifiedCheckoutHub = ({
@@ -20,7 +20,6 @@ export const UnifiedCheckoutHub = ({
   onAddToCart,
   onCheckout,
   onZoomImage,
-  hasOpenBonusSlot,
 }: UnifiedCheckoutHubProps) => {
   const [code, setCode] = useState("");
   const [foundRecipe, setFoundRecipe] = useState<SheetRecipe | null>(null);
@@ -56,7 +55,6 @@ export const UnifiedCheckoutHub = ({
         preco: foundRecipe.preco,
         tipo: "recipe",
         imagem: foundRecipe.imagem_url,
-        isBonus: hasOpenBonusSlot && foundRecipe.preco === 5,
       });
       setFoundRecipe(null);
       setCode("");
@@ -64,35 +62,28 @@ export const UnifiedCheckoutHub = ({
   };
 
   const P = calculated.recipeCount;
-  const F = calculated.bonusCount;
-  const maxSlots = calculated.maxBonusSlots;
-
-  const regularItems = calculated.items.filter(item => !item.isBonus);
-  const bonusItems = calculated.items.filter(item => item.isBonus);
 
   let neuromarketingText = "";
-  if (P >= 1 && P <= 4) {
-    neuromarketingText = `Adicione mais ${5 - P} receita(s) e ganhe 20% OFF em tudo!`;
-  } else if (P >= 5 && P <= 10) {
-    neuromarketingText = `Faltam só ${11 - P} receita(s) para o desconto subir para 40% OFF + 1 RECEITA GRÁTIS!`;
-  } else if (P >= 11 && P <= 15) {
-    if (F === 0) {
-      neuromarketingText = `Parabéns! Você já tem 40% OFF e ganhou 1 RECEITA GRÁTIS! Escolha uma receita de R$5 para levar de presente.`;
-    } else {
-      neuromarketingText = `Muito bem! Adicione mais ${16 - P} receita(s) para o desconto subir para 50% OFF + mais 2 GRÁTIS!`;
-    }
-  } else if (P >= 16) {
-    if (F < 3) {
-      neuromarketingText = `Sensacional! Você atingiu o topo: 50% OFF + até 3 RECEITAS GRÁTIS no total! Escolha receitas de R$5 para completar seus presentes.`;
-    } else {
-      neuromarketingText = `Carrinho perfeito! Você garantiu o melhor desconto e todos os seus presentes!`;
-    }
+  if (P >= 1 && P < 6) {
+    const faltam = 6 - P;
+    neuromarketingText = `Adicione mais ${faltam} receita(s) e o preço cai de R$5,00 para R$3,00 cada!`;
+  } else if (P >= 6 && P < 11) {
+    const faltam = 11 - P;
+    neuromarketingText = `Adicione mais ${faltam} receita(s) e o preço cai para R$2,50 cada!`;
+  } else if (P >= 11 && P < 21) {
+    const faltam = 21 - P;
+    neuromarketingText = `Adicione mais ${faltam} receita(s) e o preço cai para R$2,00 cada (MAIOR DESCONTO)!`;
+  } else if (P >= 21) {
+    neuromarketingText = `Parabéns! Você alcançou a melhor faixa de preço: apenas R$2,00 por receita! 🎉`;
   }
+
+  const recipeItemsInCart = calculated.items.filter(item => item.tipo === "recipe");
+  const otherItemsInCart = calculated.items.filter(item => item.tipo !== "recipe");
 
   return (
     <div 
       id="cart-section" 
-      className="max-w-xl mx-auto mt-1 mb-4 bg-white rounded-3xl p-4 sm:p-5 text-left w-full shadow-[0_25px_60px_-15px_rgba(0,0,0,0.25),0_15px_25px_-5px_rgba(0,0,0,0.12)] border-2 border-gray-100/80 transition-transform duration-300 hover:-translate-y-1"
+      className="max-w-xl mx-auto my-4 bg-white rounded-3xl p-4 sm:p-5 text-left w-full shadow-[0_25px_60px_-15px_rgba(0,0,0,0.25),0_15px_25px_-5px_rgba(0,0,0,0.12)] border-2 border-gray-100/80 transition-transform duration-300 hover:-translate-y-1"
     >
       <div className="mb-2">
         <img
@@ -160,7 +151,7 @@ export const UnifiedCheckoutHub = ({
 
                 <div className="flex flex-col items-end gap-1">
                   <span className="text-[11px] text-gray-900 font-black leading-none">
-                    R$ {foundRecipe.preco.toFixed(2)}
+                    R$ {getPrecoPorReceita(calculated.recipeCount + 1).toFixed(2)}
                   </span>
                   <div className="flex gap-1">
                     <button
@@ -196,10 +187,10 @@ export const UnifiedCheckoutHub = ({
 
       <div className="mb-3">
         <h3 className="text-sm font-bold text-gray-900 uppercase tracking-tight mb-1.5 flex items-center gap-1.5">
-          🛒 Meu Carrinho ({regularItems.length} {regularItems.length === 1 ? "item" : "itens"})
+          🛒 Meu Carrinho ({calculated.items.length} {calculated.items.length === 1 ? "item" : "itens"})
         </h3>
 
-        {regularItems.length === 0 ? (
+        {calculated.items.length === 0 ? (
           <div className="py-4 text-center bg-gray-50 rounded-lg border border-dashed border-gray-200 p-3">
             <ShoppingBag size={24} className="mx-auto text-gray-300 mb-1" />
             <p className="text-gray-600 font-bold text-sm uppercase">
@@ -211,7 +202,7 @@ export const UnifiedCheckoutHub = ({
           </div>
         ) : (
           <div className="divide-y divide-gray-100 border-t border-b border-gray-100">
-            {regularItems.map((item) => (
+            {calculated.items.map((item) => (
               <div
                 key={item.id}
                 className="flex items-center gap-2 py-1.5 transition-all bg-white"
@@ -232,9 +223,16 @@ export const UnifiedCheckoutHub = ({
                   </span>
                 </div>
                 <div className="text-right shrink-0 flex items-center gap-2">
-                  <span className="font-black text-gray-900 text-xs">
-                    R$ {item.precoOriginal.toFixed(2)}
-                  </span>
+                  <div className="flex items-center gap-1">
+                    {item.precoOriginal > item.precoFinal && (
+                      <span className="text-gray-400 line-through text-[10px] font-bold">
+                        R$ {item.precoOriginal.toFixed(2)}
+                      </span>
+                    )}
+                    <span className="font-black text-gray-900 text-xs">
+                      R$ {item.precoFinal.toFixed(2)}
+                    </span>
+                  </div>
                   <button
                     onClick={() => onRemoveFromCart(item.id)}
                     className="p-1 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors"
@@ -249,64 +247,6 @@ export const UnifiedCheckoutHub = ({
         )}
       </div>
 
-      {maxSlots > 0 && (
-        <div className="mb-3 p-3 bg-[#f0fdf4] border border-[#22c55e] rounded-xl space-y-2">
-          <h4 className="text-sm font-black text-[#16a34a] uppercase tracking-wider flex items-center gap-1.5">
-            🎁 Seus Mimos Gratuitos ({F} de {maxSlots} liberados)
-          </h4>
-          <div className="divide-y divide-green-100 border-t border-b border-green-100">
-            {bonusItems.map((item) => (
-              <div
-                key={item.id}
-                className="flex items-center gap-2 py-1.5 bg-white"
-              >
-                {item.imagem && (
-                  <img
-                    src={item.imagem}
-                    className="w-7 h-7 rounded object-cover border border-gray-100 shrink-0"
-                    alt=""
-                  />
-                )}
-                <div className="flex-1 min-w-0 flex items-center gap-1.5">
-                  <h4 className="text-xs font-bold text-gray-800 uppercase truncate leading-none">
-                    {item.nome}
-                  </h4>
-                  <span className="text-[9px] font-black bg-green-50 text-green-600 px-1 rounded shrink-0 leading-none py-0.5">
-                    (${item.id})
-                  </span>
-                </div>
-                <div className="text-right shrink-0 flex items-center gap-2">
-                  <span className="text-gray-400 line-through text-[10px] font-bold">
-                    R$ 5,00
-                  </span>
-                  <span className="text-[11px] font-black text-[#22c55e] uppercase tracking-wider">
-                    Grátis
-                  </span>
-                  <button
-                    onClick={() => onRemoveFromCart(item.id)}
-                    className="p-1 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors"
-                    aria-label="Remover item"
-                  >
-                    <X size={12} />
-                  </button>
-                </div>
-              </div>
-            ))}
-
-            {Array.from({ length: maxSlots - F }).map((_, index) => (
-              <div
-                key={`empty-${index}`}
-                className="flex items-center justify-center py-2 border-2 border-dashed border-green-200 bg-green-50/30 text-center rounded-lg mt-1"
-              >
-                <p className="text-[10px] font-bold text-green-600 uppercase tracking-wider flex items-center gap-1">
-                  <Gift size={10} /> Aguardando sua escolha grátis...
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
       {calculated.items.length > 0 && (
         <div className="pt-2.5 border-t border-gray-100">
           <div className="flex justify-between items-baseline mb-1">
@@ -314,11 +254,11 @@ export const UnifiedCheckoutHub = ({
             <span className="text-base font-bold text-gray-500">R$ {calculated.subtotalRecipesOriginal.toFixed(2)}</span>
           </div>
 
-          {calculated.subtotalRecipesOriginal > calculated.subtotalRecipes && (
+          {calculated.economia > 0 && (
             <div className="flex justify-between items-baseline mb-1">
-              <span className="text-sm font-black text-green-600 uppercase tracking-wide">Desconto</span>
+              <span className="text-sm font-black text-green-600 uppercase tracking-wide">Economia Total</span>
               <span className="text-base font-black text-green-600">
-                - R$ {(calculated.subtotalRecipesOriginal - calculated.subtotalRecipes).toFixed(2)}
+                - R$ {calculated.economia.toFixed(2)}
               </span>
             </div>
           )}
@@ -327,14 +267,6 @@ export const UnifiedCheckoutHub = ({
             <span className="text-sm font-bold text-gray-400 uppercase tracking-widest">VALOR TOTAL DO PEDIDO</span>
             <span className="text-xl font-bold text-blue-600">R$ {calculated.total.toFixed(2)}</span>
           </div>
-
-          {calculated.bonusCount > 0 && (
-            <div className="text-center mb-2">
-              <span className="text-green-600 font-bold text-[10px] uppercase">
-                🎉 {calculated.bonusCount} PRESENTE(S) INCLUÍDO(S)!
-              </span>
-            </div>
-          )}
 
           <button
             onClick={onCheckout}

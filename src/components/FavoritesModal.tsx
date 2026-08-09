@@ -14,7 +14,7 @@ interface FavoritesModalProps {
   recipes: SheetRecipe[];
   packs: SheetPack[];
   infoprodutos: SheetInfoproduto[];
-  hasOpenBonusSlot: boolean;
+  hasOpenBonusSlot?: boolean;
 }
 
 export const FavoritesModal = ({
@@ -27,7 +27,6 @@ export const FavoritesModal = ({
   recipes,
   packs,
   infoprodutos,
-  hasOpenBonusSlot,
 }: FavoritesModalProps) => {
   if (!isOpen) return null;
 
@@ -65,7 +64,6 @@ export const FavoritesModal = ({
             <div className="space-y-3">
               {allFavorites.map((item) => {
                 const added = isInCart(item.id);
-                const bloqueadoPorBonus = hasOpenBonusSlot && item.tipo === 'recipe' && item.preco !== 5;
                 return (
                   <div key={item.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-2xl border border-gray-100 relative group">
                     <img 
@@ -87,14 +85,14 @@ export const FavoritesModal = ({
                           tipo: item.tipo,
                           imagem: item.imagem
                         })}
-                        disabled={added || bloqueadoPorBonus}
+                        disabled={added}
                         className={`px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-wider transition-all ${
-                          (added || bloqueadoPorBonus) 
+                          added 
                             ? 'bg-gray-100 text-gray-400' 
                             : 'bg-[#44FF00] text-[#171717] hover:scale-105 active:scale-95'
                         }`}
                       >
-                        {added ? "✓" : bloqueadoPorBonus ? "🎁 R$5" : "+ ADD"}
+                        {added ? "✓" : "+ ADD"}
                       </button>
                       <button 
                         onClick={() => onToggleFavorite(item.id)}
