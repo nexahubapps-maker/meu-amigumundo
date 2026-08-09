@@ -3,7 +3,8 @@
 import React, { useState } from "react";
 import { ShoppingBag, X, ArrowRight, Search } from "lucide-react";
 import { type SheetRecipe, getRecipesByIds } from "@/utils/sheets";
-import { type CartItem, calculateCart, getPrecoPorReceita } from "@/utils/pricing";
+import { type CartItem, calculateCart } from "@/utils/pricing";
+import { LiquidGlassCard } from "@/components/common/LiquidGlassCard";
 
 interface UnifiedCheckoutHubProps {
   cart: CartItem[];
@@ -11,7 +12,7 @@ interface UnifiedCheckoutHubProps {
   onAddToCart: (item: CartItem) => void;
   onCheckout: () => void;
   onZoomImage?: (url: string) => void;
-  hasOpenBonusSlot?: boolean;
+  hasOpenBonusSlot: boolean;
 }
 
 export const UnifiedCheckoutHub = ({
@@ -40,10 +41,10 @@ export const UnifiedCheckoutHub = ({
       } else {
         setFoundRecipe(null);
         setSearchError(true);
-        setTimeout(() => setSearchError(false), 4000);
       }
     } else {
       setFoundRecipe(null);
+      setSearchError(false);
     }
   };
 
@@ -54,7 +55,7 @@ export const UnifiedCheckoutHub = ({
         nome: foundRecipe.nome,
         preco: foundRecipe.preco,
         tipo: "recipe",
-        imagem: foundRecipe.imagem_url,
+        imagem: foundRecipe.imagem_url
       });
       setFoundRecipe(null);
       setCode("");
@@ -63,35 +64,37 @@ export const UnifiedCheckoutHub = ({
 
   const P = calculated.recipeCount;
 
-  let neuromarketingText = "";
-  if (P >= 1 && P < 6) {
-    const faltam = 6 - P;
-    neuromarketingText = `Adicione mais ${faltam} receita(s) e o preço cai de R$5,00 para R$3,00 cada!`;
-  } else if (P >= 6 && P < 11) {
-    const faltam = 11 - P;
-    neuromarketingText = `Adicione mais ${faltam} receita(s) e o preço cai para R$2,50 cada!`;
-  } else if (P >= 11 && P < 21) {
-    const faltam = 21 - P;
-    neuromarketingText = `Adicione mais ${faltam} receita(s) e o preço cai para R$2,00 cada (MAIOR DESCONTO)!`;
-  } else if (P >= 21) {
-    neuromarketingText = `Parabéns! Você alcançou a melhor faixa de preço: apenas R$2,00 por receita! 🎉`;
+  let tierMessage = "";
+  if (P === 0) {
+    tierMessage = "Comece sua coleção agora. A partir de 6 receitas o preço já cai para R$3,00 cada.";
+  } else if (P < 6) {
+    tierMessage = `Adicione mais ${6 - P} receita(s) e o preço cai para R$3,00 cada. Sua biblioteca agradece.`;
+  } else if (P < 11) {
+    tierMessage = `Você já está economizando muito e vai ficar melhor ainda. Mais ${11 - P} receita(s) e o preço desce para R$2,50 — o próximo degrau já está bem pertinho.`;
+  } else if (P < 21) {
+    tierMessage = `Catálogo bom é quando tem muitas opções, ainda mais por esse preço. Faltam ${21 - P} receita(s) para o DESCONTO mais ABSURDO de todos: R$2,00 cada.`;
+  } else {
+    tierMessage = "Você chegou no lugar mais gostoso e ABSURDO. R$2,00 por receita. E quanto mais você coleciona, mais o AmiguMundo cuida de você.";
   }
-
-  const recipeItemsInCart = calculated.items.filter(item => item.tipo === "recipe");
-  const otherItemsInCart = calculated.items.filter(item => item.tipo !== "recipe");
 
   return (
     <div 
       id="cart-section" 
-      className="max-w-xl mx-auto my-4 bg-white rounded-3xl p-4 sm:p-5 text-left w-full shadow-[0_25px_60px_-15px_rgba(0,0,0,0.25),0_15px_25px_-5px_rgba(0,0,0,0.12)] border-2 border-gray-100/80 transition-transform duration-300 hover:-translate-y-1"
+      className="max-w-2xl mx-auto my-4 bg-white rounded-3xl p-3 sm:p-5 text-left w-full shadow-[0_25px_60px_-15px_rgba(0,0,0,0.25),0_15px_25px_-5px_rgba(0,0,0,0.12)] border-2 border-gray-100/80 transition-transform duration-300 hover:-translate-y-1"
     >
-      <div className="mb-2">
-        <img
-          src="https://ik.imagekit.io/di3huhaluc/amigumundo_descontos"
-          alt="Preços acessíveis para todas as crocheteiras apaixonadas"
-          className="w-full h-auto rounded-2xl shadow-[0_8px_20px_rgba(0,0,0,0.12)]"
-        />
+      <div className="mb-3">
+        <LiquidGlassCard tintColor="rgba(93,5,153,0.55)" pulse className="w-full">
+          <div className="p-4">
+            <p className="text-white text-[11px] font-black uppercase tracking-wider mb-1 opacity-90">
+              R$ {calculated.pricePerRecipe.toFixed(2)} por receita agora
+            </p>
+            <p className="text-white text-sm font-bold leading-snug">
+              {tierMessage}
+            </p>
+          </div>
+        </LiquidGlassCard>
       </div>
+
       <div className="bg-gray-50/80 rounded-xl p-2.5 border border-gray-200/80 mb-1">
         <div className="text-center mb-2">
           <p className="text-sm text-gray-500 font-bold leading-tight">
@@ -151,7 +154,7 @@ export const UnifiedCheckoutHub = ({
 
                 <div className="flex flex-col items-end gap-1">
                   <span className="text-[11px] text-gray-900 font-black leading-none">
-                    R$ {getPrecoPorReceita(calculated.recipeCount + 1).toFixed(2)}
+                    R$ {foundRecipe.preco.toFixed(2)}
                   </span>
                   <div className="flex gap-1">
                     <button
@@ -176,14 +179,6 @@ export const UnifiedCheckoutHub = ({
           </div>
         )}
       </div>
-
-      {neuromarketingText && (
-        <div className="mb-3 p-3 bg-yellow-50 border border-yellow-200 rounded-xl text-center animate-pulse-subtle">
-          <p className="text-sm font-bold text-yellow-800 leading-relaxed">
-            {neuromarketingText}
-          </p>
-        </div>
-      )}
 
       <div className="mb-3">
         <h3 className="text-sm font-bold text-gray-900 uppercase tracking-tight mb-1.5 flex items-center gap-1.5">
@@ -210,29 +205,20 @@ export const UnifiedCheckoutHub = ({
                 {item.imagem && (
                   <img
                     src={item.imagem}
-                    className="w-7 h-7 rounded object-cover border border-gray-100 shrink-0"
+                    className="w-8 h-8 rounded object-cover border border-gray-100 shrink-0 cursor-zoom-in"
                     alt=""
+                    onClick={() => onZoomImage?.(item.imagem!)}
                   />
                 )}
                 <div className="flex-1 min-w-0 flex items-center gap-1.5">
                   <h4 className="text-xs font-bold text-gray-800 uppercase truncate leading-none">
                     {item.nome}
                   </h4>
-                  <span className="text-[9px] font-black bg-gray-100 text-gray-500 px-1 rounded shrink-0 leading-none py-0.5">
-                    {item.tipo === "recipe" ? `(${item.id})` : item.tipo.toUpperCase()}
-                  </span>
                 </div>
                 <div className="text-right shrink-0 flex items-center gap-2">
-                  <div className="flex items-center gap-1">
-                    {item.precoOriginal > item.precoFinal && (
-                      <span className="text-gray-400 line-through text-[10px] font-bold">
-                        R$ {item.precoOriginal.toFixed(2)}
-                      </span>
-                    )}
-                    <span className="font-black text-gray-900 text-xs">
-                      R$ {item.precoFinal.toFixed(2)}
-                    </span>
-                  </div>
+                  <span className="text-[11px] font-black text-gray-900">
+                    R$ {item.precoFinal.toFixed(2)}
+                  </span>
                   <button
                     onClick={() => onRemoveFromCart(item.id)}
                     className="p-1 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors"
@@ -249,23 +235,24 @@ export const UnifiedCheckoutHub = ({
 
       {calculated.items.length > 0 && (
         <div className="pt-2.5 border-t border-gray-100">
-          <div className="flex justify-between items-baseline mb-1">
-            <span className="text-sm font-bold text-gray-400 uppercase tracking-wide">Subtotal</span>
-            <span className="text-base font-bold text-gray-500">R$ {calculated.subtotalRecipesOriginal.toFixed(2)}</span>
-          </div>
-
           {calculated.economia > 0 && (
-            <div className="flex justify-between items-baseline mb-1">
-              <span className="text-sm font-black text-green-600 uppercase tracking-wide">Economia Total</span>
-              <span className="text-base font-black text-green-600">
-                - R$ {calculated.economia.toFixed(2)}
+            <div className="flex justify-between items-baseline mb-2">
+              <span className="text-sm font-bold text-gray-500 uppercase tracking-wide">Você está economizando</span>
+              <span className="text-xl font-black text-red-600">R$ {calculated.economia.toFixed(2)}</span>
+            </div>
+          )}
+
+          {calculated.pricePerRecipe < 5 && (
+            <div className="mb-2">
+              <span className="inline-block bg-[#3CB19E] text-white text-[11px] font-black uppercase tracking-wide px-3 py-1 rounded-full animate-pulse-subtle">
+                O preço caiu para R$ {calculated.pricePerRecipe.toFixed(2)}
               </span>
             </div>
           )}
 
           <div className="flex justify-between items-baseline mb-2.5">
-            <span className="text-sm font-bold text-gray-400 uppercase tracking-widest">VALOR TOTAL DO PEDIDO</span>
-            <span className="text-xl font-bold text-blue-600">R$ {calculated.total.toFixed(2)}</span>
+            <span className="text-sm font-bold text-gray-400 uppercase tracking-widest">Total a pagar</span>
+            <span className="text-3xl font-black text-green-600">R$ {calculated.total.toFixed(2)}</span>
           </div>
 
           <button
