@@ -103,3 +103,15 @@
   animation: elastic-bounce 1s infinite ease-in-out;
   transform-origin: bottom center;
 }
+
+@keyframes glass-heartbeat {
+  0%   { transform: scale(1); }
+  14%  { transform: scale(1.018); }
+  28%  { transform: scale(1); }
+  42%  { transform: scale(1.018); }
+  70%  { transform: scale(1); }
+  100% { transform: scale(1); }
+}
+.animate-glass-heartbeat {
+  animation: glass-heartbeat 1.8s ease-in-out infinite;
+}
