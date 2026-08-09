@@ -83,12 +83,12 @@ export const UnifiedCheckoutHub = ({
       className="max-w-2xl mx-auto my-4 bg-white rounded-3xl p-3 sm:p-5 text-left w-full shadow-[0_25px_60px_-15px_rgba(0,0,0,0.25),0_15px_25px_-5px_rgba(0,0,0,0.12)] border-2 border-gray-100/80 transition-transform duration-300 hover:-translate-y-1"
     >
       <div className="mb-3">
-        <LiquidGlassCard tintColor="rgba(93,5,153,0.55)" pulse className="w-full">
+        <LiquidGlassCard tintColor="rgba(255,255,255,0.6)" pulse className="w-full border border-gray-200/80">
           <div className="p-4">
-            <p className="text-white text-[11px] font-black uppercase tracking-wider mb-1 opacity-90">
+            <p className="text-gray-900 text-[11px] font-black uppercase tracking-wider mb-1">
               R$ {calculated.pricePerRecipe.toFixed(2)} por receita agora
             </p>
-            <p className="text-white text-sm font-bold leading-snug">
+            <p className="text-gray-800 text-sm font-bold leading-snug">
               {tierMessage}
             </p>
           </div>
@@ -238,7 +238,7 @@ export const UnifiedCheckoutHub = ({
           {calculated.economia > 0 && (
             <div className="flex justify-between items-baseline mb-2">
               <span className="text-sm font-bold text-gray-500 uppercase tracking-wide">Você está economizando</span>
-              <span className="text-xl font-black text-red-600">R$ {calculated.economia.toFixed(2)}</span>
+              <span className="text-xl font-black text-red-[#171717]">R$ {calculated.economia.toFixed(2)}</span>
             </div>
           )}
 
