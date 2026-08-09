@@ -62,6 +62,10 @@ function shuffleArray<T>(array: T[]): T[] {
   return arr;
 }
 
+function getBonusSlotsForPaidCount(paidCount: number): number {
+  return 0;
+}
+
 export default function Index() {
   const navigate = useNavigate();
   const location = useLocation();
