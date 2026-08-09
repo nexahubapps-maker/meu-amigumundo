@@ -371,7 +371,7 @@ export default function Index() {
     setCart((prev) => prev.filter((i) => i.id !== id));
   };
 
-  const calculatedCart = calculateCart(cart);
+  const calculated = calculateCart(cart);
 
   const handleRecipeAdd = (recipe: SheetRecipe) => {
     addToCart({
@@ -517,6 +517,14 @@ export default function Index() {
           src="https://ik.imagekit.io/di3huhaluc/banner_presente_diario.png" 
           alt="Banner Presente Diário" 
           className="w-full h-auto object-contain mix-blend-multiply"
+        />
+      </div>
+
+      <div className="max-w-6xl mx-auto px-1.5 my-1 flex flex-col items-center">
+        <img 
+          src="https://ik.imagekit.io/di3huhaluc/banner%20do%20carrinho%20amigumundo?updatedAt=1786225221413" 
+          alt="Banner do Carrinho AmiguMundo" 
+          className="w-full h-auto object-contain rounded-2xl"
         />
       </div>
 
