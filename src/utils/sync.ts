@@ -85,7 +85,8 @@ export async function syncGoogleSheetsToSupabase(): Promise<SyncResult[]> {
       descricao: p.descricao,
       ativo: p.ativo,
       disparar_push: p.disparar_push,
-      link_entrega: p.link_entrega
+      link_entrega: p.link_entrega,
+      receitas_incluidas: p.receitas_incluidas
     }));
 
     const { error } = await supabase.from("packs").upsert(data, { onConflict: "codigo" });

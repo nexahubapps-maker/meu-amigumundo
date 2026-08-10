@@ -91,7 +91,8 @@ export async function getPacksFromSheet() {
     descricao: row[5] || "",
     ativo: row[6]?.toLowerCase() === "true",
     disparar_push: row[7]?.toLowerCase() === "true",
-    link_entrega: row[8] || ""
+    link_entrega: row[8] || "",
+    receitas_incluidas: row[9] || ""
   }));
 }
 

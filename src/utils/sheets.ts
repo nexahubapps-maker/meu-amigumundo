@@ -36,6 +36,7 @@ export interface SheetPack {
   ativo: boolean;
   disparar_push: boolean;
   link_entrega: string;
+  receitas_incluidas: string;
 }
 
 export interface SheetNotification {
@@ -198,7 +199,7 @@ export async function getInfoprodutos(): Promise<SheetInfoproduto[]> {
 export async function getPacks(): Promise<SheetPack[]> {
   const { data, error } = await supabase
     .from("packs")
-    .select("codigo, nome, slug, preco, imagem_url, descricao, ativo, disparar_push, link_entrega");
+    .select("codigo, nome, slug, preco, imagem_url, descricao, ativo, disparar_push, link_entrega, receitas_incluidas");
 
   if (error) {
     console.warn("Erro ao buscar packs no Supabase:", error);
@@ -214,7 +215,8 @@ export async function getPacks(): Promise<SheetPack[]> {
     descricao: row.descricao || "",
     ativo: !!row.ativo,
     disparar_push: !!row.disparar_push,
-    link_entrega: row.link_entrega || ""
+    link_entrega: row.link_entrega || "",
+    receitas_incluidas: row.receitas_incluidas || ""
   }));
 }
 
@@ -362,7 +364,7 @@ export async function getPacksByIds(ids: string[]): Promise<SheetPack[]> {
   if (ids.length === 0) return [];
   const { data, error } = await supabase
     .from("packs")
-    .select("codigo, nome, slug, preco, imagem_url, descricao, ativo, disparar_push, link_entrega")
+    .select("codigo, nome, slug, preco, imagem_url, descricao, ativo, disparar_push, link_entrega, receitas_incluidas")
     .in("codigo", ids);
 
   if (error) {
@@ -379,7 +381,8 @@ export async function getPacksByIds(ids: string[]): Promise<SheetPack[]> {
     descricao: row.descricao || "",
     ativo: !!row.ativo,
     disparar_push: !!row.disparar_push,
-    link_entrega: row.link_entrega || ""
+    link_entrega: row.link_entrega || "",
+    receitas_incluidas: row.receitas_incluidas || ""
   }));
 }
 
