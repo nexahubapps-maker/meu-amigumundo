@@ -142,15 +142,57 @@ export const handler: Handler = async (event) => {
       return { statusCode: 500, body: JSON.stringify({ error: "Pagamento criado, mas houve erro ao registrar o pedido." }) };
     }
 
-    const itensParaInserir = items.map((item) => ({
-      pedido_id: pedido.id,
-      tipo_produto: item.tipo,
-      codigo_produto: item.id,
-      nome_produto: item.nome,
-      imagem_url: item.imagem_url || null,
-      preco_unitario: item.preco,
-      quantidade: 1,
-    }));
+    const packItems = items.filter((item) => item.tipo === "pack");
+    let itensExtras: any[] = [];
+
+    if (packItems.length > 0) {
+      const packCodigos = packItems.map((item) => item.id);
+      const { data: packsData } = await supabaseAdmin
+        .from("packs")
+        .select("codigo, receitas_incluidas")
+        .in("codigo", packCodigos);
+
+      const codigosReceitasParaExpandir = new Set<string>();
+      (packsData || []).forEach((pack) => {
+        if (pack.receitas_incluidas && pack.receitas_incluidas.trim() !== "") {
+          pack.receitas_incluidas
+            .split(",")
+            .map((c: string) => c.trim())
+            .filter((c: string) => c.length > 0)
+            .forEach((c: string) => codigosReceitasParaExpandir.add(c));
+        }
+      });
+
+      if (codigosReceitasParaExpandir.size > 0) {
+        const { data: receitasData } = await supabaseAdmin
+          .from("receitas")
+          .select("codigo, nome, imagem_url, preco")
+          .in("codigo", Array.from(codigosReceitasParaExpandir));
+
+        itensExtras = (receitasData || []).map((receita) => ({
+          pedido_id: pedido.id,
+          tipo_produto: "receita",
+          codigo_produto: receita.codigo,
+          nome_produto: receita.nome,
+          imagem_url: receita.imagem_url || null,
+          preco_unitario: receita.preco,
+          quantidade: 1,
+        }));
+      }
+    }
+
+    const itensParaInserir = [
+      ...items.map((item) => ({
+        pedido_id: pedido.id,
+        tipo_produto: item.tipo,
+        codigo_produto: item.id,
+        nome_produto: item.nome,
+        imagem_url: item.imagem_url || null,
+        preco_unitario: item.preco,
+        quantidade: 1,
+      })),
+      ...itensExtras,
+    ];
 
     const { error: itensError } = await supabaseAdmin.from("pedido_itens").insert(itensParaInserir);
 
