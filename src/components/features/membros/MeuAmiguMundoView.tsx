@@ -60,6 +60,10 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
   const [ferramentaAberta, setFerramentaAberta] = useState<string | null>(null);
   const [zoomImage, setZoomImage] = useState<string | null>(null);
 
+  const [packDetalheAberto, setPackDetalheAberto] = useState<any | null>(null);
+  const [receitasDoPack, setReceitasDoPack] = useState<any[]>([]);
+  const [isLoadingPackDetalhe, setIsLoadingPackDetalhe] = useState(false);
+
   const recarregarPerfil = async () => {
     if (user) {
       const p = await getProfile(user.id);
@@ -141,7 +145,7 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
             const results = item.tipo_produto === "pack"
               ? await getPacksByIds([item.codigo_produto])
               : await getInfoprodutosByIds([item.codigo_produto]);
-            return { ...item, linkAcesso: results[0]?.link_entrega || null };
+            return { ...item, linkAcesso: results[0]?.link_entrega || null, receitasIncluidas: results[0]?.receitas_incluidas || "" };
           })
         );
         setPacksList(resolved);
@@ -153,6 +157,30 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
     };
     fetchPacks();
   }, [activeTab, user, packsList.length]);
+
+  const handleAbrirPack = async (item: any) => {
+    setPackDetalheAberto(item);
+    setIsLoadingPackDetalhe(true);
+    try {
+      const codigos = item.receitasIncluidas
+        .split(",")
+        .map((c: string) => c.trim())
+        .filter((c: string) => c.length > 0);
+      const receitas = await getRecipesByIds(codigos);
+      const resolved = await Promise.all(
+        receitas.map(async (r: any) => {
+          const link = await getDriveFileUrl(r.id, r.categoria);
+          return { ...r, linkAcesso: link };
+        })
+      );
+      setReceitasDoPack(resolved);
+    } catch (e) {
+      console.error("Erro ao carregar receitas do pack:", e);
+      setReceitasDoPack([]);
+    } finally {
+      setIsLoadingPackDetalhe(false);
+    }
+  };
 
   useEffect(() => {
     const fetchGratuitas = async () => {
@@ -377,6 +405,14 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
               if (categoriaAbertaCompras === null) {
                 return (
                   <div className="max-w-4xl mx-auto">
+                    <div className="bg-[#5D0599]/10 border border-[#5D0599]/20 rounded-xl p-2.5 mb-3">
+                      <p className="text-[10px] font-black text-[#5D0599] uppercase tracking-wider mb-0.5">
+                        AmiguMundo Inteligente
+                      </p>
+                      <p className="text-[10px] text-gray-600 font-medium leading-snug">
+                        Receitas que vêm de dentro de um pack ou combo já aparecem aqui, organizadas por categoria — e o pack continua disponível inteiro em "Packs & Promoções", pra você acessar quando quiser.
+                      </p>
+                    </div>
                     <p className="text-xs font-black text-gray-500 uppercase tracking-wider mb-3">
                       Suas Categorias Compradas
                     </p>
@@ -491,6 +527,14 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
               </div>
             ) : (
               <div className="max-w-4xl mx-auto space-y-3">
+                <div className="bg-[#5D0599]/10 border border-[#5D0599]/20 rounded-xl p-2.5 mb-3">
+                  <p className="text-[10px] font-black text-[#5D0599] uppercase tracking-wider mb-0.5">
+                    AmiguMundo Inteligente
+                  </p>
+                  <p className="text-[10px] text-gray-600 font-medium leading-snug">
+                    Packs com receitas separadas já distribuem tudo automaticamente nas suas categorias — e você também pode ver a coleção completa direto por aqui, sem sair do app.
+                  </p>
+                </div>
                 <p className="text-xs font-black text-gray-500 uppercase tracking-wider mb-2">
                   Seus Packs & Cursos Adquiridos ({packsList.length})
                 </p>
@@ -515,6 +559,14 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
                             <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mt-0.5">
                               {item.tipo_produto === "pack" ? "Pack Especial" : "Curso / Guia"}
                             </span>
+                            {item.receitasIncluidas && item.receitasIncluidas.trim() !== "" && (
+                              <button
+                                onClick={() => handleAbrirPack(item)}
+                                className="mt-1 bg-[#5D0599] text-white text-[9px] font-black uppercase tracking-wider px-2 py-1 rounded-lg active:scale-95 transition-transform"
+                              >
+                                Ver Receitas do Pack
+                              </button>
+                            )}
                           </div>
 
                           <div>
@@ -762,6 +814,65 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
 
       {zoomImage && (
         <LightboxModal imageUrl={zoomImage} onClose={() => setZoomImage(null)} />
+      )}
+
+      {packDetalheAberto && (
+        <div className="fixed inset-0 z-[130] bg-white overflow-y-auto">
+          <div className="max-w-4xl mx-auto p-4">
+            <button
+              onClick={() => { setPackDetalheAberto(null); setReceitasDoPack([]); }}
+              className="flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-gray-600 hover:text-gray-900 mb-3"
+            >
+              <ArrowLeft size={14} /> Voltar aos Packs
+            </button>
+            <p className="text-sm font-black text-gray-900 uppercase mb-1">{packDetalheAberto.nome_produto}</p>
+            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-4">
+              {receitasDoPack.length} receita(s) nesse pack
+            </p>
+
+            {isLoadingPackDetalhe ? (
+              <div className="h-64 flex flex-col items-center justify-center gap-3 text-gray-500">
+                <Loader2 size={32} className="animate-spin text-[#5D0599]" />
+                <p className="text-xs font-bold uppercase tracking-wider">Carregando as receitas do pack...</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-3 lg:grid-cols-5 gap-1 sm:gap-2 lg:gap-4">
+                {receitasDoPack.map((r) => (
+                  <div key={r.id} className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden flex flex-col justify-between p-1">
+                    <div className="relative aspect-square bg-gray-50 overflow-hidden rounded-lg">
+                      <img
+                        src={r.imagem_url}
+                        alt={r.nome}
+                        className="w-full h-full object-cover cursor-zoom-in"
+                        onClick={() => setZoomImage(r.imagem_url)}
+                      />
+                    </div>
+                    <div className="pt-1.5 flex flex-col justify-between flex-1">
+                      <div>
+                        <h4 className="text-[9px] lg:text-xs font-black text-gray-800 uppercase tracking-tight line-clamp-1 leading-none mb-1">
+                          {r.nome}
+                        </h4>
+                        <span className="text-[8px] lg:text-[10px] text-gray-400 font-bold block mb-1.5">
+                          ({r.id})
+                        </span>
+                      </div>
+                      {r.linkAcesso && (
+                        <a
+                          href={r.linkAcesso}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center justify-center gap-1 bg-[#44FF00] text-[#171717] py-1 rounded-lg font-black text-[8px] lg:text-[10px] uppercase tracking-wider transition-all hover:scale-105 active:scale-95"
+                        >
+                          Baixar
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
       )}
     </div>
   );
