@@ -104,7 +104,16 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
             return { ...item, linkAcesso: link, categoria };
           })
         );
-        setComprasList(resolved);
+        const deduped = Object.values(
+          resolved.reduce((acc: any, item: any) => {
+            const existing = acc[item.codigo_produto];
+            if (!existing || item.id > existing.id) {
+              acc[item.codigo_produto] = item;
+            }
+            return acc;
+          }, {})
+        );
+        setComprasList(deduped);
       } catch (e) {
         console.error("Erro ao carregar compras:", e);
       } finally {
@@ -403,11 +412,23 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
                     {receitasDaCategoria.map((item, idx) => (
                       <div key={item.id || idx} className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden flex flex-col justify-between p-1">
                         <div className="relative aspect-square bg-gray-50 overflow-hidden rounded-lg">
+                          {!item.visualizado_em && (
+                            <span className="absolute top-1 right-1 bg-[#3CB19E] text-white text-[7px] lg:text-[9px] font-black uppercase px-1.5 py-0.5 rounded-full z-10 shadow-sm">
+                              Nova
+                            </span>
+                          )}
                           <img
                             src={item.imagem_url || `https://picsum.photos/seed/${item.codigo_produto}/400/400`}
                             alt={item.nome_produto}
                             className="w-full h-full object-cover cursor-zoom-in"
-                            onClick={() => setZoomImage(item.imagem_url || `https://picsum.photos/seed/${item.codigo_produto}/400/400`)}
+                            onClick={() => {
+                              setZoomImage(item.imagem_url || `https://picsum.photos/seed/${item.codigo_produto}/400/400`);
+                              if (!item.visualizado_em) {
+                                const agora = new Date().toISOString();
+                                supabase.from("pedido_itens").update({ visualizado_em: agora }).eq("id", item.id).then(() => {});
+                                setComprasList((prev: any[]) => prev.map((c) => c.id === item.id ? { ...c, visualizado_em: agora } : c));
+                              }
+                            }}
                           />
                         </div>
                         <div className="pt-1.5 flex flex-col justify-between flex-1">
