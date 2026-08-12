@@ -14,6 +14,7 @@ import { ContadorCarreiras } from "@/components/features/ferramentas/ContadorCar
 import { ConversorAgulha } from "@/components/features/ferramentas/ConversorAgulha";
 import { CombinadorCores } from "@/components/features/ferramentas/CombinadorCores";
 import { LightboxModal } from "@/components/features/catalog/LightboxModal";
+import { ArtesaProfileHeader } from "@/components/features/membros/ArtesaProfileHeader";
 
 interface MeuAmiguMundoViewProps {
   onBack: () => void;
@@ -23,12 +24,12 @@ interface MeuAmiguMundoViewProps {
 type TabType = "Minhas Compras" | "Packs & Promoções" | "Receitas Gratuitas" | "Favoritos" | "Meus Pedidos" | "Ferramentas";
 
 const MENUS = [
-  { id: "Minhas Compras", label: "Minhas Compras", icone: ShoppingBag, cor: "from-blue-500 to-blue-600", capaUrl: null },
-  { id: "Packs & Promoções", label: "Packs & Promoções", icone: Package, cor: "from-purple-500 to-purple-600", capaUrl: null },
-  { id: "Receitas Gratuitas", label: "Receitas Gratuitas", icone: Gift, cor: "from-pink-500 to-pink-600", capaUrl: null },
-  { id: "Favoritos", label: "Favoritos", icone: Heart, cor: "from-red-500 to-red-600", capaUrl: null },
-  { id: "Meus Pedidos", label: "Meus Pedidos", icone: Receipt, cor: "from-teal-500 to-teal-600", capaUrl: null },
-  { id: "Ferramentas", label: "Ferramentas", icone: Wrench, cor: "from-green-500 to-green-600", capaUrl: null },
+  { id: "Minhas Compras", label: "Minhas Compras", icone: ShoppingBag, cor: "from-[#3CB19E] to-[#2c8577]", capaUrl: null },
+  { id: "Packs & Promoções", label: "Packs & Promoções", icone: Package, cor: "from-[#5D0599] to-[#42026b]", capaUrl: null },
+  { id: "Receitas Gratuitas", label: "Receitas Gratuitas", icone: Gift, cor: "from-[#3CB19E] to-[#2c8577]", capaUrl: null },
+  { id: "Favoritos", label: "Favoritos", icone: Heart, cor: "from-[#5D0599] to-[#42026b]", capaUrl: null },
+  { id: "Meus Pedidos", label: "Meus Pedidos", icone: Receipt, cor: "from-[#3CB19E] to-[#2c8577]", capaUrl: null },
+  { id: "Ferramentas", label: "Ferramentas", icone: Wrench, cor: "from-[#5D0599] to-[#42026b]", capaUrl: null },
 ];
 
 const FERRAMENTAS = [
@@ -367,28 +368,37 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
 
       {/* Grade de Cards do Menu OU Botão Voltar ao Menu */}
       {activeTab === null ? (
-        <div className="max-w-4xl mx-auto p-4 sm:p-6">
-          <p className="text-xs font-black text-gray-500 uppercase tracking-wider mb-3">
-            O que você quer ver?
-          </p>
-          <div className="grid grid-cols-2 gap-3">
-            {MENUS.map((menu, idx) => {
-              const Icone = menu.icone;
-              const isUltimo = idx === MENUS.length - 1;
-              return (
-                <button
-                  key={menu.id}
-                  onClick={() => setActiveTab(menu.id as TabType)}
-                  className={`relative overflow-hidden rounded-2xl aspect-[4/3] flex flex-col items-center justify-center gap-2 bg-gradient-to-br ${menu.cor} shadow-md hover:scale-[1.02] active:scale-95 transition-transform ${isUltimo ? "col-span-2" : ""}`}
-                  style={menu.capaUrl ? { backgroundImage: `url(${menu.capaUrl})`, backgroundSize: "cover", backgroundPosition: "center" } : {}}
-                >
-                  <Icone size={32} className="text-white drop-shadow-md" />
-                  <span className="text-white font-black text-xs uppercase tracking-wide text-center px-2 drop-shadow-md">
-                    {menu.label}
-                  </span>
-                </button>
-              );
-            })}
+        <div className="max-w-4xl mx-auto">
+          <ArtesaProfileHeader
+            nome={displayName}
+            fotoUrl={avatarUrl}
+            bio={profile?.bio}
+            cidade={profile?.cidade}
+            tagEspecialidade={profile?.tag_especialidade}
+          />
+          <div className="p-4 sm:p-6">
+            <p className="text-xs font-black text-gray-500 uppercase tracking-wider mb-3">
+              O que você quer ver?
+            </p>
+            <div className="grid grid-cols-2 gap-3">
+              {MENUS.map((menu, idx) => {
+                const Icone = menu.icone;
+                const isUltimo = idx === MENUS.length - 1;
+                return (
+                  <button
+                    key={menu.id}
+                    onClick={() => setActiveTab(menu.id as TabType)}
+                    className={`relative overflow-hidden rounded-2xl aspect-[4/3] flex flex-col items-center justify-center gap-2 bg-gradient-to-br ${menu.cor} shadow-md hover:scale-[1.02] active:scale-95 transition-transform ${isUltimo ? "col-span-2" : ""}`}
+                    style={menu.capaUrl ? { backgroundImage: `url(${menu.capaUrl})`, backgroundSize: "cover", backgroundPosition: "center" } : {}}
+                  >
+                    <Icone size={32} className="text-white drop-shadow-md" />
+                    <span className="text-white font-black text-xs uppercase tracking-wide text-center px-2 drop-shadow-md">
+                      {menu.label}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
       ) : (
@@ -871,6 +881,9 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
         fotoAtual={profile?.foto_url}
         telefoneAtual={profile?.telefone}
         emailAtual={user?.email}
+        bioAtual={profile?.bio}
+        cidadeAtual={profile?.cidade}
+        tagAtual={profile?.tag_especialidade}
         onSuccess={() => {
           setIsEditProfileOpen(false);
           recarregarPerfil();
