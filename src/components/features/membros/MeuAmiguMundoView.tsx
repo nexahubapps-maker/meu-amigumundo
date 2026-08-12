@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { ArrowLeft, User as UserIcon, Download, ExternalLink, Loader2, ShoppingBag, Package, Pencil, LogOut, Heart, Trash2, Gift, Printer, Calculator, ListChecks, Ruler, Palette, Lock, Wrench } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { ArrowLeft, User as UserIcon, Download, ExternalLink, Loader2, ShoppingBag, Package, Pencil, LogOut, Heart, Trash2, Gift, Printer, Calculator, ListChecks, Ruler, Palette, Lock, Wrench, Receipt } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { getProfile, type Perfil } from "@/utils/profile";
 import { supabase } from "@/lib/supabase";
@@ -19,13 +20,14 @@ interface MeuAmiguMundoViewProps {
   onAddToCart: (items: any[]) => void;
 }
 
-type TabType = "Minhas Compras" | "Packs & Promoções" | "Receitas Gratuitas" | "Favoritos" | "Ferramentas";
+type TabType = "Minhas Compras" | "Packs & Promoções" | "Receitas Gratuitas" | "Favoritos" | "Meus Pedidos" | "Ferramentas";
 
 const MENUS = [
   { id: "Minhas Compras", label: "Minhas Compras", icone: ShoppingBag, cor: "from-blue-500 to-blue-600", capaUrl: null },
   { id: "Packs & Promoções", label: "Packs & Promoções", icone: Package, cor: "from-purple-500 to-purple-600", capaUrl: null },
   { id: "Receitas Gratuitas", label: "Receitas Gratuitas", icone: Gift, cor: "from-pink-500 to-pink-600", capaUrl: null },
   { id: "Favoritos", label: "Favoritos", icone: Heart, cor: "from-red-500 to-red-600", capaUrl: null },
+  { id: "Meus Pedidos", label: "Meus Pedidos", icone: Receipt, cor: "from-teal-500 to-teal-600", capaUrl: null },
   { id: "Ferramentas", label: "Ferramentas", icone: Wrench, cor: "from-green-500 to-green-600", capaUrl: null },
 ];
 
@@ -38,6 +40,8 @@ const FERRAMENTAS = [
 
 export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProps) => {
   const { user, signOut } = useAuth();
+  const navigate = useNavigate();
+
   const [profile, setProfile] = useState<Perfil | null>(null);
   const [activeTab, setActiveTab] = useState<TabType | null>(null);
 
@@ -49,6 +53,9 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
 
   const [packsList, setPacksList] = useState<any[]>([]);
   const [isLoadingPacks, setIsLoadingPacks] = useState(false);
+
+  const [pedidosList, setPedidosList] = useState<any[]>([]);
+  const [isLoadingPedidos, setIsLoadingPedidos] = useState(false);
 
   const [gratuitasList, setGratuitasList] = useState<any[]>([]);
   const [isLoadingGratuitas, setIsLoadingGratuitas] = useState(false);
@@ -157,6 +164,26 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
     };
     fetchPacks();
   }, [activeTab, user, packsList.length]);
+
+  useEffect(() => {
+    const fetchPedidos = async () => {
+      if (activeTab !== "Meus Pedidos" || !user || pedidosList.length > 0) return;
+      setIsLoadingPedidos(true);
+      try {
+        const { data } = await supabase
+          .from("pedidos")
+          .select("id, criado_em, valor_total, status")
+          .eq("usuario_id", user.id)
+          .order("criado_em", { ascending: false });
+        setPedidosList(data || []);
+      } catch (e) {
+        console.error("Erro ao carregar pedidos:", e);
+      } finally {
+        setIsLoadingPedidos(false);
+      }
+    };
+    fetchPedidos();
+  }, [activeTab, user, pedidosList.length]);
 
   const handleAbrirPack = async (item: any) => {
     setPackDetalheAberto(item);
@@ -769,6 +796,60 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
                 })}
               </div>
             </div>
+          ) : activeTab === "Meus Pedidos" ? (
+            isLoadingPedidos ? (
+              <div className="h-64 flex flex-col items-center justify-center gap-3 text-gray-500">
+                <Loader2 size={32} className="animate-spin text-[#5D0599]" />
+                <p className="text-xs font-bold uppercase tracking-wider">Carregando seus pedidos...</p>
+              </div>
+            ) : pedidosList.length === 0 ? (
+              <div className="text-center py-16 px-4 bg-white rounded-2xl border border-gray-100 shadow-sm max-w-md mx-auto">
+                <Receipt size={48} className="text-gray-300 mx-auto mb-3" />
+                <p className="text-gray-700 font-black text-sm uppercase tracking-tight">
+                  Você ainda não fez nenhum pedido.
+                </p>
+              </div>
+            ) : (
+              <div className="max-w-2xl mx-auto space-y-2">
+                <p className="text-xs font-black text-gray-500 uppercase tracking-wider mb-2">
+                  Seus Pedidos ({pedidosList.length})
+                </p>
+                {pedidosList.map((pedido) => {
+                  const match = (pedido.criado_em || "").match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})/);
+                  const dataFormatada = match ? `${match[3]}/${match[2]} - ${match[4]}:${match[5]}` : pedido.criado_em;
+                  const statusCores: Record<string, string> = {
+                    aprovado: "bg-green-100 text-green-700",
+                    pendente: "bg-amber-100 text-amber-700",
+                    recusado: "bg-red-100 text-red-700",
+                    cancelado: "bg-gray-100 text-gray-600",
+                    reembolsado: "bg-gray-100 text-gray-600",
+                  };
+                  return (
+                    <button
+                      key={pedido.id}
+                      onClick={() => navigate(`/obrigado/${pedido.id}`)}
+                      className="w-full bg-white rounded-2xl p-3.5 border border-gray-100 shadow-sm flex items-center justify-between gap-3 hover:shadow-md active:scale-[0.99] transition-all text-left"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-[#5D0599]/10 flex items-center justify-center shrink-0">
+                          <Receipt size={18} className="text-[#5D0599]" />
+                        </div>
+                        <div>
+                          <p className="text-xs font-black text-gray-900 uppercase">Pedido #{pedido.id}</p>
+                          <p className="text-[10px] text-gray-400 font-bold">{dataFormatada}</p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-sm font-black text-gray-900">R$ {Number(pedido.valor_total).toFixed(2)}</p>
+                        <span className={`text-[9px] font-black uppercase px-2 py-0.5 rounded-full ${statusCores[pedido.status] || "bg-gray-100 text-gray-600"}`}>
+                          {pedido.status}
+                        </span>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            )
           ) : (
             <div className="h-64 flex items-center justify-center">
               <div className="text-center py-12 px-4 bg-white rounded-2xl border border-gray-100 shadow-sm max-w-sm w-full">
