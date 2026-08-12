@@ -7,12 +7,15 @@ export interface Perfil {
   telefone: string | null;
   foto_url: string | null;
   assinatura_status: string | null;
+  bio: string | null;
+  cidade: string | null;
+  tag_especialidade: string | null;
 }
 
 export async function getProfile(userId: string): Promise<Perfil | null> {
   const { data, error } = await supabase
     .from("perfis")
-    .select("id, nome, email, telefone, foto_url, assinatura_status")
+    .select("id, nome, email, telefone, foto_url, assinatura_status, bio, cidade, tag_especialidade")
     .eq("id", userId)
     .single();
 
@@ -66,7 +69,7 @@ export async function uploadFotoPerfil(
 
 export async function updateProfile(
   userId: string,
-  updates: { telefone?: string; nome?: string; foto_url?: string }
+  updates: { telefone?: string; nome?: string; foto_url?: string; bio?: string; cidade?: string; tag_especialidade?: string }
 ): Promise<{ error: string | null }> {
   const { error } = await supabase
     .from("perfis")
@@ -74,4 +77,12 @@ export async function updateProfile(
     .eq("id", userId);
 
   return { error: error ? error.message : null };
+}
+
+export function getWhatsappLink(telefone: string | null | undefined): string | null {
+  if (!telefone) return null;
+  const digitos = telefone.replace(/\D/g, "");
+  if (digitos.length < 10) return null;
+  const comCodigoPais = digitos.startsWith("55") ? digitos : `55${digitos}`;
+  return `https://wa.me/${comCodigoPais}`;
 }

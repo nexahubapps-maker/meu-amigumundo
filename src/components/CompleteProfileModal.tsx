@@ -13,6 +13,9 @@ interface CompleteProfileModalProps {
   fotoAtual?: string | null;
   telefoneAtual?: string | null;
   emailAtual?: string | null;
+  bioAtual?: string | null;
+  cidadeAtual?: string | null;
+  tagAtual?: string | null;
 }
 
 export const CompleteProfileModal = ({
@@ -24,9 +27,15 @@ export const CompleteProfileModal = ({
   fotoAtual,
   telefoneAtual,
   emailAtual,
+  bioAtual,
+  cidadeAtual,
+  tagAtual,
 }: CompleteProfileModalProps) => {
   const [nome, setNome] = useState(nomeAtual || "");
   const [telefone, setTelefone] = useState(telefoneAtual || "");
+  const [bio, setBio] = useState("");
+  const [cidade, setCidade] = useState("");
+  const [tagEspecialidade, setTagEspecialidade] = useState("");
   const [fotoPreview, setFotoPreview] = useState<string | null>(fotoAtual || null);
   const [fotoFile, setFotoFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -38,11 +47,14 @@ export const CompleteProfileModal = ({
     if (isOpen) {
       setNome(nomeAtual || "");
       setTelefone(telefoneAtual || "");
+      setBio(bioAtual || "");
+      setCidade(cidadeAtual || "");
+      setTagEspecialidade(tagAtual || "");
       setFotoPreview(fotoAtual || null);
       setFotoFile(null);
       setErrorMessage(null);
     }
-  }, [isOpen, nomeAtual, fotoAtual, telefoneAtual]);
+  }, [isOpen, nomeAtual, fotoAtual, telefoneAtual, bioAtual, cidadeAtual, tagAtual]);
 
   if (!isOpen) return null;
 
@@ -110,6 +122,9 @@ export const CompleteProfileModal = ({
       const { error } = await updateProfile(userId, {
         telefone,
         nome,
+        bio,
+        cidade,
+        tag_especialidade: tagEspecialidade,
         ...(fotoUrl ? { foto_url: fotoUrl } : {}),
       });
 
@@ -235,6 +250,50 @@ export const CompleteProfileModal = ({
                   className="w-full pl-11 pr-3 py-2.5 bg-gray-50 border-2 border-gray-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-gray-800 font-bold text-sm"
                 />
               </div>
+            </div>
+
+            {/* Campo Bio */}
+            <div className="relative">
+              <label className="block text-[10px] font-bold text-gray-400 uppercase mb-1 ml-1">
+                Sobre você (opcional)
+              </label>
+              <textarea
+                value={bio}
+                onChange={(e) => setBio(e.target.value)}
+                placeholder="Amigurumis feitos à mão, com muito carinho..."
+                maxLength={150}
+                rows={2}
+                className="w-full px-3 py-2.5 bg-gray-50 border-2 border-gray-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-gray-800 font-bold text-sm resize-none"
+              />
+            </div>
+
+            {/* Campo Cidade */}
+            <div className="relative">
+              <label className="block text-[10px] font-bold text-gray-400 uppercase mb-1 ml-1">
+                Cidade/Região (opcional)
+              </label>
+              <input
+                type="text"
+                value={cidade}
+                onChange={(e) => setCidade(e.target.value)}
+                placeholder="Maringá/PR"
+                className="w-full px-3 py-2.5 bg-gray-50 border-2 border-gray-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-gray-800 font-bold text-sm"
+              />
+            </div>
+
+            {/* Campo Tag de Especialidade */}
+            <div className="relative">
+              <label className="block text-[10px] font-bold text-gray-400 uppercase mb-1 ml-1">
+                Especialidade (opcional)
+              </label>
+              <input
+                type="text"
+                value={tagEspecialidade}
+                onChange={(e) => setTagEspecialidade(e.target.value)}
+                placeholder="Amigurumis sob encomenda"
+                maxLength={40}
+                className="w-full px-3 py-2.5 bg-gray-50 border-2 border-gray-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-gray-800 font-bold text-sm"
+              />
             </div>
 
             <button
