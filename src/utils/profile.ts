@@ -10,12 +10,13 @@ export interface Perfil {
   bio: string | null;
   cidade: string | null;
   tag_especialidade: string | null;
+  nome_atelie: string | null;
 }
 
 export async function getProfile(userId: string): Promise<Perfil | null> {
   const { data, error } = await supabase
     .from("perfis")
-    .select("id, nome, email, telefone, foto_url, assinatura_status, bio, cidade, tag_especialidade")
+    .select("id, nome, email, telefone, foto_url, assinatura_status, bio, cidade, tag_especialidade, nome_atelie")
     .eq("id", userId)
     .single();
 
@@ -69,7 +70,7 @@ export async function uploadFotoPerfil(
 
 export async function updateProfile(
   userId: string,
-  updates: { telefone?: string; nome?: string; foto_url?: string; bio?: string; cidade?: string; tag_especialidade?: string }
+  updates: { telefone?: string; nome?: string; foto_url?: string; bio?: string; cidade?: string; tag_especialidade?: string; nome_atelie?: string }
 ): Promise<{ error: string | null }> {
   const { error } = await supabase
     .from("perfis")

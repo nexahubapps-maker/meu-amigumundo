@@ -15,6 +15,7 @@ import { ConversorAgulha } from "@/components/features/ferramentas/ConversorAgul
 import { CombinadorCores } from "@/components/features/ferramentas/CombinadorCores";
 import { LightboxModal } from "@/components/features/catalog/LightboxModal";
 import { ArtesaProfileHeader } from "@/components/features/membros/ArtesaProfileHeader";
+import { showSuccess } from "@/utils/toast";
 
 interface MeuAmiguMundoViewProps {
   onBack: () => void;
@@ -44,7 +45,7 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
   const navigate = useNavigate();
 
   const [profile, setProfile] = useState<Perfil | null>(null);
-  const [activeTab, setActiveTab] = useState<TabType | null>(null);
+  const [activeTab, setActiveTab] = useState<TabType>("Minhas Compras");
 
   const [comprasList, setComprasList] = useState<any[]>([]);
   const [isLoadingCompras, setIsLoadingCompras] = useState(false);
@@ -324,99 +325,41 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
         <div className="w-12"></div>
       </div>
 
-      {/* Faixa de Perfil */}
-      <div className="bg-white border-b border-gray-100 px-4 py-3 flex items-center justify-between gap-3 shrink-0 shadow-sm">
-        <div className="flex items-center gap-3 min-w-0 flex-1">
-          <div className="w-11 h-11 rounded-full overflow-hidden bg-gray-100 border border-gray-200 flex items-center justify-center shrink-0">
-            {avatarUrl ? (
-              <img
-                src={avatarUrl}
-                alt={displayName}
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <UserIcon className="text-gray-400" size={22} />
-            )}
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider leading-none mb-0.5">
-              Área de Membros
-            </p>
-            <h3 className="text-sm font-black text-gray-900 truncate uppercase leading-tight">
-              {displayName}
-            </h3>
-          </div>
-        </div>
+      <ArtesaProfileHeader
+        nome={displayName}
+        nomeAtelie={profile?.nome_atelie}
+        fotoUrl={avatarUrl}
+        bio={profile?.bio}
+        cidade={profile?.cidade}
+        tagEspecialidade={profile?.tag_especialidade}
+        onCopiarLink={() => {
+          const link = `${window.location.origin}/catalogo/${user?.id}`;
+          navigator.clipboard.writeText(link);
+          showSuccess("Link do seu catálogo copiado!");
+        }}
+        onVisualizarCatalogo={() => {
+          window.open(`/catalogo/${user?.id}`, "_blank");
+        }}
+      />
 
-        <div className="flex items-center gap-1.5 shrink-0">
-          <button
-            onClick={() => setIsEditProfileOpen(true)}
-            className="p-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl transition-colors active:scale-95"
-            title="Editar perfil"
-          >
-            <Pencil size={16} />
-          </button>
-          <button
-            onClick={handleSignOut}
-            className="p-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl transition-colors active:scale-95"
-            title="Sair da conta"
-          >
-            <LogOut size={16} />
-          </button>
-        </div>
+      <div className="flex items-center justify-around border-t border-b border-gray-100 bg-white sticky top-[60px] z-[5]">
+        {MENUS.map((menu) => {
+          const Icone = menu.icone;
+          const isActive = activeTab === menu.id;
+          return (
+            <button
+              key={menu.id}
+              onClick={() => setActiveTab(menu.id as TabType)}
+              className={`flex-1 flex flex-col items-center justify-center gap-0.5 py-2.5 border-b-2 transition-colors ${isActive ? "border-[#5D0599] text-[#5D0599]" : "border-transparent text-gray-400"}`}
+            >
+              <Icone size={18} />
+            </button>
+          );
+        })}
       </div>
 
-      {/* Grade de Cards do Menu OU Botão Voltar ao Menu */}
-      {activeTab === null ? (
-        <div className="max-w-4xl mx-auto">
-          <ArtesaProfileHeader
-            nome={displayName}
-            fotoUrl={avatarUrl}
-            bio={profile?.bio}
-            cidade={profile?.cidade}
-            tagEspecialidade={profile?.tag_especialidade}
-          />
-          <div className="p-4 sm:p-6">
-            <p className="text-xs font-black text-gray-500 uppercase tracking-wider mb-3">
-              O que você quer ver?
-            </p>
-            <div className="grid grid-cols-2 gap-3">
-              {MENUS.map((menu, idx) => {
-                const Icone = menu.icone;
-                const isUltimo = idx === MENUS.length - 1;
-                return (
-                  <button
-                    key={menu.id}
-                    onClick={() => setActiveTab(menu.id as TabType)}
-                    className={`relative overflow-hidden rounded-2xl aspect-[4/3] flex flex-col items-center justify-center gap-2 bg-gradient-to-br ${menu.cor} shadow-md hover:scale-[1.02] active:scale-95 transition-transform ${isUltimo ? "col-span-2" : ""}`}
-                    style={menu.capaUrl ? { backgroundImage: `url(${menu.capaUrl})`, backgroundSize: "cover", backgroundPosition: "center" } : {}}
-                  >
-                    <Icone size={32} className="text-white drop-shadow-md" />
-                    <span className="text-white font-black text-xs uppercase tracking-wide text-center px-2 drop-shadow-md">
-                      {menu.label}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-      ) : (
-        <div className="bg-white border-b border-gray-200 px-4 py-2.5">
-          <button
-            onClick={() => {
-              setActiveTab(null);
-              setCategoriaAbertaCompras(null);
-            }}
-            className="flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-gray-600 hover:text-gray-900"
-          >
-            <ArrowLeft size={14} /> Voltar ao menu
-          </button>
-        </div>
-      )}
-
       {/* Conteúdo Dinâmico por Aba */}
-      {activeTab !== null && (
+      {activeTab && (
         <div className="flex-1 p-4 sm:p-6 overflow-y-auto">
           {activeTab === "Minhas Compras" ? (
             isLoadingCompras ? (
@@ -878,6 +821,7 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
         onClose={() => setIsEditProfileOpen(false)}
         userId={user?.id}
         nomeAtual={profile?.nome}
+        nomeAtelieAtual={profile?.nome_atelie}
         fotoAtual={profile?.foto_url}
         telefoneAtual={profile?.telefone}
         emailAtual={user?.email}

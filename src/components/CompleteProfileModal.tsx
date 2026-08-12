@@ -10,6 +10,7 @@ interface CompleteProfileModalProps {
   userId: string | undefined;
   onSuccess: () => void;
   nomeAtual?: string | null;
+  nomeAtelieAtual?: string | null;
   fotoAtual?: string | null;
   telefoneAtual?: string | null;
   emailAtual?: string | null;
@@ -24,6 +25,7 @@ export const CompleteProfileModal = ({
   userId,
   onSuccess,
   nomeAtual,
+  nomeAtelieAtual,
   fotoAtual,
   telefoneAtual,
   emailAtual,
@@ -32,6 +34,7 @@ export const CompleteProfileModal = ({
   tagAtual,
 }: CompleteProfileModalProps) => {
   const [nome, setNome] = useState(nomeAtual || "");
+  const [nomeAtelie, setNomeAtelie] = useState("");
   const [telefone, setTelefone] = useState(telefoneAtual || "");
   const [bio, setBio] = useState("");
   const [cidade, setCidade] = useState("");
@@ -46,6 +49,7 @@ export const CompleteProfileModal = ({
   useEffect(() => {
     if (isOpen) {
       setNome(nomeAtual || "");
+      setNomeAtelie(nomeAtelieAtual || "");
       setTelefone(telefoneAtual || "");
       setBio(bioAtual || "");
       setCidade(cidadeAtual || "");
@@ -54,7 +58,7 @@ export const CompleteProfileModal = ({
       setFotoFile(null);
       setErrorMessage(null);
     }
-  }, [isOpen, nomeAtual, fotoAtual, telefoneAtual, bioAtual, cidadeAtual, tagAtual]);
+  }, [isOpen, nomeAtual, nomeAtelieAtual, fotoAtual, telefoneAtual, bioAtual, cidadeAtual, tagAtual]);
 
   if (!isOpen) return null;
 
@@ -122,6 +126,7 @@ export const CompleteProfileModal = ({
       const { error } = await updateProfile(userId, {
         telefone,
         nome,
+        nome_atelie: nomeAtelie,
         bio,
         cidade,
         tag_especialidade: tagEspecialidade,
@@ -232,6 +237,22 @@ export const CompleteProfileModal = ({
                   className="w-full pl-11 pr-3 py-2.5 bg-gray-50 border-2 border-gray-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-gray-800 font-bold text-sm"
                 />
               </div>
+            </div>
+
+            <div className="relative">
+              <label className="block text-[10px] font-bold text-gray-400 uppercase mb-1 ml-1">
+                Nome do Ateliê (opcional)
+              </label>
+              <input
+                type="text"
+                value={nomeAtelie}
+                onChange={(e) => setNomeAtelie(e.target.value)}
+                placeholder="Ex: Crochê da Maria"
+                className="w-full px-3 py-2.5 bg-gray-50 border-2 border-gray-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-gray-800 font-bold text-sm"
+              />
+              <p className="text-[9px] text-gray-400 font-medium mt-1 ml-1">
+                Se preenchido, esse nome aparece no seu Catálogo Público no lugar do seu nome pessoal.
+              </p>
             </div>
 
             {/* Campo Telefone */}
