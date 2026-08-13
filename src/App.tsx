@@ -8,6 +8,7 @@ import { AuthProvider } from "@/context/AuthContext";
 import Index from "./pages/Index";
 import Checkout from "./pages/Checkout";
 import ObrigadoPage from "@/pages/ObrigadoPage";
+import CatalogoPublico from "./pages/CatalogoPublico";
 import NotFound from "./pages/NotFound";
 import { FloatingBackButton } from "@/components/common/FloatingBackButton";
 import { DailyReminderPopup } from "@/components/common/DailyReminderPopup";
@@ -42,6 +43,9 @@ const App = () => (
               <Route path="/pack/:slug_and_id" element={<Index />} />
               <Route path="/infoproduto/:slug_and_id" element={<Index />} />
               
+              {/* Catálogo Público da Artesã */}
+              <Route path="/catalogo/:userId" element={<CatalogoPublico />} />
+
               {/* Tela de Checkout */}
               <Route path="/checkout" element={<Checkout />} />
               <Route path="/checkout/:id" element={<Checkout />} />
