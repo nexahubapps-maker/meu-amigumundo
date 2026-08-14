@@ -17,6 +17,16 @@ export interface SyncResult {
   error?: string;
 }
 
+function normalizarDataHora(valor: string): string {
+  if (!valor) return valor;
+  const formatoBrasileiro = valor.match(/^(\d{2})\/(\d{2})\/(\d{4})\s+(\d{2}):(\d{2})(:(\d{2}))?/);
+  if (formatoBrasileiro) {
+    const [, dia, mes, ano, hora, minuto, , segundo] = formatoBrasileiro;
+    return `${ano}-${mes}-${dia}T${hora}:${minuto}:${segundo || "00"}`;
+  }
+  return valor;
+}
+
 async function removerAusentes(tabela: string, coluna: string, idsValidos: (string | number)[]) {
   if (idsValidos.length === 0) return;
   const lista = idsValidos.map(id => `"${id}"`).join(",");
@@ -131,7 +141,7 @@ export async function syncGoogleSheetsToSupabase(): Promise<SyncResult[]> {
     const data = validNotifications.map(n => ({
       id: n.id,
       ativo: n.ativo,
-      data_hora: n.data_hora,
+      data_hora: normalizarDataHora(n.data_hora),
       titulo: n.titulo,
       mensagem: n.mensagem,
       imagem_url: n.imagem_url,
