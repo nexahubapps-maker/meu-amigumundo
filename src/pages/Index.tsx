@@ -267,21 +267,22 @@ export default function Index() {
 
     const checkNotifications = () => {
       const now = new Date();
-      let delay = 0;
-      notificationsList.forEach((notif) => {
-        if (!notif.ativo) return;
-        
+      const pendentes = notificationsList.filter((notif) => {
+        if (!notif.ativo) return false;
         const notifTime = new Date(notif.data_hora);
-        if (now >= notifTime) {
-          const hasBeenShown = localStorage.getItem(`notif-shown-${notif.id}`);
-          if (!hasBeenShown) {
-            setTimeout(() => {
-              showNotificationPopup(notif.titulo, notif.mensagem, notif.imagem_url);
-            }, delay);
-            delay += 900;
-            localStorage.setItem(`notif-shown-${notif.id}`, "true");
-          }
-        }
+        if (now < notifTime) return false;
+        const hasBeenShown = localStorage.getItem(`notif-shown-${notif.id}`);
+        return !hasBeenShown;
+      });
+
+      pendentes.slice(0, 2).forEach((notif, index) => {
+        setTimeout(() => {
+          showNotificationPopup(notif.titulo, notif.mensagem, notif.imagem_url);
+        }, index * 3000);
+      });
+
+      pendentes.forEach((notif) => {
+        localStorage.setItem(`notif-shown-${notif.id}`, "true");
       });
     };
 
