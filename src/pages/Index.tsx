@@ -16,7 +16,6 @@ import { PwaPrompt } from "@/components/features/pwa/PwaPrompt";
 import { FavoritesModal } from "@/components/FavoritesModal";
 import { FooterNavigation } from "@/components/common/FooterNavigation";
 import { NotificationsModal } from "@/components/NotificationsModal";
-import { InternalPopup } from "@/components/common/InternalPopup";
 import { UnifiedCheckoutHub } from "@/components/features/checkout/UnifiedCheckoutHub";
 import { CartFooter } from "@/components/features/checkout/CartFooter";
 import { CategoryDetailView } from "@/components/features/catalog/CategoryDetailView";
@@ -513,8 +512,6 @@ export default function Index() {
 
       <Header cartCount={cart.length} onOpenMeuAmiguMundo={handleOpenMeuAmiguMundo} />
       <PushOptInCard />
-
-      <InternalPopup notifications={notificationsList} />
 
       <div className="max-w-6xl mx-auto px-4 my-0 flex flex-col items-center">
         <img 
