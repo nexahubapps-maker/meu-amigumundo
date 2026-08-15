@@ -21,10 +21,10 @@ export const PushOptInCard = () => {
 
   const handleAtivar = async () => {
     const ok = await subscribeToPush(user?.id);
-    if (ok) setVisible(false);
-    else {
-      localStorage.setItem("amigumundo-push-dispensado", "true");
+    if (ok) {
       setVisible(false);
+    } else {
+      alert("Não foi possível ativar as notificações agora. Confira no console (F12) o erro exato, ou tente novamente.");
     }
   };
 
