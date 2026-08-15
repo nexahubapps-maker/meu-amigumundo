@@ -93,7 +93,7 @@ export const showNotificationPopup = (titulo: string, mensagem: string, imagemUr
   toast.custom((t) => React.createElement(
     "div",
     {
-      className: "bg-[#5D0599] border border-[#5D0599] rounded-3xl p-4 shadow-[0_16px_40px_rgba(0,0,0,0.25)] flex items-start gap-3.5 max-w-md w-full mx-auto pointer-events-auto animate-in slide-in-from-top duration-300",
+      className: "bg-[#5D0599] border border-[#5D0599] rounded-3xl p-4 shadow-[0_16px_40px_rgba(0,0,0,0.25)] flex items-start gap-3.5 max-w-md w-full mx-auto pointer-events-auto animate-in slide-in-from-top duration-300 overflow-hidden",
       onClick: () => toast.dismiss(t)
     },
     imagemUrl ? React.createElement("img", {
