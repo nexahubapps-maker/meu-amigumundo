@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { X, Bell, Calendar, ExternalLink } from 'lucide-react';
 import { type SheetNotification } from '@/utils/sheets';
 import { getReadNotificationIds, markNotificationsAsRead } from '@/utils/notificacoesLidas';
+import { getPrimeiroAcesso } from "@/utils/primeiroAcesso";
 
 interface NotificationsModalProps {
   isOpen: boolean;
@@ -19,7 +20,11 @@ export const NotificationsModal = ({ isOpen, onClose, notifications }: Notificat
 
   if (!isOpen) return null;
 
-  const activeNotifications = notifications.filter(n => n.ativo && new Date(n.data_hora.replace(" ", "T")) <= new Date());
+  const primeiroAcesso = new Date(getPrimeiroAcesso());
+  const activeNotifications = notifications.filter(n => {
+    const dataNotif = new Date(n.data_hora.replace(" ", "T"));
+    return n.ativo && dataNotif <= new Date() && dataNotif >= primeiroAcesso;
+  });
 
   const handleOpenDetail = (notif: SheetNotification) => {
     setSelectedNotif(notif);
