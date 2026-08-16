@@ -50,10 +50,18 @@ export const NotificationsModal = ({ isOpen, onClose, notifications }: Notificat
   };
 
   const formatDate = (raw: string) => {
-    const match = raw.match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})/);
-    if (!match) return raw;
-    const [, , month, day, hour, minute] = match;
-    return `${day}/${month} - ${hour}:${minute}`;
+    const date = new Date(raw);
+    if (isNaN(date.getTime())) return raw;
+    const partes = new Intl.DateTimeFormat('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      timeZone: 'America/Sao_Paulo',
+      hour12: false
+    }).formatToParts(date);
+    const obter = (tipo: string) => partes.find(p => p.type === tipo)?.value || '';
+    return `${obter('day')}/${obter('month')} - ${obter('hour')}:${obter('minute')}`;
   };
 
   return (
