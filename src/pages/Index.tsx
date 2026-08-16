@@ -280,7 +280,7 @@ export default function Index() {
 
       pendentes.slice(0, 2).forEach((notif, index) => {
         setTimeout(() => {
-          showNotificationPopup(notif.titulo, notif.mensagem, notif.imagem_url);
+          showNotificationPopup(notif.titulo, notif.mensagem, notif.imagem_url, notif.link);
         }, index * 3000);
       });
 
@@ -835,7 +835,13 @@ export default function Index() {
         onOpenMeuAmiguMundo={handleOpenMeuAmiguMundo}
         onOpenNotifications={handleOpenNotifications}
         favoritesCount={favorites.length}
-        notificationsCount={notificationsList.filter(n => n.ativo && !readNotificationIds.includes(n.id)).length}
+        notificationsCount={notificationsList.filter(n => {
+          if (!n.ativo || readNotificationIds.includes(n.id)) return false;
+          const dataNotif = new Date(n.data_hora.replace(" ", "T"));
+          const agora = new Date();
+          const primeiroAcesso = new Date(getPrimeiroAcesso());
+          return dataNotif <= agora && dataNotif >= primeiroAcesso;
+        }).length}
       />
 
       <FavoritesModal
