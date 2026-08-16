@@ -22,7 +22,12 @@ function normalizarDataHora(valor: string): string {
   const formatoBrasileiro = valor.match(/^(\d{2})\/(\d{2})\/(\d{4})\s+(\d{2}):(\d{2})(:(\d{2}))?/);
   if (formatoBrasileiro) {
     const [, dia, mes, ano, hora, minuto, , segundo] = formatoBrasileiro;
-    return `${ano}-${mes}-${dia}T${hora}:${minuto}:${segundo || "00"}`;
+    return `${ano}-${mes}-${dia}T${hora}:${minuto}:${segundo || "00"}-03:00`;
+  }
+  const formatoISO = valor.match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})(:(\d{2}))?/);
+  if (formatoISO) {
+    const [, ano, mes, dia, hora, minuto, , segundo] = formatoISO;
+    return `${ano}-${mes}-${dia}T${hora}:${minuto}:${segundo || "00"}-03:00`;
   }
   return valor;
 }
