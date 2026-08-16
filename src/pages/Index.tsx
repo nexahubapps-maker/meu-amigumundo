@@ -33,6 +33,7 @@ import { MeuAmiguMundoView } from "@/components/features/membros/MeuAmiguMundoVi
 import { captureUTMs } from "@/lib/tracking/utmify-service";
 import { supabase } from "@/lib/supabase";
 import { getReadNotificationIds } from "@/utils/notificacoesLidas";
+import { getPrimeiroAcesso } from "@/utils/primeiroAcesso";
 import { 
   getInfoprodutos, 
   getPacks, 
@@ -267,10 +268,12 @@ export default function Index() {
 
     const checkNotifications = () => {
       const now = new Date();
+      const primeiroAcesso = new Date(getPrimeiroAcesso());
       const pendentes = notificationsList.filter((notif) => {
         if (!notif.ativo) return false;
         const notifTime = new Date(notif.data_hora);
         if (now < notifTime) return false;
+        if (notifTime < primeiroAcesso) return false;
         const hasBeenShown = localStorage.getItem(`notif-shown-${notif.id}`);
         return !hasBeenShown;
       });
