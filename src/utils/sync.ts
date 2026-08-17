@@ -143,16 +143,43 @@ export async function syncGoogleSheetsToSupabase(): Promise<SyncResult[]> {
     const notifications = await getNotificationsFromSheet();
     const validNotifications = notifications.filter(n => n.id && n.titulo);
 
-    const data = validNotifications.map(n => ({
-      id: n.id,
-      ativo: n.ativo,
-      data_hora: normalizarDataHora(n.data_hora),
-      titulo: n.titulo,
-      mensagem: n.mensagem,
-      imagem_url: n.imagem_url,
-      link: n.link,
-      disparar_push: n.disparar_push
-    }));
+    const { data: dbNotifs } = await supabase
+      .from("notificacoes_internas")
+      .select("id, data_hora, push_enviado_em");
+
+    const mapaAtuais = new Map<string, { data_hora: string; push_enviado_em: string | null }>();
+    (dbNotifs || []).forEach((row: any) => {
+      mapaAtuais.set(String(row.id), {
+        data_hora: row.data_hora,
+        push_enviado_em: row.push_enviado_em,
+      });
+    });
+
+    const data = validNotifications.map(n => {
+      const dataHoraNormalizada = normalizarDataHora(n.data_hora);
+      const atual = mapaAtuais.get(String(n.id));
+
+      const item: any = {
+        id: n.id,
+        ativo: n.ativo,
+        data_hora: dataHoraNormalizada,
+        titulo: n.titulo,
+        mensagem: n.mensagem,
+        imagem_url: n.imagem_url,
+        link: n.link,
+        disparar_push: n.disparar_push
+      };
+
+      if (atual && atual.push_enviado_em !== null) {
+        const timeNovo = new Date(dataHoraNormalizada).getTime();
+        const timeAtual = new Date(atual.data_hora).getTime();
+        if (!isNaN(timeNovo) && !isNaN(timeAtual) && timeNovo !== timeAtual) {
+          item.push_enviado_em = null;
+        }
+      }
+
+      return item;
+    });
 
     const { error } = await supabase.from("notificacoes_internas").upsert(data, { onConflict: "id" });
     if (!error) await removerAusentes("notificacoes_internas", "id", validNotifications.map(n => n.id));

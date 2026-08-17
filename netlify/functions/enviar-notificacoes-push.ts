@@ -46,6 +46,10 @@ export default async (req: Request) => {
           })
         );
       } catch (err: any) {
+        console.error(
+          `[Push Error] Endpoint: ${sub.endpoint ? sub.endpoint.substring(0, 50) + "..." : "sem endpoint"} | StatusCode: ${err.statusCode ?? "sem statusCode"} | Detalhe:`,
+          err.body || err.message || err
+        );
         if (err.statusCode === 410 || err.statusCode === 404) {
           await supabase.from("push_subscriptions").delete().eq("endpoint", sub.endpoint);
         }
