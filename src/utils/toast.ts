@@ -48,57 +48,6 @@ export const showInfo = (message: string) => {
   toast.custom((t) => React.createElement(
     "div",
     {
-      className: "bg-white<dyad-write path="src/utils/toast.ts" description="Adiciona botão visual de call-to-action (Ver mais) em showNotificationPopup quando há link">
-import { toast } from "sonner";
-import React from "react";
-import { ChevronRight } from "lucide-react";
-
-export const showSuccess = (message: string) => {
-  toast.custom((t) => React.createElement(
-    "div",
-    {
-      className: "bg-white border border-gray-100 rounded-2xl p-3.5 shadow-[0_10px_30px_rgba(0,0,0,0.08)] flex items-center gap-3 max-w-sm w-full mx-auto pointer-events-auto animate-in slide-in-from-top duration-300",
-      onClick: () => toast.dismiss(t)
-    },
-    React.createElement(
-      "div",
-      { className: "w-8 h-8 rounded-full bg-green-50 flex items-center justify-center text-green-500 shrink-0 font-bold text-sm" },
-      "✓"
-    ),
-    React.createElement(
-      "div",
-      { className: "flex-1 min-w-0" },
-      React.createElement("p", { className: "text-xs font-black text-gray-900 uppercase tracking-tight" }, "Sucesso!"),
-      React.createElement("p", { className: "text-[11px] text-gray-500 font-medium leading-tight mt-0.5" }, message)
-    )
-  ), { duration: 3000 });
-};
-
-export const showError = (message: string) => {
-  toast.custom((t) => React.createElement(
-    "div",
-    {
-      className: "bg-white border border-gray-100 rounded-2xl p-3.5 shadow-[0_10px_30px_rgba(0,0,0,0.08)] flex items-center gap-3 max-w-sm w-full mx-auto pointer-events-auto animate-in slide-in-from-top duration-300",
-      onClick: () => toast.dismiss(t)
-    },
-    React.createElement(
-      "div",
-      { className: "w-8 h-8 rounded-full bg-red-50 flex items-center justify-center text-red-500 shrink-0 font-bold text-sm" },
-      "✕"
-    ),
-    React.createElement(
-      "div",
-      { className: "flex-1 min-w-0" },
-      React.createElement("p", { className: "text-xs font-black text-gray-900 uppercase tracking-tight" }, "Erro!"),
-      React.createElement("p", { className: "text-[11px] text-gray-500 font-medium leading-tight mt-0.5" }, message)
-    )
-  ), { duration: 3000 });
-};
-
-export const showInfo = (message: string) => {
-  toast.custom((t) => React.createElement(
-    "div",
-    {
       className: "bg-white border border-gray-100 rounded-2xl p-3.5 shadow-[0_10px_30px_rgba(0,0,0,0.08)] flex items-center gap-3 max-w-sm w-full mx-auto pointer-events-auto animate-in slide-in-from-top duration-300",
       onClick: () => toast.dismiss(t)
     },
@@ -163,7 +112,7 @@ export const showNotificationPopup = (titulo: string, mensagem: string, imagemUr
       React.createElement("p", { className: "text-sm text-white/90 font-bold leading-snug mt-1.5" }, mensagem),
       link ? React.createElement(
         "span",
-        { className: "inline-flex items-center gap-1 bg-white/20 text-white font-bold text-xs px-3 py-1 rounded-full mt-2" },
+        { className: "inline-flex items-center gap-1 mt-2 bg-white/20 text-white text-xs font-bold rounded-full px-3 py-1" },
         "Ver mais",
         React.createElement(ChevronRight, { size: 14 })
       ) : null
