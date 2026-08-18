@@ -30,6 +30,7 @@ import { AuthModal } from "@/components/AuthModal";
 import { getProfile } from "@/utils/profile";
 import { CompleteProfileModal } from "@/components/CompleteProfileModal";
 import { MeuAmiguMundoView } from "@/components/features/membros/MeuAmiguMundoView";
+import { MeusPedidosView } from "@/components/features/membros/MeusPedidosView";
 import { captureUTMs } from "@/lib/tracking/utmify-service";
 import { supabase } from "@/lib/supabase";
 import { getReadNotificationIds } from "@/utils/notificacoesLidas";
@@ -86,6 +87,7 @@ export default function Index() {
   const [error, setError] = useState<string | null>(null);
   const [isFavoritesOpen, setIsFavoritesOpen] = useState(false);
   const [isMeuAmiguMundoOpen, setIsMeuAmiguMundoOpen] = useState(false);
+  const [isMeusPedidosOpen, setIsMeusPedidosOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [isMeuAuthModalOpen, setIsMeuAuthModalOpen] = useState(false);
   const [isCompleteProfileOpen, setIsCompleteProfileOpen] = useState(false);
@@ -305,7 +307,7 @@ export default function Index() {
   }, [location.pathname]);
 
   useEffect(() => {
-    const isModalOpen = !!showRecipe || !!activeUpsell || isFavoritesOpen || !!zoomImage || !!categoria_slug || !!targetId || !!termo || isMeuAmiguMundoOpen;
+    const isModalOpen = !!showRecipe || !!activeUpsell || isFavoritesOpen || !!zoomImage || !!categoria_slug || !!targetId || !!termo || isMeuAmiguMundoOpen || isMeusPedidosOpen;
     if (isModalOpen) {
       document.body.style.overflow = "hidden";
     } else {
@@ -314,7 +316,7 @@ export default function Index() {
     return () => {
       document.body.style.overflow = "";
     };
-  }, [showRecipe, activeUpsell, isFavoritesOpen, zoomImage, categoria_slug, targetId, termo, isMeuAmiguMundoOpen]);
+  }, [showRecipe, activeUpsell, isFavoritesOpen, zoomImage, categoria_slug, targetId, termo, isMeuAmiguMundoOpen, isMeusPedidosOpen]);
 
   useEffect(() => {
     const savedCart = localStorage.getItem("amigumundo-cart");
@@ -448,6 +450,19 @@ export default function Index() {
       setIsCompleteProfileOpen(true);
     } else {
       setIsMeuAmiguMundoOpen(true);
+    }
+  };
+
+  const handleOpenMeusPedidos = async () => {
+    if (!user) {
+      setIsMeuAuthModalOpen(true);
+      return;
+    }
+    const profile = await getProfile(user.id);
+    if (!profile?.telefone) {
+      setIsCompleteProfileOpen(true);
+    } else {
+      setIsMeusPedidosOpen(true);
     }
   };
 
@@ -834,7 +849,7 @@ export default function Index() {
       <FooterNavigation
         onOpenMeuAmiguMundo={handleOpenMeuAmiguMundo}
         onOpenNotifications={handleOpenNotifications}
-        favoritesCount={favorites.length}
+        onOpenMeusPedidos={handleOpenMeusPedidos}
         notificationsCount={notificationsList.filter(n => {
           if (!n.ativo || readNotificationIds.includes(n.id)) return false;
           const dataNotif = new Date(n.data_hora.replace(" ", "T"));
@@ -924,6 +939,10 @@ export default function Index() {
 
       {isMeuAmiguMundoOpen && (
         <MeuAmiguMundoView onBack={() => setIsMeuAmiguMundoOpen(false)} onAddToCart={addToCart} />
+      )}
+
+      {isMeusPedidosOpen && (
+        <MeusPedidosView onBack={() => setIsMeusPedidosOpen(false)} />
       )}
 
       {user?.email === ADMIN_EMAIL && <AdminSyncButton />}
