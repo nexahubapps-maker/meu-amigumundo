@@ -31,6 +31,7 @@ import { getProfile } from "@/utils/profile";
 import { CompleteProfileModal } from "@/components/CompleteProfileModal";
 import { MeuAmiguMundoView } from "@/components/features/membros/MeuAmiguMundoView";
 import { MeusPedidosView } from "@/components/features/membros/MeusPedidosView";
+import { PremiumSalesView } from "@/components/features/membros/PremiumSalesView";
 import { captureUTMs } from "@/lib/tracking/utmify-service";
 import { supabase } from "@/lib/supabase";
 import { getReadNotificationIds } from "@/utils/notificacoesLidas";
@@ -87,6 +88,7 @@ export default function Index() {
   const [error, setError] = useState<string | null>(null);
   const [isFavoritesOpen, setIsFavoritesOpen] = useState(false);
   const [isMeuAmiguMundoOpen, setIsMeuAmiguMundoOpen] = useState(false);
+  const [isPremiumSalesOpen, setIsPremiumSalesOpen] = useState(false);
   const [isMeusPedidosOpen, setIsMeusPedidosOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [isMeuAuthModalOpen, setIsMeuAuthModalOpen] = useState(false);
@@ -307,7 +309,7 @@ export default function Index() {
   }, [location.pathname]);
 
   useEffect(() => {
-    const isModalOpen = !!showRecipe || !!activeUpsell || isFavoritesOpen || !!zoomImage || !!categoria_slug || !!targetId || !!termo || isMeuAmiguMundoOpen || isMeusPedidosOpen;
+    const isModalOpen = !!showRecipe || !!activeUpsell || isFavoritesOpen || !!zoomImage || !!categoria_slug || !!targetId || !!termo || isMeuAmiguMundoOpen || isMeusPedidosOpen || isPremiumSalesOpen;
     if (isModalOpen) {
       document.body.style.overflow = "hidden";
     } else {
@@ -316,7 +318,7 @@ export default function Index() {
     return () => {
       document.body.style.overflow = "";
     };
-  }, [showRecipe, activeUpsell, isFavoritesOpen, zoomImage, categoria_slug, targetId, termo, isMeuAmiguMundoOpen, isMeusPedidosOpen]);
+  }, [showRecipe, activeUpsell, isFavoritesOpen, zoomImage, categoria_slug, targetId, termo, isMeuAmiguMundoOpen, isMeusPedidosOpen, isPremiumSalesOpen]);
 
   useEffect(() => {
     const savedCart = localStorage.getItem("amigumundo-cart");
@@ -448,8 +450,10 @@ export default function Index() {
     const profile = await getProfile(user.id);
     if (!profile?.telefone) {
       setIsCompleteProfileOpen(true);
-    } else {
+    } else if (profile.assinatura_status === "ativo") {
       setIsMeuAmiguMundoOpen(true);
+    } else {
+      setIsPremiumSalesOpen(true);
     }
   };
 
@@ -939,6 +943,10 @@ export default function Index() {
 
       {isMeuAmiguMundoOpen && (
         <MeuAmiguMundoView onBack={() => setIsMeuAmiguMundoOpen(false)} onAddToCart={addToCart} />
+      )}
+
+      {isPremiumSalesOpen && (
+        <PremiumSalesView onBack={() => setIsPremiumSalesOpen(false)} />
       )}
 
       {isMeusPedidosOpen && (
