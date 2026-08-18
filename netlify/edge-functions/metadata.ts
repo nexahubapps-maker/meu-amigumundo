@@ -179,6 +179,15 @@ export default async function handler(request: Request, context: Context) {
     console.error("Error in Edge Function metadata injection:", e);
   }
 
+  let imageType = "image/jpeg";
+  try {
+    const imgHeadRes = await fetch(image, { method: "HEAD" });
+    const ct = imgHeadRes.headers.get("content-type");
+    if (ct && ct.startsWith("image/")) imageType = ct;
+  } catch (e) {
+    console.warn("Não foi possível detectar o tipo real da imagem para og:image:type:", image, e);
+  }
+
   // Build dynamic meta tags
   let metaTags = `
     <title>${title}</title>
@@ -186,7 +195,7 @@ export default async function handler(request: Request, context: Context) {
     <meta property="og:image" content="${image}" />
     <meta property="og:description" content="${description}" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:type" content="${imageType}" />
   `;
 
   if (priceAmount) {
