@@ -103,7 +103,7 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
 
   useEffect(() => {
     const fetchFavoritos = async () => {
-      if (activeTab !== "Favoritos" || !user || favoritosList.length > 0) return;
+      if (!user || favoritosList.length > 0) return;
       setIsLoadingFavoritos(true);
       try {
         const { data } = await supabase
@@ -119,11 +119,27 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
       }
     };
     fetchFavoritos();
-  }, [activeTab, user, favoritosList.length]);
+  }, [user, favoritosList.length]);
 
   const removerFavorito = async (item: any) => {
     await supabase.from("favoritos").delete().eq("id", item.id);
     setFavoritosList((prev) => prev.filter((f) => f.id !== item.id));
+  };
+
+  const toggleFavoritoReceita = async (item: any) => {
+    if (!user) return;
+    const existente = favoritosList.find((f) => f.codigo_item === item.id);
+    if (existente) {
+      await supabase.from("favoritos").delete().eq("id", existente.id);
+      setFavoritosList((prev) => prev.filter((f) => f.id !== existente.id));
+    } else {
+      const { data } = await supabase
+        .from("favoritos")
+        .insert({ usuario_id: user.id, tipo_item: "receita", codigo_item: item.id, nome_item: item.nome, imagem_url: item.imagem_url })
+        .select()
+        .single();
+      if (data) setFavoritosList((prev) => [data, ...prev]);
+    }
   };
 
   const handleAdicionarTudoAoCarrinho = async () => {
