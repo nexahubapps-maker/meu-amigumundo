@@ -80,7 +80,7 @@ export default function Index() {
   const [categoriesList, setCategoriesList] = useState<SheetCategoria[]>([]);
   const [shuffledRecipes, setShuffledRecipes] = useState<SheetRecipe[]>([]);
   const [favoriteRecipes, setFavoriteRecipes] = useState<SheetRecipe[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading] = useState(true);
 
   const [cart, setCart] = useState<CartItem[]>([]);
   const [showRecipe, setShowRecipe] = useState<SheetRecipe | null>(null);
@@ -153,7 +153,6 @@ export default function Index() {
 
   useEffect(() => {
     const loadAllData = async () => {
-      setIsLoading(true);
       try {
         const [infoprodutosData, packsData, notificationsData, categoriesData] = await Promise.all([
           getInfoprodutos(),
@@ -173,9 +172,6 @@ export default function Index() {
 
       } catch (e) {
         console.error("Error loading sheets data:", e);
-      }
-      finally {
-        setIsLoading(false);
       }
     };
 
@@ -461,7 +457,7 @@ export default function Index() {
 
   const handleOpenMeusPedidos = async () => {
     if (!user) {
-      setIsMeuAuthModalOpen(true);
+      setIsMeusPedidosOpen(true);
       return;
     }
     const profile = await getProfile(user.id);

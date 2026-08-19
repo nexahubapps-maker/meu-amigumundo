@@ -76,6 +76,15 @@ export default function ObrigadoPage() {
       }
 
       setPedido(resPedido.data);
+      try {
+        const idsSalvos: string[] = JSON.parse(localStorage.getItem("amigumundo-meus-pedidos") || "[]");
+        if (!idsSalvos.includes(idPedido)) {
+          idsSalvos.unshift(idPedido);
+          localStorage.setItem("amigumundo-meus-pedidos", JSON.stringify(idsSalvos.slice(0, 50)));
+        }
+      } catch (e) {
+        console.warn("Não foi possível salvar o pedido no navegador:", e);
+      }
 
       const rawItens: PedidoItem[] = resItens.data || [];
 

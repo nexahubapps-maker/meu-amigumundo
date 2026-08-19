@@ -142,18 +142,6 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
     }
   };
 
-  const handleAdicionarTudoAoCarrinho = async () => {
-    const receitaIds = favoritosList.filter(f => f.tipo_item === "receita").map(f => f.codigo_item);
-
-    const receitas = receitaIds.length > 0 ? await getRecipesByIds(receitaIds) : [];
-
-    const items = [
-      ...receitas.map((r: any) => ({ id: r.id, nome: r.nome, preco: r.preco, tipo: "recipe", imagem: r.imagem_url })),
-    ];
-
-    onAddToCart(items);
-  };
-
   const textureLaranjaStyle = {
     backgroundImage: "url('https://ik.imagekit.io/51b3srlsg/textura_laranja.jpeg')",
     backgroundRepeat: "repeat",
@@ -357,13 +345,6 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
                 <p className="text-xs font-black text-gray-500 uppercase tracking-wider mb-2">
                   Seus Itens Favoritados ({favoritosList.length})
                 </p>
-
-                <button
-                  onClick={handleAdicionarTudoAoCarrinho}
-                  className="w-full mb-3 bg-[#44FF00] hover:bg-[#3ee600] active:scale-95 text-[#171717] py-3 rounded-xl font-black text-xs uppercase tracking-wider transition-all shadow-sm"
-                >
-                  Adicionar tudo ao carrinho ({favoritosList.length})
-                </button>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {favoritosList.map((item) => (

@@ -19,15 +19,28 @@ export const MeusPedidosView = ({ onBack }: MeusPedidosViewProps) => {
 
   useEffect(() => {
     const fetchPedidos = async () => {
-      if (!user) return;
       setIsLoadingPedidos(true);
       try {
-        const { data } = await supabase
-          .from("pedidos")
-          .select("id, criado_em, valor_total, status")
-          .eq("usuario_id", user.id)
-          .order("criado_em", { ascending: false });
-        setPedidosList(data || []);
+        if (user) {
+          const { data } = await supabase
+            .from("pedidos")
+            .select("id, criado_em, valor_total, status")
+            .eq("usuario_id", user.id)
+            .order("criado_em", { ascending: false });
+          setPedidosList(data || []);
+        } else {
+          const idsSalvos: string[] = JSON.parse(localStorage.getItem("amigumundo-meus-pedidos") || "[]");
+          if (idsSalvos.length === 0) {
+            setPedidosList([]);
+          } else {
+            const { data } = await supabase
+              .from("pedidos")
+              .select("id, criado_em, valor_total, status")
+              .in("id", idsSalvos)
+              .order("criado_em", { ascending: false });
+            setPedidosList(data || []);
+          }
+        }
       } catch (e) {
         console.error("Erro ao carregar pedidos:", e);
       } finally {
