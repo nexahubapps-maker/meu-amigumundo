@@ -1,3 +1,7 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
 [[edge_functions]]
   path = "/receita/*"
   function = "metadata"
@@ -21,3 +25,7 @@
 [[edge_functions]]
   path = "/entrar-grupo"
   function = "entrar-grupo"
+
+[[edge_functions]]
+  path = "/premium"
+  function = "premium-manifest"

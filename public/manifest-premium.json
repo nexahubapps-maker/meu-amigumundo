@@ -1,0 +1,21 @@
+{
+  "short_name": "AmiguMundo Premium",
+  "name": "AmiguMundo Premium",
+  "icons": [
+    {
+      "src": "https://ik.imagekit.io/51b3srlsg/icone_amigumundo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://ik.imagekit.io/51b3srlsg/icone_amigumundo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "/premium",
+  "background_color": "#FFFFFF",
+  "theme_color": "#5D0599",
+  "display": "standalone",
+  "orientation": "portrait"
+}

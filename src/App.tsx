@@ -9,6 +9,7 @@ import Index from "./pages/Index";
 import Checkout from "./pages/Checkout";
 import ObrigadoPage from "@/pages/ObrigadoPage";
 import CatalogoPublico from "./pages/CatalogoPublico";
+import PremiumPage from "./pages/PremiumPage";
 import NotFound from "./pages/NotFound";
 import { FloatingBackButton } from "@/components/common/FloatingBackButton";
 import { DailyReminderPopup } from "@/components/common/DailyReminderPopup";
@@ -52,6 +53,9 @@ const App = () => (
 
               {/* Tela de Obrigado / Entrega do Pedido */}
               <Route path="/obrigado/:idPedido" element={<ObrigadoPage />} />
+              
+              {/* Rota do AmiguMundo Premium */}
+              <Route path="/premium" element={<PremiumPage />} />
               
               <Route path="*" element={<NotFound />} />
             </Routes>
