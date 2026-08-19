@@ -251,7 +251,9 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
                   <p className="text-xs text-gray-400 font-bold text-center py-10">Nenhuma receita nessa categoria ainda.</p>
                 ) : (
                   <div className="grid grid-cols-3 lg:grid-cols-5 gap-1 sm:gap-2 lg:gap-4">
-                    {receitasDaCategoriaSelecionada.map((item) => (
+                    {receitasDaCategoriaSelecionada.map((item) => {
+                      const isFav = favoritosList.some((f) => f.codigo_item === item.id);
+                      return (
                       <div key={item.id} className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden flex flex-col justify-between p-1">
                         <div className="relative aspect-square bg-gray-50 overflow-hidden rounded-lg">
                           <img
@@ -260,6 +262,12 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
                             className="w-full h-full object-cover cursor-zoom-in"
                             onClick={() => setZoomImage(item.imagem_url || `https://picsum.photos/seed/${item.id}/400/400`)}
                           />
+                          <button
+                            onClick={() => toggleFavoritoReceita(item)}
+                            className={`absolute top-1 right-1 bg-white/90 backdrop-blur-sm p-1 rounded-full shadow-md ${isFav ? "text-[#44FF00]" : "text-gray-400"}`}
+                          >
+                            <Heart size={13} fill={isFav ? "currentColor" : "none"} />
+                          </button>
                           <div className="absolute bottom-1 left-1 bg-black/70 backdrop-blur-sm text-white text-[7px] lg:text-[9px] font-bold px-1.5 py-0.5 rounded-md">
                             ({item.id})
                           </div>
@@ -296,7 +304,8 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
                           </div>
                         </div>
                       </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 )}
               </div>
