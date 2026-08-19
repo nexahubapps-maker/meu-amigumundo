@@ -46,10 +46,10 @@ export const FooterNavigation = ({
         translate="no"
         className="notranslate flex-1 flex items-center justify-center gap-1.5 text-white bg-white/10 hover:bg-white/20 active:scale-95 transition-all py-1.5 px-2 rounded-full border border-white/15 shadow-[inset_0_1px_1px_rgba(255,255,255,0.15)]"
       >
-        <Receipt size={15} className="text-[#44FF00] shrink-0" />
+        <Receipt size={15} className="text-[#44FF00]" shrink-0 />
         <span translate="no" className="notranslate flex flex-col leading-[1.1] text-[10px] font-black uppercase tracking-wider text-white text-left">
-          <span>Meus</span>
-          <span>Pedidos</span>
+          <span>Minhas</span>
+          <span>Compras</span>
         </span>
       </button>
 
@@ -58,7 +58,7 @@ export const FooterNavigation = ({
         translate="no"
         className="notranslate flex-1 flex items-center justify-center gap-1.5 text-[#3A2A00] bg-gradient-to-r from-[#F4D160] to-[#C9971C] hover:brightness-105 active:scale-95 transition-all py-1.5 px-2 rounded-full border border-[#B8860B]/50 shadow-[inset_0_1px_1px_rgba(255,255,255,0.4)]"
       >
-        <Crown size={15} className="text-[#3A2A00] shrink-0" fill="#3A2A00" />
+        <Crown size={15} className="text-[#3A2A00]" shrink-0 fill="#3A2A00" />
         <span translate="no" className="notranslate flex flex-col leading-[1.1] text-[10px] font-black uppercase tracking-wider text-[#3A2A00] text-left">
           <span>AmiguMundo</span>
           <span>Premium</span>

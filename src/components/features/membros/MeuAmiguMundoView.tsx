@@ -2,12 +2,11 @@
 
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, User as UserIcon, Download, ExternalLink, Loader2, ShoppingBag, Pencil, LogOut, Heart, Trash2, Printer, Calculator, ListChecks, Ruler, Palette, Lock, Wrench } from "lucide-react";
+import { ArrowLeft, User as UserIcon, ExternalLink, Loader2, Pencil, LogOut, Heart, Trash2, Printer, Calculator, ListChecks, Ruler, Palette, Lock, Wrench, BookOpen } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { getProfile, type Perfil } from "@/utils/profile";
 import { supabase } from "@/lib/supabase";
-import { getRecipesByIds, getDriveFileUrl, getCategories } from "@/utils/sheets";
-import { CategoryCard } from "@/components/features/catalog/CategoryCard";
+import { getRecipesByIds, getDriveFileUrl, getPacksByIds, getInfoprodutosByIds, getReceitaGratuitaDownloadUrl, getCategories, getRecipesByCategoria } from "@/utils/sheets";
 import { CompleteProfileModal } from "@/components/CompleteProfileModal";
 import { CalculadoraPreco } from "@/components/features/ferramentas/CalculadoraPreco";
 import { ContadorCarreiras } from "@/components/features/ferramentas/ContadorCarreiras";
@@ -22,10 +21,10 @@ interface MeuAmiguMundoViewProps {
   onAddToCart: (items: any[]) => void;
 }
 
-type TabType = "Minhas Compras" | "Favoritos" | "Ferramentas";
+type TabType = "Catálogo" | "Favoritos" | "Ferramentas";
 
 const MENUS = [
-  { id: "Minhas Compras", label: "Minhas Compras", icone: ShoppingBag, cor: "from-[#3CB19E] to-[#2c8577]", capaUrl: null },
+  { id: "Catálogo", label: "Catálogo", icone: BookOpen, cor: "from-[#3CB19E] to-[#2c8577]", capaUrl: null },
   { id: "Favoritos", label: "Favoritos", icone: Heart, cor: "from-[#5D0599] to-[#42026b]", capaUrl: null },
   { id: "Ferramentas", label: "Ferramentas", icone: Wrench, cor: "from-[#3CB19E] to-[#2c8577]", capaUrl: null },
 ];
@@ -42,13 +41,12 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
   const navigate = useNavigate();
 
   const [profile, setProfile] = useState<Perfil | null>(null);
-  const [activeTab, setActiveTab] = useState<TabType>("Minhas Compras");
-
-  const [comprasList, setComprasList] = useState<any[]>([]);
-  const [isLoadingCompras, setIsLoadingCompras] = useState(false);
+  const [activeTab, setActiveTab] = useState<TabType>("Catálogo");
 
   const [categoriesList, setCategoriesList] = useState<any[]>([]);
-  const [categoriaAbertaCompras, setCategoriaAbertaCompras] = useState<string | null>(null);
+  const [categoriaSelecionadaCatalogo, setCategoriaSelecionadaCatalogo] = useState<any | null>(null);
+  const [receitasDaCategoriaSelecionada, setReceitasDaCategoriaSelecionada] = useState<any[]>([]);
+  const [isLoadingReceitasCategoria, setIsLoadingReceitasCategoria] = useState(false);
 
   const [favoritosList, setFavoritosList] = useState<any[]>([]);
   const [isLoadingFavoritos, setIsLoadingFavoritos] = useState(false);
@@ -75,50 +73,33 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
   }, [user]);
 
   useEffect(() => {
-    if (activeTab === "Minhas Compras" && categoriesList.length === 0) {
+    if (activeTab === "Catálogo" && categoriesList.length === 0) {
       getCategories().then(setCategoriesList);
     }
   }, [activeTab, categoriesList.length]);
 
   useEffect(() => {
-    const fetchCompras = async () => {
-      if (activeTab !== "Minhas Compras" || !user || comprasList.length > 0) return;
-      setIsLoadingCompras(true);
+    const fetchReceitasDaCategoria = async () => {
+      if (!categoriaSelecionadaCatalogo) return;
+      setIsLoadingReceitasCategoria(true);
       try {
-        const { data } = await supabase
-          .from("pedido_itens")
-          .select("*, pedidos!inner(usuario_id, status)")
-          .eq("pedidos.usuario_id", user.id)
-          .eq("pedidos.status", "aprovado")
-          .eq("tipo_produto", "receita");
-
-        const itens = data || [];
+        const receitas = await getRecipesByCategoria(categoriaSelecionadaCatalogo.id);
         const resolved = await Promise.all(
-          itens.map(async (item: any) => {
-            const receitas = await getRecipesByIds([item.codigo_produto]);
-            const categoria = receitas[0]?.categoria || "";
-            const link = await getDriveFileUrl(item.codigo_produto, categoria);
-            return { ...item, linkAcesso: link, categoria };
+          receitas.map(async (r: any) => {
+            const link = await getDriveFileUrl(r.id, r.categoria);
+            return { ...r, linkAcesso: link };
           })
         );
-        const deduped = Object.values(
-          resolved.reduce((acc: any, item: any) => {
-            const existing = acc[item.codigo_produto];
-            if (!existing || item.id > existing.id) {
-              acc[item.codigo_produto] = item;
-            }
-            return acc;
-          }, {})
-        );
-        setComprasList(deduped);
+        setReceitasDaCategoriaSelecionada(resolved);
       } catch (e) {
-        console.error("Erro ao carregar compras:", e);
+        console.error("Erro ao carregar receitas da categoria:", e);
+        setReceitasDaCategoriaSelecionada([]);
       } finally {
-        setIsLoadingCompras(false);
+        setIsLoadingReceitasCategoria(false);
       }
     };
-    fetchCompras();
-  }, [activeTab, user, comprasList.length]);
+    fetchReceitasDaCategoria();
+  }, [categoriaSelecionadaCatalogo]);
 
   useEffect(() => {
     const fetchFavoritos = async () => {
@@ -233,101 +214,44 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
       {/* Conteúdo Dinâmico por Aba */}
       {activeTab && (
         <div className="flex-1 p-4 sm:p-6 overflow-y-auto">
-          {activeTab === "Minhas Compras" ? (
-            isLoadingCompras ? (
-              <div className="h-64 flex flex-col items-center justify-center gap-3 text-gray-500">
-                <Loader2 size={32} className="animate-spin text-[#0E5E6F]" />
-                <p className="text-xs font-bold uppercase tracking-wider">Carregando suas compras...</p>
-              </div>
-            ) : comprasList.length === 0 ? (
-              <div className="text-center py-16 px-4 bg-white rounded-2xl border border-gray-100 shadow-sm max-w-md mx-auto">
-                <ShoppingBag size={48} className="text-gray-300 mx-auto mb-3" />
-                <p className="text-gray-700 font-black text-sm uppercase tracking-tight">
-                  Você ainda não comprou nenhuma receita avulsa.
+          {activeTab === "Catálogo" ? (
+            categoriaSelecionadaCatalogo ? (
+              <div className="max-w-4xl mx-auto space-y-3">
+                <button
+                  onClick={() => { setCategoriaSelecionadaCatalogo(null); setReceitasDaCategoriaSelecionada([]); }}
+                  className="flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-gray-600 hover:text-gray-900 mb-2"
+                >
+                  <ArrowLeft size={14} /> Voltar às categorias
+                </button>
+                <p className="text-xs font-black text-gray-500 uppercase tracking-wider mb-2">
+                  {categoriaSelecionadaCatalogo.titulo} ({receitasDaCategoriaSelecionada.length})
                 </p>
-                <p className="text-gray-400 text-xs font-medium mt-1">
-                  Suas receitas compradas aparecerão aqui para você baixar sempre que quiser!
-                </p>
-              </div>
-            ) : (() => {
-              const categoriasComCompra = categoriesList.filter((cat) =>
-                comprasList.some((item) => item.categoria === cat.id)
-              );
-
-              if (categoriaAbertaCompras === null) {
-                return (
-                  <div className="max-w-4xl mx-auto">
-                    <div className="bg-[#5D0599]/10 border border-[#5D0599]/20 rounded-xl p-2.5 mb-3">
-                      <p className="text-[10px] font-black text-[#5D0599] uppercase tracking-wider mb-0.5">
-                        AmiguMundo Inteligente
-                      </p>
-                      <p className="text-[10px] text-gray-600 font-medium leading-snug">
-                        Receitas que vêm de dentro de um pack ou combo já aparecem aqui, organizadas por categoria — e o pack continua disponível inteiro em "Packs & Promoções", pra você acessar quando quiser.
-                      </p>
-                    </div>
-                    <p className="text-xs font-black text-gray-500 uppercase tracking-wider mb-3">
-                      Suas Categorias Compradas
-                    </p>
-                    <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
-                      {categoriasComCompra.map((cat) => (
-                        <CategoryCard
-                          key={cat.id}
-                          nome={cat.titulo}
-                          imagem={cat.imagem_url}
-                          onClick={() => setCategoriaAbertaCompras(cat.id)}
-                        />
-                      ))}
-                    </div>
+                {isLoadingReceitasCategoria ? (
+                  <div className="h-64 flex flex-col items-center justify-center gap-3 text-gray-500">
+                    <Loader2 size={32} className="animate-spin text-[#0E5E6F]" />
+                    <p className="text-xs font-bold uppercase tracking-wider">Carregando receitas...</p>
                   </div>
-                );
-              }
-
-              const receitasDaCategoria = comprasList.filter((item) => item.categoria === categoriaAbertaCompras);
-              const categoriaAtual = categoriesList.find((c) => c.id === categoriaAbertaCompras);
-
-              return (
-                <div className="max-w-4xl mx-auto space-y-3">
-                  <button
-                    onClick={() => setCategoriaAbertaCompras(null)}
-                    className="flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-gray-600 hover:text-gray-900 mb-2"
-                  >
-                    <ArrowLeft size={14} /> Voltar às categorias
-                  </button>
-                  <p className="text-xs font-black text-gray-500 uppercase tracking-wider mb-2">
-                    {categoriaAtual?.titulo} ({receitasDaCategoria.length})
-                  </p>
+                ) : receitasDaCategoriaSelecionada.length === 0 ? (
+                  <p className="text-xs text-gray-400 font-bold text-center py-10">Nenhuma receita nessa categoria ainda.</p>
+                ) : (
                   <div className="grid grid-cols-3 lg:grid-cols-5 gap-1 sm:gap-2 lg:gap-4">
-                    {receitasDaCategoria.map((item, idx) => (
-                      <div key={item.id || idx} className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden flex flex-col justify-between p-1">
+                    {receitasDaCategoriaSelecionada.map((item) => (
+                      <div key={item.id} className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden flex flex-col justify-between p-1">
                         <div className="relative aspect-square bg-gray-50 overflow-hidden rounded-lg">
-                          {!item.visualizado_em && (
-                            <span className="absolute top-1 right-1 bg-[#3CB19E] text-white text-[7px] lg:text-[9px] font-black uppercase px-1.5 py-0.5 rounded-full z-10 shadow-sm">
-                              Nova
-                            </span>
-                          )}
                           <img
-                            src={item.imagem_url || `https://picsum.photos/seed/${item.codigo_produto}/400/400`}
-                            alt={item.nome_produto}
+                            src={item.imagem_url || `https://picsum.photos/seed/${item.id}/400/400`}
+                            alt={item.nome}
                             className="w-full h-full object-cover cursor-zoom-in"
-                            onClick={() => {
-                              setZoomImage(item.imagem_url || `https://picsum.photos/seed/${item.codigo_produto}/400/400`);
-                              if (!item.visualizado_em) {
-                                const agora = new Date().toISOString();
-                                supabase.from("pedido_itens").update({ visualizado_em: agora }).eq("id", item.id).then(() => {});
-                                setComprasList((prev: any[]) => prev.map((c) => c.id === item.id ? { ...c, visualizado_em: agora } : c));
-                              }
-                            }}
+                            onClick={() => setZoomImage(item.imagem_url || `https://picsum.photos/seed/${item.id}/400/400`)}
                           />
+                          <div className="absolute bottom-1 left-1 bg-black/70 backdrop-blur-sm text-white text-[7px] lg:text-[9px] font-bold px-1.5 py-0.5 rounded-md">
+                            ({item.id})
+                          </div>
                         </div>
                         <div className="pt-1.5 flex flex-col justify-between flex-1">
-                          <div>
-                            <h4 className="text-[9px] lg:text-xs font-black text-gray-800 uppercase tracking-tight line-clamp-1 leading-none mb-1">
-                              {item.nome_produto}
-                            </h4>
-                            <span className="text-[8px] lg:text-[10px] text-gray-400 font-bold block mb-1.5">
-                              ({item.codigo_produto})
-                            </span>
-                          </div>
+                          <h4 className="text-[9px] lg:text-xs font-black text-gray-800 uppercase tracking-tight line-clamp-1 leading-none mb-1.5">
+                            {item.nome}
+                          </h4>
                           <div className="flex flex-col gap-1">
                             {item.linkAcesso ? (
                               <>
@@ -335,12 +259,12 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
                                   href={item.linkAcesso}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="flex items-center justify-center gap-1 bg-[#44FF00] text-[#171717] py-1 rounded-lg font-black text-[8px] lg:text-[10px] uppercase tracking-wider transition-all hover:scale-105 active:scale-95"
+                                  className="flex items-center justify-center gap-1 bg-[#5D0599] text-white py-1 rounded-lg font-black text-[8px] lg:text-[10px] uppercase tracking-wider transition-all hover:scale-105 active:scale-95"
                                 >
-                                  <Download size={10} /> Baixar
+                                  <ExternalLink size={10} /> Abrir
                                 </a>
                                 <a
-                                  href={getLinkVisualizacao(item.linkAcesso) || item.linkAcesso}
+                                  href={item.linkAcesso}
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   className="flex items-center justify-center gap-1 bg-gray-100 text-gray-800 py-1 rounded-lg font-black text-[8px] lg:text-[10px] uppercase tracking-wider transition-all hover:scale-105 active:scale-95"
@@ -358,9 +282,35 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
                       </div>
                     ))}
                   </div>
+                )}
+              </div>
+            ) : (
+              <div className="max-w-4xl mx-auto">
+                <p className="text-xs font-black text-gray-500 uppercase tracking-wider mb-3">
+                  Todas as Categorias
+                </p>
+                <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+                  {categoriesList.filter((cat) => cat.ativo).map((cat) => (
+                    <div
+                      key={cat.id}
+                      onClick={() => setCategoriaSelecionadaCatalogo(cat)}
+                      className="flex flex-col items-center cursor-pointer group w-full relative"
+                    >
+                      <div className="w-full aspect-square rounded-2xl overflow-hidden bg-gray-50 shadow-[0_8px_20px_rgba(0,0,0,0.12),_0_4px_8px_rgba(0,0,0,0.08)] border-2 border-gray-200/80 relative lg:max-w-[140px] lg:mx-auto transition-transform duration-300 group-hover:scale-105">
+                        <img
+                          src={cat.imagem_url || `https://picsum.photos/seed/${encodeURIComponent(cat.titulo)}/400/400`}
+                          alt={cat.titulo}
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        />
+                      </div>
+                      <span className="text-[#171717] text-[11px] sm:text-[13px] lg:text-xs font-black text-center uppercase tracking-tight truncate w-full mt-1.5">
+                        {cat.titulo}
+                      </span>
+                    </div>
+                  ))}
                 </div>
-              );
-            })()
+              </div>
+            )
           ) : activeTab === "Favoritos" ? (
             isLoadingFavoritos ? (
               <div className="h-64 flex flex-col items-center justify-center gap-3 text-gray-500">

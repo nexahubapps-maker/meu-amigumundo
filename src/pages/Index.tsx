@@ -444,14 +444,16 @@ export default function Index() {
 
   const handleOpenMeuAmiguMundo = async () => {
     if (!user) {
-      setIsMeuAuthModalOpen(true);
+      setIsPremiumSalesOpen(true);
       return;
     }
     const profile = await getProfile(user.id);
-    if (!profile?.telefone) {
-      setIsCompleteProfileOpen(true);
-    } else if (profile.assinatura_status === "ativo") {
-      setIsMeuAmiguMundoOpen(true);
+    if (profile?.assinatura_status === "ativo") {
+      if (!profile?.telefone) {
+        setIsCompleteProfileOpen(true);
+      } else {
+        setIsMeuAmiguMundoOpen(true);
+      }
     } else {
       setIsPremiumSalesOpen(true);
     }
