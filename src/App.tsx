@@ -10,6 +10,7 @@ import Checkout from "./pages/Checkout";
 import ObrigadoPage from "@/pages/ObrigadoPage";
 import CatalogoPublico from "./pages/CatalogoPublico";
 import PremiumPage from "./pages/PremiumPage";
+import InstagramProfissional from "./pages/conteudo/InstagramProfissional";
 import NotFound from "./pages/NotFound";
 import { FloatingBackButton } from "@/components/common/FloatingBackButton";
 import { DailyReminderPopup } from "@/components/common/DailyReminderPopup";
@@ -56,6 +57,9 @@ const App = () => (
               
               {/* Rota do AmiguMundo Premium */}
               <Route path="/premium" element={<PremiumPage />} />
+              
+              {/* Conteúdo de Infoprodutos */}
+              <Route path="/conteudo/instagram-profissional" element={<InstagramProfissional />} />
               
               <Route path="*" element={<NotFound />} />
             </Routes>
