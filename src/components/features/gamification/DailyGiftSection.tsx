@@ -6,7 +6,6 @@ import { Download, Bookmark, Check, Loader2 } from 'lucide-react';
 import { getReceitaGratuita, getReceitaGratuitaDownloadUrl, type SheetReceitaGratuita } from '@/utils/sheets';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/lib/supabase';
-import { LoginUpsellCard } from '@/components/LoginUpsellCard';
 import { AuthModal } from '@/components/AuthModal';
 
 export const DailyGiftSection = () => {
@@ -231,7 +230,7 @@ export const DailyGiftSection = () => {
                     </button>
                   )}
 
-                  {user ? (
+                  {user && (
                     <button
                       onClick={handleSalvarBiblioteca}
                       disabled={isSalvo || isSalvando}
@@ -255,8 +254,6 @@ export const DailyGiftSection = () => {
                         </>
                       )}
                     </button>
-                  ) : (
-                    <LoginUpsellCard onOpenAuth={() => setIsAuthModalOpen(true)} />
                   )}
                 </div>
               </div>

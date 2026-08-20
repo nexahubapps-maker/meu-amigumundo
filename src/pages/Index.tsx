@@ -1,8 +1,7 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import { ArrowLeft, ArrowRight } from "lucide-react";
 import { Header } from "@/components/common/Header";
 import { PushOptInCard } from "@/components/features/pwa/PushOptInCard";
 import RecipeCard from "@/components/features/catalog/RecipeCard";
@@ -90,9 +89,7 @@ export default function Index() {
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [isMeuAuthModalOpen, setIsMeuAuthModalOpen] = useState(false);
   const [isCompleteProfileOpen, setIsCompleteProfileOpen] = useState(false);
-  const [activeUpsellIndex, setActiveUpsellIndex] = useState(0);
   const [zoomImage, setZoomImage] = useState<string | null>(null);
-  const carouselRef = useRef<HTMLDivElement>(null);
   
   const [readNotificationIds, setReadNotificationIds] = useState<string[]>(() => getReadNotificationIds());
   const [isDirectEntry, setIsDirectEntry] = useState(false);
@@ -405,17 +402,6 @@ export default function Index() {
     });
   };
 
-  const handleCarouselScroll = () => {
-    if (carouselRef.current) {
-      const scrollLeft = carouselRef.current.scrollLeft;
-      const width = carouselRef.current.clientWidth;
-      const index = Math.round(scrollLeft / (width * 0.85));
-      if (index >= 0 && index < infoprodutosList.length) {
-        setActiveUpsellIndex(index);
-      }
-    }
-  };
-
   const handleUpsellBuy = () => {
     if (activeUpsell) {
       const upsell = infoprodutosList.find((u) => u.id === activeUpsell);
@@ -613,88 +599,56 @@ export default function Index() {
         </div>
       </section>
 
-      <section className="py-8 bg-[#2A2A2A] overflow-hidden rounded-3xl mx-4 sm:mx-auto max-w-3xl shadow-xl border border-white/5 my-6">
-        <div className="px-4">
+      {/* Seção Infoprodutos em 3D com 2 cards por linha */}
+      <section className="py-8 bg-[#2A2A2A] rounded-3xl mx-3 sm:mx-auto max-w-4xl shadow-[0_25px_60px_-15px_rgba(0,0,0,0.5),0_15px_30px_-5px_rgba(0,0,0,0.3)] border-2 border-white/10 my-8">
+        <div className="px-3 sm:px-6">
           <div 
             style={textureLaranjaStyle}
-            className="w-full py-2 px-4 mb-3 shadow-sm rounded-xl text-center border border-white/10"
+            className="w-full py-2.5 px-4 mb-3 shadow-md rounded-xl text-center border border-white/15"
           >
-            <h2 className="text-sm sm:text-base font-black uppercase tracking-wider text-white m-0">
-              TRANSFORME SUAS PEÇAS EM UM ATELIÊ LUCRATIVO
+            <h2 className="text-base sm:text-xl font-black uppercase tracking-wider text-white m-0 leading-tight">
+              COMO TER UM <br /> ATELIÊ LUCRATIVO
             </h2>
           </div>
           
-          <div className="mb-4 text-center">
+          <div className="mb-6 text-center">
             <p className="text-xs sm:text-sm text-gray-300 font-medium mt-1 max-w-2xl mx-auto leading-relaxed">
               Descubra as soluções exclusivas para atrair clientes pagantes, valorizar o seu trabalho e profissionalizar suas vendas.
             </p>
-            <p className="text-xs text-[#44FF00] font-bold mt-2 animate-pulse">
-              Arraste para o lado para ver todas as soluções ➔
-            </p>
           </div>
 
-          <div className="relative">
-            <div 
-              ref={carouselRef}
-              onScroll={handleCarouselScroll}
-              className="flex overflow-x-auto snap-x snap-mandatory scrollbar-none gap-4 pb-4 px-4 -mx-4"
-              style={{ scrollbarWidth: 'none' }}
-            >
-              {isLoading ? (
-                Array.from({ length: 3 }).map((_, i) => (
-                  <div key={i} className="snap-center shrink-0 w-[85vw] max-w-[320px] bg-gray-800 rounded-2xl aspect-[16/10] animate-pulse" />
-                ))
-              ) : (
-                infoprodutosList.map((upsell) => (
-                  <div key={upsell.id} id={`item-${upsell.id}`} className="snap-center shrink-0 w-[85vw] max-w-[320px]">
-                    <UpsellCard 
-                      upsell={{
-                        id: upsell.id,
-                        nome: upsell.nome,
-                        descricao: upsell.descricao,
-                        descricaoLonga: upsell.descricao,
-                        precoOriginal: upsell.preco * 1.5,
-                        precoAtual: upsell.preco,
-                        emoji: "💡",
-                        cor: "#FF3D9A",
-                        beneficios: ["Acesso imediato", "Suporte exclusivo"],
-                        copiaVendas: [upsell.descricao],
-                        imagem_url: upsell.imagem_url
-                      }} 
-                      isFavorite={favorites.includes(upsell.id)}
-                      onToggleFavorite={() => toggleFavorite(upsell.id, { nome: upsell.nome, imagem_url: upsell.imagem_url, tipo: "infoproduto" })}
-                      onOpen={() => {
-                        setActiveUpsell(upsell.id);
-                      }} 
-                      onZoomImage={setZoomImage}
-                    />
-                  </div>
-                ))
-              )}
-            </div>
-            <button
-              onClick={() => carouselRef.current?.scrollBy({ left: -340, behavior: "smooth" })}
-              className="hidden lg:flex absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 z-10 bg-white text-[#171717] p-2 rounded-full shadow-lg hover:scale-110 active:scale-95 transition-transform"
-              aria-label="Anterior"
-            >
-              <ArrowLeft size={20} />
-            </button>
-            <button
-              onClick={() => carouselRef.current?.scrollBy({ left: 340, behavior: "smooth" })}
-              className="hidden lg:flex absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 z-10 bg-white text-[#171717] p-2 rounded-full shadow-lg hover:scale-110 active:scale-95 transition-transform"
-              aria-label="Próximo"
-            >
-              <ArrowRight size={20} />
-            </button>
-          </div>
-
-          <div className="flex justify-center gap-1.5 mt-2">
-            {infoprodutosList.map((_, i) => (
-              <div 
-                key={i} 
-                className={`h-1.5 rounded-full transition-all ${i === activeUpsellIndex ? 'w-4 bg-[#44FF00]' : 'w-1.5 bg-gray-500'}`}
-              />
-            ))}
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+            {isLoading ? (
+              Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="bg-gray-800/80 rounded-2xl aspect-[3/4] animate-pulse" />
+              ))
+            ) : (
+              infoprodutosList.map((upsell) => (
+                <div key={upsell.id} id={`item-${upsell.id}`}>
+                  <UpsellCard 
+                    upsell={{
+                      id: upsell.id,
+                      nome: upsell.nome,
+                      descricao: upsell.descricao,
+                      descricaoLonga: upsell.descricao,
+                      precoOriginal: upsell.preco * 1.5,
+                      precoAtual: upsell.preco,
+                      emoji: "💡",
+                      cor: "#FF3D9A",
+                      beneficios: ["Acesso imediato", "Suporte exclusivo"],
+                      copiaVendas: [upsell.descricao],
+                      imagem_url: upsell.imagem_url
+                    }} 
+                    isFavorite={favorites.includes(upsell.id)}
+                    onToggleFavorite={() => toggleFavorite(upsell.id, { nome: upsell.nome, imagem_url: upsell.imagem_url, tipo: "infoproduto" })}
+                    onOpen={() => {
+                      setActiveUpsell(upsell.id);
+                    }} 
+                    onZoomImage={setZoomImage}
+                  />
+                </div>
+              ))
+            )}
           </div>
         </div>
       </section>
@@ -767,17 +721,18 @@ export default function Index() {
         />
       )}
 
+      {/* Seção Super Packs Temáticos */}
       <section className="bg-white py-6">
         <div className="max-w-6xl mx-auto px-4">
           <div 
             style={textureLaranjaStyle}
-            className="w-full py-2 px-4 mb-4 shadow-sm rounded-xl text-center border border-gray-100"
+            className="w-full py-2.5 px-4 mb-4 shadow-sm rounded-xl text-center border border-gray-100"
           >
-            <h2 className="text-sm sm:text-base font-black uppercase tracking-wider text-white m-0">
-              Packs Temáticos Premium
+            <h2 className="text-base sm:text-xl font-black uppercase tracking-wider text-white m-0 leading-tight">
+              SUPER PACKS TEMATICOS
             </h2>
           </div>
-          <p className="text-gray-600 text-xs font-bold mb-4 text-center uppercase tracking-tight">
+          <p className="text-gray-600 text-xs sm:text-sm font-bold mb-4 text-center uppercase tracking-tight">
             Suas coleções favoritas reunidas em pacotes completos com descontos imperdíveis.
           </p>
 

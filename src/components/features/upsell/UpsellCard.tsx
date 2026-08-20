@@ -41,8 +41,8 @@ export const UpsellCard = ({ upsell, isFavorite, onToggleFavorite, onOpen, onZoo
   };
 
   return (
-    <div className="bg-white rounded-2xl overflow-hidden border-2 border-gray-200 shadow-[0_12px_28px_rgba(0,0,0,0.18),_0_6px_12px_rgba(0,0,0,0.12)] flex flex-col transition-all duration-300 hover:shadow-[0_16px_32px_rgba(0,0,0,0.22)] hover:-translate-y-1 h-full">
-      <div className="relative aspect-[16/10] w-full bg-gray-50 cursor-pointer" onClick={onOpen}>
+    <div className="bg-white rounded-2xl overflow-hidden border-2 border-gray-100 shadow-[0_20px_40px_-10px_rgba(0,0,0,0.35),0_10px_18px_-4px_rgba(0,0,0,0.2)] hover:shadow-[0_28px_55px_-10px_rgba(0,0,0,0.45)] hover:-translate-y-2 transition-all duration-300 flex flex-col h-full">
+      <div className="relative aspect-square sm:aspect-[16/10] w-full bg-gray-50 cursor-pointer" onClick={onOpen}>
         <img 
           src={upsell.imagem_url || `https://picsum.photos/seed/${upsell.id}/600/375`} 
           alt={upsell.nome} 
@@ -74,19 +74,19 @@ export const UpsellCard = ({ upsell, isFavorite, onToggleFavorite, onOpen, onZoo
         </button>
       </div>
 
-      <div className="p-3.5 flex flex-col flex-1 justify-between bg-white">
+      <div className="p-3 sm:p-3.5 flex flex-col flex-1 justify-between bg-white">
         <div>
-          <h3 className="text-sm font-black text-gray-900 leading-tight mb-1 uppercase tracking-tight line-clamp-2">
+          <h3 className="text-xs sm:text-sm font-black text-gray-900 leading-tight mb-1 uppercase tracking-tight line-clamp-2">
             {upsell.nome}
           </h3>
-          <p className="text-[11px] text-gray-500 leading-snug mb-3 line-clamp-3">
+          <p className="text-[10px] sm:text-[11px] text-gray-500 leading-snug mb-3 line-clamp-2 sm:line-clamp-3">
             {upsell.descricao}
           </p>
         </div>
 
         <button
           onClick={onOpen}
-          className="w-full bg-gray-50 hover:bg-gray-100 text-gray-800 py-2 rounded-lg font-bold text-xs transition-all active:scale-95 border border-gray-200 flex items-center justify-center gap-1"
+          className="w-full bg-[#171717] hover:bg-black text-white py-2 sm:py-2.5 rounded-xl font-black text-[10px] sm:text-xs uppercase tracking-wider transition-all active:scale-95 shadow-md flex items-center justify-center gap-1"
         >
           Saiba Mais →
         </button>
