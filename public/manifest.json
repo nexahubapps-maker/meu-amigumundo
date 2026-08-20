@@ -1,4 +1,5 @@
 {
+  "id": "/",
   "short_name": "Amigu Mundo",
   "name": "Amigu Mundo",
   "icons": [
@@ -14,6 +15,7 @@
     }
   ],
   "start_url": "/",
+  "scope": "/",
   "background_color": "#FFFFFF",
   "theme_color": "#0E5E6F",
   "display": "standalone",

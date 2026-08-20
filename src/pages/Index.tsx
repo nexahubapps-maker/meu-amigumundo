@@ -428,21 +428,8 @@ export default function Index() {
 
   const isInCart = (id: string) => cart.some((item) => item.id === id);
 
-  const handleOpenMeuAmiguMundo = async () => {
-    if (!user) {
-      setIsPremiumSalesOpen(true);
-      return;
-    }
-    const profile = await getProfile(user.id);
-    if (profile?.assinatura_status === "ativo") {
-      if (!profile?.telefone) {
-        setIsCompleteProfileOpen(true);
-      } else {
-        setIsMeuAmiguMundoOpen(true);
-      }
-    } else {
-      setIsPremiumSalesOpen(true);
-    }
+  const handleOpenMeuAmiguMundo = () => {
+    setIsPremiumSalesOpen(true);
   };
 
   const handleOpenMeusPedidos = async () => {

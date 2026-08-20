@@ -1,4 +1,5 @@
 {
+  "id": "/premium",
   "short_name": "AmiguMundo Premium",
   "name": "AmiguMundo Premium",
   "icons": [
@@ -14,6 +15,7 @@
     }
   ],
   "start_url": "/premium",
+  "scope": "/premium",
   "background_color": "#FFFFFF",
   "theme_color": "#5D0599",
   "display": "standalone",
