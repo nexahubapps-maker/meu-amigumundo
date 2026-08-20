@@ -10,7 +10,8 @@ import Checkout from "./pages/Checkout";
 import ObrigadoPage from "@/pages/ObrigadoPage";
 import CatalogoPublico from "./pages/CatalogoPublico";
 import PremiumPage from "./pages/PremiumPage";
-import InstagramProfissional from "./pages/conteudo/InstagramProfissional";
+import InfoprodutoHome from "./pages/conteudo/InfoprodutoHome";
+import { ModuleReader } from "./components/features/infoprodutos/ModuleReader";
 import NotFound from "./pages/NotFound";
 import { FloatingBackButton } from "@/components/common/FloatingBackButton";
 import { DailyReminderPopup } from "@/components/common/DailyReminderPopup";
@@ -59,7 +60,8 @@ const App = () => (
               <Route path="/premium" element={<PremiumPage />} />
               
               {/* Conteúdo de Infoprodutos */}
-              <Route path="/conteudo/instagram-profissional" element={<InstagramProfissional />} />
+              <Route path="/conteudo/:infoprodutoId" element={<InfoprodutoHome />} />
+              <Route path="/conteudo/:infoprodutoId/modulo/:numero" element={<ModuleReader />} />
               
               <Route path="*" element={<NotFound />} />
             </Routes>
