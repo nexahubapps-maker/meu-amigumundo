@@ -51,7 +51,7 @@ import {
   type SheetCategoria
 } from "@/utils/sheets";
 import { type CartItem, calculateCart } from "@/utils/pricing";
-import { showCartAdd, showSuccess, showInfo, showNotificationPopup } from "@/utils/toast";
+import { showCartAdd, showSuccess, showNotificationPopup } from "@/utils/toast";
 
 const ADMIN_EMAIL = "crochecrochet1@gmail.com";
 
@@ -62,10 +62,6 @@ function shuffleArray<T>(array: T[]): T[] {
     [arr[i], arr[j]] = [arr[j], arr[i]];
   }
   return arr;
-}
-
-function getBonusSlotsForPaidCount(paidCount: number): number {
-  return 0;
 }
 
 export default function Index() {
@@ -80,7 +76,8 @@ export default function Index() {
   const [categoriesList, setCategoriesList] = useState<SheetCategoria[]>([]);
   const [shuffledRecipes, setShuffledRecipes] = useState<SheetRecipe[]>([]);
   const [favoriteRecipes, setFavoriteRecipes] = useState<SheetRecipe[]>([]);
-  const [isLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingCategoryRecipes, setIsLoadingCategoryRecipes] = useState(false);
 
   const [cart, setCart] = useState<CartItem[]>([]);
   const [showRecipe, setShowRecipe] = useState<SheetRecipe | null>(null);
@@ -153,6 +150,7 @@ export default function Index() {
 
   useEffect(() => {
     const loadAllData = async () => {
+      setIsLoading(true);
       try {
         const [infoprodutosData, packsData, notificationsData, categoriesData] = await Promise.all([
           getInfoprodutos(),
@@ -161,8 +159,8 @@ export default function Index() {
           getCategories()
         ]);
 
-        setInfoprodutosList(infoprodutosData);
-        setPacksList(packsData);
+        setInfoprodutosList(infoprodutosData.filter(i => i.ativo));
+        setPacksList(packsData.filter(p => p.ativo));
         setNotificationsList(notificationsData);
 
         const activeCategories = categoriesData
@@ -172,6 +170,8 @@ export default function Index() {
 
       } catch (e) {
         console.error("Error loading sheets data:", e);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -181,6 +181,7 @@ export default function Index() {
   useEffect(() => {
     const fetchCategoryRecipes = async () => {
       if (categoria_slug && categoriesList.length > 0) {
+        setIsLoadingCategoryRecipes(true);
         const decodedCat = decodeURIComponent(categoria_slug).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
         
         const matchedCat = categoriesList.find(c => {
@@ -189,6 +190,7 @@ export default function Index() {
         });
 
         if (!matchedCat) {
+          setIsLoadingCategoryRecipes(false);
           navigate("/");
           return;
         }
@@ -199,9 +201,12 @@ export default function Index() {
         } catch (e) {
           console.error("Error fetching category recipes:", e);
           setShuffledRecipes([]);
+        } finally {
+          setIsLoadingCategoryRecipes(false);
         }
       } else {
         setShuffledRecipes([]);
+        setIsLoadingCategoryRecipes(false);
       }
     };
 
@@ -219,8 +224,7 @@ export default function Index() {
         } catch (e) {
           console.error("Error searching recipes:", e);
           setSearchResults([]);
-        }
-        finally {
+        } finally {
           setIsSearching(false);
         }
       } else {
@@ -561,6 +565,7 @@ export default function Index() {
               onAddToCart={addToCart}
               onCheckout={() => navigate("/checkout")}
               onZoomImage={setZoomImage}
+              hasOpenBonusSlot={false}
             />
           </div>
         </section>
@@ -895,7 +900,7 @@ export default function Index() {
         <CategoryDetailView
           categoriaSlug={categoria_slug}
           recipes={shuffledRecipes}
-          isLoading={isLoading}
+          isLoading={isLoadingCategoryRecipes}
           isInCart={isInCart}
           onBack={() => navigate("/")}
           onRecipeAdd={handleRecipeAdd}

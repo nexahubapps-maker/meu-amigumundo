@@ -2,6 +2,12 @@
 
 const SPREADSHEET_ID = "1RUrFeuyLIqxf7vK9Vypo7XzcigV6v4koHg1v0fmjR8k";
 
+function isTruthy(value?: string): boolean {
+  if (!value) return false;
+  const v = value.trim().toLowerCase();
+  return v === "true" || v === "verdadeiro" || v === "1" || v === "sim";
+}
+
 function parseCSV(text: string): string[][] {
   const lines: string[][] = [];
   let row: string[] = [];
@@ -59,8 +65,8 @@ export async function getRecipesFromSheet() {
     preco: parseFloat(row[3]) || 0,
     imagem_url: row[4] || "",
     categoria: row[5] || "",
-    ativo: row[6]?.toLowerCase() === "true",
-    disparar_push: row[7]?.toLowerCase() === "true"
+    ativo: isTruthy(row[6]),
+    disparar_push: isTruthy(row[7])
   }));
 }
 
@@ -73,10 +79,10 @@ export async function getInfoprodutosFromSheet() {
     preco: parseFloat(row[3]) || 0,
     imagem_url: row[4] || "",
     descricao: row[5] || "",
-    ativo: row[6]?.toLowerCase() === "true",
-    disparar_push: row[7]?.toLowerCase() === "true",
+    ativo: isTruthy(row[6]),
+    disparar_push: isTruthy(row[7]),
     link_entrega: row[8] || "",
-    bump_ativo: row[9] === "TRUE"
+    bump_ativo: isTruthy(row[9])
   }));
 }
 
@@ -89,8 +95,8 @@ export async function getPacksFromSheet() {
     preco: parseFloat(row[3]) || 0,
     imagem_url: row[4] || "",
     descricao: row[5] || "",
-    ativo: row[6]?.toLowerCase() === "true",
-    disparar_push: row[7]?.toLowerCase() === "true",
+    ativo: isTruthy(row[6]),
+    disparar_push: isTruthy(row[7]),
     link_entrega: row[8] || "",
     receitas_incluidas: row[9] || ""
   }));
@@ -100,13 +106,13 @@ export async function getNotificationsFromSheet() {
   const rows = await fetchSheetRows("notificacoes_internas");
   return rows.map((row) => ({
     id: row[0] || "",
-    ativo: row[1]?.toLowerCase() === "true",
+    ativo: isTruthy(row[1]),
     data_hora: row[2] || new Date().toISOString(),
     titulo: row[3] || "",
     mensagem: row[4] || "",
     imagem_url: row[5] || "",
     link: row[6] || "",
-    disparar_push: row[7]?.toLowerCase() === "true"
+    disparar_push: isTruthy(row[7])
   }));
 }
 
@@ -117,7 +123,7 @@ export async function getReceitaGratuitaFromSheet() {
     data: row[1] || "",
     nome: row[2] || "",
     imagem_url: row[3] || "",
-    ativo: row[4]?.toLowerCase() === "true"
+    ativo: isTruthy(row[4])
   }));
 }
 
@@ -127,6 +133,6 @@ export async function getCategoriesFromSheet() {
     id: row[0] || "",
     titulo: row[1] || "",
     imagem_url: row[2] || "",
-    ativo: row[3]?.toLowerCase() === "true"
+    ativo: isTruthy(row[3])
   }));
 }
