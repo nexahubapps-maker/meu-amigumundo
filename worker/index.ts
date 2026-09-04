@@ -1,5 +1,9 @@
 interface Env {
   ASSETS: Fetcher;
+  SUPABASE_SERVICE_ROLE_KEY: string;
+  MERCADOPAGO_ACCESS_TOKEN: string;
+  MERCADOPAGO_WEBHOOK_SECRET: string;
+  RESEND_API_KEY?: string;
 }
 
 const SPREADSHEET_ID = "1RUrFeuyLIqxf7vK9Vypo7XzcigV6v4koHg1v0fmjR8k";
@@ -292,6 +296,372 @@ async function handleCapaImagem(request: Request, ctx: ExecutionContext): Promis
   return finalResponse;
 }
 
+function traduzirStatus(statusMercadoPago: string): string {
+  const mapa: Record<string, string> = {
+    approved: "aprovado",
+    pending: "pendente",
+    in_process: "pendente",
+    authorized: "pendente",
+    in_mediation: "pendente",
+    rejected: "recusado",
+    cancelled: "cancelado",
+    refunded: "reembolsado",
+    charged_back: "reembolsado"
+  };
+  return mapa[statusMercadoPago] || "pendente";
+}
+
+async function supabaseRest(path: string, serviceKey: string, options: RequestInit = {}): Promise<Response> {
+  return fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+    ...options,
+    headers: {
+      apikey: serviceKey,
+      Authorization: `Bearer ${serviceKey}`,
+      "Content-Type": "application/json",
+      ...(options.headers || {})
+    }
+  });
+}
+
+interface CartItemPayload {
+  id: string;
+  nome: string;
+  preco: number;
+  tipo: string;
+  imagem_url?: string;
+}
+
+async function handleCriarPagamento(request: Request, env: Env): Promise<Response> {
+  if (request.method !== "POST") {
+    return new Response(JSON.stringify({ error: "Método não permitido" }), { status: 405 });
+  }
+
+  try {
+    const body: any = await request.json();
+    const {
+      paymentMethod,
+      paymentMethodId,
+      cardToken,
+      amount,
+      email,
+      nome,
+      cpf,
+      items,
+      usuarioId,
+      utm_source,
+      utm_medium,
+      utm_campaign,
+      utm_content
+    }: {
+      paymentMethod: "pix" | "card";
+      paymentMethodId?: string;
+      cardToken?: string;
+      amount: number;
+      email: string;
+      nome: string;
+      cpf: string;
+      items: CartItemPayload[];
+      usuarioId?: string | null;
+      utm_source?: string;
+      utm_medium?: string;
+      utm_campaign?: string;
+      utm_content?: string;
+    } = body;
+
+    if (!email || !nome || !cpf || !amount || !items || items.length === 0) {
+      return new Response(JSON.stringify({ error: "Dados obrigatórios ausentes." }), { status: 400 });
+    }
+    if (paymentMethod === "card" && !cardToken) {
+      return new Response(JSON.stringify({ error: "Token do cartão ausente." }), { status: 400 });
+    }
+
+    const cleanCpf = cpf.replace(/\D/g, "");
+    const nameParts = nome.trim().split(" ");
+    const firstName = nameParts[0] || nome;
+    const lastName = nameParts.slice(1).join(" ") || nome;
+
+    const mpBody: any = {
+      transaction_amount: amount,
+      description: "Compra AmiguMundo",
+      payer: {
+        email,
+        first_name: firstName,
+        last_name: lastName,
+        identification: { type: "CPF", number: cleanCpf }
+      }
+    };
+
+    if (paymentMethod === "pix") {
+      mpBody.payment_method_id = "pix";
+    } else {
+      mpBody.token = cardToken;
+      mpBody.payment_method_id = paymentMethodId || "visa";
+      mpBody.installments = 1;
+    }
+
+    const idempotencyKey = crypto.randomUUID();
+
+    const mpResponse = await fetch("https://api.mercadopago.com/v1/payments", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${env.MERCADOPAGO_ACCESS_TOKEN}`,
+        "X-Idempotency-Key": idempotencyKey
+      },
+      body: JSON.stringify(mpBody)
+    });
+
+    const mpData: any = await mpResponse.json();
+
+    if (!mpResponse.ok) {
+      console.error("Erro Mercado Pago:", mpData);
+      return new Response(JSON.stringify({ error: mpData.message || "Erro ao processar pagamento." }), { status: 502 });
+    }
+
+    const pedidoRes = await supabaseRest("pedidos", env.SUPABASE_SERVICE_ROLE_KEY, {
+      method: "POST",
+      headers: { Prefer: "return=representation" },
+      body: JSON.stringify({
+        mercadopago_transaction_id: String(mpData.id),
+        usuario_id: usuarioId || null,
+        email_comprador: email,
+        nome_comprador: nome,
+        cpf_comprador: cleanCpf,
+        valor_total: amount,
+        status: traduzirStatus(mpData.status),
+        pix_gerado_em: paymentMethod === "pix" ? new Date().toISOString() : null,
+        criado_em: new Date().toISOString(),
+        atualizado_em: new Date().toISOString(),
+        utm_source: utm_source || null,
+        utm_medium: utm_medium || null,
+        utm_campaign: utm_campaign || null,
+        utm_content: utm_content || null
+      })
+    });
+
+    const pedidoArr: any = await pedidoRes.json();
+    const pedido = Array.isArray(pedidoArr) ? pedidoArr[0] : null;
+
+    if (!pedidoRes.ok || !pedido) {
+      console.error("Erro ao gravar pedido:", pedidoArr);
+      return new Response(JSON.stringify({ error: "Pagamento criado, mas houve erro ao registrar o pedido." }), { status: 500 });
+    }
+
+    const packItems = items.filter((item) => item.tipo === "pack");
+    let itensExtras: any[] = [];
+
+    if (packItems.length > 0) {
+      const packCodigos = packItems.map((item) => item.id);
+      const packsRes = await supabaseRest(
+        `packs?select=codigo,receitas_incluidas&codigo=in.(${packCodigos.join(",")})`,
+        env.SUPABASE_SERVICE_ROLE_KEY
+      );
+      const packsData: any = await packsRes.json();
+
+      const codigosReceitasParaExpandir = new Set<string>();
+      (packsData || []).forEach((pack: any) => {
+        if (pack.receitas_incluidas && pack.receitas_incluidas.trim() !== "") {
+          pack.receitas_incluidas
+            .split(",")
+            .map((c: string) => c.trim())
+            .filter((c: string) => c.length > 0)
+            .forEach((c: string) => codigosReceitasParaExpandir.add(c));
+        }
+      });
+
+      if (codigosReceitasParaExpandir.size > 0) {
+        const receitasRes = await supabaseRest(
+          `receitas?select=codigo,nome,imagem_url,preco&codigo=in.(${Array.from(codigosReceitasParaExpandir).join(",")})`,
+          env.SUPABASE_SERVICE_ROLE_KEY
+        );
+        const receitasData: any = await receitasRes.json();
+
+        itensExtras = (receitasData || []).map((receita: any) => ({
+          pedido_id: pedido.id,
+          tipo_produto: "receita",
+          codigo_produto: receita.codigo,
+          nome_produto: receita.nome,
+          imagem_url: receita.imagem_url || null,
+          preco_unitario: receita.preco,
+          quantidade: 1
+        }));
+      }
+    }
+
+    const itensParaInserir = [
+      ...items.map((item) => ({
+        pedido_id: pedido.id,
+        tipo_produto: item.tipo,
+        codigo_produto: item.id,
+        nome_produto: item.nome,
+        imagem_url: item.imagem_url || null,
+        preco_unitario: item.preco,
+        quantidade: 1
+      })),
+      ...itensExtras
+    ];
+
+    const itensRes = await supabaseRest("pedido_itens", env.SUPABASE_SERVICE_ROLE_KEY, {
+      method: "POST",
+      headers: { Prefer: "return=minimal" },
+      body: JSON.stringify(itensParaInserir)
+    });
+
+    if (!itensRes.ok) {
+      console.error("Erro ao gravar itens do pedido:", await itensRes.text());
+    }
+
+    return new Response(
+      JSON.stringify({
+        pedidoId: pedido.id,
+        status: mpData.status,
+        qrCode: mpData.point_of_interaction?.transaction_data?.qr_code || null,
+        qrCodeBase64: mpData.point_of_interaction?.transaction_data?.qr_code_base64 || null
+      }),
+      { status: 200 }
+    );
+  } catch (error: any) {
+    console.error("Erro inesperado em criar-pagamento:", error);
+    return new Response(JSON.stringify({ error: "Erro inesperado ao processar pagamento." }), { status: 500 });
+  }
+}
+
+async function validateMpSignature(
+  xSignature: string | undefined,
+  xRequestId: string | undefined,
+  dataId: string,
+  secret: string | undefined
+): Promise<boolean> {
+  if (!xSignature || !xRequestId || !secret) return false;
+  const parts = xSignature.split(",").reduce((acc: Record<string, string>, part) => {
+    const [key, value] = part.split("=");
+    if (key) acc[key.trim()] = (value || "").trim();
+    return acc;
+  }, {});
+  const ts = parts["ts"];
+  const hash = parts["v1"];
+  if (!ts || !hash) return false;
+
+  const manifest = `id:${dataId};request-id:${xRequestId};ts:${ts};`;
+
+  const encoder = new TextEncoder();
+  const cryptoKey = await crypto.subtle.importKey(
+    "raw",
+    encoder.encode(secret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"]
+  );
+  const signatureBuffer = await crypto.subtle.sign("HMAC", cryptoKey, encoder.encode(manifest));
+  const computedHash = Array.from(new Uint8Array(signatureBuffer))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+
+  return computedHash === hash;
+}
+
+async function enviarEmailBackup(
+  pedido: { id: number; email_comprador: string; nome_comprador: string | null },
+  origin: string,
+  resendApiKey: string | undefined
+): Promise<void> {
+  if (!resendApiKey) return;
+  try {
+    const linkPedido = `${origin}/obrigado/${pedido.id}`;
+
+    await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${resendApiKey}`
+      },
+      body: JSON.stringify({
+        from: "AmiguMundo <onboarding@resend.dev>",
+        to: pedido.email_comprador,
+        subject: "Sua compra no AmiguMundo foi confirmada!",
+        html: `
+          <p>Oi${pedido.nome_comprador ? ", " + pedido.nome_comprador : ""}!</p>
+          <p>Seu pagamento foi aprovado. Você já pode acessar tudo que comprou clicando no link abaixo:</p>
+          <p><a href="${linkPedido}">Ver minhas receitas</a></p>
+          <p>Guarde este e-mail — esse link não expira, você pode voltar nele sempre que quiser.</p>
+        `
+      })
+    });
+  } catch (error) {
+    console.error("Erro ao enviar e-mail de backup:", error);
+  }
+}
+
+async function handleWebhookMercadopago(request: Request, env: Env): Promise<Response> {
+  try {
+    const url = new URL(request.url);
+    let bodyData: any = {};
+    try {
+      bodyData = await request.json();
+    } catch {
+      bodyData = {};
+    }
+    const dataId = url.searchParams.get("data.id") || bodyData?.data?.id;
+
+    if (!dataId) {
+      return new Response("Missing data.id", { status: 400 });
+    }
+
+    const xSignature = request.headers.get("x-signature") || undefined;
+    const xRequestId = request.headers.get("x-request-id") || undefined;
+
+    const assinaturaValida = await validateMpSignature(xSignature, xRequestId, String(dataId), env.MERCADOPAGO_WEBHOOK_SECRET);
+    if (!assinaturaValida) {
+      console.warn("Assinatura inválida no webhook do Mercado Pago");
+      return new Response("Invalid signature", { status: 401 });
+    }
+
+    const mpResponse = await fetch(`https://api.mercadopago.com/v1/payments/${dataId}`, {
+      headers: { Authorization: `Bearer ${env.MERCADOPAGO_ACCESS_TOKEN}` }
+    });
+
+    if (!mpResponse.ok) {
+      return new Response("Erro ao consultar pagamento", { status: 502 });
+    }
+
+    const paymentData: any = await mpResponse.json();
+    const novoStatus = paymentData.status;
+
+    const pedidoRes = await supabaseRest(
+      `pedidos?mercadopago_transaction_id=eq.${dataId}&select=id,status,email_comprador,nome_comprador`,
+      env.SUPABASE_SERVICE_ROLE_KEY
+    );
+    const pedidoArr: any = await pedidoRes.json();
+    const pedidoAtual = Array.isArray(pedidoArr) ? pedidoArr[0] : null;
+
+    if (!pedidoAtual) {
+      return new Response("Pedido não encontrado", { status: 404 });
+    }
+
+    const jaEstavaAprovado = pedidoAtual.status === "aprovado";
+    const statusTraduzido = traduzirStatus(novoStatus);
+
+    await supabaseRest(`pedidos?id=eq.${pedidoAtual.id}`, env.SUPABASE_SERVICE_ROLE_KEY, {
+      method: "PATCH",
+      headers: { Prefer: "return=minimal" },
+      body: JSON.stringify({
+        status: statusTraduzido,
+        aprovado_em: statusTraduzido === "aprovado" ? new Date().toISOString() : null,
+        atualizado_em: new Date().toISOString()
+      })
+    });
+
+    if (statusTraduzido === "aprovado" && !jaEstavaAprovado) {
+      await enviarEmailBackup(pedidoAtual, url.origin, env.RESEND_API_KEY);
+    }
+
+    return new Response("OK", { status: 200 });
+  } catch (error: any) {
+    console.error("Erro no webhook do Mercado Pago:", error);
+    return new Response("Erro inesperado", { status: 500 });
+  }
+}
+
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
@@ -305,6 +675,12 @@ export default {
     }
     if (path.startsWith("/capa/")) {
       return handleCapaImagem(request, ctx);
+    }
+    if (path === "/.netlify/functions/criar-pagamento") {
+      return handleCriarPagamento(request, env);
+    }
+    if (path === "/webhook-mercadopago") {
+      return handleWebhookMercadopago(request, env);
     }
     if (
       path.startsWith("/receita/") ||
