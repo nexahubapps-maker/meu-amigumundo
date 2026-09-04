@@ -272,8 +272,28 @@ async function handleEntrarGrupo(): Promise<Response> {
   }
 }
 
+async function handleCapaImagem(request: Request, ctx: ExecutionContext): Promise<Response> {
+  const cache = caches.default;
+  const cached = await cache.match(request);
+  if (cached) return cached;
+
+  const url = new URL(request.url);
+  const fileId = url.pathname.split("/").pop();
+  const supabaseFunctionUrl = `${SUPABASE_URL}/functions/v1/capa-imagem/${fileId}`;
+
+  const response = await fetch(supabaseFunctionUrl, {
+    headers: { Authorization: `Bearer ${SUPABASE_ANON_KEY}` }
+  });
+
+  const finalResponse = new Response(response.body, response);
+  finalResponse.headers.set("Cache-Control", "public, max-age=31536000, immutable");
+
+  ctx.waitUntil(cache.put(request, finalResponse.clone()));
+  return finalResponse;
+}
+
 export default {
-  async fetch(request: Request, env: Env): Promise<Response> {
+  async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
     const path = url.pathname;
 
@@ -282,6 +302,9 @@ export default {
     }
     if (path === "/premium") {
       return handlePremiumManifest(request, env);
+    }
+    if (path.startsWith("/capa/")) {
+      return handleCapaImagem(request, ctx);
     }
     if (
       path.startsWith("/receita/") ||
