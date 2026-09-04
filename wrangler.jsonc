@@ -13,7 +13,9 @@
       "/categoria/*",
       "/premium",
       "/entrar-grupo",
-      "/capa/*"
+      "/capa/*",
+      "/.netlify/functions/*",
+      "/webhook-mercadopago"
     ]
   }
 }
