@@ -12,7 +12,8 @@
       "/infoproduto/*",
       "/categoria/*",
       "/premium",
-      "/entrar-grupo"
+      "/entrar-grupo",
+      "/capa/*"
     ]
   }
 }
