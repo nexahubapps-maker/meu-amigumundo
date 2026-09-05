@@ -23,7 +23,8 @@
       "/entrar-grupo",
       "/capa/*",
       "/.netlify/functions/*",
-      "/webhook-mercadopago"
+      "/webhook-mercadopago",
+      "/debug-mp"
     ]
   }
 }
