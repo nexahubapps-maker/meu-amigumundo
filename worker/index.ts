@@ -685,9 +685,21 @@ async function handleWebhookMercadopago(request: Request, env: Env): Promise<Res
 
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+    console.log("=== REQUEST RECEIVED ===", JSON.stringify({
+      method: request.method,
+      url: request.url,
+      userAgent: request.headers.get("user-agent"),
+      cf: (request as any).cf || null,
+      hasSignature: !!request.headers.get("x-signature"),
+      hasRequestId: !!request.headers.get("x-request-id")
+    }));
+
     const url = new URL(request.url);
     const path = url.pathname;
 
+    if (path === "/debug-mp") {
+      return new Response("MP-DEBUG-OK", { status: 200 });
+    }
     if (path === "/entrar-grupo") {
       return handleEntrarGrupo();
     }
