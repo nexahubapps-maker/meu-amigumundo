@@ -532,7 +532,15 @@ async function validateMpSignature(
   dataId: string,
   secret: string | undefined
 ): Promise<boolean> {
-  if (!xSignature || !xRequestId || !secret) return false;
+  console.log("[MP Webhook Debug] xSignature recebido:", xSignature);
+  console.log("[MP Webhook Debug] xRequestId recebido:", xRequestId);
+  console.log("[MP Webhook Debug] dataId recebido:", dataId);
+  console.log("[MP Webhook Debug] secret configurado, tamanho:", secret ? secret.length : "UNDEFINED/VAZIO");
+
+  if (!xSignature || !xRequestId || !secret) {
+    console.log("[MP Webhook Debug] FALHOU cedo: falta xSignature, xRequestId ou secret");
+    return false;
+  }
   const parts = xSignature.split(",").reduce((acc: Record<string, string>, part) => {
     const [key, value] = part.split("=");
     if (key) acc[key.trim()] = (value || "").trim();
@@ -540,9 +548,14 @@ async function validateMpSignature(
   }, {});
   const ts = parts["ts"];
   const hash = parts["v1"];
-  if (!ts || !hash) return false;
+  console.log("[MP Webhook Debug] ts extraido:", ts, "| hash (v1) extraido:", hash);
+  if (!ts || !hash) {
+    console.log("[MP Webhook Debug] FALHOU: nao achou ts ou v1 dentro do x-signature");
+    return false;
+  }
 
   const manifest = `id:${dataId};request-id:${xRequestId};ts:${ts};`;
+  console.log("[MP Webhook Debug] manifest construido:", manifest);
 
   const encoder = new TextEncoder();
   const cryptoKey = await crypto.subtle.importKey(
@@ -556,6 +569,10 @@ async function validateMpSignature(
   const computedHash = Array.from(new Uint8Array(signatureBuffer))
     .map((b) => b.toString(16).padStart(2, "0"))
     .join("");
+
+  console.log("[MP Webhook Debug] hash calculado:", computedHash);
+  console.log("[MP Webhook Debug] hash esperado (do Mercado Pago):", hash);
+  console.log("[MP Webhook Debug] bateram?", computedHash === hash);
 
   return computedHash === hash;
 }
@@ -602,6 +619,10 @@ async function handleWebhookMercadopago(request: Request, env: Env): Promise<Res
       bodyData = {};
     }
     const dataId = url.searchParams.get("data.id") || bodyData?.data?.id;
+
+    console.log("[MP Webhook Debug] URL completa recebida:", request.url);
+    console.log("[MP Webhook Debug] Corpo recebido:", JSON.stringify(bodyData));
+    console.log("[MP Webhook Debug] dataId resolvido:", dataId);
 
     if (!dataId) {
       return new Response("Missing data.id", { status: 400 });
