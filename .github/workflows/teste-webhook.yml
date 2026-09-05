@@ -1,0 +1,26 @@
+name: Teste Webhook Mercado Pago
+
+on:
+  workflow_dispatch:
+
+jobs:
+  testar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Teste 1 - rota /debug-mp (sem nenhuma lógica de negócio)
+        run: |
+          echo "=== Chamando /debug-mp de um servidor do GitHub (datacenter) ==="
+          curl -i -X POST "https://amigumundo.nexahubapps.workers.dev/debug-mp" \
+            -H "Content-Type: application/json" \
+            -H "User-Agent: restclient-node/5.1.10" \
+            -d '{}'
+
+      - name: Teste 2 - rota /webhook-mercadopago simulando os cabeçalhos do Mercado Pago
+        run: |
+          echo "=== Chamando /webhook-mercadopago de um servidor do GitHub (datacenter) ==="
+          curl -i -X POST "https://amigumundo.nexahubapps.workers.dev/webhook-mercadopago?data.id=123456789&type=payment" \
+            -H "Content-Type: application/json" \
+            -H "User-Agent: restclient-node/5.1.10" \
+            -H "X-Request-Id: 11111111-2222-3333-4444-555555555555" \
+            -H "X-Signature: ts=1234567890,v1=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" \
+            -d '{"id":123456789,"live_mode":true,"type":"payment","action":"payment.updated","data":{"id":"123456789"}}'
