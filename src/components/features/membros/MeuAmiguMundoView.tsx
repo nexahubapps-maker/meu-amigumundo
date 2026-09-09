@@ -19,6 +19,7 @@ import { showSuccess } from "@/utils/toast";
 interface MeuAmiguMundoViewProps {
   onBack: () => void;
   onAddToCart: (items: any[]) => void;
+  esconderBotaoVoltar?: boolean;
 }
 
 type TabType = "Catálogo" | "Favoritos" | "Ferramentas";
@@ -36,7 +37,7 @@ const FERRAMENTAS = [
   { id: "cores", nome: "Combinador de Cores", descricao: "Paletas harmônicas pro seu amigurumi", icone: Palette, disponivel: true },
 ];
 
-export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProps) => {
+export const MeuAmiguMundoView = ({ onBack, onAddToCart, esconderBotaoVoltar }: MeuAmiguMundoViewProps) => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
 
@@ -170,12 +171,16 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
         style={textureLaranjaStyle}
         className="sticky top-0 z-10 py-4 px-4 flex items-center justify-between shadow-md shrink-0"
       >
-        <button
-          onClick={onBack}
-          className="text-white hover:scale-105 active:scale-95 transition-transform flex items-center gap-1.5 font-black text-xs uppercase tracking-wider"
-        >
-          <ArrowLeft size={18} /> Voltar
-        </button>
+        {esconderBotaoVoltar ? (
+          <div className="w-16"></div>
+        ) : (
+          <button
+            onClick={onBack}
+            className="text-white hover:scale-105 active:scale-95 transition-transform flex items-center gap-1.5 font-black text-xs uppercase tracking-wider"
+          >
+            <ArrowLeft size={18} /> Voltar
+          </button>
+        )}
         <h2 className="text-white font-black text-sm uppercase tracking-widest m-0">
           MEU AMIGUMUNDO
         </h2>
@@ -268,7 +273,7 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
                             {item.linkAcesso ? (
                               <>
                                 <a
-                                  href={item.linkAcesso}
+                                  href={getLinkVisualizacao(item.linkAcesso)}
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   className="flex items-center justify-center gap-1 bg-[#5D0599] text-white py-1 rounded-lg font-black text-[8px] lg:text-[10px] uppercase tracking-wider transition-all hover:scale-105 active:scale-95"
@@ -276,7 +281,7 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
                                   <ExternalLink size={10} /> Abrir
                                 </a>
                                 <a
-                                  href={item.linkAcesso}
+                                  href={getLinkVisualizacao(item.linkAcesso)}
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   className="flex items-center justify-center gap-1 bg-gray-100 text-gray-800 py-1 rounded-lg font-black text-[8px] lg:text-[10px] uppercase tracking-wider transition-all hover:scale-105 active:scale-95"

@@ -70,7 +70,7 @@ const PremiumPage = () => {
     );
   }
 
-  return <MeuAmiguMundoView onBack={() => navigate("/")} onAddToCart={() => {}} />;
+  return <MeuAmiguMundoView onBack={() => navigate("/")} onAddToCart={() => {}} esconderBotaoVoltar={true} />;
 };
 
 export default PremiumPage;
