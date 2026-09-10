@@ -22,6 +22,7 @@
       "/premium",
       "/entrar-grupo",
       "/capa/*",
+      "/premium-pdf/*",
       "/.netlify/functions/*",
       "/webhook-mercadopago",
       "/debug-mp"

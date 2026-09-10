@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, User as UserIcon, ExternalLink, Loader2, Pencil, LogOut, Heart, Trash2, Printer, Calculator, ListChecks, Ruler, Palette, Lock, Wrench, BookOpen } from "lucide-react";
+import { VisualizadorPDF } from "./VisualizadorPDF";
 import { useAuth } from "@/context/AuthContext";
 import { getProfile, type Perfil } from "@/utils/profile";
 import { supabase } from "@/lib/supabase";
@@ -164,6 +165,14 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart, esconderBotaoVoltar }: 
     return match ? `https://drive.google.com/file/d/${match[1]}/view` : linkDownload;
   };
 
+  const extrairFileId = (linkDownload: string | null): string | null => {
+    if (!linkDownload) return null;
+    const match = linkDownload.match(/id=([^&]+)/);
+    return match ? match[1] : null;
+  };
+
+  const [pdfAberto, setPdfAberto] = useState<{ fileId: string; titulo: string } | null>(null);
+
   return (
     <div className="fixed inset-0 z-[90] bg-[#F5F5F7] overflow-y-auto animate-in slide-in-from-bottom duration-300 flex flex-col">
       {/* Cabeçalho Fixo com Textura Laranja */}
@@ -272,22 +281,24 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart, esconderBotaoVoltar }: 
                           <div className="flex flex-col gap-1">
                             {item.linkAcesso ? (
                               <>
-                                <a
-                                  href={getLinkVisualizacao(item.linkAcesso)}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
+                                <button
+                                  onClick={() => {
+                                    const fileId = extrairFileId(item.linkAcesso);
+                                    if (fileId) setPdfAberto({ fileId, titulo: item.nome });
+                                  }}
                                   className="flex items-center justify-center gap-1 bg-[#5D0599] text-white py-1 rounded-lg font-black text-[8px] lg:text-[10px] uppercase tracking-wider transition-all hover:scale-105 active:scale-95"
                                 >
                                   <ExternalLink size={10} /> Abrir
-                                </a>
-                                <a
-                                  href={getLinkVisualizacao(item.linkAcesso)}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    const fileId = extrairFileId(item.linkAcesso);
+                                    if (fileId) setPdfAberto({ fileId, titulo: item.nome });
+                                  }}
                                   className="flex items-center justify-center gap-1 bg-gray-100 text-gray-800 py-1 rounded-lg font-black text-[8px] lg:text-[10px] uppercase tracking-wider transition-all hover:scale-105 active:scale-95"
                                 >
                                   <Printer size={10} /> Imprimir
-                                </a>
+                                </button>
                               </>
                             ) : (
                               <span className="text-[8px] font-bold text-amber-600 bg-amber-50 px-1.5 py-1 rounded-lg text-center">
@@ -470,6 +481,14 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart, esconderBotaoVoltar }: 
 
       {zoomImage && (
         <LightboxModal imageUrl={zoomImage} onClose={() => setZoomImage(null)} />
+      )}
+
+      {pdfAberto && (
+        <VisualizadorPDF
+          fileId={pdfAberto.fileId}
+          titulo={pdfAberto.titulo}
+          onClose={() => setPdfAberto(null)}
+        />
       )}
     </div>
   );

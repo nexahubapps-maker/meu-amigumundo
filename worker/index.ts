@@ -276,6 +276,41 @@ async function handleEntrarGrupo(): Promise<Response> {
   }
 }
 
+async function handlePremiumPdf(request: Request): Promise<Response> {
+  const url = new URL(request.url);
+  const fileId = url.pathname.split("/").pop();
+  if (!fileId) {
+    return new Response("Arquivo não encontrado", { status: 400 });
+  }
+
+  try {
+    const driveUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
+    const driveResponse = await fetch(driveUrl, { redirect: "follow" });
+
+    if (!driveResponse.ok) {
+      return new Response("Erro ao buscar arquivo no Drive", { status: 502 });
+    }
+
+    const contentType = driveResponse.headers.get("content-type") || "";
+    if (contentType.includes("text/html")) {
+      console.error("Drive retornou HTML em vez do PDF (possível aviso de verificação) para fileId:", fileId);
+      return new Response("Não foi possível carregar esse arquivo agora", { status: 502 });
+    }
+
+    return new Response(driveResponse.body, {
+      status: 200,
+      headers: {
+        "content-type": "application/pdf",
+        "cache-control": "private, no-store",
+        "access-control-allow-origin": "*"
+      }
+    });
+  } catch (e) {
+    console.error("Erro em handlePremiumPdf:", e);
+    return new Response("Erro inesperado ao buscar o arquivo", { status: 500 });
+  }
+}
+
 async function handleCapaImagem(request: Request, ctx: ExecutionContext): Promise<Response> {
   const cache = caches.default;
   const cached = await cache.match(request);
@@ -708,6 +743,9 @@ export default {
     }
     if (path.startsWith("/capa/")) {
       return handleCapaImagem(request, ctx);
+    }
+    if (path.startsWith("/premium-pdf/")) {
+      return handlePremiumPdf(request);
     }
     if (path === "/.netlify/functions/criar-pagamento") {
       return handleCriarPagamento(request, env);
