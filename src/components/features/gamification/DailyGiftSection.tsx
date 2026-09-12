@@ -2,22 +2,15 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import confetti from 'canvas-confetti';
-import { Download, Bookmark, Check, Loader2 } from 'lucide-react';
+import { Download, Loader2 } from 'lucide-react';
 import { getReceitaGratuita, getReceitaGratuitaDownloadUrl, type SheetReceitaGratuita } from '@/utils/sheets';
-import { useAuth } from '@/context/AuthContext';
-import { supabase } from '@/lib/supabase';
-import { AuthModal } from '@/components/AuthModal';
 
 export const DailyGiftSection = () => {
-  const { user } = useAuth();
   const [dailyRecipe, setDailyRecipe] = useState<SheetReceitaGratuita | null>(null);
   const [isVisible, setIsVisible] = useState(true);
   const [isOpened, setIsOpened] = useState(false);
 
   const [linkDownload, setLinkDownload] = useState<string | null>(null);
-  const [isSalvo, setIsSalvo] = useState(false);
-  const [isSalvando, setIsSalvando] = useState(false);
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -58,8 +51,6 @@ export const DailyGiftSection = () => {
     if (!dailyRecipe) return;
     const jaAberto = localStorage.getItem(`daily-gift-opened-${dailyRecipe.codigo}`);
     if (jaAberto) setIsOpened(true);
-    const jaSalvo = localStorage.getItem(`daily-gift-saved-${dailyRecipe.codigo}`);
-    if (jaSalvo) setIsSalvo(true);
   }, [dailyRecipe]);
 
   useEffect(() => {
@@ -96,34 +87,6 @@ export const DailyGiftSection = () => {
       spread: 70,
       origin: { y: 0.7 }
     });
-  };
-
-  const handleSalvarBiblioteca = async () => {
-    if (!user || !dailyRecipe) return;
-    setIsSalvando(true);
-    try {
-      const { error } = await supabase.from("biblioteca").upsert({
-        usuario_id: user.id,
-        tipo_item: "gratuita",
-        codigo_item: dailyRecipe.codigo,
-        nome_item: dailyRecipe.nome,
-        imagem_url: dailyRecipe.imagem_url,
-        adicionado_em: new Date().toISOString(),
-      }, { onConflict: "usuario_id,tipo_item,codigo_item" });
-
-      if (error) {
-        console.error("Erro ao salvar na biblioteca:", error);
-        return;
-      }
-      setIsSalvo(true);
-      if (dailyRecipe) {
-        localStorage.setItem(`daily-gift-saved-${dailyRecipe.codigo}`, "true");
-      }
-    } catch (e) {
-      console.error("Erro inesperado ao salvar na biblioteca:", e);
-    } finally {
-      setIsSalvando(false);
-    }
   };
 
   if (!isVisible || !dailyRecipe) return null;
@@ -229,32 +192,6 @@ export const DailyGiftSection = () => {
                       <span>Gerando link...</span>
                     </button>
                   )}
-
-                  {user && (
-                    <button
-                      onClick={handleSalvarBiblioteca}
-                      disabled={isSalvo || isSalvando}
-                      className={`w-full py-3.5 rounded-2xl font-black text-xs sm:text-sm flex items-center justify-center gap-2 transition-all uppercase tracking-wider ${
-                        isSalvo 
-                          ? 'bg-green-50 text-green-700 border border-green-200 cursor-default' 
-                          : 'bg-gray-100 hover:bg-gray-200 active:scale-[0.98] text-gray-800'
-                      }`}
-                    >
-                      {isSalvando ? (
-                        <Loader2 size={16} className="animate-spin" />
-                      ) : isSalvo ? (
-                        <>
-                          <Check size={16} className="text-green-600" />
-                          <span>Salvo! ✅</span>
-                        </>
-                      ) : (
-                        <>
-                          <Bookmark size={16} />
-                          <span>Salvar na Biblioteca</span>
-                        </>
-                      )}
-                    </button>
-                  )}
                 </div>
               </div>
             )}
@@ -262,8 +199,6 @@ export const DailyGiftSection = () => {
           </div>
         </div>
       </section>
-
-      <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
     </>
   );
 };

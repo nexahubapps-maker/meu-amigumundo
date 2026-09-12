@@ -50,7 +50,8 @@ import {
   type SheetCategoria
 } from "@/utils/sheets";
 import { type CartItem, calculateCart } from "@/utils/pricing";
-import { showCartAdd, showSuccess, showNotificationPopup, showInfo } from "@/utils/toast";
+import { showCartAdd, showSuccess, showNotificationPopup } from "@/utils/toast";
+import { PremiumEmBrevePopup } from "@/components/common/PremiumEmBrevePopup";
 
 const ADMIN_EMAIL = "crochecrochet1@gmail.com";
 
@@ -85,6 +86,7 @@ export default function Index() {
   const [isFavoritesOpen, setIsFavoritesOpen] = useState(false);
   const [isMeuAmiguMundoOpen, setIsMeuAmiguMundoOpen] = useState(false);
   const [isPremiumSalesOpen, setIsPremiumSalesOpen] = useState(false);
+  const [isPremiumEmBreveOpen, setIsPremiumEmBreveOpen] = useState(false);
   const [isMeusPedidosOpen, setIsMeusPedidosOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [isMeuAuthModalOpen, setIsMeuAuthModalOpen] = useState(false);
@@ -433,7 +435,7 @@ export default function Index() {
   };
 
   const handlePremiumEmBreve = () => {
-    showInfo("AmiguMundo Premium chegando em breve! ✨");
+    setIsPremiumEmBreveOpen(true);
   };
 
   const handleOpenMeusPedidos = async () => {
@@ -512,7 +514,7 @@ export default function Index() {
         <meta property="og:image:type" content="image/jpeg" />
       </Helmet>
 
-      <Header cartCount={cart.length} onOpenMeuAmiguMundo={handleOpenMeuAmiguMundo} />
+      <Header cartCount={cart.length} />
       <PushOptInCard />
 
       <div className="max-w-6xl mx-auto px-4 my-0 flex flex-col items-center">
@@ -897,6 +899,8 @@ export default function Index() {
       {isPremiumSalesOpen && (
         <PremiumSalesView onBack={() => setIsPremiumSalesOpen(false)} />
       )}
+
+      <PremiumEmBrevePopup isOpen={isPremiumEmBreveOpen} onClose={() => setIsPremiumEmBreveOpen(false)} />
 
       {isMeusPedidosOpen && (
         <MeusPedidosView onBack={() => setIsMeusPedidosOpen(false)} />
