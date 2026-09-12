@@ -311,10 +311,13 @@ async function handlePremiumPdf(request: Request): Promise<Response> {
       return new Response("Não foi possível carregar esse arquivo agora", { status: 502 });
     }
 
-    return new Response(driveResponse.body, {
+    const pdfBuffer = await driveResponse.arrayBuffer();
+
+    return new Response(pdfBuffer, {
       status: 200,
       headers: {
         "content-type": "application/pdf",
+        "content-length": String(pdfBuffer.byteLength),
         "cache-control": "private, no-store",
         "access-control-allow-origin": "*"
       }
