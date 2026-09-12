@@ -23,7 +23,7 @@ export const VisualizadorPDF = ({ fileId, titulo, onClose }: VisualizadorPDFProp
     const carregarPdf = async () => {
       try {
         const url = `/premium-pdf/${fileId}`;
-        const pdf = await pdfjsLib.getDocument(url).promise;
+        const pdf = await pdfjsLib.getDocument({ url }).promise;
         if (cancelado || !containerRef.current) return;
         containerRef.current.innerHTML = "";
 
