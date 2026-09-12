@@ -297,16 +297,17 @@ async function handlePremiumPdf(request: Request): Promise<Response> {
   }
 
   try {
-    const driveUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
+    const driveUrl = `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media&key=${GOOGLE_DRIVE_API_KEY}`;
     const driveResponse = await fetch(driveUrl, { redirect: "follow" });
 
     if (!driveResponse.ok) {
+      console.error("Erro ao buscar arquivo no Drive via API v3:", driveResponse.status, await driveResponse.text());
       return new Response("Erro ao buscar arquivo no Drive", { status: 502 });
     }
 
     const contentType = driveResponse.headers.get("content-type") || "";
-    if (contentType.includes("text/html")) {
-      console.error("Drive retornou HTML em vez do PDF (possível aviso de verificação) para fileId:", fileId);
+    if (contentType.includes("text/html") || contentType.includes("application/json")) {
+      console.error("Drive retornou conteudo inesperado em vez do PDF para fileId:", fileId, contentType);
       return new Response("Não foi possível carregar esse arquivo agora", { status: 502 });
     }
 
