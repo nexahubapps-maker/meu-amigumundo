@@ -50,7 +50,7 @@ import {
   type SheetCategoria
 } from "@/utils/sheets";
 import { type CartItem, calculateCart } from "@/utils/pricing";
-import { showCartAdd, showSuccess, showNotificationPopup } from "@/utils/toast";
+import { showCartAdd, showSuccess, showNotificationPopup, showInfo } from "@/utils/toast";
 
 const ADMIN_EMAIL = "crochecrochet1@gmail.com";
 
@@ -432,6 +432,10 @@ export default function Index() {
     setIsPremiumSalesOpen(true);
   };
 
+  const handlePremiumEmBreve = () => {
+    showInfo("AmiguMundo Premium chegando em breve! ✨");
+  };
+
   const handleOpenMeusPedidos = async () => {
     if (!user) {
       setIsMeusPedidosOpen(true);
@@ -796,7 +800,7 @@ export default function Index() {
       />
 
       <FooterNavigation
-        onOpenMeuAmiguMundo={handleOpenMeuAmiguMundo}
+        onOpenMeuAmiguMundo={handlePremiumEmBreve}
         onOpenNotifications={handleOpenNotifications}
         onOpenMeusPedidos={handleOpenMeusPedidos}
         notificationsCount={notificationsList.filter(n => {
