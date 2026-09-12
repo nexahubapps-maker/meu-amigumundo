@@ -257,7 +257,10 @@ async function handlePremiumManifest(request: Request, env: Env): Promise<Respon
   });
 }
 
-async function handleEntrarGrupo(): Promise<Response> {
+async function handleEntrarGrupo(request: Request): Promise<Response> {
+  const url = new URL(request.url);
+  const wantsJson = url.searchParams.get("formato") === "json";
+
   try {
     const res = await fetch(
       `${SUPABASE_URL}/rest/v1/configuracoes_app?chave=eq.link_grupo_whatsapp&select=valor`,
@@ -270,8 +273,18 @@ async function handleEntrarGrupo(): Promise<Response> {
     );
     const data: any = await res.json();
     const link = data?.[0]?.valor || FALLBACK_GRUPO_LINK;
+    if (wantsJson) {
+      return new Response(JSON.stringify({ link }), {
+        headers: { "content-type": "application/json" }
+      });
+    }
     return Response.redirect(link, 302);
   } catch (e) {
+    if (wantsJson) {
+      return new Response(JSON.stringify({ link: FALLBACK_GRUPO_LINK }), {
+        headers: { "content-type": "application/json" }
+      });
+    }
     return Response.redirect(FALLBACK_GRUPO_LINK, 302);
   }
 }
@@ -736,7 +749,7 @@ export default {
       return new Response("MP-DEBUG-OK", { status: 200 });
     }
     if (path === "/entrar-grupo") {
-      return handleEntrarGrupo();
+      return handleEntrarGrupo(request);
     }
     if (path === "/premium") {
       return handlePremiumManifest(request, env);

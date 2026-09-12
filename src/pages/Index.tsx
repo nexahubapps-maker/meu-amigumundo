@@ -438,6 +438,17 @@ export default function Index() {
     setIsPremiumEmBreveOpen(true);
   };
 
+  const handleEntrarGrupo = async () => {
+    const FALLBACK_GRUPO_LINK = "https://chat.whatsapp.com/LGQhKR68mLP3hm0Xv3N1OG?s=cl&p=a&ilr=0";
+    try {
+      const res = await fetch("/entrar-grupo?formato=json");
+      const data = await res.json();
+      window.open(data?.link || FALLBACK_GRUPO_LINK, "_blank");
+    } catch (e) {
+      window.open(FALLBACK_GRUPO_LINK, "_blank");
+    }
+  };
+
   const handleOpenMeusPedidos = async () => {
     if (!user) {
       setIsMeusPedidosOpen(true);
@@ -763,11 +774,9 @@ export default function Index() {
       </section>
 
       <div className="max-w-2xl mx-auto px-4 my-6">
-        <a 
-          href="/entrar-grupo" 
-          target="_blank" 
-          rel="noopener noreferrer"
-          className="bg-[#0E5E6F] text-white p-3.5 rounded-2xl text-center shadow-md flex items-center justify-center gap-4 hover:scale-[1.01] active:scale-[0.99] transition-transform border border-white/10"
+        <button
+          onClick={handleEntrarGrupo}
+          className="w-full bg-[#0E5E6F] text-white p-3.5 rounded-2xl text-center shadow-md flex items-center justify-center gap-4 hover:scale-[1.01] active:scale-[0.99] transition-transform border border-white/10"
         >
           <div className="h-[44px] w-[44px] rounded-[10px] overflow-hidden shrink-0 flex items-center justify-center bg-transparent">
             <img 
@@ -784,7 +793,7 @@ export default function Index() {
               Então CLIQUE AQUI e entre no nosso Grupo de Promoções do WhatsApp
             </p>
           </div>
-        </a>
+        </button>
       </div>
 
       <DailyGiftSection />
