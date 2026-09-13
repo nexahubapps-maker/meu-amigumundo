@@ -177,7 +177,7 @@ async function handleMetadata(request: Request, env: Env): Promise<Response> {
       }
     } else if (isPromo) {
       title = "Promoções AmiguMundo - Aproveite!";
-      image = "https://ik.imagekit.io/di3huhaluc/banner%20do%20carrinho%20amigumundo?updatedAt=1786225221413";
+      image = "https://ik.imagekit.io/di3huhaluc/banner%20do%20carrinho%20amigumundo?updatedAt=1786225221413&tr=w-1200,h-630,cm-pad_resize,bg-dominant";
       description = "Confira as promoções e o esquema de descontos do AmiguMundo!";
     }
   } catch (e) {
