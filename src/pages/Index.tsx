@@ -31,7 +31,8 @@ import { CompleteProfileModal } from "@/components/CompleteProfileModal";
 import { MeuAmiguMundoView } from "@/components/features/membros/MeuAmiguMundoView";
 import { MeusPedidosView } from "@/components/features/membros/MeusPedidosView";
 import { PremiumSalesView } from "@/components/features/membros/PremiumSalesView";
-import { captureUTMs } from "@/lib/tracking/utmify-service";
+import { captureUTMs, appendShareUTM } from "@/lib/tracking/utmify-service";
+import { Share2 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { getReadNotificationIds } from "@/utils/notificacoesLidas";
 import { getPrimeiroAcesso } from "@/utils/primeiroAcesso";
@@ -449,6 +450,29 @@ export default function Index() {
     }
   };
 
+  const handleSharePromoBanner = async () => {
+    const shareUrl = appendShareUTM(`${window.location.origin}/promocoes`);
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: "AmiguMundo - Promoções",
+          url: shareUrl,
+        });
+      } else {
+        await navigator.clipboard.writeText(shareUrl);
+        showSuccess("Link copiado com sucesso!");
+      }
+    } catch (err) {
+      console.warn("Erro ao compartilhar banner de promoções:", err);
+      try {
+        await navigator.clipboard.writeText(shareUrl);
+        showSuccess("Link copiado com sucesso!");
+      } catch (clipErr) {
+        console.error(clipErr);
+      }
+    }
+  };
+
   const handleOpenMeusPedidos = async () => {
     if (!user) {
       setIsMeusPedidosOpen(true);
@@ -536,12 +560,21 @@ export default function Index() {
         />
       </div>
 
-      <div className="max-w-6xl mx-auto px-1.5 my-1 flex flex-col items-center">
-        <img 
-          src="https://ik.imagekit.io/di3huhaluc/banner%20do%20carrinho%20amigumundo?updatedAt=1786225221413" 
-          alt="Banner do Carrinho AmiguMundo" 
-          className="w-full max-w-xl h-auto object-contain rounded-2xl"
-        />
+      <div className="max-w-6xl mx-auto px-1.5 my-1 flex flex-col items-center relative">
+        <div className="relative w-full max-w-xl">
+          <img 
+            src="https://ik.imagekit.io/di3huhaluc/banner%20do%20carrinho%20amigumundo?updatedAt=1786225221413" 
+            alt="Banner do Carrinho AmiguMundo" 
+            className="w-full h-auto object-contain rounded-2xl"
+          />
+          <button
+            onClick={handleSharePromoBanner}
+            className="absolute top-0 right-0 bg-[#25D366] text-white p-2 rounded-tr-2xl rounded-bl-xl shadow-md hover:scale-105 active:scale-95 transition-transform flex items-center justify-center"
+            title="Compartilhar"
+          >
+            <Share2 size={18} />
+          </button>
+        </div>
       </div>
 
       <div className="bg-white mt-0 pt-0 pb-0">

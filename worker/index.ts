@@ -119,6 +119,7 @@ async function handleMetadata(request: Request, env: Env): Promise<Response> {
   const isPack = path.startsWith("/pack/");
   const isUpsell = path.startsWith("/infoproduto/") || path.startsWith("/upsell/");
   const isCategory = path.startsWith("/categoria/");
+  const isPromo = path === "/promocoes";
 
   const response = await env.ASSETS.fetch(request);
   let html = await response.text();
@@ -174,6 +175,10 @@ async function handleMetadata(request: Request, env: Env): Promise<Response> {
         title = `Coleção ${match[1]} - Amigu Mundo`;
         image = match[2] || DEFAULT_LOGO;
       }
+    } else if (isPromo) {
+      title = "Promoções AmiguMundo - Aproveite!";
+      image = "https://ik.imagekit.io/di3huhaluc/banner%20do%20carrinho%20amigumundo?updatedAt=1786225221413";
+      description = "Confira as promoções e o esquema de descontos do AmiguMundo!";
     }
   } catch (e) {
     console.error("Error in metadata injection:", e);
@@ -774,7 +779,8 @@ export default {
       path.startsWith("/receita/") ||
       path.startsWith("/pack/") ||
       path.startsWith("/infoproduto/") ||
-      path.startsWith("/categoria/")
+      path.startsWith("/categoria/") ||
+      path === "/promocoes"
     ) {
       return handleMetadata(request, env);
     }

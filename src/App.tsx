@@ -45,6 +45,7 @@ const App = () => (
               <Route path="/receita/:slug_and_id" element={<Index />} />
               <Route path="/pack/:slug_and_id" element={<Index />} />
               <Route path="/infoproduto/:slug_and_id" element={<Index />} />
+              <Route path="/promocoes" element={<Index />} />
               
               {/* Catálogo Público da Artesã */}
               <Route path="/catalogo/:userId" element={<CatalogoPublico />} />
