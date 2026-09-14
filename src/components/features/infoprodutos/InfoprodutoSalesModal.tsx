@@ -7,6 +7,7 @@ import type { SheetInfoproduto } from "@/utils/sheets";
 interface InfoprodutoSalesModalProps {
   infoproduto: SheetInfoproduto;
   onClose: () => void;
+  onBuy?: () => void;
 }
 
 interface ConteudoVenda {
@@ -54,13 +55,17 @@ const CONTEUDO_PADRAO: ConteudoVenda = {
   ],
 };
 
-export const InfoprodutoSalesModal = ({ infoproduto, onClose }: InfoprodutoSalesModalProps) => {
+export const InfoprodutoSalesModal = ({ infoproduto, onClose, onBuy }: InfoprodutoSalesModalProps) => {
   const navigate = useNavigate();
   const idConteudo = infoproduto.link_entrega?.split("/").filter(Boolean).pop() || "";
   const conteudo = CONTEUDO_POR_PRODUTO[idConteudo] || CONTEUDO_PADRAO;
   const precoOriginal = infoproduto.preco / 0.4;
 
   const handleComprar = () => {
+    if (onBuy) {
+      onBuy();
+      return;
+    }
     try {
       const cart = JSON.parse(localStorage.getItem("amigumundo-cart") || "[]");
       const jaTem = cart.find((i: any) => i.id === infoproduto.id);

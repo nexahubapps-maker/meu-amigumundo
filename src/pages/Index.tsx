@@ -6,7 +6,7 @@ import { Header } from "@/components/common/Header";
 import { PushOptInCard } from "@/components/features/pwa/PushOptInCard";
 import RecipeCard from "@/components/features/catalog/RecipeCard";
 import { UpsellCard } from "@/components/features/upsell/UpsellCard";
-import { UpsellModal } from "@/components/features/upsell/UpsellModal";
+import { InfoprodutoSalesModal } from "@/components/features/infoprodutos/InfoprodutoSalesModal";
 import { CategoryCard } from "@/components/features/catalog/CategoryCard";
 import { PackCard } from "@/components/features/catalog/PackCard";
 import { ErrorToast } from "@/components/common/ErrorToast";
@@ -742,17 +742,8 @@ export default function Index() {
       )}
 
       {activeUpsell && (
-        <UpsellModal
-          upsell={{
-            ...infoprodutosList.find((u) => u.id === activeUpsell)!,
-            descricaoLonga: infoprodutosList.find((u) => u.id === activeUpsell)!.descricao,
-            precoOriginal: infoprodutosList.find((u) => u.id === activeUpsell)!.preco * 1.5,
-            precoAtual: infoprodutosList.find((u) => u.id === activeUpsell)!.preco,
-            emoji: "💡",
-            cor: "#FF3D9A",
-            beneficios: ["Acesso imediato", "Suporte exclusivo"],
-            copiaVendas: [infoprodutosList.find((u) => u.id === activeUpsell)!.descricao]
-          }}
+        <InfoprodutoSalesModal
+          infoproduto={infoprodutosList.find((u) => u.id === activeUpsell)!}
           onClose={() => setActiveUpsell(null)}
           onBuy={handleUpsellBuy}
         />
