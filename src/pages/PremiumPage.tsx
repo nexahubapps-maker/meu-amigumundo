@@ -10,7 +10,7 @@ import { PremiumSalesView } from "@/components/features/membros/PremiumSalesView
 import { Loader2 } from "lucide-react";
 
 const PremiumPage = () => {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
 
   const [profile, setProfile] = useState<Perfil | null>(null);
@@ -19,6 +19,7 @@ const PremiumPage = () => {
 
   useEffect(() => {
     const load = async () => {
+      if (authLoading) return; // ainda não sabemos se existe sessão — espera antes de decidir
       if (!user) {
         setIsLoadingProfile(false);
         return;
@@ -31,12 +32,17 @@ const PremiumPage = () => {
       }
     };
     load();
-  }, [user]);
+  }, [user, authLoading]);
 
-  if (isLoadingProfile) {
+  if (authLoading || isLoadingProfile) {
     return (
-      <div className="fixed inset-0 bg-[#F8F6F2] flex items-center justify-center">
-        <Loader2 size={32} className="animate-spin text-[#5D0599]" />
+      <div className="fixed inset-0 bg-[#5D0599] flex flex-col items-center justify-center gap-6">
+        <img
+          src="https://ik.imagekit.io/51b3srlsg/logomarca_amigumundo_01.png"
+          alt="AmiguMundo"
+          className="w-40 h-auto"
+        />
+        <Loader2 size={28} className="animate-spin text-white/80" />
       </div>
     );
   }

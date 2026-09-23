@@ -25,9 +25,9 @@ interface MeuAmiguMundoViewProps {
 type TabType = "Catálogo" | "Favoritos" | "Ferramentas";
 
 const MENUS = [
-  { id: "Catálogo", label: "Galeria", icone: BookOpen, cor: "#3CB19E" },
-  { id: "Favoritos", label: "Favoritos", icone: Heart, cor: "#5D0599" },
-  { id: "Ferramentas", label: "Ferramentas", icone: Wrench, cor: "#3CB19E" },
+  { id: "Catálogo", label: "Galeria", icone: BookOpen, cor: "#3CB19E", corAtiva: "#1F6F63" },
+  { id: "Favoritos", label: "Favoritos", icone: Heart, cor: "#5D0599", corAtiva: "#42026b" },
+  { id: "Ferramentas", label: "Ferramentas", icone: Wrench, cor: "#3CB19E", corAtiva: "#1F6F63" },
 ];
 
 const FERRAMENTAS = [
@@ -53,6 +53,7 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
   const [isLoadingFavoritos, setIsLoadingFavoritos] = useState(false);
 
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
+  const [isConfirmSairOpen, setIsConfirmSairOpen] = useState(false);
   const [ferramentaAberta, setFerramentaAberta] = useState<string | null>(null);
   const [zoomImage, setZoomImage] = useState<string | null>(null);
 
@@ -178,7 +179,7 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
           tagEspecialidade={profile?.tag_especialidade}
           capaUrl={CAPA_PREMIUM_URL}
           onEditarPerfil={() => setIsEditProfileOpen(true)}
-          onSair={handleSignOut}
+          onSair={() => setIsConfirmSairOpen(true)}
         />
       </div>
 
@@ -191,10 +192,11 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
               <button
                 key={menu.id}
                 onClick={() => setActiveTab(menu.id as TabType)}
-                style={{ backgroundColor: menu.cor }}
-                className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl font-black text-[10px] sm:text-[11px] uppercase tracking-wide text-white transition-all active:scale-95 ${
-                  isActive ? "opacity-100 shadow-md" : "opacity-55"
-                }`}
+                style={{
+                  backgroundColor: menu.cor,
+                  borderColor: isActive ? menu.corAtiva : "transparent",
+                }}
+                className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl font-black text-[10px] sm:text-[11px] uppercase tracking-wide text-white border-2 transition-all active:scale-95"
               >
                 <Icone size={14} /> {menu.label}
               </button>
@@ -292,7 +294,7 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
                 <p className="text-xs font-black text-gray-500 uppercase tracking-wider mb-3">
                   Todas as Categorias
                 </p>
-                <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+                <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-3">
                   {categoriesList.filter((cat) => cat.ativo).map((cat) => (
                     <div
                       key={cat.id}
@@ -436,6 +438,34 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
           recarregarPerfil();
         }}
       />
+
+      {isConfirmSairOpen && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white rounded-[24px] w-full max-w-sm p-6 shadow-2xl border border-gray-100 text-center animate-in zoom-in-95 duration-200">
+            <h3 className="text-base font-black text-gray-900 uppercase tracking-tight">Sair da conta?</h3>
+            <p className="text-xs text-gray-500 font-bold mt-2 leading-relaxed">
+              Você vai precisar entrar de novo pra acessar sua área Meu AmiguMundo.
+            </p>
+            <div className="flex items-center gap-2 mt-5">
+              <button
+                onClick={() => setIsConfirmSairOpen(false)}
+                className="flex-1 bg-gray-100 text-gray-700 py-3 rounded-xl font-black text-xs uppercase tracking-wide active:scale-95 transition-transform"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={() => {
+                  setIsConfirmSairOpen(false);
+                  handleSignOut();
+                }}
+                className="flex-1 bg-[#171717] text-white py-3 rounded-xl font-black text-xs uppercase tracking-wide active:scale-95 transition-transform"
+              >
+                Sim, sair
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {ferramentaAberta === "calculadora-preco" && (
         <CalculadoraPreco onBack={() => setFerramentaAberta(null)} />

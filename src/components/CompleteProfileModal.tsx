@@ -34,11 +34,8 @@ export const CompleteProfileModal = ({
   tagAtual,
 }: CompleteProfileModalProps) => {
   const [nome, setNome] = useState(nomeAtual || "");
-  const [nomeAtelie, setNomeAtelie] = useState("");
   const [telefone, setTelefone] = useState(telefoneAtual || "");
-  const [bio, setBio] = useState("");
   const [cidade, setCidade] = useState("");
-  const [tagEspecialidade, setTagEspecialidade] = useState("");
   const [fotoPreview, setFotoPreview] = useState<string | null>(fotoAtual || null);
   const [fotoFile, setFotoFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -48,17 +45,14 @@ export const CompleteProfileModal = ({
 
   useEffect(() => {
     if (isOpen) {
-      setNome(nomeAtual || "");
-      setNomeAtelie(nomeAtelieAtual || "");
+      setNome(nomeAtelieAtual && nomeAtelieAtual.trim() !== "" ? nomeAtelieAtual : (nomeAtual || ""));
       setTelefone(telefoneAtual || "");
-      setBio(bioAtual || "");
       setCidade(cidadeAtual || "");
-      setTagEspecialidade(tagAtual || "");
       setFotoPreview(fotoAtual || null);
       setFotoFile(null);
       setErrorMessage(null);
     }
-  }, [isOpen, nomeAtual, nomeAtelieAtual, fotoAtual, telefoneAtual, bioAtual, cidadeAtual, tagAtual]);
+  }, [isOpen, nomeAtual, nomeAtelieAtual, fotoAtual, telefoneAtual, cidadeAtual]);
 
   if (!isOpen) return null;
 
@@ -126,10 +120,8 @@ export const CompleteProfileModal = ({
       const { error } = await updateProfile(userId, {
         telefone,
         nome,
-        nome_atelie: nomeAtelie,
-        bio,
+        nome_atelie: nome,
         cidade,
-        tag_especialidade: tagEspecialidade,
         ...(fotoUrl ? { foto_url: fotoUrl } : {}),
       });
 
@@ -144,13 +136,6 @@ export const CompleteProfileModal = ({
     } finally {
       setIsSubmitting(false);
     }
-  };
-
-  const textureLaranjaStyle = {
-    backgroundImage: "url('https://ik.imagekit.io/51b3srlsg/textura_laranja.jpeg')",
-    backgroundRepeat: "repeat",
-    backgroundSize: "150px",
-    textShadow: "1px 1px 2px rgba(0,0,0,0.5)"
   };
 
   return (
@@ -168,14 +153,9 @@ export const CompleteProfileModal = ({
 
         <div className="space-y-4">
           <div className="text-center space-y-1.5 mt-2">
-            <div 
-              style={textureLaranjaStyle}
-              className="w-full py-1.5 px-3 shadow-sm rounded-xl text-center border border-gray-100 mb-2"
-            >
-              <h2 className="text-xs sm:text-sm font-black uppercase tracking-wider text-white m-0">
-                Falta bem pouquinho!
-              </h2>
-            </div>
+            <h2 className="text-lg font-black uppercase tracking-wider text-[#171717] m-0">
+              Bem vinda, artesã!
+            </h2>
             <p className="text-xs text-gray-700 font-bold leading-relaxed">
               Complete seu perfil pra acessar sua área <strong className="text-gray-900">Meu AmiguMundo</strong>.
             </p>
@@ -224,7 +204,7 @@ export const CompleteProfileModal = ({
             {/* Campo Nome */}
             <div className="relative">
               <label className="block text-[10px] font-bold text-gray-400 uppercase mb-1 ml-1">
-                Como quer ser chamada?
+                Seu nome ou nome do Ateliê
               </label>
               <div className="relative">
                 <UserIcon className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
@@ -232,27 +212,11 @@ export const CompleteProfileModal = ({
                   type="text"
                   value={nome}
                   onChange={(e) => setNome(e.target.value)}
-                  placeholder="Seu nome ou apelido"
+                  placeholder="Ex: Maria ou Crochê da Maria"
                   required
                   className="w-full pl-11 pr-3 py-2.5 bg-gray-50 border-2 border-gray-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-gray-800 font-bold text-sm"
                 />
               </div>
-            </div>
-
-            <div className="relative">
-              <label className="block text-[10px] font-bold text-gray-400 uppercase mb-1 ml-1">
-                Nome do Ateliê (opcional)
-              </label>
-              <input
-                type="text"
-                value={nomeAtelie}
-                onChange={(e) => setNomeAtelie(e.target.value)}
-                placeholder="Ex: Crochê da Maria"
-                className="w-full px-3 py-2.5 bg-gray-50 border-2 border-gray-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-gray-800 font-bold text-sm"
-              />
-              <p className="text-[9px] text-gray-400 font-medium mt-1 ml-1">
-                Se preenchido, esse nome aparece no seu Catálogo Público no lugar do seu nome pessoal.
-              </p>
             </div>
 
             {/* Campo Telefone */}
@@ -273,21 +237,6 @@ export const CompleteProfileModal = ({
               </div>
             </div>
 
-            {/* Campo Bio */}
-            <div className="relative">
-              <label className="block text-[10px] font-bold text-gray-400 uppercase mb-1 ml-1">
-                Sobre você (opcional)
-              </label>
-              <textarea
-                value={bio}
-                onChange={(e) => setBio(e.target.value)}
-                placeholder="Amigurumis feitos à mão, com muito carinho..."
-                maxLength={150}
-                rows={2}
-                className="w-full px-3 py-2.5 bg-gray-50 border-2 border-gray-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-gray-800 font-bold text-sm resize-none"
-              />
-            </div>
-
             {/* Campo Cidade */}
             <div className="relative">
               <label className="block text-[10px] font-bold text-gray-400 uppercase mb-1 ml-1">
@@ -298,21 +247,6 @@ export const CompleteProfileModal = ({
                 value={cidade}
                 onChange={(e) => setCidade(e.target.value)}
                 placeholder="Maringá/PR"
-                className="w-full px-3 py-2.5 bg-gray-50 border-2 border-gray-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-gray-800 font-bold text-sm"
-              />
-            </div>
-
-            {/* Campo Tag de Especialidade */}
-            <div className="relative">
-              <label className="block text-[10px] font-bold text-gray-400 uppercase mb-1 ml-1">
-                Especialidade (opcional)
-              </label>
-              <input
-                type="text"
-                value={tagEspecialidade}
-                onChange={(e) => setTagEspecialidade(e.target.value)}
-                placeholder="Amigurumis sob encomenda"
-                maxLength={40}
                 className="w-full px-3 py-2.5 bg-gray-50 border-2 border-gray-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-gray-800 font-bold text-sm"
               />
             </div>

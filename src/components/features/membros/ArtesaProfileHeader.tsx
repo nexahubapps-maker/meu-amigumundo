@@ -38,23 +38,21 @@ export const ArtesaProfileHeader = ({
       />
 
       {(onEditarPerfil || onSair) && (
-        <div className="absolute top-2 right-2 flex items-center gap-1.5">
+        <div className="absolute top-3 left-3 flex items-center gap-2">
           {onEditarPerfil && (
             <button
               onClick={onEditarPerfil}
-              aria-label="Editar perfil"
-              className="w-8 h-8 rounded-full bg-black/40 backdrop-blur-sm text-white flex items-center justify-center active:scale-90 transition-transform"
+              className="flex items-center gap-1.5 bg-[#5D0599] text-white px-3 py-2 rounded-xl font-black text-[10px] sm:text-xs uppercase tracking-wide shadow-lg active:scale-95 transition-transform"
             >
-              <Pencil size={14} />
+              <Pencil size={14} /> Completar Perfil
             </button>
           )}
           {onSair && (
             <button
               onClick={onSair}
-              aria-label="Sair da conta"
-              className="w-8 h-8 rounded-full bg-black/40 backdrop-blur-sm text-white flex items-center justify-center active:scale-90 transition-transform"
+              className="flex items-center gap-1.5 bg-black/55 backdrop-blur-sm text-white px-3 py-2 rounded-xl font-black text-[10px] sm:text-xs uppercase tracking-wide shadow-lg active:scale-95 transition-transform"
             >
-              <LogOut size={14} />
+              <LogOut size={14} /> Sair
             </button>
           )}
         </div>
@@ -65,21 +63,21 @@ export const ArtesaProfileHeader = ({
 
       <div className="absolute inset-x-0 bottom-0 px-4 pb-3 pt-2">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full overflow-hidden bg-gradient-to-br from-[#5D0599] to-[#3CB19E] p-[2.5px] shrink-0">
+          <div className="w-16 h-16 sm:w-24 sm:h-24 rounded-full overflow-hidden bg-gradient-to-br from-[#5D0599] to-[#3CB19E] p-[3px] shrink-0">
             <div className="w-full h-full rounded-full overflow-hidden bg-white flex items-center justify-center">
               {fotoUrl ? (
                 <img src={fotoUrl} alt={nomeExibido} className="w-full h-full object-cover" />
               ) : (
-                <UserIcon className="text-gray-300" size={22} />
+                <UserIcon className="text-gray-300" size={30} />
               )}
             </div>
           </div>
           <div className="flex-1 min-w-0">
-            <h2 style={textoComSombra} className="text-white font-black text-xs sm:text-base uppercase tracking-tight leading-tight truncate">
+            <h2 style={textoComSombra} className="text-white font-black text-base sm:text-2xl uppercase tracking-tight leading-tight truncate">
               {nomeExibido}
             </h2>
             {nomeAtelie && nomeAtelie.trim() !== "" && (
-              <p style={textoComSombra} className="text-white/80 text-[9px] sm:text-[10px] font-bold truncate">{nome}</p>
+              <p style={textoComSombra} className="text-white/80 text-[10px] sm:text-xs font-bold truncate">{nome}</p>
             )}
             {(cidade || tagEspecialidade) && (
               <div className="flex items-center gap-2 flex-wrap mt-0.5">

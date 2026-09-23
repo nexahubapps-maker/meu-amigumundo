@@ -16,7 +16,7 @@
   ],
   "start_url": "/premium",
   "scope": "/premium",
-  "background_color": "#FFFFFF",
+  "background_color": "#5D0599",
   "theme_color": "#5D0599",
   "display": "standalone",
   "orientation": "portrait"
