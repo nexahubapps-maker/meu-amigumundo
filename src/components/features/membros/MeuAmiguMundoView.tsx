@@ -202,7 +202,7 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
 
       {/* Conteúdo Dinâmico por Aba */}
       {activeTab && (
-        <div className="flex-1 p-4 sm:p-6 overflow-y-auto">
+        <div className="flex-1 p-4 sm:p-6">
           {activeTab === "Catálogo" ? (
             categoriaSelecionadaCatalogo ? (
               <div className="max-w-4xl mx-auto space-y-3">
