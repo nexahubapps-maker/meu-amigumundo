@@ -1,8 +1,9 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { ArrowLeft, Crown, Check, Sparkles } from "lucide-react";
 import { showInfo } from "@/utils/toast";
+import { AuthModal } from "@/components/AuthModal";
 
 // PREÇO PROVISÓRIO — ajustar aqui quando o valor definitivo for decidido, antes do lançamento
 const PRECO_MENSAL = "29,90";
@@ -19,6 +20,8 @@ const BENEFICIOS = [
 ];
 
 export const PremiumSalesView = ({ onBack }: PremiumSalesViewProps) => {
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+
   const handleAssinar = () => {
     showInfo("Em breve! Estamos preparando o lançamento do AmiguMundo Premium.");
   };
@@ -29,7 +32,13 @@ export const PremiumSalesView = ({ onBack }: PremiumSalesViewProps) => {
         <button onClick={onBack} className="w-9 h-9 rounded-full bg-gray-50 flex items-center justify-center active:scale-95 transition-all">
           <ArrowLeft size={18} className="text-gray-700" />
         </button>
-        <h1 className="text-sm font-black text-gray-900 uppercase tracking-tight">AmiguMundo Premium</h1>
+        <h1 className="text-sm font-black text-gray-900 uppercase tracking-tight flex-1">AmiguMundo Premium</h1>
+        <button
+          onClick={() => setIsAuthModalOpen(true)}
+          className="text-[11px] font-black uppercase tracking-wide text-[#5D0599] active:scale-95 transition-transform"
+        >
+          Já sou assinante
+        </button>
       </div>
 
       <div className="flex-1 px-5 py-8 max-w-md mx-auto w-full">
@@ -78,6 +87,8 @@ export const PremiumSalesView = ({ onBack }: PremiumSalesViewProps) => {
           Cancele quando quiser. Sem fidelidade.
         </p>
       </div>
+
+      <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
     </div>
   );
 };

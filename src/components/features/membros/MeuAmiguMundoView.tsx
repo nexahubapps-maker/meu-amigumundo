@@ -150,7 +150,6 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
 
   const handleSignOut = async () => {
     await signOut();
-    onBack();
   };
 
   const getLinkVisualizacao = (linkDownload: string | null): string | null => {
@@ -178,6 +177,8 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
           cidade={profile?.cidade}
           tagEspecialidade={profile?.tag_especialidade}
           capaUrl={CAPA_PREMIUM_URL}
+          onEditarPerfil={() => setIsEditProfileOpen(true)}
+          onSair={handleSignOut}
         />
       </div>
 

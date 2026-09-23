@@ -1,5 +1,5 @@
 "use client";
-import { User as UserIcon, MapPin } from "lucide-react";
+import { User as UserIcon, MapPin, Pencil, LogOut } from "lucide-react";
 
 interface ArtesaProfileHeaderProps {
   nome: string;
@@ -9,6 +9,8 @@ interface ArtesaProfileHeaderProps {
   cidade?: string | null;
   tagEspecialidade?: string | null;
   capaUrl: string;
+  onEditarPerfil?: () => void;
+  onSair?: () => void;
 }
 
 const textoComSombra = { textShadow: "0 1px 4px rgba(0,0,0,0.85)" };
@@ -21,6 +23,8 @@ export const ArtesaProfileHeader = ({
   cidade,
   tagEspecialidade,
   capaUrl,
+  onEditarPerfil,
+  onSair,
 }: ArtesaProfileHeaderProps) => {
   const nomeExibido = nomeAtelie && nomeAtelie.trim() !== "" ? nomeAtelie : nome;
 
@@ -32,6 +36,29 @@ export const ArtesaProfileHeader = ({
         className="w-full h-auto block"
         onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
       />
+
+      {(onEditarPerfil || onSair) && (
+        <div className="absolute top-2 right-2 flex items-center gap-1.5">
+          {onEditarPerfil && (
+            <button
+              onClick={onEditarPerfil}
+              aria-label="Editar perfil"
+              className="w-8 h-8 rounded-full bg-black/40 backdrop-blur-sm text-white flex items-center justify-center active:scale-90 transition-transform"
+            >
+              <Pencil size={14} />
+            </button>
+          )}
+          {onSair && (
+            <button
+              onClick={onSair}
+              aria-label="Sair da conta"
+              className="w-8 h-8 rounded-full bg-black/40 backdrop-blur-sm text-white flex items-center justify-center active:scale-90 transition-transform"
+            >
+              <LogOut size={14} />
+            </button>
+          )}
+        </div>
+      )}
 
       {/* Gradiente inferior só pra garantir legibilidade do avatar/nome por cima da capa */}
       <div className="absolute inset-x-0 bottom-0 h-[55%] bg-gradient-to-t from-black/75 via-black/25 to-transparent pointer-events-none" />
