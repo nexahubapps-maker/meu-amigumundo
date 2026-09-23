@@ -38,7 +38,7 @@ const FERRAMENTAS = [
   { id: "cores", nome: "Combinador de Cores", descricao: "Paletas harmônicas pro seu amigurumi", icone: Palette, disponivel: true },
 ];
 
-export const MeuAmiguMundoView = ({ onBack, onAddToCart, esconderBotaoVoltar }: MeuAmiguMundoViewProps) => {
+export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProps) => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
 
@@ -144,12 +144,7 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart, esconderBotaoVoltar }: 
     }
   };
 
-  const textureLaranjaStyle = {
-    backgroundImage: "url('https://ik.imagekit.io/51b3srlsg/textura_laranja.jpeg')",
-    backgroundRepeat: "repeat",
-    backgroundSize: "150px",
-    textShadow: "1px 1px 2px rgba(0,0,0,0.5)",
-  };
+  const CAPA_PREMIUM_URL = "https://ik.imagekit.io/di3huhaluc/capa%20app%20amigumundo%20premium";
 
   const displayName = profile?.nome || user?.email || "Visitante";
   const avatarUrl = profile?.foto_url;
@@ -175,27 +170,6 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart, esconderBotaoVoltar }: 
 
   return (
     <div className="fixed inset-0 z-[90] bg-[#F5F5F7] overflow-y-auto animate-in slide-in-from-bottom duration-300 flex flex-col">
-      {/* Cabeçalho Fixo com Textura Laranja */}
-      <div
-        style={textureLaranjaStyle}
-        className="sticky top-0 z-10 py-4 px-4 flex items-center justify-between shadow-md shrink-0"
-      >
-        {esconderBotaoVoltar ? (
-          <div className="w-16"></div>
-        ) : (
-          <button
-            onClick={onBack}
-            className="text-white hover:scale-105 active:scale-95 transition-transform flex items-center gap-1.5 font-black text-xs uppercase tracking-wider"
-          >
-            <ArrowLeft size={18} /> Voltar
-          </button>
-        )}
-        <h2 className="text-white font-black text-sm uppercase tracking-widest m-0">
-          MEU AMIGUMUNDO
-        </h2>
-        <div className="w-12"></div>
-      </div>
-
       <ArtesaProfileHeader
         nome={displayName}
         nomeAtelie={profile?.nome_atelie}
@@ -203,6 +177,7 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart, esconderBotaoVoltar }: 
         bio={profile?.bio}
         cidade={profile?.cidade}
         tagEspecialidade={profile?.tag_especialidade}
+        capaUrl={CAPA_PREMIUM_URL}
         onCopiarLink={() => {
           const link = `${window.location.origin}/catalogo/${user?.id}`;
           navigator.clipboard.writeText(link);
@@ -213,7 +188,7 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart, esconderBotaoVoltar }: 
         }}
       />
 
-      <div className="flex items-center justify-around border-t border-b border-gray-100 bg-white sticky top-[60px] z-[5]">
+      <div className="flex items-center justify-around border-t border-b border-gray-100 bg-white sticky top-0 z-[5]">
         {MENUS.map((menu) => {
           const Icone = menu.icone;
           const isActive = activeTab === menu.id;
