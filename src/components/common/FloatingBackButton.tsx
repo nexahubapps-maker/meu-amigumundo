@@ -6,7 +6,7 @@ export const FloatingBackButton = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  if (location.pathname === "/") return null;
+  if (location.pathname === "/" || location.pathname === "/premium") return null;
 
   return (
     <button

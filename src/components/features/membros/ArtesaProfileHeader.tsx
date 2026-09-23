@@ -25,7 +25,7 @@ export const ArtesaProfileHeader = ({
   const nomeExibido = nomeAtelie && nomeAtelie.trim() !== "" ? nomeAtelie : nome;
 
   return (
-    <div className="relative w-full min-h-[110px] sm:min-h-[170px] overflow-hidden bg-[#171717] shrink-0">
+    <div className="relative w-full min-h-[110px] sm:min-h-[170px] sm:rounded-2xl overflow-hidden bg-[#171717] shrink-0">
       <img
         src={capaUrl}
         alt="AmiguMundo Premium"

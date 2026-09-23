@@ -169,7 +169,7 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
 
   return (
     <div className="fixed inset-0 z-[90] bg-[#F5F5F7] overflow-y-auto animate-in slide-in-from-bottom duration-300 flex flex-col">
-      <div className="sm:max-w-4xl sm:mx-auto sm:mt-6 sm:rounded-2xl sm:overflow-hidden">
+      <div className="sm:max-w-4xl sm:mx-auto sm:mt-6">
         <ArtesaProfileHeader
           nome={displayName}
           nomeAtelie={profile?.nome_atelie}
@@ -460,6 +460,25 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
           titulo={pdfAberto.titulo}
           onClose={() => setPdfAberto(null)}
         />
+      )}
+
+      {(ferramentaAberta || categoriaSelecionadaCatalogo || pdfAberto || zoomImage || isEditProfileOpen) && (
+        <button
+          onClick={() => {
+            if (pdfAberto) return setPdfAberto(null);
+            if (zoomImage) return setZoomImage(null);
+            if (isEditProfileOpen) return setIsEditProfileOpen(false);
+            if (ferramentaAberta) return setFerramentaAberta(null);
+            if (categoriaSelecionadaCatalogo) {
+              setCategoriaSelecionadaCatalogo(null);
+              setReceitasDaCategoriaSelecionada([]);
+            }
+          }}
+          aria-label="Voltar"
+          className="fixed bottom-6 right-4 z-[9998] bg-[#171717]/90 backdrop-blur-sm text-white p-3 rounded-full shadow-lg hover:scale-110 active:scale-90 transition-transform"
+        >
+          <ArrowLeft size={20} />
+        </button>
       )}
     </div>
   );
