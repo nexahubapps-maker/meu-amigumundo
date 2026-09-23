@@ -1,5 +1,5 @@
 "use client";
-import { User as UserIcon, MapPin, Link2, Eye } from "lucide-react";
+import { User as UserIcon, MapPin } from "lucide-react";
 
 interface ArtesaProfileHeaderProps {
   nome: string;
@@ -9,8 +9,6 @@ interface ArtesaProfileHeaderProps {
   cidade?: string | null;
   tagEspecialidade?: string | null;
   capaUrl: string;
-  onCopiarLink?: () => void;
-  onVisualizarCatalogo?: () => void;
 }
 
 const textoComSombra = { textShadow: "0 1px 4px rgba(0,0,0,0.85)" };
@@ -23,21 +21,19 @@ export const ArtesaProfileHeader = ({
   cidade,
   tagEspecialidade,
   capaUrl,
-  onCopiarLink,
-  onVisualizarCatalogo
 }: ArtesaProfileHeaderProps) => {
   const nomeExibido = nomeAtelie && nomeAtelie.trim() !== "" ? nomeAtelie : nome;
 
   return (
-    <div className="relative w-full aspect-[3/1] overflow-hidden bg-[#171717] shrink-0">
+    <div className="relative w-full overflow-hidden bg-[#171717] shrink-0">
       <img
         src={capaUrl}
         alt="AmiguMundo Premium"
-        className="absolute inset-0 w-full h-full object-cover"
+        className="w-full h-auto block"
       />
 
-      {/* Gradiente inferior só pra garantir legibilidade do avatar/nome/botões por cima da capa */}
-      <div className="absolute inset-x-0 bottom-0 h-[60%] bg-gradient-to-t from-black/75 via-black/30 to-transparent pointer-events-none" />
+      {/* Gradiente inferior só pra garantir legibilidade do avatar/nome por cima da capa */}
+      <div className="absolute inset-x-0 bottom-0 h-[55%] bg-gradient-to-t from-black/75 via-black/25 to-transparent pointer-events-none" />
 
       <div className="absolute inset-x-0 bottom-0 px-4 pb-3 pt-2">
         <div className="flex items-center gap-3">
@@ -75,25 +71,10 @@ export const ArtesaProfileHeader = ({
         </div>
 
         {bio && (
-          <p style={textoComSombra} className="text-white/90 text-[10px] sm:text-xs font-medium leading-snug mt-1.5 line-clamp-2 hidden sm:block">
+          <p style={textoComSombra} className="text-white/90 text-[10px] sm:text-xs font-medium leading-snug mt-1.5 line-clamp-2">
             {bio}
           </p>
         )}
-
-        <div className="flex items-center gap-2 mt-2">
-          <button
-            onClick={onCopiarLink}
-            className="flex-1 flex items-center justify-center gap-1.5 bg-[#5D0599] text-white py-1.5 sm:py-2 rounded-xl font-black text-[10px] sm:text-[11px] uppercase tracking-wide active:scale-95 transition-transform shadow-lg"
-          >
-            <Link2 size={12} /> Copiar Link
-          </button>
-          <button
-            onClick={onVisualizarCatalogo}
-            className="flex-1 flex items-center justify-center gap-1.5 bg-[#3CB19E] text-white py-1.5 sm:py-2 rounded-xl font-black text-[10px] sm:text-[11px] uppercase tracking-wide active:scale-95 transition-transform shadow-lg"
-          >
-            <Eye size={12} /> Ver Meu Catálogo
-          </button>
-        </div>
       </div>
     </div>
   );

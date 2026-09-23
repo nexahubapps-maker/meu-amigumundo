@@ -15,7 +15,6 @@ import { ConversorAgulha } from "@/components/features/ferramentas/ConversorAgul
 import { CombinadorCores } from "@/components/features/ferramentas/CombinadorCores";
 import { LightboxModal } from "@/components/features/catalog/LightboxModal";
 import { ArtesaProfileHeader } from "@/components/features/membros/ArtesaProfileHeader";
-import { showSuccess } from "@/utils/toast";
 
 interface MeuAmiguMundoViewProps {
   onBack: () => void;
@@ -26,9 +25,9 @@ interface MeuAmiguMundoViewProps {
 type TabType = "Catálogo" | "Favoritos" | "Ferramentas";
 
 const MENUS = [
-  { id: "Catálogo", label: "Catálogo", icone: BookOpen, cor: "from-[#3CB19E] to-[#2c8577]", capaUrl: null },
-  { id: "Favoritos", label: "Favoritos", icone: Heart, cor: "from-[#5D0599] to-[#42026b]", capaUrl: null },
-  { id: "Ferramentas", label: "Ferramentas", icone: Wrench, cor: "from-[#3CB19E] to-[#2c8577]", capaUrl: null },
+  { id: "Catálogo", label: "Galeria", icone: BookOpen, cor: "#3CB19E" },
+  { id: "Favoritos", label: "Favoritos", icone: Heart, cor: "#5D0599" },
+  { id: "Ferramentas", label: "Ferramentas", icone: Wrench, cor: "#3CB19E" },
 ];
 
 const FERRAMENTAS = [
@@ -144,7 +143,7 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
     }
   };
 
-  const CAPA_PREMIUM_URL = "https://ik.imagekit.io/di3huhaluc/capa%20app%20amigumundo%20premium";
+  const CAPA_PREMIUM_URL = "https://ik.imagekit.io/di3huhaluc/capa%20amigumundo%20premium";
 
   const displayName = profile?.nome || user?.email || "Visitante";
   const avatarUrl = profile?.foto_url;
@@ -170,25 +169,19 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
 
   return (
     <div className="fixed inset-0 z-[90] bg-[#F5F5F7] overflow-y-auto animate-in slide-in-from-bottom duration-300 flex flex-col">
-      <ArtesaProfileHeader
-        nome={displayName}
-        nomeAtelie={profile?.nome_atelie}
-        fotoUrl={avatarUrl}
-        bio={profile?.bio}
-        cidade={profile?.cidade}
-        tagEspecialidade={profile?.tag_especialidade}
-        capaUrl={CAPA_PREMIUM_URL}
-        onCopiarLink={() => {
-          const link = `${window.location.origin}/catalogo/${user?.id}`;
-          navigator.clipboard.writeText(link);
-          showSuccess("Link do seu catálogo copiado!");
-        }}
-        onVisualizarCatalogo={() => {
-          window.open(`/catalogo/${user?.id}`, "_blank");
-        }}
-      />
+      <div className="sm:max-w-4xl sm:mx-auto sm:mt-6 sm:rounded-2xl sm:overflow-hidden">
+        <ArtesaProfileHeader
+          nome={displayName}
+          nomeAtelie={profile?.nome_atelie}
+          fotoUrl={avatarUrl}
+          bio={profile?.bio}
+          cidade={profile?.cidade}
+          tagEspecialidade={profile?.tag_especialidade}
+          capaUrl={CAPA_PREMIUM_URL}
+        />
+      </div>
 
-      <div className="flex items-center justify-around border-t border-b border-gray-100 bg-white sticky top-0 z-[5]">
+      <div className="flex items-center gap-2 px-4 py-3 border-t border-b border-gray-100 bg-white sticky top-0 z-[5]">
         {MENUS.map((menu) => {
           const Icone = menu.icone;
           const isActive = activeTab === menu.id;
@@ -196,9 +189,12 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
             <button
               key={menu.id}
               onClick={() => setActiveTab(menu.id as TabType)}
-              className={`flex-1 flex flex-col items-center justify-center gap-0.5 py-2.5 border-b-2 transition-colors ${isActive ? "border-[#5D0599] text-[#5D0599]" : "border-transparent text-gray-400"}`}
+              style={{ backgroundColor: menu.cor }}
+              className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl font-black text-[10px] sm:text-[11px] uppercase tracking-wide text-white transition-all active:scale-95 ${
+                isActive ? "opacity-100 shadow-md" : "opacity-55"
+              }`}
             >
-              <Icone size={18} />
+              <Icone size={14} /> {menu.label}
             </button>
           );
         })}
