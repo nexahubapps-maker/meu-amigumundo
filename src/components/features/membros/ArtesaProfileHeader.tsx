@@ -25,11 +25,12 @@ export const ArtesaProfileHeader = ({
   const nomeExibido = nomeAtelie && nomeAtelie.trim() !== "" ? nomeAtelie : nome;
 
   return (
-    <div className="relative w-full overflow-hidden bg-[#171717] shrink-0">
+    <div className="relative w-full min-h-[110px] sm:min-h-[170px] overflow-hidden bg-[#171717] shrink-0">
       <img
         src={capaUrl}
         alt="AmiguMundo Premium"
         className="w-full h-auto block"
+        onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
       />
 
       {/* Gradiente inferior só pra garantir legibilidade do avatar/nome por cima da capa */}
