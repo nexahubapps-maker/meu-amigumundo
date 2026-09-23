@@ -143,7 +143,7 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
     }
   };
 
-  const CAPA_PREMIUM_URL = "https://ik.imagekit.io/di3huhaluc/capa%20amigumundo%20premium";
+  const CAPA_PREMIUM_URL = "https://ik.imagekit.io/di3huhaluc/capa%20do%20app%20mestre%20cuca%20premium.png";
 
   const displayName = profile?.nome || user?.email || "Visitante";
   const avatarUrl = profile?.foto_url;
@@ -169,7 +169,7 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
 
   return (
     <div className="fixed inset-0 z-[90] bg-[#F5F5F7] overflow-y-auto animate-in slide-in-from-bottom duration-300 flex flex-col">
-      <div className="sm:max-w-4xl sm:mx-auto sm:mt-6">
+      <div className="sm:max-w-6xl sm:mx-auto sm:mt-6">
         <ArtesaProfileHeader
           nome={displayName}
           nomeAtelie={profile?.nome_atelie}
@@ -181,23 +181,25 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
         />
       </div>
 
-      <div className="flex items-center gap-2 px-4 py-3 border-t border-b border-gray-100 bg-white sticky top-0 z-[5]">
-        {MENUS.map((menu) => {
-          const Icone = menu.icone;
-          const isActive = activeTab === menu.id;
-          return (
-            <button
-              key={menu.id}
-              onClick={() => setActiveTab(menu.id as TabType)}
-              style={{ backgroundColor: menu.cor }}
-              className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl font-black text-[10px] sm:text-[11px] uppercase tracking-wide text-white transition-all active:scale-95 ${
-                isActive ? "opacity-100 shadow-md" : "opacity-55"
-              }`}
-            >
-              <Icone size={14} /> {menu.label}
-            </button>
-          );
-        })}
+      <div className="border-t border-b border-gray-100 bg-white sticky top-0 z-[5] px-4 sm:px-6 py-3">
+        <div className="max-w-6xl mx-auto flex items-center gap-2">
+          {MENUS.map((menu) => {
+            const Icone = menu.icone;
+            const isActive = activeTab === menu.id;
+            return (
+              <button
+                key={menu.id}
+                onClick={() => setActiveTab(menu.id as TabType)}
+                style={{ backgroundColor: menu.cor }}
+                className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl font-black text-[10px] sm:text-[11px] uppercase tracking-wide text-white transition-all active:scale-95 ${
+                  isActive ? "opacity-100 shadow-md" : "opacity-55"
+                }`}
+              >
+                <Icone size={14} /> {menu.label}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {/* Conteúdo Dinâmico por Aba */}
@@ -205,7 +207,7 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
         <div className="flex-1 p-4 sm:p-6">
           {activeTab === "Catálogo" ? (
             categoriaSelecionadaCatalogo ? (
-              <div className="max-w-4xl mx-auto space-y-3">
+              <div className="max-w-6xl mx-auto space-y-3">
                 <button
                   onClick={() => { setCategoriaSelecionadaCatalogo(null); setReceitasDaCategoriaSelecionada([]); }}
                   className="flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-gray-600 hover:text-gray-900 mb-2"
@@ -285,7 +287,7 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
                 )}
               </div>
             ) : (
-              <div className="max-w-4xl mx-auto">
+              <div className="max-w-6xl mx-auto">
                 <p className="text-xs font-black text-gray-500 uppercase tracking-wider mb-3">
                   Todas as Categorias
                 </p>
@@ -328,7 +330,7 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
                 </p>
               </div>
             ) : (
-              <div className="max-w-4xl mx-auto space-y-3">
+              <div className="max-w-6xl mx-auto space-y-3">
                 <p className="text-xs font-black text-gray-500 uppercase tracking-wider mb-2">
                   Seus Itens Favoritados ({favoritosList.length})
                 </p>
@@ -370,7 +372,7 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
               </div>
             )
           ) : activeTab === "Ferramentas" ? (
-            <div className="max-w-4xl mx-auto">
+            <div className="max-w-6xl mx-auto">
               <p className="text-xs font-black text-gray-500 uppercase tracking-wider mb-3">
                 Ferramentas Gratuitas
               </p>
