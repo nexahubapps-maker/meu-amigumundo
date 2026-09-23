@@ -1,5 +1,5 @@
 "use client";
-import { User as UserIcon, MapPin, Pencil, LogOut } from "lucide-react";
+import { User as UserIcon, MapPin, LogOut } from "lucide-react";
 
 interface ArtesaProfileHeaderProps {
   nome: string;
@@ -39,20 +39,20 @@ export const ArtesaProfileHeader = ({
 
       {(onEditarPerfil || onSair) && (
         <div className="absolute top-3 left-3 flex items-center gap-2">
-          {onEditarPerfil && (
-            <button
-              onClick={onEditarPerfil}
-              className="flex items-center gap-1.5 bg-[#5D0599] text-white px-3 py-2 rounded-xl font-black text-[10px] sm:text-xs uppercase tracking-wide shadow-lg active:scale-95 transition-transform"
-            >
-              <Pencil size={14} /> Completar Perfil
-            </button>
-          )}
           {onSair && (
             <button
               onClick={onSair}
               className="flex items-center gap-1.5 bg-black/55 backdrop-blur-sm text-white px-3 py-2 rounded-xl font-black text-[10px] sm:text-xs uppercase tracking-wide shadow-lg active:scale-95 transition-transform"
             >
               <LogOut size={14} /> Sair
+            </button>
+          )}
+          {onEditarPerfil && (
+            <button
+              onClick={onEditarPerfil}
+              className="flex items-center gap-1.5 bg-[#5D0599] text-white px-3 py-2 rounded-xl font-black text-[10px] sm:text-xs uppercase tracking-wide shadow-lg active:scale-95 transition-transform"
+            >
+              Perfil
             </button>
           )}
         </div>
