@@ -5,13 +5,25 @@ import { useEffect, useState } from "react";
 import { Loader2, Sparkles, BookOpen, ChevronRight } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { InfoprodutoCrossSell } from "@/components/features/infoprodutos/InfoprodutoCrossSell";
+import { useAuth } from "@/context/AuthContext";
+import { getProfile } from "@/utils/profile";
 
 const InfoprodutoHome = () => {
   const { infoprodutoId } = useParams<{ infoprodutoId: string }>();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [modulos, setModulos] = useState<any[]>([]);
   const [carregando, setCarregando] = useState(true);
   const [tituloProduto, setTituloProduto] = useState("");
+  const [isPremium, setIsPremium] = useState(false);
+
+  useEffect(() => {
+    if (!user) {
+      setIsPremium(false);
+      return;
+    }
+    getProfile(user.id).then((p) => setIsPremium(p?.assinatura_status === "ativo"));
+  }, [user]);
 
   useEffect(() => {
     const carregar = async () => {
@@ -77,7 +89,7 @@ const InfoprodutoHome = () => {
         )}
       </div>
 
-      <InfoprodutoCrossSell currentId={infoprodutoId || ""} />
+      <InfoprodutoCrossSell currentId={infoprodutoId || ""} isPremium={isPremium} />
     </div>
   );
 };
