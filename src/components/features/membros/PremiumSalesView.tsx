@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { ArrowLeft, Crown, Check, Sparkles } from "lucide-react";
-import { showInfo } from "@/utils/toast";
+import { useNavigate } from "react-router-dom";
 import { AuthModal } from "@/components/AuthModal";
 
 // PREÇO PROVISÓRIO — ajustar aqui quando o valor definitivo for decidido, antes do lançamento
@@ -20,10 +20,11 @@ const BENEFICIOS = [
 ];
 
 export const PremiumSalesView = ({ onBack }: PremiumSalesViewProps) => {
+  const navigate = useNavigate();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   const handleAssinar = () => {
-    showInfo("Em breve! Estamos preparando o lançamento do AmiguMundo Premium.");
+    navigate("/premium/assinar");
   };
 
   return (

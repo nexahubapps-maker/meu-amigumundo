@@ -583,6 +583,133 @@ async function handleCriarPagamento(request: Request, env: Env): Promise<Respons
   }
 }
 
+const PREMIUM_ASSINATURA_VALOR = 19.90;
+
+interface CriarAssinaturaBody {
+  cardToken: string;
+  paymentMethodId?: string;
+  email: string;
+  nome: string;
+  cpf: string;
+  usuarioId?: string | null;
+  utm_source?: string;
+  utm_medium?: string;
+  utm_campaign?: string;
+  utm_content?: string;
+}
+
+async function handleCriarAssinaturaPremium(request: Request, env: Env): Promise<Response> {
+  if (request.method !== "POST") {
+    return new Response(JSON.stringify({ error: "Método não permitido" }), { status: 405 });
+  }
+
+  try {
+    const body: any = await request.json();
+    const {
+      cardToken,
+      email,
+      nome,
+      cpf,
+      usuarioId,
+      utm_source,
+      utm_medium,
+      utm_campaign,
+      utm_content
+    }: CriarAssinaturaBody = body;
+
+    if (!cardToken || !email || !nome || !cpf) {
+      return new Response(JSON.stringify({ error: "Dados obrigatórios ausentes." }), { status: 400 });
+    }
+
+    const cleanCpf = cpf.replace(/\D/g, "");
+
+    // Se essa pessoa já tem uma assinatura ativa registrada, não deixa criar outra cobrança duplicada.
+    if (usuarioId) {
+      const existenteRes = await supabaseRest(
+        `assinaturas_premium?usuario_id=eq.${usuarioId}&status=eq.authorized&select=id`,
+        env.SUPABASE_SERVICE_ROLE_KEY
+      );
+      const existenteArr: any = await existenteRes.json();
+      if (Array.isArray(existenteArr) && existenteArr.length > 0) {
+        return new Response(JSON.stringify({ error: "Você já tem uma assinatura Premium ativa." }), { status: 409 });
+      }
+    }
+
+    const idempotencyKey = crypto.randomUUID();
+
+    const mpBody = {
+      reason: "AmiguMundo Premium - Assinatura mensal",
+      external_reference: usuarioId || email,
+      payer_email: email,
+      card_token_id: cardToken,
+      status: "authorized",
+      auto_recurring: {
+        frequency: 1,
+        frequency_type: "months",
+        transaction_amount: PREMIUM_ASSINATURA_VALOR,
+        currency_id: "BRL"
+      },
+      back_url: "https://amigumundo.nexahubapps.workers.dev/premium"
+    };
+
+    const mpResponse = await fetch("https://api.mercadopago.com/preapproval", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${env.MERCADOPAGO_ACCESS_TOKEN}`,
+        "X-Idempotency-Key": idempotencyKey
+      },
+      body: JSON.stringify(mpBody)
+    });
+
+    const mpData: any = await mpResponse.json();
+
+    if (!mpResponse.ok) {
+      console.error("Erro Mercado Pago (preapproval):", mpData);
+      return new Response(JSON.stringify({ error: mpData.message || "Erro ao processar a assinatura." }), { status: 502 });
+    }
+
+    const assinaturaRes = await supabaseRest("assinaturas_premium", env.SUPABASE_SERVICE_ROLE_KEY, {
+      method: "POST",
+      headers: { Prefer: "return=representation" },
+      body: JSON.stringify({
+        mercadopago_preapproval_id: mpData.id,
+        usuario_id: usuarioId || null,
+        email,
+        nome,
+        cpf: cleanCpf,
+        valor: PREMIUM_ASSINATURA_VALOR,
+        status: mpData.status,
+        utm_source: utm_source || null,
+        utm_medium: utm_medium || null,
+        utm_campaign: utm_campaign || null,
+        utm_content: utm_content || null
+      })
+    });
+
+    if (!assinaturaRes.ok) {
+      console.error("Erro ao gravar assinatura:", await assinaturaRes.text());
+    }
+
+    // Se autorizada na hora (cartão válido), já libera o acesso Premium sem depender do webhook.
+    if (mpData.status === "authorized" && usuarioId) {
+      await supabaseRest(`perfis?id=eq.${usuarioId}`, env.SUPABASE_SERVICE_ROLE_KEY, {
+        method: "PATCH",
+        headers: { Prefer: "return=minimal" },
+        body: JSON.stringify({ assinatura_status: "ativo", atualizado_em: new Date().toISOString() })
+      });
+    }
+
+    return new Response(
+      JSON.stringify({ status: mpData.status, preapprovalId: mpData.id }),
+      { status: 200 }
+    );
+  } catch (error: any) {
+    console.error("Erro inesperado em criar-assinatura-premium:", error);
+    return new Response(JSON.stringify({ error: "Erro inesperado ao processar a assinatura." }), { status: 500 });
+  }
+}
+
 async function validateMpSignature(
   xSignature: string | undefined,
   xRequestId: string | undefined,
@@ -666,6 +793,47 @@ async function enviarEmailBackup(
   }
 }
 
+async function handleWebhookPreapproval(dataId: string, env: Env): Promise<Response> {
+  const mpResponse = await fetch(`https://api.mercadopago.com/preapproval/${dataId}`, {
+    headers: { Authorization: `Bearer ${env.MERCADOPAGO_ACCESS_TOKEN}` }
+  });
+
+  if (!mpResponse.ok) {
+    return new Response("Erro ao consultar assinatura", { status: 502 });
+  }
+
+  const preapprovalData: any = await mpResponse.json();
+  const novoStatus = preapprovalData.status; // authorized | paused | cancelled | pending
+
+  const assinaturaRes = await supabaseRest(
+    `assinaturas_premium?mercadopago_preapproval_id=eq.${dataId}&select=id,usuario_id`,
+    env.SUPABASE_SERVICE_ROLE_KEY
+  );
+  const assinaturaArr: any = await assinaturaRes.json();
+  const assinatura = Array.isArray(assinaturaArr) ? assinaturaArr[0] : null;
+
+  if (!assinatura) {
+    return new Response("Assinatura não encontrada", { status: 404 });
+  }
+
+  await supabaseRest(`assinaturas_premium?id=eq.${assinatura.id}`, env.SUPABASE_SERVICE_ROLE_KEY, {
+    method: "PATCH",
+    headers: { Prefer: "return=minimal" },
+    body: JSON.stringify({ status: novoStatus, atualizado_em: new Date().toISOString() })
+  });
+
+  if (assinatura.usuario_id) {
+    const statusPerfil = novoStatus === "authorized" ? "ativo" : novoStatus === "pending" ? "pendente" : "inativo";
+    await supabaseRest(`perfis?id=eq.${assinatura.usuario_id}`, env.SUPABASE_SERVICE_ROLE_KEY, {
+      method: "PATCH",
+      headers: { Prefer: "return=minimal" },
+      body: JSON.stringify({ assinatura_status: statusPerfil, atualizado_em: new Date().toISOString() })
+    });
+  }
+
+  return new Response("OK", { status: 200 });
+}
+
 async function handleWebhookMercadopago(request: Request, env: Env): Promise<Response> {
   try {
     const url = new URL(request.url);
@@ -676,10 +844,11 @@ async function handleWebhookMercadopago(request: Request, env: Env): Promise<Res
       bodyData = {};
     }
     const dataId = url.searchParams.get("data.id") || bodyData?.data?.id;
+    const tipoNotificacao = url.searchParams.get("type") || bodyData?.type;
 
     console.log("[MP Webhook Debug] URL completa recebida:", request.url);
     console.log("[MP Webhook Debug] Corpo recebido:", JSON.stringify(bodyData));
-    console.log("[MP Webhook Debug] dataId resolvido:", dataId);
+    console.log("[MP Webhook Debug] dataId resolvido:", dataId, "| tipo:", tipoNotificacao);
 
     if (!dataId) {
       return new Response("Missing data.id", { status: 400 });
@@ -692,6 +861,10 @@ async function handleWebhookMercadopago(request: Request, env: Env): Promise<Res
     if (!assinaturaValida) {
       console.warn("Assinatura inválida no webhook do Mercado Pago");
       return new Response("Invalid signature", { status: 401 });
+    }
+
+    if (tipoNotificacao === "subscription_preapproval") {
+      return handleWebhookPreapproval(String(dataId), env);
     }
 
     const mpResponse = await fetch(`https://api.mercadopago.com/v1/payments/${dataId}`, {
@@ -713,7 +886,10 @@ async function handleWebhookMercadopago(request: Request, env: Env): Promise<Res
     const pedidoAtual = Array.isArray(pedidoArr) ? pedidoArr[0] : null;
 
     if (!pedidoAtual) {
-      return new Response("Pedido não encontrado", { status: 404 });
+      // Não é um erro: pagamentos recorrentes de assinaturas (subscription_authorized_payment) também
+      // chegam aqui pelo tópico "payments", mas não têm linha correspondente em `pedidos` (essa tabela
+      // é só de compras avulsas da Loja). Não há nada pra fazer aqui nesse caso.
+      return new Response("OK (sem pedido avulso correspondente)", { status: 200 });
     }
 
     const jaEstavaAprovado = pedidoAtual.status === "aprovado";
@@ -771,6 +947,9 @@ export default {
     }
     if (path === "/.netlify/functions/criar-pagamento") {
       return handleCriarPagamento(request, env);
+    }
+    if (path === "/criar-assinatura-premium") {
+      return handleCriarAssinaturaPremium(request, env);
     }
     if (path === "/webhook-mercadopago") {
       return handleWebhookMercadopago(request, env);

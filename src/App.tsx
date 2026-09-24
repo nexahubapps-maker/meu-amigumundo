@@ -10,6 +10,7 @@ import Checkout from "./pages/Checkout";
 import ObrigadoPage from "@/pages/ObrigadoPage";
 import CatalogoPublico from "./pages/CatalogoPublico";
 import PremiumPage from "./pages/PremiumPage";
+import PremiumCheckout from "./pages/PremiumCheckout";
 import InfoprodutoHome from "./pages/conteudo/InfoprodutoHome";
 import { ModuleReader } from "./components/features/infoprodutos/ModuleReader";
 import NotFound from "./pages/NotFound";
@@ -59,6 +60,7 @@ const App = () => (
               
               {/* Rota do AmiguMundo Premium */}
               <Route path="/premium" element={<PremiumPage />} />
+              <Route path="/premium/assinar" element={<PremiumCheckout />} />
               
               {/* Conteúdo de Infoprodutos */}
               <Route path="/conteudo/:infoprodutoId" element={<InfoprodutoHome />} />

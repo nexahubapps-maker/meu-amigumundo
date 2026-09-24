@@ -25,6 +25,7 @@
       "/capa/*",
       "/premium-pdf/*",
       "/.netlify/functions/*",
+      "/criar-assinatura-premium",
       "/webhook-mercadopago",
       "/debug-mp"
     ]
