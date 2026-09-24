@@ -230,7 +230,7 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
           <button
             disabled
             aria-hidden="true"
-            className="flex-1 py-2 rounded-xl bg-[#5D0599]/20 border-2 border-dashed border-[#5D0599]/30 cursor-default"
+            className="flex-1 min-h-[34px] py-2 rounded-xl bg-[#5D0599]/20 border-2 border-dashed border-[#5D0599]/30 cursor-default"
           />
         </div>
       </div>
