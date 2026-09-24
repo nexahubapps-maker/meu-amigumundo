@@ -76,9 +76,6 @@ export const ArtesaProfileHeader = ({
             <h2 style={textoComSombra} className="text-white font-black text-base sm:text-2xl uppercase tracking-tight leading-tight truncate">
               {nomeExibido}
             </h2>
-            {nomeAtelie && nomeAtelie.trim() !== "" && (
-              <p style={textoComSombra} className="text-white/80 text-[10px] sm:text-xs font-bold truncate">{nome}</p>
-            )}
             {(cidade || tagEspecialidade) && (
               <div className="flex items-center gap-2 flex-wrap mt-0.5">
                 {cidade && (

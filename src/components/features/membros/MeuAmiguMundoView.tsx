@@ -1,13 +1,13 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, User as UserIcon, ExternalLink, Loader2, Pencil, LogOut, Heart, Trash2, Printer, Calculator, ListChecks, Ruler, Palette, Lock, Wrench, BookOpen } from "lucide-react";
 import { VisualizadorPDF } from "./VisualizadorPDF";
 import { useAuth } from "@/context/AuthContext";
 import { getProfile, type Perfil } from "@/utils/profile";
 import { supabase } from "@/lib/supabase";
-import { getRecipesByIds, getDriveFileUrl, getPacksByIds, getInfoprodutosByIds, getReceitaGratuitaDownloadUrl, getCategories, getRecipesByCategoria } from "@/utils/sheets";
+import { getRecipesByIds, getDriveFileUrl, getPacksByIds, getInfoprodutosByIds, getInfoprodutos, type SheetInfoproduto, getReceitaGratuitaDownloadUrl, getCategories, getRecipesByCategoria } from "@/utils/sheets";
 import { CompleteProfileModal } from "@/components/CompleteProfileModal";
 import { CalculadoraPreco } from "@/components/features/ferramentas/CalculadoraPreco";
 import { ContadorCarreiras } from "@/components/features/ferramentas/ContadorCarreiras";
@@ -49,6 +49,9 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
   const [receitasDaCategoriaSelecionada, setReceitasDaCategoriaSelecionada] = useState<any[]>([]);
   const [isLoadingReceitasCategoria, setIsLoadingReceitasCategoria] = useState(false);
 
+  const [infoprodutosList, setInfoprodutosList] = useState<SheetInfoproduto[]>([]);
+  const ateliePromissionalRef = useRef<HTMLDivElement>(null);
+
   const [favoritosList, setFavoritosList] = useState<any[]>([]);
   const [isLoadingFavoritos, setIsLoadingFavoritos] = useState(false);
 
@@ -79,6 +82,12 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
       getCategories().then(setCategoriesList);
     }
   }, [activeTab, categoriesList.length]);
+
+  useEffect(() => {
+    if (activeTab === "Catálogo" && infoprodutosList.length === 0) {
+      getInfoprodutos().then((lista) => setInfoprodutosList(lista.filter((i) => i.ativo)));
+    }
+  }, [activeTab, infoprodutosList.length]);
 
   useEffect(() => {
     const fetchReceitasDaCategoria = async () => {
@@ -205,6 +214,27 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
         </div>
       </div>
 
+      {/* Atalho pro Ateliê Lucrativo (infoprodutos bônus) */}
+      <div className="border-t border-gray-100 bg-white px-4 sm:px-6 py-3">
+        <div className="max-w-6xl mx-auto flex items-center gap-2">
+          <button
+            onClick={() => {
+              setActiveTab("Catálogo");
+              setCategoriaSelecionadaCatalogo(null);
+              setTimeout(() => ateliePromissionalRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
+            }}
+            className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl font-black text-[10px] sm:text-[11px] uppercase tracking-wide text-white bg-[#5D0599] active:scale-95 transition-transform"
+          >
+            Ateliê Lucrativo
+          </button>
+          <button
+            disabled
+            aria-hidden="true"
+            className="flex-1 py-2 rounded-xl bg-[#5D0599]/20 border-2 border-dashed border-[#5D0599]/30 cursor-default"
+          />
+        </div>
+      </div>
+
       {/* Conteúdo Dinâmico por Aba */}
       {activeTab && (
         <div className="flex-1 p-4 sm:p-6">
@@ -314,6 +344,47 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
                     </div>
                   ))}
                 </div>
+
+                {infoprodutosList.length > 0 && (
+                  <div ref={ateliePromissionalRef} className="mt-10 pt-8 border-t border-gray-200">
+                    <div className="text-center mb-5">
+                      <h2 className="text-lg sm:text-xl font-black uppercase tracking-wider text-[#5D0599]">
+                        Ateliê Lucrativo
+                      </h2>
+                      <p className="text-xs sm:text-sm text-gray-500 font-medium mt-1 max-w-2xl mx-auto leading-relaxed">
+                        Tudo que você precisa para vender mais, conseguir mais clientes, elevar o seu profissionalismo e do seu Ateliê.
+                      </p>
+                    </div>
+                    <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-3">
+                      {infoprodutosList.map((info) => (
+                        <div key={info.id} className="flex flex-col">
+                          <div className="relative aspect-square bg-gray-50 overflow-hidden rounded-lg">
+                            <img
+                              src={info.imagem_url || `https://picsum.photos/seed/${info.id}/400/400`}
+                              alt={info.nome}
+                              className="w-full h-full object-cover cursor-zoom-in"
+                              onClick={() => setZoomImage(info.imagem_url || `https://picsum.photos/seed/${info.id}/400/400`)}
+                            />
+                          </div>
+                          <div className="pt-1.5">
+                            <h4 className="text-[9px] lg:text-xs font-black text-gray-800 uppercase tracking-tight line-clamp-1 leading-none mb-1.5">
+                              {info.nome}
+                            </h4>
+                            <button
+                              onClick={() => {
+                                const fileId = extrairFileId(info.link_entrega);
+                                if (fileId) setPdfAberto({ fileId, titulo: info.nome });
+                              }}
+                              className="w-full flex items-center justify-center gap-1 bg-[#5D0599] text-white py-1 rounded-lg font-black text-[8px] lg:text-[10px] uppercase tracking-wider transition-all hover:scale-105 active:scale-95"
+                            >
+                              <ExternalLink size={10} /> Abrir
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             )
           ) : activeTab === "Favoritos" ? (

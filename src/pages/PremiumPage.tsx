@@ -7,7 +7,6 @@ import { getProfile, type Perfil } from "@/utils/profile";
 import { CompleteProfileModal } from "@/components/CompleteProfileModal";
 import { MeuAmiguMundoView } from "@/components/features/membros/MeuAmiguMundoView";
 import { PremiumSalesView } from "@/components/features/membros/PremiumSalesView";
-import { Loader2 } from "lucide-react";
 
 const PremiumPage = () => {
   const { user, loading: authLoading } = useAuth();
@@ -35,16 +34,10 @@ const PremiumPage = () => {
   }, [user, authLoading]);
 
   if (authLoading || isLoadingProfile) {
-    return (
-      <div className="fixed inset-0 bg-[#5D0599] flex flex-col items-center justify-center gap-6">
-        <img
-          src="https://ik.imagekit.io/51b3srlsg/logomarca_amigumundo_01.png"
-          alt="AmiguMundo"
-          className="w-40 h-auto"
-        />
-        <Loader2 size={28} className="animate-spin text-white/80" />
-      </div>
-    );
+    // Sem tela própria aqui de propósito: a splash nativa do PWA (definida no
+    // manifest-premium.json) já cobre esse instante de carregamento. Renderizar
+    // uma segunda tela aqui criava a sensação de duas telas de abertura em sequência.
+    return null;
   }
 
   if (!user || profile?.assinatura_status !== "ativo") {
