@@ -7,13 +7,15 @@ import { appendShareUTM } from "@/lib/tracking/utmify-service";
 
 interface UpsellCardProps {
   upsell: Upsell & { imagem_url?: string };
-  isFavorite: boolean;
-  onToggleFavorite: () => void;
+  isFavorite?: boolean;
+  onToggleFavorite?: () => void;
   onOpen: () => void;
   onZoomImage?: (url: string) => void;
+  ctaLabel?: string;
+  mostrarAcoes?: boolean;
 }
 
-export const UpsellCard = ({ upsell, isFavorite, onToggleFavorite, onOpen, onZoomImage }: UpsellCardProps) => {
+export const UpsellCard = ({ upsell, isFavorite = false, onToggleFavorite, onOpen, onZoomImage, ctaLabel = "Saiba Mais →", mostrarAcoes = true }: UpsellCardProps) => {
   const handleShare = async (e: React.MouseEvent) => {
     e.stopPropagation();
     const slug = upsell.nome.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "");
@@ -55,23 +57,27 @@ export const UpsellCard = ({ upsell, isFavorite, onToggleFavorite, onOpen, onZoo
           }}
         />
         
-        <button 
-          onClick={(e) => {
-            e.stopPropagation();
-            onToggleFavorite();
-          }}
-          className={`absolute top-2.5 right-2.5 bg-white/90 backdrop-blur-sm p-1.5 rounded-full shadow-md hover:scale-110 active:scale-90 transition-transform z-10 ${isFavorite ? 'text-[#44FF00]' : 'text-gray-400'}`}
-        >
-          <Heart size={20} fill={isFavorite ? "currentColor" : "none"} />
-        </button>
+        {mostrarAcoes && (
+          <>
+            <button 
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleFavorite?.();
+              }}
+              className={`absolute top-2.5 right-2.5 bg-white/90 backdrop-blur-sm p-1.5 rounded-full shadow-md hover:scale-110 active:scale-90 transition-transform z-10 ${isFavorite ? 'text-[#44FF00]' : 'text-gray-400'}`}
+            >
+              <Heart size={20} fill={isFavorite ? "currentColor" : "none"} />
+            </button>
 
-        <button 
-          onClick={handleShare}
-          className="absolute top-12 right-2.5 bg-white/90 backdrop-blur-sm p-1.5 rounded-full shadow-md hover:scale-110 active:scale-90 transition-transform text-gray-500 hover:text-gray-800 z-10"
-          title="Compartilhar"
-        >
-          <Share2 size={20} />
-        </button>
+            <button 
+              onClick={handleShare}
+              className="absolute top-12 right-2.5 bg-white/90 backdrop-blur-sm p-1.5 rounded-full shadow-md hover:scale-110 active:scale-90 transition-transform text-gray-500 hover:text-gray-800 z-10"
+              title="Compartilhar"
+            >
+              <Share2 size={20} />
+            </button>
+          </>
+        )}
       </div>
 
       <div className="p-3 sm:p-3.5 flex flex-col flex-1 justify-between bg-white">
@@ -79,16 +85,18 @@ export const UpsellCard = ({ upsell, isFavorite, onToggleFavorite, onOpen, onZoo
           <h3 className="text-xs sm:text-sm font-black text-gray-900 leading-tight mb-1 uppercase tracking-tight line-clamp-2">
             {upsell.nome}
           </h3>
-          <p className="text-[10px] sm:text-[11px] text-gray-500 leading-snug mb-3 line-clamp-2 sm:line-clamp-3">
-            {upsell.descricao}
-          </p>
+          {upsell.descricao && (
+            <p className="text-[10px] sm:text-[11px] text-gray-500 leading-snug mb-3 line-clamp-2 sm:line-clamp-3">
+              {upsell.descricao}
+            </p>
+          )}
         </div>
 
         <button
           onClick={onOpen}
           className="w-full bg-[#171717] hover:bg-black text-white py-2 sm:py-2.5 rounded-xl font-black text-[10px] sm:text-xs uppercase tracking-wider transition-all active:scale-95 shadow-md flex items-center justify-center gap-1"
         >
-          Saiba Mais →
+          {ctaLabel}
         </button>
       </div>
     </div>

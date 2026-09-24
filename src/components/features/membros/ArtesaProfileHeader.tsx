@@ -13,7 +13,7 @@ interface ArtesaProfileHeaderProps {
   onSair?: () => void;
 }
 
-const textoComSombra = { textShadow: "0 1px 4px rgba(0,0,0,0.85)" };
+const textoComSombra = { textShadow: "0 1px 3px rgba(0,0,0,0.95), 0 2px 10px rgba(0,0,0,0.7)" };
 
 export const ArtesaProfileHeader = ({
   nome,
@@ -29,7 +29,7 @@ export const ArtesaProfileHeader = ({
   const nomeExibido = nomeAtelie && nomeAtelie.trim() !== "" ? nomeAtelie : nome;
 
   return (
-    <div className="relative w-full min-h-[110px] sm:min-h-[170px] sm:rounded-2xl overflow-hidden bg-[#171717] shrink-0">
+    <div className="relative w-full min-h-[130px] sm:min-h-[190px] sm:rounded-2xl overflow-hidden bg-[#171717] shrink-0">
       <img
         src={capaUrl}
         alt="AmiguMundo Premium"
@@ -63,17 +63,17 @@ export const ArtesaProfileHeader = ({
 
       <div className="absolute inset-x-0 bottom-0 px-4 pb-3 pt-2">
         <div className="flex items-center gap-3">
-          <div className="w-16 h-16 sm:w-24 sm:h-24 rounded-full overflow-hidden bg-gradient-to-br from-[#5D0599] to-[#3CB19E] p-[3px] shrink-0">
+          <div className="w-20 h-20 sm:w-28 sm:h-28 rounded-full overflow-hidden bg-gradient-to-br from-[#5D0599] to-[#3CB19E] p-[3px] shrink-0">
             <div className="w-full h-full rounded-full overflow-hidden bg-white flex items-center justify-center">
               {fotoUrl ? (
                 <img src={fotoUrl} alt={nomeExibido} className="w-full h-full object-cover" />
               ) : (
-                <UserIcon className="text-gray-300" size={30} />
+                <UserIcon className="text-gray-300" size={36} />
               )}
             </div>
           </div>
           <div className="flex-1 min-w-0">
-            <h2 style={textoComSombra} className="text-white font-black text-base sm:text-2xl uppercase tracking-tight leading-tight truncate">
+            <h2 style={textoComSombra} className="text-white font-black text-lg sm:text-3xl uppercase tracking-tight leading-tight truncate">
               {nomeExibido}
             </h2>
             {(cidade || tagEspecialidade) && (

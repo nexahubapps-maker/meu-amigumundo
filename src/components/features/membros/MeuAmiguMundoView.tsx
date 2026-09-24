@@ -15,6 +15,7 @@ import { ConversorAgulha } from "@/components/features/ferramentas/ConversorAgul
 import { CombinadorCores } from "@/components/features/ferramentas/CombinadorCores";
 import { LightboxModal } from "@/components/features/catalog/LightboxModal";
 import { ArtesaProfileHeader } from "@/components/features/membros/ArtesaProfileHeader";
+import { UpsellCard } from "@/components/features/upsell/UpsellCard";
 
 interface MeuAmiguMundoViewProps {
   onBack: () => void;
@@ -347,40 +348,40 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
 
                 {infoprodutosList.length > 0 && (
                   <div ref={ateliePromissionalRef} className="mt-10 pt-8 border-t border-gray-200">
-                    <div className="text-center mb-5">
-                      <h2 className="text-lg sm:text-xl font-black uppercase tracking-wider text-[#5D0599]">
-                        Ateliê Lucrativo
-                      </h2>
-                      <p className="text-xs sm:text-sm text-gray-500 font-medium mt-1 max-w-2xl mx-auto leading-relaxed">
-                        Tudo que você precisa para vender mais, conseguir mais clientes, elevar o seu profissionalismo e do seu Ateliê.
-                      </p>
-                    </div>
-                    <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-3">
+                    <img
+                      src="https://ik.imagekit.io/di3huhaluc/atelie%20lucrativo%20amigumundo.png"
+                      alt="Ateliê Lucrativo"
+                      className="w-full h-auto rounded-2xl mb-6"
+                    />
+                    <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                       {infoprodutosList.map((info) => (
-                        <div key={info.id} className="flex flex-col">
-                          <div className="relative aspect-square bg-gray-50 overflow-hidden rounded-lg">
-                            <img
-                              src={info.imagem_url || `https://picsum.photos/seed/${info.id}/400/400`}
-                              alt={info.nome}
-                              className="w-full h-full object-cover cursor-zoom-in"
-                              onClick={() => setZoomImage(info.imagem_url || `https://picsum.photos/seed/${info.id}/400/400`)}
-                            />
-                          </div>
-                          <div className="pt-1.5">
-                            <h4 className="text-[9px] lg:text-xs font-black text-gray-800 uppercase tracking-tight line-clamp-1 leading-none mb-1.5">
-                              {info.nome}
-                            </h4>
-                            <button
-                              onClick={() => {
-                                const fileId = extrairFileId(info.link_entrega);
-                                if (fileId) setPdfAberto({ fileId, titulo: info.nome });
-                              }}
-                              className="w-full flex items-center justify-center gap-1 bg-[#5D0599] text-white py-1 rounded-lg font-black text-[8px] lg:text-[10px] uppercase tracking-wider transition-all hover:scale-105 active:scale-95"
-                            >
-                              <ExternalLink size={10} /> Abrir
-                            </button>
-                          </div>
-                        </div>
+                        <UpsellCard
+                          key={info.id}
+                          upsell={{
+                            id: info.id,
+                            nome: info.nome,
+                            descricao: "",
+                            descricaoLonga: "",
+                            precoOriginal: 0,
+                            precoAtual: 0,
+                            emoji: "💡",
+                            cor: "#5D0599",
+                            beneficios: [],
+                            copiaVendas: [],
+                            imagem_url: info.imagem_url,
+                          }}
+                          mostrarAcoes={false}
+                          ctaLabel="Abrir"
+                          onOpen={() => {
+                            try {
+                              const path = new URL(info.link_entrega).pathname;
+                              navigate(path);
+                            } catch {
+                              console.warn("link_entrega inválido pro infoproduto:", info.id);
+                            }
+                          }}
+                          onZoomImage={setZoomImage}
+                        />
                       ))}
                     </div>
                   </div>
