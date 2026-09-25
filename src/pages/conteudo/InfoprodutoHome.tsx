@@ -8,6 +8,12 @@ import { InfoprodutoCrossSell } from "@/components/features/infoprodutos/Infopro
 import { useAuth } from "@/context/AuthContext";
 import { getProfile } from "@/utils/profile";
 
+const CAPAS_INFOPRODUTOS: Record<string, string> = {
+  "instagram-profissional": "https://ik.imagekit.io/di3huhaluc/instagram%20profissional.png?updatedAt=1790240758842",
+  "pinterest-profissional": "https://ik.imagekit.io/di3huhaluc/pinterest%20profissional.png?updatedAt=1790240757594",
+  "whatsapp-profissional": "https://ik.imagekit.io/di3huhaluc/whatsapp%20profissional.png?updatedAt=1790240758716",
+};
+
 const InfoprodutoHome = () => {
   const { infoprodutoId } = useParams<{ infoprodutoId: string }>();
   const navigate = useNavigate();
@@ -47,20 +53,26 @@ const InfoprodutoHome = () => {
     );
   }
 
+  const capaUrl = infoprodutoId ? CAPAS_INFOPRODUTOS[infoprodutoId] : undefined;
+
   return (
     <div className="min-h-screen bg-[#FDFBF7]">
-      <div className="relative bg-gradient-to-br from-[#5D0599] to-[#2E0350] px-6 pt-16 pb-14 text-white overflow-hidden text-center">
-        <div className="absolute -top-16 -right-16 w-64 h-64 rounded-full bg-white/5" />
-        <div className="absolute bottom-0 left-0 w-40 h-40 rounded-full bg-[#E8734A]/15 -mb-16 -ml-16" />
-        <div className="relative max-w-2xl mx-auto">
-          <span className="inline-flex items-center gap-1.5 bg-white/15 border border-white/20 rounded-full px-3.5 py-1.5 text-[10px] font-black uppercase tracking-widest mb-5">
-            <Sparkles size={12} className="text-[#F4D160]" /> Conteúdo AmiguMundo
-          </span>
-          <h1 className="text-2xl sm:text-3xl font-black uppercase leading-[1.05] tracking-tight capitalize">
-            {tituloProduto}
-          </h1>
+      {capaUrl ? (
+        <img src={capaUrl} alt={tituloProduto} className="w-full h-auto block" />
+      ) : (
+        <div className="relative bg-gradient-to-br from-[#5D0599] to-[#2E0350] px-6 pt-16 pb-14 text-white overflow-hidden text-center">
+          <div className="absolute -top-16 -right-16 w-64 h-64 rounded-full bg-white/5" />
+          <div className="absolute bottom-0 left-0 w-40 h-40 rounded-full bg-[#E8734A]/15 -mb-16 -ml-16" />
+          <div className="relative max-w-2xl mx-auto">
+            <span className="inline-flex items-center gap-1.5 bg-white/15 border border-white/20 rounded-full px-3.5 py-1.5 text-[10px] font-black uppercase tracking-widest mb-5">
+              <Sparkles size={12} className="text-[#F4D160]" /> Conteúdo AmiguMundo
+            </span>
+            <h1 className="text-2xl sm:text-3xl font-black uppercase leading-[1.05] tracking-tight capitalize">
+              {tituloProduto}
+            </h1>
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="h-4 bg-[#FDFBF7] relative -mt-4">
         <div className="absolute inset-x-0 top-0 border-t-2 border-dashed border-[#5D0599]/20" />
