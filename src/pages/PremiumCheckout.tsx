@@ -9,7 +9,14 @@ import { getStoredUTMs } from "@/lib/tracking/utmify-service";
 import { AuthModal } from "@/components/AuthModal";
 
 const MERCADOPAGO_PUBLIC_KEY = import.meta.env.VITE_MERCADOPAGO_PUBLIC_KEY || "TEST-f2993981-4aad-4e7a-a767-ad00a2c0634e";
-const VALOR_MENSAL = 19.9;
+
+type PlanoId = "mensal" | "semestral" | "anual";
+
+const PLANOS: Record<PlanoId, { label: string; valor: number; meses: number; badge?: string }> = {
+  mensal: { label: "Mensal", valor: 19.9, meses: 1 },
+  semestral: { label: "Semestral", valor: 99.0, meses: 6, badge: "Economize 17%" },
+  anual: { label: "Anual", valor: 197.0, meses: 12, badge: "Economize 17%" },
+};
 
 const BENEFICIOS = [
   "Acesso a TODAS as receitas de todas as categorias, sem comprar uma por uma",
@@ -22,6 +29,9 @@ export default function PremiumCheckout() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [planoId, setPlanoId] = useState<PlanoId>("mensal");
+  const plano = PLANOS[planoId];
+  const valorPorMes = plano.valor / plano.meses;
 
   const [email, setEmail] = useState(user?.email || "");
   const [nomeCompleto, setNomeCompleto] = useState("");
@@ -127,6 +137,7 @@ export default function PremiumCheckout() {
           nome: nomeCompleto,
           cpf: cpf.replace(/\D/g, ""),
           usuarioId: user?.id || null,
+          plano: planoId,
         }),
       });
 
@@ -197,6 +208,43 @@ export default function PremiumCheckout() {
         {/* Coluna do formulário */}
         <div className="order-2 lg:order-1 space-y-5">
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 sm:p-6">
+            <h2 className="text-xs font-black text-gray-900 uppercase tracking-wider mb-4">Escolha seu plano</h2>
+            <div className="grid grid-cols-3 gap-2">
+              {(Object.keys(PLANOS) as PlanoId[]).map((id) => {
+                const p = PLANOS[id];
+                const isSelected = planoId === id;
+                return (
+                  <button
+                    key={id}
+                    onClick={() => setPlanoId(id)}
+                    className={`relative flex flex-col items-center gap-0.5 rounded-xl border-2 py-3 px-1.5 transition-all ${
+                      isSelected ? "border-[#5D0599] bg-[#5D0599]/5" : "border-gray-200 bg-white"
+                    }`}
+                  >
+                    {p.badge && (
+                      <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-[#3CB19E] text-white text-[8px] font-black uppercase px-1.5 py-0.5 rounded-full whitespace-nowrap">
+                        {p.badge}
+                      </span>
+                    )}
+                    <span className={`text-[10px] font-black uppercase tracking-wide ${isSelected ? "text-[#5D0599]" : "text-gray-500"}`}>
+                      {p.label}
+                    </span>
+                    <span className="text-sm font-black text-gray-900">
+                      R$ {(p.valor / p.meses).toFixed(2).replace(".", ",")}
+                    </span>
+                    <span className="text-[9px] text-gray-400 font-bold">/mês</span>
+                  </button>
+                );
+              })}
+            </div>
+            {plano.meses > 1 && (
+              <p className="text-[10px] text-gray-400 font-bold text-center mt-3">
+                Cobrado como 1 pagamento de R$ {plano.valor.toFixed(2).replace(".", ",")} a cada {plano.meses} meses — equivalente a R$ {valorPorMes.toFixed(2).replace(".", ",")}/mês.
+              </p>
+            )}
+          </div>
+
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 sm:p-6">
             <h2 className="text-xs font-black text-gray-900 uppercase tracking-wider mb-4">Seus dados</h2>
             <div className="space-y-3">
               <div>
@@ -237,7 +285,7 @@ export default function PremiumCheckout() {
               <CreditCard size={16} /> Cartão de crédito
             </h2>
             <p className="text-[10px] text-gray-400 font-bold mb-4">
-              A assinatura é recorrente e por isso só aceita cartão de crédito — é o único método que permite a cobrança automática todo mês, sem você precisar pagar manualmente toda vez.
+              A assinatura é recorrente e por isso só aceita cartão de crédito — é o único método que permite a cobrança automática a cada ciclo, sem você precisar pagar manualmente toda vez.
             </p>
             <div className="space-y-3">
               <div>
@@ -298,7 +346,7 @@ export default function PremiumCheckout() {
                 <Loader2 size={18} className="animate-spin" /> Processando...
               </>
             ) : (
-              <>Assinar por R$ {VALOR_MENSAL.toFixed(2).replace(".", ",")}/mês</>
+              <>Assinar plano {plano.label} — R$ {plano.valor.toFixed(2).replace(".", ",")}{plano.meses === 1 ? "/mês" : ""}</>
             )}
           </button>
 
@@ -315,9 +363,10 @@ export default function PremiumCheckout() {
                 <Sparkles size={12} /> AmiguMundo Premium
               </div>
               <p className="text-2xl font-black">
-                R$ {VALOR_MENSAL.toFixed(2).replace(".", ",")}
+                R$ {valorPorMes.toFixed(2).replace(".", ",")}
                 <span className="text-sm font-bold opacity-80">/mês</span>
               </p>
+              <p className="text-[10px] font-bold opacity-80 uppercase tracking-wide">Plano {plano.label}</p>
             </div>
             <div className="p-5 space-y-3">
               {BENEFICIOS.map((b) => (
@@ -331,7 +380,7 @@ export default function PremiumCheckout() {
             </div>
             <div className="border-t border-gray-100 px-5 py-4 flex items-center justify-between">
               <span className="text-xs font-black text-gray-900 uppercase">Total hoje</span>
-              <span className="text-lg font-black text-gray-900">R$ {VALOR_MENSAL.toFixed(2).replace(".", ",")}</span>
+              <span className="text-lg font-black text-gray-900">R$ {plano.valor.toFixed(2).replace(".", ",")}</span>
             </div>
           </div>
         </div>

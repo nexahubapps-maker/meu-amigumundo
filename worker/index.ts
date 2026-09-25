@@ -583,7 +583,11 @@ async function handleCriarPagamento(request: Request, env: Env): Promise<Respons
   }
 }
 
-const PREMIUM_ASSINATURA_VALOR = 19.90;
+const PLANOS_PREMIUM: Record<string, { valor: number; frequency: number; reason: string }> = {
+  mensal: { valor: 19.90, frequency: 1, reason: "AmiguMundo Premium - Assinatura mensal" },
+  semestral: { valor: 99.00, frequency: 6, reason: "AmiguMundo Premium - Assinatura semestral" },
+  anual: { valor: 197.00, frequency: 12, reason: "AmiguMundo Premium - Assinatura anual" },
+};
 
 interface CriarAssinaturaBody {
   cardToken: string;
@@ -592,6 +596,7 @@ interface CriarAssinaturaBody {
   nome: string;
   cpf: string;
   usuarioId?: string | null;
+  plano?: string;
   utm_source?: string;
   utm_medium?: string;
   utm_campaign?: string;
@@ -611,6 +616,7 @@ async function handleCriarAssinaturaPremium(request: Request, env: Env): Promise
       nome,
       cpf,
       usuarioId,
+      plano,
       utm_source,
       utm_medium,
       utm_campaign,
@@ -619,6 +625,11 @@ async function handleCriarAssinaturaPremium(request: Request, env: Env): Promise
 
     if (!cardToken || !email || !nome || !cpf) {
       return new Response(JSON.stringify({ error: "Dados obrigatórios ausentes." }), { status: 400 });
+    }
+
+    const planoEscolhido = PLANOS_PREMIUM[plano || "mensal"];
+    if (!planoEscolhido) {
+      return new Response(JSON.stringify({ error: "Plano inválido." }), { status: 400 });
     }
 
     const cleanCpf = cpf.replace(/\D/g, "");
@@ -638,15 +649,15 @@ async function handleCriarAssinaturaPremium(request: Request, env: Env): Promise
     const idempotencyKey = crypto.randomUUID();
 
     const mpBody = {
-      reason: "AmiguMundo Premium - Assinatura mensal",
+      reason: planoEscolhido.reason,
       external_reference: usuarioId || email,
       payer_email: email,
       card_token_id: cardToken,
       status: "authorized",
       auto_recurring: {
-        frequency: 1,
+        frequency: planoEscolhido.frequency,
         frequency_type: "months",
-        transaction_amount: PREMIUM_ASSINATURA_VALOR,
+        transaction_amount: planoEscolhido.valor,
         currency_id: "BRL"
       },
       back_url: "https://amigumundo.nexahubapps.workers.dev/premium"
@@ -678,7 +689,8 @@ async function handleCriarAssinaturaPremium(request: Request, env: Env): Promise
         email,
         nome,
         cpf: cleanCpf,
-        valor: PREMIUM_ASSINATURA_VALOR,
+        valor: planoEscolhido.valor,
+        plano: plano || "mensal",
         status: mpData.status,
         utm_source: utm_source || null,
         utm_medium: utm_medium || null,
