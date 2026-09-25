@@ -1,12 +1,17 @@
 "use client";
 import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { showNotificationPopup } from "@/utils/toast";
 import { getReceitaGratuita } from "@/utils/sheets";
 
 const LAST_SHOWN_KEY = "amigumundo-lembrete-diario";
 
 export const DailyReminderPopup = () => {
+  const location = useLocation();
+
   useEffect(() => {
+    if (location.pathname !== "/") return; // só na Loja — nunca no Premium
+
     const run = async () => {
       const now = new Date();
       const todayKey = now.toISOString().slice(0, 10);
@@ -31,7 +36,7 @@ export const DailyReminderPopup = () => {
       localStorage.setItem(LAST_SHOWN_KEY, todayKey);
     };
     run();
-  }, []);
+  }, [location.pathname]);
 
   return null;
 };
