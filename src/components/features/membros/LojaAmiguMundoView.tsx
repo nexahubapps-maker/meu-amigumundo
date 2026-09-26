@@ -1,20 +1,45 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
-import { ArrowLeft, ShoppingBag, Search, ExternalLink, Sparkles } from "lucide-react";
+import { ArrowLeft, ShoppingBag, Search, ExternalLink, Sparkles, Check } from "lucide-react";
 import { getLojaParceiros, type SheetLojaParceiro } from "@/utils/sheets";
 
 interface LojaAmiguMundoViewProps {
   onBack: () => void;
 }
 
-const CATEGORIAS = [
-  { id: "fios_linhas", label: "Fios & Linhas", emoji: "🧶" },
-  { id: "agulhas_ferramentas", label: "Agulhas & Ferramentas", emoji: "🪡" },
-  { id: "materiais_amigurumi", label: "Materiais para Amigurumi", emoji: "👀" },
-  { id: "organizacao", label: "Organização", emoji: "🧺" },
-  { id: "kits", label: "Kits", emoji: "🎁" },
-] as const;
+// Sombra 3D premium com bastante profundidade — usada nos menus e em todos os cards da Loja
+const SOMBRA_3D =
+  "shadow-[0_18px_35px_-8px_rgba(0,0,0,0.35),0_8px_16px_-4px_rgba(0,0,0,0.28),inset_0_1.5px_0_rgba(255,255,255,0.35),inset_0_-5px_10px_rgba(0,0,0,0.2)]";
+
+const VERDE = "#3CB19E";
+const VERDE_ATIVO = "#1F6F63";
+const ROXO = "#5D0599";
+const ROXO_ATIVO = "#42026b";
+
+// 6 botões de menu (categorias + "Todas"), organizados em 2 linhas de 3.
+// Cada linha segue o padrão pequeno/médio/grande, e as cores alternam verde/roxo.
+const MENU_ITEMS: {
+  id: string | null;
+  label: string;
+  emoji: string;
+  tamanho: "sm" | "md" | "lg";
+  cor: string;
+  corAtiva: string;
+}[] = [
+  // linha 1 — verde / roxo / verde
+  { id: null, label: "Todas", emoji: "🛍️", tamanho: "sm", cor: VERDE, corAtiva: VERDE_ATIVO },
+  { id: "fios_linhas", label: "Fios & Linhas", emoji: "🧶", tamanho: "md", cor: ROXO, corAtiva: ROXO_ATIVO },
+  { id: "materiais_amigurumi", label: "Materiais p/ Amigurumi", emoji: "👀", tamanho: "lg", cor: VERDE, corAtiva: VERDE_ATIVO },
+  // linha 2 — roxo / verde / roxo
+  { id: "kits", label: "Kits", emoji: "🎁", tamanho: "sm", cor: ROXO, corAtiva: ROXO_ATIVO },
+  { id: "organizacao", label: "Organização", emoji: "🧺", tamanho: "md", cor: VERDE, corAtiva: VERDE_ATIVO },
+  { id: "agulhas_ferramentas", label: "Agulhas & Ferramentas", emoji: "🪡", tamanho: "lg", cor: ROXO, corAtiva: ROXO_ATIVO },
+];
+
+const LINHA1 = MENU_ITEMS.slice(0, 3);
+const LINHA2 = MENU_ITEMS.slice(3, 6);
+const COLS_GRID = "grid-cols-[1fr_1.3fr_1.7fr]";
 
 function formatarPreco(preco: number | null): string | null {
   if (preco === null || isNaN(preco)) return null;
@@ -25,7 +50,7 @@ const ProdutoCard = ({ produto }: { produto: SheetLojaParceiro }) => {
   const precoFormatado = formatarPreco(produto.preco);
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden flex flex-col shrink-0 w-[168px] sm:w-full">
+    <div className={`bg-white rounded-2xl overflow-hidden flex flex-col shrink-0 w-[168px] sm:w-full transition-transform duration-200 hover:-translate-y-1 ${SOMBRA_3D}`}>
       <div className="aspect-square bg-gray-50">
         <img
           src={produto.imagem_url || `https://picsum.photos/seed/${produto.codigo}/300/300`}
@@ -112,23 +137,26 @@ export const LojaAmiguMundoView = ({ onBack }: LojaAmiguMundoViewProps) => {
         <div className="w-12" />
       </div>
 
-      <div className="flex-1 w-full max-w-5xl mx-auto px-4 sm:px-6 py-5 space-y-6">
+      <div className="flex-1 w-full max-w-5xl mx-auto px-2 sm:px-6 py-5 space-y-6">
         {/* Hero */}
         <div
-          className="relative rounded-3xl overflow-hidden shadow-sm bg-[#5D0599] bg-cover bg-center min-h-[200px] sm:min-h-[240px] flex items-end"
+          className="relative rounded-3xl overflow-hidden shadow-sm bg-[#5D0599] bg-cover bg-center aspect-[16/9] flex items-end"
           style={{ backgroundImage: "url('https://ik.imagekit.io/di3huhaluc/capa%20loja%20amigumundo%20premium.png')" }}
         >
-          <div className="relative p-4 sm:p-5">
-            <span className="inline-block bg-black/70 backdrop-blur-sm px-3.5 py-2 rounded-xl">
-              <span className="text-sm sm:text-lg font-black uppercase tracking-wide text-white [text-shadow:0_2px_6px_rgba(0,0,0,0.9)]">
-                Tudo para ajudar você a continuar criando
+          <div className="relative p-2.5 sm:p-3.5 w-full flex justify-start">
+            <span
+              className="inline-block px-3.5 py-1.5 rounded-xl"
+              style={{ backgroundColor: VERDE }}
+            >
+              <span className="text-sm sm:text-lg font-black uppercase tracking-wide text-white [text-shadow:0_2px_6px_rgba(0,0,0,0.5)]">
+                Tudo para você continuar criando
               </span>
             </span>
           </div>
         </div>
 
         {/* Título e subtítulo, fora da imagem */}
-        <div>
+        <div className="px-2 sm:px-0">
           <h1 className="text-lg sm:text-2xl font-black leading-tight text-gray-900 mb-2">
             Materiais e ferramentas selecionados pra quem ama amigurumi
           </h1>
@@ -138,7 +166,7 @@ export const LojaAmiguMundoView = ({ onBack }: LojaAmiguMundoViewProps) => {
         </div>
 
         {/* Busca */}
-        <div className="relative">
+        <div className="relative px-2 sm:px-0">
           <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
           <input
             type="text"
@@ -157,12 +185,12 @@ export const LojaAmiguMundoView = ({ onBack }: LojaAmiguMundoViewProps) => {
           <>
             {/* Recomendados */}
             {destaques.length > 0 && !busca && !categoriaAtiva && (
-              <div>
+              <div className="px-2 sm:px-0">
                 <h2 className="flex items-center gap-1.5 text-xs font-black text-gray-500 uppercase tracking-wider mb-3">
                   <Sparkles size={13} className="text-[#5D0599]" />
                   Recomendados pelo AmiguMundo
                 </h2>
-                <div className="flex gap-3 overflow-x-auto pb-1 -mx-4 px-4 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-4">
+                <div className="flex gap-3 overflow-x-auto pb-1 -mx-2 px-2 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-4">
                   {destaques.map((p) => (
                     <ProdutoCard key={p.codigo} produto={p} />
                   ))}
@@ -170,32 +198,37 @@ export const LojaAmiguMundoView = ({ onBack }: LojaAmiguMundoViewProps) => {
               </div>
             )}
 
-            {/* Categorias */}
-            <div className="flex gap-2 overflow-x-auto pb-1 -mx-4 px-4 sm:mx-0 sm:px-0">
-              <button
-                onClick={() => setCategoriaAtiva(null)}
-                className={`shrink-0 px-3.5 py-2 rounded-xl font-black text-[10px] uppercase tracking-wide transition-colors ${
-                  !categoriaAtiva ? "bg-[#171717] text-white" : "bg-white text-gray-600 border border-gray-100"
-                }`}
-              >
-                Todas
-              </button>
-              {CATEGORIAS.map((c) => (
-                <button
-                  key={c.id}
-                  onClick={() => setCategoriaAtiva(c.id === categoriaAtiva ? null : c.id)}
-                  className={`shrink-0 flex items-center gap-1.5 px-3.5 py-2 rounded-xl font-black text-[10px] uppercase tracking-wide transition-colors ${
-                    categoriaAtiva === c.id ? "bg-[#171717] text-white" : "bg-white text-gray-600 border border-gray-100"
-                  }`}
-                >
-                  <span>{c.emoji}</span> {c.label}
-                </button>
+            {/* Menus (2 linhas de 3, pequeno/médio/grande, cores alternadas verde/roxo, com efeito 3D) */}
+            <div className="px-2 sm:px-0 space-y-2">
+              {[LINHA1, LINHA2].map((linha, linhaIdx) => (
+                <div key={linhaIdx} className={`grid ${COLS_GRID} gap-2`}>
+                  {linha.map((item) => {
+                    const ativo = categoriaAtiva === item.id;
+                    return (
+                      <button
+                        key={item.label}
+                        onClick={() => setCategoriaAtiva(item.id === categoriaAtiva ? null : item.id)}
+                        style={{ backgroundColor: ativo ? item.corAtiva : item.cor }}
+                        className={`relative flex flex-col items-center justify-center gap-0.5 py-3 px-1.5 rounded-2xl text-white font-black text-[9px] sm:text-[10px] uppercase tracking-wide leading-tight text-center transition-transform active:scale-95 hover:-translate-y-0.5 duration-200 ${SOMBRA_3D}`}
+                      >
+                        {ativo && (
+                          <span className="absolute top-1.5 right-1.5 bg-white rounded-full p-0.5">
+                            <Check size={10} strokeWidth={3.5} style={{ color: item.corAtiva }} />
+                          </span>
+                        )}
+                        <span className="text-base sm:text-lg">{item.emoji}</span>
+                        <span>{item.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
               ))}
             </div>
 
             {/* Grade de produtos (só esta parte fica vazia esperando a planilha) */}
+            <div className="px-2 sm:px-0">
             {produtos.length === 0 ? (
-              <div className="py-14 text-center bg-white rounded-3xl border border-gray-100 shadow-sm px-6">
+              <div className={`py-14 text-center bg-white rounded-3xl px-6 ${SOMBRA_3D}`}>
                 <ShoppingBag size={26} className="text-gray-300 mx-auto mb-3" />
                 <p className="text-sm font-black text-gray-700 uppercase tracking-wide mb-1">
                   Em breve, novidades por aqui
@@ -215,9 +248,10 @@ export const LojaAmiguMundoView = ({ onBack }: LojaAmiguMundoViewProps) => {
                 ))}
               </div>
             )}
+            </div>
 
             {/* Como funciona */}
-            <div className="bg-white rounded-3xl p-5 border border-gray-100 shadow-sm">
+            <div className={`bg-white rounded-3xl p-5 mx-2 sm:mx-0 ${SOMBRA_3D}`}>
               <h2 className="text-xs font-black text-gray-900 uppercase tracking-wider mb-4">
                 Como funciona
               </h2>
@@ -238,7 +272,7 @@ export const LojaAmiguMundoView = ({ onBack }: LojaAmiguMundoViewProps) => {
             </div>
 
             {/* Texto institucional */}
-            <div className="text-center px-2 py-2">
+            <div className="text-center px-4 py-2">
               <p className="text-xs text-gray-500 font-medium leading-relaxed max-w-md mx-auto">
                 Selecionamos produtos que podem ser úteis na sua jornada no amigurumi, de fios e agulhas a materiais, acessórios e itens pra organizar seu ateliê — pra facilitar sua busca e colocar boas opções ao seu alcance.
               </p>
@@ -247,7 +281,7 @@ export const LojaAmiguMundoView = ({ onBack }: LojaAmiguMundoViewProps) => {
         )}
 
         {/* Aviso de afiliados, discreto */}
-        <p className="text-center text-[10px] text-gray-400 font-medium leading-relaxed pt-2 pb-6">
+        <p className="text-center text-[10px] text-gray-400 font-medium leading-relaxed pt-2 pb-6 px-4">
           Alguns produtos desta página podem utilizar links de afiliados. Quando você compra por eles, o AmiguMundo pode receber uma comissão, sem custo adicional pra você.
         </p>
       </div>
