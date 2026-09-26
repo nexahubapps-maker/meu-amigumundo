@@ -142,16 +142,6 @@ export const LojaAmiguMundoView = ({ onBack }: LojaAmiguMundoViewProps) => {
           <div className="py-16 text-center">
             <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Carregando a vitrine...</p>
           </div>
-        ) : produtos.length === 0 ? (
-          <div className="py-16 text-center bg-white rounded-3xl border border-gray-100 shadow-sm px-6">
-            <ShoppingBag size={28} className="text-gray-300 mx-auto mb-3" />
-            <p className="text-sm font-black text-gray-700 uppercase tracking-wide mb-1">
-              Em breve, novidades por aqui
-            </p>
-            <p className="text-xs text-gray-500 font-medium max-w-xs mx-auto">
-              Estamos preparando a seleção certinha de materiais e ferramentas pra você. Volte em breve!
-            </p>
-          </div>
         ) : (
           <>
             {/* Recomendados */}
@@ -192,8 +182,18 @@ export const LojaAmiguMundoView = ({ onBack }: LojaAmiguMundoViewProps) => {
               ))}
             </div>
 
-            {/* Grade de produtos */}
-            {produtosFiltrados.length === 0 ? (
+            {/* Grade de produtos (só esta parte fica vazia esperando a planilha) */}
+            {produtos.length === 0 ? (
+              <div className="py-14 text-center bg-white rounded-3xl border border-gray-100 shadow-sm px-6">
+                <ShoppingBag size={26} className="text-gray-300 mx-auto mb-3" />
+                <p className="text-sm font-black text-gray-700 uppercase tracking-wide mb-1">
+                  Em breve, novidades por aqui
+                </p>
+                <p className="text-xs text-gray-500 font-medium max-w-xs mx-auto">
+                  Estamos preparando a seleção certinha de materiais e ferramentas pra você. Volte em breve!
+                </p>
+              </div>
+            ) : produtosFiltrados.length === 0 ? (
               <p className="text-center text-xs font-bold text-gray-400 py-10">
                 Nada por aqui com esse filtro ainda. Tenta outra busca ou categoria.
               </p>
