@@ -41,7 +41,7 @@ const PremiumPage = () => {
   }
 
   if (!user || profile?.assinatura_status !== "ativo") {
-    return <PremiumSalesView onBack={() => navigate("/")} />;
+    return <PremiumSalesView onBack={() => navigate(-1)} />;
   }
 
   if (!profile?.telefone) {

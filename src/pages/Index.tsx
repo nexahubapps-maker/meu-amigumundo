@@ -950,7 +950,7 @@ export default function Index() {
         emailAtual={user?.email}
         onSuccess={() => {
           setIsCompleteProfileOpen(false);
-          setIsMeuAmiguMundoOpen(true);
+          setIsMeusPedidosOpen(true);
         }}
       />
     </div>

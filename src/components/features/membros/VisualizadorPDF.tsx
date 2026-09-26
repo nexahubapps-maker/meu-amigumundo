@@ -40,7 +40,7 @@ export const VisualizadorPDF = ({ fileId, titulo, onClose }: VisualizadorPDFProp
           canvas.style.boxShadow = "0 2px 8px rgba(0,0,0,0.15)";
           const context = canvas.getContext("2d");
           if (!context) continue;
-          await page.render({ canvasContext: context, viewport }).promise;
+          await page.render({ canvasContext: context, canvas, viewport }).promise;
           if (cancelado) return;
           containerRef.current?.appendChild(canvas);
         }
