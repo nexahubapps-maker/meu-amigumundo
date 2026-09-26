@@ -24,7 +24,7 @@ const MENU_ITEMS: {
 }[] = [
   // linha 1 — verde / roxo / verde
   { id: null, label: "Todas", emoji: "🛍️", cor: VERDE, corAtiva: VERDE_ATIVO },
-  { id: "materiais_amigurumi", label: "Materiais p/ Amigurumi", emoji: "👀", cor: ROXO, corAtiva: ROXO_ATIVO },
+  { id: "materiais_amigurumi", label: "Materiais", emoji: "👀", cor: ROXO, corAtiva: ROXO_ATIVO },
   { id: "fios_linhas", label: "Fios & Linhas", emoji: "🧶", cor: VERDE, corAtiva: VERDE_ATIVO },
   // linha 2 — roxo / verde / roxo
   { id: "kits", label: "Kits", emoji: "🎁", cor: ROXO, corAtiva: ROXO_ATIVO },
@@ -34,7 +34,7 @@ const MENU_ITEMS: {
 
 const LINHA1 = MENU_ITEMS.slice(0, 3);
 const LINHA2 = MENU_ITEMS.slice(3, 6);
-const COLS_GRID = "grid-cols-[1fr_1.3fr_1.7fr]";
+const COLS_GRID = "grid-cols-3";
 
 function formatarPreco(preco: number | null): string | null {
   if (preco === null || isNaN(preco)) return null;
