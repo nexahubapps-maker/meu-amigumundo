@@ -114,16 +114,23 @@ export const LojaAmiguMundoView = ({ onBack }: LojaAmiguMundoViewProps) => {
 
       <div className="flex-1 w-full max-w-5xl mx-auto px-4 sm:px-6 py-5 space-y-6">
         {/* Hero */}
-        <div className="bg-gradient-to-br from-[#5D0599] to-[#7a1ac2] rounded-3xl p-5 sm:p-7 text-white shadow-sm">
-          <p className="text-[11px] font-black uppercase tracking-widest text-white/70 mb-1">
-            Tudo para ajudar você a continuar criando
-          </p>
-          <h1 className="text-lg sm:text-2xl font-black leading-tight mb-2">
-            Materiais e ferramentas selecionados pra quem ama amigurumi
-          </h1>
-          <p className="text-xs sm:text-sm text-white/80 font-medium leading-relaxed max-w-md">
-            Encontre produtos que podem facilitar seu trabalho, melhorar seus materiais e ajudar você a criar ainda mais — sem precisar sair procurando pela internet.
-          </p>
+        <div
+          className="relative rounded-3xl overflow-hidden shadow-sm bg-[#5D0599] bg-cover bg-center min-h-[200px] sm:min-h-[240px] flex items-end"
+          style={{ backgroundImage: "url('https://ik.imagekit.io/di3huhaluc/capa%20loja%20marketplace.png')" }}
+        >
+          {/* Overlay escuro em gradiente: garante contraste do texto sobre qualquer foto, mais forte embaixo onde o texto fica */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/45 to-black/10" />
+          <div className="relative p-5 sm:p-7 text-white w-full">
+            <p className="text-[11px] font-black uppercase tracking-widest text-white/90 mb-1 [text-shadow:0_1px_3px_rgba(0,0,0,0.6)]">
+              Tudo para ajudar você a continuar criando
+            </p>
+            <h1 className="text-lg sm:text-2xl font-black leading-tight mb-2 [text-shadow:0_1px_4px_rgba(0,0,0,0.6)]">
+              Materiais e ferramentas selecionados pra quem ama amigurumi
+            </h1>
+            <p className="text-xs sm:text-sm text-white/95 font-medium leading-relaxed max-w-md [text-shadow:0_1px_3px_rgba(0,0,0,0.6)]">
+              Encontre produtos que podem facilitar seu trabalho, melhorar seus materiais e ajudar você a criar ainda mais — sem precisar sair procurando pela internet.
+            </p>
+          </div>
         </div>
 
         {/* Busca */}
