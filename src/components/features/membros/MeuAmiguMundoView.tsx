@@ -354,7 +354,7 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
                 {infoprodutosList.length > 0 && (
                   <div ref={ateliePromissionalRef} className="mt-10 pt-8 border-t border-gray-200">
                     <img
-                      src="https://ik.imagekit.io/di3huhaluc/atelie%20lucrativo%20amigumundo.png"
+                      src="https://ik.imagekit.io/di3huhaluc/atelie%20amigumundo%202.png"
                       alt="Ateliê Lucrativo"
                       className="w-full h-auto rounded-2xl mb-6"
                     />
