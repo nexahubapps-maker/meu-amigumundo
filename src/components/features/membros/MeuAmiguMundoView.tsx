@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, User as UserIcon, ExternalLink, Loader2, Pencil, LogOut, Heart, Trash2, Printer, Calculator, ListChecks, Ruler, Palette, Lock, Wrench, BookOpen } from "lucide-react";
+import { ArrowLeft, User as UserIcon, ExternalLink, Loader2, Pencil, LogOut, Heart, Trash2, Printer, Calculator, ListChecks, Ruler, Palette, Lock, Wrench, BookOpen, ShoppingBag } from "lucide-react";
 import { VisualizadorPDF } from "./VisualizadorPDF";
 import { useAuth } from "@/context/AuthContext";
 import { getProfile, type Perfil } from "@/utils/profile";
@@ -16,6 +16,7 @@ import { CombinadorCores } from "@/components/features/ferramentas/CombinadorCor
 import { LightboxModal } from "@/components/features/catalog/LightboxModal";
 import { ArtesaProfileHeader } from "@/components/features/membros/ArtesaProfileHeader";
 import { UpsellCard } from "@/components/features/upsell/UpsellCard";
+import { LojaAmiguMundoView } from "@/components/features/membros/LojaAmiguMundoView";
 
 interface MeuAmiguMundoViewProps {
   onBack: () => void;
@@ -59,6 +60,7 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
   const [isConfirmSairOpen, setIsConfirmSairOpen] = useState(false);
   const [ferramentaAberta, setFerramentaAberta] = useState<string | null>(null);
+  const [lojaParceirosAberta, setLojaParceirosAberta] = useState(false);
   const [zoomImage, setZoomImage] = useState<string | null>(null);
 
   const recarregarPerfil = async () => {
@@ -229,10 +231,12 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
             Ateliê Lucrativo
           </button>
           <button
-            disabled
-            aria-hidden="true"
-            className="flex-1 min-h-[34px] py-2 rounded-xl bg-[#5D0599]/20 border-2 border-dashed border-[#5D0599]/30 cursor-default"
-          />
+            onClick={() => setLojaParceirosAberta(true)}
+            className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl font-black text-[10px] sm:text-[11px] uppercase tracking-wide text-white bg-[#5D0599] active:scale-95 transition-transform"
+          >
+            <ShoppingBag size={13} />
+            Loja AmiguMundo
+          </button>
         </div>
       </div>
 
@@ -553,6 +557,10 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
 
       {ferramentaAberta === "cores" && (
         <CombinadorCores onBack={() => setFerramentaAberta(null)} />
+      )}
+
+      {lojaParceirosAberta && (
+        <LojaAmiguMundoView onBack={() => setLojaParceirosAberta(false)} />
       )}
 
       {zoomImage && (

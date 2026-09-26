@@ -55,7 +55,7 @@ export const AdminSyncModal = ({ isOpen, onClose }: AdminSyncModalProps) => {
             Sincronizador Supabase
           </h3>
           <p className="text-[11px] text-gray-500 font-medium leading-relaxed">
-            Importe e atualize instantaneamente as categorias, receitas, packs e infoprodutos da Planilha Mestre para o seu banco de dados Supabase.
+            Importe e atualize instantaneamente as categorias, receitas, packs, infoprodutos e a Loja de Parceiros da Planilha Mestre para o seu banco de dados Supabase.
           </p>
         </div>
 

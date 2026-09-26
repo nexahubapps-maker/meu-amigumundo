@@ -7,7 +7,8 @@ import {
   getPacksFromSheet,
   getInfoprodutosFromSheet,
   getNotificationsFromSheet,
-  getReceitaGratuitaFromSheet
+  getReceitaGratuitaFromSheet,
+  getLojaParceirosFromSheet
 } from "./googleSheetsSource";
 
 export interface SyncResult {
@@ -208,6 +209,31 @@ export async function syncGoogleSheetsToSupabase(): Promise<SyncResult[]> {
     results.push({ table: "receitas_gratuitas", success: !error, count: data.length, error: error?.message });
   } catch (e: any) {
     results.push({ table: "receitas_gratuitas", success: false, count: 0, error: e.message || String(e) });
+  }
+
+  // 7. Loja Parceiros (produtos de afiliado)
+  try {
+    const parceiros = await getLojaParceirosFromSheet();
+    const validParceiros = parceiros.filter(p => p.codigo && p.nome);
+
+    const data = validParceiros.map(p => ({
+      codigo: p.codigo,
+      nome: p.nome,
+      descricao: p.descricao,
+      preco: p.preco,
+      imagem_url: p.imagem_url,
+      link_externo: p.link_externo,
+      categoria: p.categoria,
+      destaque: p.destaque,
+      ativo: p.ativo
+    }));
+
+    const { error } = await supabase.from("loja_parceiros").upsert(data, { onConflict: "codigo" });
+    if (!error) await removerAusentes("loja_parceiros", "codigo", validParceiros.map(p => p.codigo));
+
+    results.push({ table: "loja_parceiros", success: !error, count: data.length, error: error?.message });
+  } catch (e: any) {
+    results.push({ table: "loja_parceiros", success: false, count: 0, error: e.message || String(e) });
   }
 
   return results;

@@ -65,6 +65,18 @@ export interface SheetCategoria {
   ativo: boolean;
 }
 
+export interface SheetLojaParceiro {
+  codigo: string;
+  nome: string;
+  descricao: string;
+  preco: number | null;
+  imagem_url: string;
+  link_externo: string;
+  categoria: string;
+  destaque: boolean;
+  ativo: boolean;
+}
+
 export const GOOGLE_DRIVE_FOLDER_ID = "1yrrZX5yqhLC8pi4phyOt8fxNzMiG1BoV";
 export const GOOGLE_DRIVE_RECEITAS_GRATUITAS_FOLDER_ID = "1gwkPEe6E74YxkDbrSRzoNfNpnjzztY8u";
 export const GOOGLE_DRIVE_API_KEY = "AIzaSyBJiL8IdTPi25jPZM0P6kl3dDUO8YHvVu4";
@@ -284,6 +296,29 @@ export async function getCategories(): Promise<SheetCategoria[]> {
     id: row.id,
     titulo: row.titulo || "",
     imagem_url: row.imagem_url || "",
+    ativo: !!row.ativo
+  }));
+}
+
+export async function getLojaParceiros(): Promise<SheetLojaParceiro[]> {
+  const { data, error } = await supabase
+    .from("loja_parceiros")
+    .select("codigo, nome, descricao, preco, imagem_url, link_externo, categoria, destaque, ativo");
+
+  if (error) {
+    console.warn("Erro ao buscar loja_parceiros no Supabase:", error);
+    return [];
+  }
+
+  return (data || []).map((row) => ({
+    codigo: row.codigo,
+    nome: row.nome || "",
+    descricao: row.descricao || "",
+    preco: row.preco === null || row.preco === undefined ? null : Number(row.preco),
+    imagem_url: row.imagem_url || "",
+    link_externo: row.link_externo || "",
+    categoria: row.categoria || "",
+    destaque: !!row.destaque,
     ativo: !!row.ativo
   }));
 }

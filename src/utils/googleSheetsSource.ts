@@ -136,3 +136,18 @@ export async function getCategoriesFromSheet() {
     ativo: isTruthy(row[3])
   }));
 }
+
+export async function getLojaParceirosFromSheet() {
+  const rows = await fetchSheetRows("loja_parceiros");
+  return rows.map((row) => ({
+    codigo: row[0] || "",
+    nome: row[1] || "",
+    descricao: row[2] || "",
+    preco: row[3] && row[3].trim() !== "" ? parseFloat(row[3]) : null,
+    imagem_url: row[4] || "",
+    link_externo: row[5] || "",
+    categoria: row[6] || "",
+    destaque: isTruthy(row[7]),
+    ativo: isTruthy(row[8])
+  }));
+}
