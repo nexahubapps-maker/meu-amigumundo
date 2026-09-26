@@ -3,14 +3,11 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { ArrowLeft, ShoppingBag, Search, ExternalLink, Sparkles, Check } from "lucide-react";
 import { getLojaParceiros, type SheetLojaParceiro } from "@/utils/sheets";
+import { SOMBRA_3D } from "@/lib/style3d";
 
 interface LojaAmiguMundoViewProps {
   onBack: () => void;
 }
-
-// Sombra 3D premium com bastante profundidade — usada nos menus e em todos os cards da Loja
-const SOMBRA_3D =
-  "shadow-[0_18px_35px_-8px_rgba(0,0,0,0.35),0_8px_16px_-4px_rgba(0,0,0,0.28),inset_0_1.5px_0_rgba(255,255,255,0.35),inset_0_-5px_10px_rgba(0,0,0,0.2)]";
 
 const VERDE = "#3CB19E";
 const VERDE_ATIVO = "#1F6F63";
@@ -18,23 +15,21 @@ const ROXO = "#5D0599";
 const ROXO_ATIVO = "#42026b";
 
 // 6 botões de menu (categorias + "Todas"), organizados em 2 linhas de 3.
-// Cada linha segue o padrão pequeno/médio/grande, e as cores alternam verde/roxo.
 const MENU_ITEMS: {
   id: string | null;
   label: string;
   emoji: string;
-  tamanho: "sm" | "md" | "lg";
   cor: string;
   corAtiva: string;
 }[] = [
   // linha 1 — verde / roxo / verde
-  { id: null, label: "Todas", emoji: "🛍️", tamanho: "sm", cor: VERDE, corAtiva: VERDE_ATIVO },
-  { id: "fios_linhas", label: "Fios & Linhas", emoji: "🧶", tamanho: "md", cor: ROXO, corAtiva: ROXO_ATIVO },
-  { id: "materiais_amigurumi", label: "Materiais p/ Amigurumi", emoji: "👀", tamanho: "lg", cor: VERDE, corAtiva: VERDE_ATIVO },
+  { id: null, label: "Todas", emoji: "🛍️", cor: VERDE, corAtiva: VERDE_ATIVO },
+  { id: "materiais_amigurumi", label: "Materiais p/ Amigurumi", emoji: "👀", cor: ROXO, corAtiva: ROXO_ATIVO },
+  { id: "fios_linhas", label: "Fios & Linhas", emoji: "🧶", cor: VERDE, corAtiva: VERDE_ATIVO },
   // linha 2 — roxo / verde / roxo
-  { id: "kits", label: "Kits", emoji: "🎁", tamanho: "sm", cor: ROXO, corAtiva: ROXO_ATIVO },
-  { id: "organizacao", label: "Organização", emoji: "🧺", tamanho: "md", cor: VERDE, corAtiva: VERDE_ATIVO },
-  { id: "agulhas_ferramentas", label: "Agulhas & Ferramentas", emoji: "🪡", tamanho: "lg", cor: ROXO, corAtiva: ROXO_ATIVO },
+  { id: "kits", label: "Kits", emoji: "🎁", cor: ROXO, corAtiva: ROXO_ATIVO },
+  { id: "agulhas_ferramentas", label: "Agulhas & Ferramentas", emoji: "🪡", cor: VERDE, corAtiva: VERDE_ATIVO },
+  { id: "organizacao", label: "Organização", emoji: "🧺", cor: ROXO, corAtiva: ROXO_ATIVO },
 ];
 
 const LINHA1 = MENU_ITEMS.slice(0, 3);
@@ -203,7 +198,7 @@ export const LojaAmiguMundoView = ({ onBack }: LojaAmiguMundoViewProps) => {
               {[LINHA1, LINHA2].map((linha, linhaIdx) => (
                 <div key={linhaIdx} className={`grid ${COLS_GRID} gap-2`}>
                   {linha.map((item) => {
-                    const ativo = categoriaAtiva === item.id;
+                    const ativo = item.id !== null && categoriaAtiva === item.id;
                     return (
                       <button
                         key={item.label}

@@ -1,5 +1,6 @@
 "use client";
 import { User as UserIcon, MapPin, LogOut } from "lucide-react";
+import { SOMBRA_3D } from "@/lib/style3d";
 
 interface ArtesaProfileHeaderProps {
   nome: string;
@@ -14,6 +15,11 @@ interface ArtesaProfileHeaderProps {
 }
 
 const textoComSombra = { textShadow: "0 1px 3px rgba(0,0,0,0.95), 0 2px 10px rgba(0,0,0,0.7)" };
+// Sombra mais profunda, dando efeito de relevo/3D no nome (além da legibilidade básica acima)
+const nomeComSombra3D = {
+  textShadow:
+    "0 1px 0 rgba(0,0,0,0.6), 0 2px 2px rgba(0,0,0,0.6), 0 4px 8px rgba(0,0,0,0.55), 0 8px 16px rgba(0,0,0,0.4)",
+};
 
 export const ArtesaProfileHeader = ({
   nome,
@@ -63,7 +69,7 @@ export const ArtesaProfileHeader = ({
 
       <div className="absolute inset-x-0 bottom-0 px-4 pb-3 pt-2">
         <div className="flex items-center gap-3">
-          <div className="w-20 h-20 sm:w-28 sm:h-28 rounded-full overflow-hidden bg-gradient-to-br from-[#5D0599] to-[#3CB19E] p-[3px] shrink-0">
+          <div className={`w-20 h-20 sm:w-28 sm:h-28 rounded-full overflow-hidden bg-gradient-to-br from-[#5D0599] to-[#3CB19E] p-[3px] shrink-0 ${SOMBRA_3D}`}>
             <div className="w-full h-full rounded-full overflow-hidden bg-white flex items-center justify-center">
               {fotoUrl ? (
                 <img src={fotoUrl} alt={nomeExibido} className="w-full h-full object-cover" />
@@ -73,7 +79,7 @@ export const ArtesaProfileHeader = ({
             </div>
           </div>
           <div className="flex-1 min-w-0">
-            <h2 style={textoComSombra} className="text-white font-black text-lg sm:text-3xl uppercase tracking-tight leading-tight truncate">
+            <h2 style={nomeComSombra3D} className="text-white font-black text-lg sm:text-3xl uppercase tracking-tight leading-tight truncate">
               {nomeExibido}
             </h2>
             {(cidade || tagEspecialidade) && (

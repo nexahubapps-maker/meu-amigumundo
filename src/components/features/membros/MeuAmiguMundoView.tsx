@@ -17,6 +17,7 @@ import { LightboxModal } from "@/components/features/catalog/LightboxModal";
 import { ArtesaProfileHeader } from "@/components/features/membros/ArtesaProfileHeader";
 import { UpsellCard } from "@/components/features/upsell/UpsellCard";
 import { LojaAmiguMundoView } from "@/components/features/membros/LojaAmiguMundoView";
+import { SOMBRA_3D } from "@/lib/style3d";
 
 interface MeuAmiguMundoViewProps {
   onBack: () => void;
@@ -208,7 +209,7 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
                   backgroundColor: menu.cor,
                   borderColor: isActive ? menu.corAtiva : "transparent",
                 }}
-                className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl font-black text-[10px] sm:text-[11px] uppercase tracking-wide text-white border-2 transition-all active:scale-95"
+                className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl font-black text-[10px] sm:text-[11px] uppercase tracking-wide text-white border-2 transition-all active:scale-95 hover:-translate-y-0.5 duration-200 ${SOMBRA_3D}`}
               >
                 <Icone size={14} /> {menu.label}
               </button>
@@ -226,13 +227,13 @@ export const MeuAmiguMundoView = ({ onBack, onAddToCart }: MeuAmiguMundoViewProp
               setCategoriaSelecionadaCatalogo(null);
               setTimeout(() => ateliePromissionalRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
             }}
-            className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl font-black text-[10px] sm:text-[11px] uppercase tracking-wide text-white bg-[#5D0599] active:scale-95 transition-transform"
+            className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl font-black text-[10px] sm:text-[11px] uppercase tracking-wide text-white bg-[#5D0599] active:scale-95 transition-transform hover:-translate-y-0.5 duration-200 ${SOMBRA_3D}`}
           >
             Ateliê Lucrativo
           </button>
           <button
             onClick={() => setLojaParceirosAberta(true)}
-            className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl font-black text-[10px] sm:text-[11px] uppercase tracking-wide text-white bg-[#5D0599] active:scale-95 transition-transform"
+            className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl font-black text-[10px] sm:text-[11px] uppercase tracking-wide text-white bg-[#5D0599] active:scale-95 transition-transform hover:-translate-y-0.5 duration-200 ${SOMBRA_3D}`}
           >
             <ShoppingBag size={13} />
             Loja AmiguMundo
