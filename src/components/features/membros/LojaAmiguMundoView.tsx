@@ -198,7 +198,7 @@ export const LojaAmiguMundoView = ({ onBack }: LojaAmiguMundoViewProps) => {
               {[LINHA1, LINHA2].map((linha, linhaIdx) => (
                 <div key={linhaIdx} className={`grid ${COLS_GRID} gap-2`}>
                   {linha.map((item) => {
-                    const ativo = item.id !== null && categoriaAtiva === item.id;
+                    const ativo = categoriaAtiva === item.id;
                     return (
                       <button
                         key={item.label}
