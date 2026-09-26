@@ -116,21 +116,25 @@ export const LojaAmiguMundoView = ({ onBack }: LojaAmiguMundoViewProps) => {
         {/* Hero */}
         <div
           className="relative rounded-3xl overflow-hidden shadow-sm bg-[#5D0599] bg-cover bg-center min-h-[200px] sm:min-h-[240px] flex items-end"
-          style={{ backgroundImage: "url('https://ik.imagekit.io/di3huhaluc/capa%20loja%20marketplace.png')" }}
+          style={{ backgroundImage: "url('https://ik.imagekit.io/di3huhaluc/capa%20loja%20amigumundo%20premium.png')" }}
         >
-          {/* Overlay escuro em gradiente: garante contraste do texto sobre qualquer foto, mais forte embaixo onde o texto fica */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/45 to-black/10" />
-          <div className="relative p-5 sm:p-7 text-white w-full">
-            <p className="text-[11px] font-black uppercase tracking-widest text-white/90 mb-1 [text-shadow:0_1px_3px_rgba(0,0,0,0.6)]">
-              Tudo para ajudar você a continuar criando
-            </p>
-            <h1 className="text-lg sm:text-2xl font-black leading-tight mb-2 [text-shadow:0_1px_4px_rgba(0,0,0,0.6)]">
-              Materiais e ferramentas selecionados pra quem ama amigurumi
-            </h1>
-            <p className="text-xs sm:text-sm text-white/95 font-medium leading-relaxed max-w-md [text-shadow:0_1px_3px_rgba(0,0,0,0.6)]">
-              Encontre produtos que podem facilitar seu trabalho, melhorar seus materiais e ajudar você a criar ainda mais — sem precisar sair procurando pela internet.
-            </p>
+          <div className="relative p-4 sm:p-5">
+            <span className="inline-block bg-black/70 backdrop-blur-sm px-3.5 py-2 rounded-xl">
+              <span className="text-sm sm:text-lg font-black uppercase tracking-wide text-white [text-shadow:0_2px_6px_rgba(0,0,0,0.9)]">
+                Tudo para ajudar você a continuar criando
+              </span>
+            </span>
           </div>
+        </div>
+
+        {/* Título e subtítulo, fora da imagem */}
+        <div>
+          <h1 className="text-lg sm:text-2xl font-black leading-tight text-gray-900 mb-2">
+            Materiais e ferramentas selecionados pra quem ama amigurumi
+          </h1>
+          <p className="text-xs sm:text-sm text-gray-500 font-medium leading-relaxed max-w-md">
+            Encontre produtos que podem facilitar seu trabalho, melhorar seus materiais e ajudar você a criar ainda mais — sem precisar sair procurando pela internet.
+          </p>
         </div>
 
         {/* Busca */}
