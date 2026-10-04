@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft, ShieldCheck, Lock, CreditCard, Check, Loader2, Sparkles, LogIn } from "lucide-react";
 import { showError } from "@/utils/toast";
@@ -33,9 +33,21 @@ export default function PremiumCheckout() {
   const plano = PLANOS[planoId];
   const valorPorMes = plano.valor / plano.meses;
 
-  const [email, setEmail] = useState(user?.email || "");
-  const [nomeCompleto, setNomeCompleto] = useState("");
-  const [cpf, setCpf] = useState("");
+  const [email, setEmail] = useState(user?.email || localStorage.getItem("amigumundo-email") || "");
+  const [nomeCompleto, setNomeCompleto] = useState(() => localStorage.getItem("amigumundo-nome") || "");
+  const [cpf, setCpf] = useState(() => localStorage.getItem("amigumundo-cpf") || "");
+
+  useEffect(() => {
+    localStorage.setItem("amigumundo-email", email);
+  }, [email]);
+
+  useEffect(() => {
+    localStorage.setItem("amigumundo-nome", nomeCompleto);
+  }, [nomeCompleto]);
+
+  useEffect(() => {
+    localStorage.setItem("amigumundo-cpf", cpf);
+  }, [cpf]);
   const [cardNumber, setCardNumber] = useState("");
   const [cardName, setCardName] = useState("");
   const [cardExpiry, setCardExpiry] = useState("");
