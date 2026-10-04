@@ -28,13 +28,11 @@ export interface CalculatedCart {
   economia: number;
 }
 
-const PRECO_BASE_RECEITA = 5;
+const PRECO_BASE_RECEITA = 3;
 
 export function getPrecoPorReceita(paidCount: number): number {
-  if (paidCount < 6) return 5;
   if (paidCount < 11) return 3;
-  if (paidCount < 21) return 2.5;
-  return 2;
+  return 2.5;
 }
 
 export function calculateCart(cart: CartItem[]): CalculatedCart {

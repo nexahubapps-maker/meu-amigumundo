@@ -66,15 +66,11 @@ export const UnifiedCheckoutHub = ({
 
   let tierMessage = "";
   if (P === 0) {
-    tierMessage = "Comece sua coleção agora. A partir de 6 receitas o preço já cai para R$3,00 cada.";
-  } else if (P < 6) {
-    tierMessage = `Adicione mais ${6 - P} receita(s) e o preço cai para R$3,00 cada. Sua biblioteca agradece.`;
+    tierMessage = "Receitas por R$3,00 cada. A partir de 11 receitas, o preço já cai para R$2,50 cada.";
   } else if (P < 11) {
-    tierMessage = `Você já está economizando muito e vai ficar melhor ainda. Mais ${11 - P} receita(s) e o preço desce para R$2,50 — o próximo degrau já está bem pertinho.`;
-  } else if (P < 21) {
-    tierMessage = `Catálogo bom é quando tem muitas opções, ainda mais por esse preço. Faltam ${21 - P} receita(s) para o DESCONTO mais ABSURDO de todos: R$2,00 cada.`;
+    tierMessage = `Adicione mais ${11 - P} receita(s) e o preço cai para R$2,50 cada. Sua biblioteca agradece.`;
   } else {
-    tierMessage = "Você chegou no lugar mais gostoso e ABSURDO. R$2,00 por receita. E quanto mais você coleciona, mais o AmiguMundo cuida de você.";
+    tierMessage = "Você chegou na melhor faixa de preço: R$2,50 por receita. E quanto mais você coleciona, mais o AmiguMundo cuida de você.";
   }
 
   return (

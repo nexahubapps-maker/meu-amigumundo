@@ -563,7 +563,7 @@ export default function Index() {
       <div className="max-w-6xl mx-auto px-1.5 my-1 flex flex-col items-center relative">
         <div className="relative w-full max-w-xl">
           <img 
-            src="https://ik.imagekit.io/di3huhaluc/banner%20do%20carrinho%20amigumundo?updatedAt=1786225221413" 
+            src="https://ik.imagekit.io/di3huhaluc/banner%20topo%20amigumundo.png" 
             alt="Banner do Carrinho AmiguMundo" 
             className="w-full h-auto object-contain rounded-2xl"
           />
