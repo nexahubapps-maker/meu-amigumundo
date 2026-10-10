@@ -369,6 +369,43 @@ export async function getRecipesByCategoria(categoriaId: string): Promise<SheetR
   return resolveImagensReceitas(mapped);
 }
 
+// Busca paginada usada na aba "Todas as receitas" da Home.
+// Ordena por código decrescente (receitas mais novas primeiro). Os códigos têm sempre
+// 4 dígitos (1001, 1002...), então a ordem de texto equivale à ordem numérica.
+// Pede 1 registro a mais que o limite só para saber se existe uma próxima página.
+export async function getRecipesPage(
+  offset: number,
+  limit: number
+): Promise<{ recipes: SheetRecipe[]; hasMore: boolean; error: boolean }> {
+  const { data, error } = await supabase
+    .from("receitas")
+    .select("codigo, nome, slug, preco, imagem_url, categoria, ativo, disparar_push")
+    .eq("ativo", true)
+    .order("codigo", { ascending: false })
+    .range(offset, offset + limit);
+
+  if (error) {
+    console.warn("Erro ao buscar página de receitas no Supabase:", error);
+    return { recipes: [], hasMore: false, error: true };
+  }
+
+  const rows = data || [];
+  const hasMore = rows.length > limit;
+
+  const mapped = rows.slice(0, limit).map((row) => ({
+    id: row.codigo,
+    nome: row.nome || "",
+    slug: row.slug || "",
+    preco: Number(row.preco) || 0,
+    imagem_url: row.imagem_url || "",
+    categoria: row.categoria || "",
+    ativo: !!row.ativo,
+    disparar_push: !!row.disparar_push
+  }));
+
+  return { recipes: await resolveImagensReceitas(mapped), hasMore, error: false };
+}
+
 export async function getRecipesByIds(ids: string[]): Promise<SheetRecipe[]> {
   if (ids.length === 0) return [];
   const { data, error } = await supabase

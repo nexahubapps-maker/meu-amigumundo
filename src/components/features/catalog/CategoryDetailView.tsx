@@ -1,11 +1,10 @@
 "use client";
 
 import React from "react";
-import { ArrowLeft, Heart, Search, Share2 } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { type SheetRecipe } from "@/utils/sheets";
-import { showSuccess } from "@/utils/toast";
 import { RecipeSearchBar } from "@/components/features/catalog/RecipeSearchBar";
-import { appendShareUTM } from "@/lib/tracking/utmify-service";
+import { RecipeGridCard } from "@/components/features/catalog/RecipeGridCard";
 
 interface CategoryDetailViewProps {
   categoriaSlug: string;
@@ -38,32 +37,6 @@ export const CategoryDetailView = ({
     backgroundRepeat: "repeat",
     backgroundSize: "150px",
     textShadow: "1px 1px 2px rgba(0,0,0,0.5)"
-  };
-
-  const handleShare = async (recipe: SheetRecipe, e: React.MouseEvent) => {
-    e.stopPropagation();
-    const slug = recipe.nome.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "");
-    const shareUrl = appendShareUTM(`${window.location.origin}/receita/${slug}-${recipe.id}`);
-    
-    try {
-      if (navigator.share) {
-        await navigator.share({
-          title: 'AmiguMundo - ' + recipe.nome,
-          url: shareUrl,
-        });
-      } else {
-        await navigator.clipboard.writeText(shareUrl);
-        showSuccess("Link copiado com sucesso!");
-      }
-    } catch (err) {
-      console.warn("Erro ao compartilhar:", err);
-      try {
-        await navigator.clipboard.writeText(shareUrl);
-        showSuccess("Link copiado com sucesso!");
-      } catch (clipErr) {
-        console.error(clipErr);
-      }
-    }
   };
 
   return (
@@ -105,78 +78,18 @@ export const CategoryDetailView = ({
           </div>
         ) : (
           <div className="grid grid-cols-3 lg:grid-cols-5 gap-1 sm:gap-2 lg:gap-4">
-            {recipes.map((recipe) => {
-              const added = isInCart(recipe.id);
-              const isFavorite = favorites.includes(recipe.id);
-              return (
-                <div key={recipe.id} className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden flex flex-col justify-between p-1">
-                  <div className="relative aspect-square bg-gray-50 overflow-hidden rounded-lg group">
-                    <img 
-                      src={recipe.imagem_url} 
-                      alt={recipe.nome} 
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 cursor-zoom-in"
-                      onClick={() => onZoomImage(recipe.imagem_url)}
-                    />
-                    
-                    <div className="absolute top-1.5 left-1.5 bg-black/50 text-white p-1 rounded-full pointer-events-none">
-                      <Search size={10} />
-                    </div>
-
-                    <button 
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onToggleFavorite(recipe.id);
-                      }}
-                      className={`absolute top-1.5 right-1.5 bg-white/90 backdrop-blur-sm p-1.5 rounded-full shadow-md hover:scale-110 active:scale-90 transition-transform z-10 ${isFavorite ? 'text-[#44FF00]' : 'text-gray-400'}`}
-                    >
-                      <Heart size={14} fill={isFavorite ? "currentColor" : "none"} />
-                    </button>
-
-                    <button 
-                      onClick={(e) => handleShare(recipe, e)}
-                      className="absolute top-9 right-1.5 bg-white/90 backdrop-blur-sm p-1.5 rounded-full shadow-md hover:scale-110 active:scale-90 transition-transform text-gray-500 hover:text-gray-800 z-10"
-                      title="Compartilhar"
-                    >
-                      <Share2 size={14} />
-                    </button>
-                  </div>
-
-                  <div className="pt-1.5 flex flex-col justify-between flex-1">
-                    <div>
-                      <h4 className="text-[11px] lg:text-sm font-black text-gray-800 uppercase tracking-tight leading-tight mb-1">
-                        {recipe.nome}
-                      </h4>
-                      <div className="flex items-center justify-between mb-1.5">
-                        <span className="text-[9px] lg:text-[11px] text-gray-400 font-bold">({recipe.id})</span>
-                        <span className="text-gray-900 font-black text-[13px] lg:text-base">R$ {recipe.preco.toFixed(2)}</span>
-                      </div>
-                    </div>
-                    
-                    <div className="flex gap-1">
-                      <button
-                        onClick={() => onRecipeAdd(recipe)}
-                        disabled={added}
-                        className={`flex-1 py-1 rounded-lg font-black text-[8px] lg:text-[10px] uppercase tracking-wider transition-all ${
-                          added 
-                            ? 'bg-gray-100 text-gray-400' 
-                            : 'bg-[#44FF00] text-[#171717] hover:scale-105 active:scale-95'
-                        }`}
-                      >
-                        {added ? "✓" : "Quero"}
-                      </button>
-                      {added && (
-                        <button 
-                          onClick={() => onRecipeRemove(recipe.id)} 
-                          className="px-1.5 rounded-lg bg-red-50 text-red-500 text-[10px] hover:bg-red-100 transition-colors"
-                        >
-                          ✕
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
+            {recipes.map((recipe) => (
+              <RecipeGridCard
+                key={recipe.id}
+                recipe={recipe}
+                added={isInCart(recipe.id)}
+                isFavorite={favorites.includes(recipe.id)}
+                onAdd={onRecipeAdd}
+                onRemove={onRecipeRemove}
+                onZoomImage={onZoomImage}
+                onToggleFavorite={onToggleFavorite}
+              />
+            ))}
           </div>
         )}
       </div>

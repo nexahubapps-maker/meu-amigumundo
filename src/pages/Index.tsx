@@ -20,6 +20,7 @@ import { CartFooter } from "@/components/features/checkout/CartFooter";
 import { CategoryDetailView } from "@/components/features/catalog/CategoryDetailView";
 import { SearchResultsView } from "@/components/features/catalog/SearchResultsView";
 import { RecipeSearchBar } from "@/components/features/catalog/RecipeSearchBar";
+import { AllRecipesSection } from "@/components/features/catalog/AllRecipesSection";
 import { LightboxModal } from "@/components/features/catalog/LightboxModal";
 import { InstallGuideCard } from "@/components/features/pwa/InstallGuideCard";
 import { Breadcrumbs } from "@/components/common/Breadcrumbs";
@@ -35,6 +36,7 @@ import { captureUTMs, appendShareUTM } from "@/lib/tracking/utmify-service";
 import { Share2 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { getReadNotificationIds } from "@/utils/notificacoesLidas";
+import { SOMBRA_3D } from "@/lib/style3d";
 import { getPrimeiroAcesso } from "@/utils/primeiroAcesso";
 import { 
   getInfoprodutos, 
@@ -55,6 +57,14 @@ import { showCartAdd, showSuccess, showNotificationPopup } from "@/utils/toast";
 import { PremiumEmBrevePopup } from "@/components/common/PremiumEmBrevePopup";
 
 const ADMIN_EMAIL = "crochecrochet1@gmail.com";
+
+// Abas da seção de receitas na Home (mesmo padrão de cores dos botões do Premium).
+type AbaCatalogo = "todas" | "categorias";
+const ABAS_CATALOGO: { id: AbaCatalogo; label: string; cor: string; corAtiva: string }[] = [
+  { id: "todas", label: "Todas as receitas", cor: "#5D0599", corAtiva: "#42026b" },
+  { id: "categorias", label: "Categorias de receitas", cor: "#3CB19E", corAtiva: "#1F6F63" },
+];
+const CHAVE_ABA_CATALOGO = "amigumundo-aba-catalogo";
 
 function shuffleArray<T>(array: T[]): T[] {
   const arr = [...array];
@@ -89,6 +99,22 @@ export default function Index() {
   const [isPremiumSalesOpen, setIsPremiumSalesOpen] = useState(false);
   const [isPremiumEmBreveOpen, setIsPremiumEmBreveOpen] = useState(false);
   const [isMeusPedidosOpen, setIsMeusPedidosOpen] = useState(false);
+  const [catalogTab, setCatalogTab] = useState<AbaCatalogo>(() => {
+    try {
+      return sessionStorage.getItem(CHAVE_ABA_CATALOGO) === "categorias" ? "categorias" : "todas";
+    } catch {
+      return "todas";
+    }
+  });
+
+  const selecionarAbaCatalogo = (aba: AbaCatalogo) => {
+    setCatalogTab(aba);
+    try {
+      sessionStorage.setItem(CHAVE_ABA_CATALOGO, aba);
+    } catch {
+      // sem sessionStorage (modo privado): só não lembra a escolha
+    }
+  };
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [isMeuAuthModalOpen, setIsMeuAuthModalOpen] = useState(false);
   const [isCompleteProfileOpen, setIsCompleteProfileOpen] = useState(false);
@@ -607,30 +633,55 @@ export default function Index() {
 
         <div id="secao-categorias" className="max-w-6xl mx-auto px-2 sm:px-4 mt-3">
           <div className="bg-white rounded-3xl p-2 sm:p-3 shadow-lg border border-gray-100/80 flex flex-col gap-2">
-            <div 
-              style={textureLaranjaStyle}
-              className="w-full py-2 px-3 shadow-sm rounded-xl text-center border border-gray-100"
-            >
-              <h2 className="text-base sm:text-lg font-black uppercase tracking-wider text-white m-0">
-                CATEGORIAS DE RECEITAS
-              </h2>
+            <div className="flex items-stretch gap-2">
+              {ABAS_CATALOGO.map((aba) => {
+                const ativa = catalogTab === aba.id;
+                return (
+                  <button
+                    key={aba.id}
+                    onClick={() => selecionarAbaCatalogo(aba.id)}
+                    style={{
+                      backgroundColor: aba.cor,
+                      borderColor: ativa ? aba.corAtiva : "transparent",
+                    }}
+                    className={`flex-1 flex items-center justify-center text-center px-1.5 py-2.5 rounded-xl font-black text-[10px] sm:text-xs uppercase tracking-wide leading-tight text-white border-2 transition-all active:scale-95 hover:-translate-y-0.5 duration-200 ${SOMBRA_3D}`}
+                  >
+                    {aba.label}
+                  </button>
+                );
+              })}
             </div>
-            
-            <p className="text-gray-600 text-xs sm:text-sm font-bold text-center uppercase tracking-tight -mt-0.5 mb-1">
+
+            <p className="text-gray-600 text-xs sm:text-sm font-bold text-center uppercase tracking-tight mt-0.5 mb-1">
               NOVAS TRADUÇÕES ADICIONADAS TODOS OS DIAS
             </p>
-            
-            <div className="grid grid-cols-3 lg:grid-cols-6 gap-x-1 gap-y-1.5 lg:gap-4 px-0.5">
-              {categoriesList.map((cat) => (
-                <CategoryCard 
-                  key={cat.id} 
-                  nome={cat.titulo} 
-                  imagem={cat.imagem_url}
-                  onClick={() => {
-                    navigate(`/categoria/${encodeURIComponent(cat.titulo.toLowerCase())}`);
-                  }} 
-                />
-              ))}
+
+            <div className={catalogTab === "todas" ? "" : "hidden"}>
+              <AllRecipesSection
+                isInCart={isInCart}
+                onRecipeAdd={handleRecipeAdd}
+                onRecipeRemove={removeFromCart}
+                onZoomImage={setZoomImage}
+                favorites={favorites}
+                onToggleFavorite={(recipe) =>
+                  toggleFavorite(recipe.id, { nome: recipe.nome, imagem_url: recipe.imagem_url, tipo: "receita" })
+                }
+              />
+            </div>
+
+            <div className={catalogTab === "categorias" ? "" : "hidden"}>
+              <div className="grid grid-cols-3 lg:grid-cols-6 gap-x-1 gap-y-1.5 lg:gap-4 px-0.5">
+                {categoriesList.map((cat) => (
+                  <CategoryCard 
+                    key={cat.id} 
+                    nome={cat.titulo} 
+                    imagem={cat.imagem_url}
+                    onClick={() => {
+                      navigate(`/categoria/${encodeURIComponent(cat.titulo.toLowerCase())}`);
+                    }} 
+                  />
+                ))}
+              </div>
             </div>
           </div>
         </div>
