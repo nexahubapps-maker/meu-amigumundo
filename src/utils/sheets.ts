@@ -369,41 +369,100 @@ export async function getRecipesByCategoria(categoriaId: string): Promise<SheetR
   return resolveImagensReceitas(mapped);
 }
 
-// Busca paginada usada na aba "Todas as receitas" da Home.
-// Ordena por código decrescente (receitas mais novas primeiro). Os códigos têm sempre
-// 4 dígitos (1001, 1002...), então a ordem de texto equivale à ordem numérica.
-// Pede 1 registro a mais que o limite só para saber se existe uma próxima página.
+// ---------------------------------------------------------------------------
+// Aba "Todas as receitas" da Home: lista embaralhada e paginada.
+//
+// A ordem é sorteada UMA vez a cada abertura do app (fica guardada na memória) e a
+// paginação anda em cima dessa ordem. Assim a cliente vê uma sequência diferente a cada
+// visita, e o "Ver mais" continua a mesma sequência, sem repetir nem pular receita.
+// ---------------------------------------------------------------------------
+let ordemEmbaralhadaPromise: Promise<string[]> | null = null;
+
+function embaralhar<T>(lista: T[]): T[] {
+  const copia = [...lista];
+  for (let i = copia.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copia[i], copia[j]] = [copia[j], copia[i]];
+  }
+  return copia;
+}
+
+// Busca só a coluna "codigo" das receitas ativas (leve). O Supabase devolve no máximo
+// 1000 linhas por requisição, então busca em lotes caso o catálogo cresça além disso.
+async function buscarCodigosAtivos(): Promise<string[]> {
+  const TAMANHO_LOTE = 1000;
+  const codigos: string[] = [];
+
+  for (let inicio = 0; ; inicio += TAMANHO_LOTE) {
+    const { data, error } = await supabase
+      .from("receitas")
+      .select("codigo")
+      .eq("ativo", true)
+      .order("codigo", { ascending: true })
+      .range(inicio, inicio + TAMANHO_LOTE - 1);
+
+    if (error) throw error;
+
+    const lote = (data || []).map((row) => row.codigo as string);
+    codigos.push(...lote);
+    if (lote.length < TAMANHO_LOTE) break;
+  }
+
+  return codigos;
+}
+
 export async function getRecipesPage(
   offset: number,
   limit: number
-): Promise<{ recipes: SheetRecipe[]; hasMore: boolean; error: boolean }> {
-  const { data, error } = await supabase
-    .from("receitas")
-    .select("codigo, nome, slug, preco, imagem_url, categoria, ativo, disparar_push")
-    .eq("ativo", true)
-    .order("codigo", { ascending: false })
-    .range(offset, offset + limit);
+): Promise<{ recipes: SheetRecipe[]; hasMore: boolean; proximoOffset: number; error: boolean }> {
+  try {
+    // A promessa é criada de forma síncrona na primeira chamada, então chamadas simultâneas
+    // (ex.: React em modo estrito) compartilham exatamente a mesma ordem sorteada.
+    if (!ordemEmbaralhadaPromise) {
+      ordemEmbaralhadaPromise = buscarCodigosAtivos().then(embaralhar);
+    }
+    const ordem = await ordemEmbaralhadaPromise;
 
-  if (error) {
-    console.warn("Erro ao buscar página de receitas no Supabase:", error);
-    return { recipes: [], hasMore: false, error: true };
+    const codigosDaPagina = ordem.slice(offset, offset + limit);
+    const proximoOffset = offset + codigosDaPagina.length;
+    const hasMore = proximoOffset < ordem.length;
+
+    if (codigosDaPagina.length === 0) {
+      return { recipes: [], hasMore: false, proximoOffset, error: false };
+    }
+
+    const { data, error } = await supabase
+      .from("receitas")
+      .select("codigo, nome, slug, preco, imagem_url, categoria, ativo, disparar_push")
+      .in("codigo", codigosDaPagina)
+      .eq("ativo", true);
+
+    if (error) throw error;
+
+    // O banco não garante a ordem do "in", então reordena pela sequência sorteada.
+    const porCodigo = new Map((data || []).map((row) => [row.codigo as string, row]));
+    const mapped: SheetRecipe[] = [];
+    for (const codigo of codigosDaPagina) {
+      const row = porCodigo.get(codigo);
+      if (!row) continue; // receita desativada depois do sorteio: simplesmente some da lista
+      mapped.push({
+        id: row.codigo,
+        nome: row.nome || "",
+        slug: row.slug || "",
+        preco: Number(row.preco) || 0,
+        imagem_url: row.imagem_url || "",
+        categoria: row.categoria || "",
+        ativo: !!row.ativo,
+        disparar_push: !!row.disparar_push
+      });
+    }
+
+    return { recipes: await resolveImagensReceitas(mapped), hasMore, proximoOffset, error: false };
+  } catch (e) {
+    console.warn("Erro ao buscar página de receitas no Supabase:", e);
+    ordemEmbaralhadaPromise = null; // permite tentar de novo e sortear outra vez
+    return { recipes: [], hasMore: false, proximoOffset: offset, error: true };
   }
-
-  const rows = data || [];
-  const hasMore = rows.length > limit;
-
-  const mapped = rows.slice(0, limit).map((row) => ({
-    id: row.codigo,
-    nome: row.nome || "",
-    slug: row.slug || "",
-    preco: Number(row.preco) || 0,
-    imagem_url: row.imagem_url || "",
-    categoria: row.categoria || "",
-    ativo: !!row.ativo,
-    disparar_push: !!row.disparar_push
-  }));
-
-  return { recipes: await resolveImagensReceitas(mapped), hasMore, error: false };
 }
 
 export async function getRecipesByIds(ids: string[]): Promise<SheetRecipe[]> {

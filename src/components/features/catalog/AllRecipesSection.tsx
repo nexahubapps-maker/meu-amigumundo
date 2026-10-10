@@ -36,7 +36,7 @@ export const AllRecipesSection = ({
   const [loadMoreError, setLoadMoreError] = useState(false);
   const [tentativa, setTentativa] = useState(0);
 
-  // Quantos registros já foram buscados no banco (usado como deslocamento da próxima página).
+  // Posição na ordem sorteada de onde começa a próxima página.
   const proximoOffset = useRef(0);
 
   useEffect(() => {
@@ -49,7 +49,7 @@ export const AllRecipesSection = ({
       if (res.error) {
         setLoadError(true);
       } else {
-        proximoOffset.current = res.recipes.length;
+        proximoOffset.current = res.proximoOffset;
         setRecipes(res.recipes);
         setHasMore(res.hasMore);
       }
@@ -71,7 +71,7 @@ export const AllRecipesSection = ({
     if (res.error) {
       setLoadMoreError(true);
     } else {
-      proximoOffset.current += res.recipes.length;
+      proximoOffset.current = res.proximoOffset;
       // Evita card repetido caso entre receita nova enquanto a cliente navega.
       setRecipes((anteriores) => {
         const jaExistem = new Set(anteriores.map((r) => r.id));
